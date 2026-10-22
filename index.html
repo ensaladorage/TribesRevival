@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#17131f" />
+    <title>Tribes Revival</title>
+  </head>
+  <body>
+    <main id="game-shell" aria-label="Tribes Revival">
+      <div id="game-root"></div>
+      <div id="main-menu-overlay" class="menu-overlay" data-menu-screen="main">
+        <section class="menu-panel main-menu-panel" aria-labelledby="main-menu-title">
+          <p class="menu-kicker">Una tribu. Un tótem. Un mundo por sobrevivir.</p>
+          <h1 id="main-menu-title">Tribes Revival</h1>
+          <p class="menu-subtitle">Guía a tu tribu y ayúdala a prosperar.</p>
+          <nav class="main-menu-actions" aria-label="Menú principal">
+            <button type="button" data-menu-action="play">Jugar</button>
+            <button type="button" data-menu-action="tutorial">Tutorial</button>
+            <button type="button" data-menu-action="open-load">Cargar</button>
+          </nav>
+        </section>
+      </div>
+
+      <div id="tutorial-overlay" class="menu-overlay" data-menu-screen="tutorial" hidden>
+        <section class="menu-panel tutorial-panel" role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
+          <header class="menu-panel-header">
+            <div>
+              <p class="menu-kicker">Guía rápida</p>
+              <h2 id="tutorial-title">Cómo jugar</h2>
+            </div>
+            <button type="button" class="menu-back-button" data-menu-action="back-main">Volver</button>
+          </header>
+          <div class="tutorial-content">
+            <article class="tutorial-movement-card">
+              <div class="tutorial-diagram" aria-hidden="true">
+                <svg viewBox="0 0 520 180" role="img">
+                  <ellipse cx="115" cy="101" rx="95" ry="55" fill="#61734a" stroke="#9b9b68" stroke-width="3" />
+                  <ellipse cx="405" cy="76" rx="86" ry="49" fill="#6c8050" stroke="#a4a276" stroke-width="3" />
+                  <path d="M145 102 C220 35 288 137 374 74" fill="none" stroke="#f1d27a" stroke-width="4" stroke-dasharray="8 8" />
+                  <path d="m367 64 17 8-15 11" fill="none" stroke="#f1d27a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                  <rect x="93" y="69" width="39" height="48" rx="5" fill="#b98158" stroke="#3a2b27" stroke-width="4" />
+                  <circle cx="157" cy="126" r="11" fill="#f1d27a" stroke="#28221d" stroke-width="3" />
+                  <circle cx="177" cy="137" r="10" fill="#5b9a75" stroke="#28221d" stroke-width="3" />
+                  <circle cx="197" cy="126" r="10" fill="#c5684f" stroke="#28221d" stroke-width="3" />
+                  <rect x="381" y="47" width="41" height="52" rx="5" fill="#d8904f" stroke="#3a2b27" stroke-width="4" />
+                  <circle cx="359" cy="116" r="10" fill="#f1d27a" stroke="#28221d" stroke-width="3" />
+                  <circle cx="341" cy="128" r="10" fill="#5b9a75" stroke="#28221d" stroke-width="3" />
+                  <circle cx="323" cy="115" r="10" fill="#c5684f" stroke="#28221d" stroke-width="3" />
+                </svg>
+              </div>
+              <div class="tutorial-copy">
+                <h3>Mueve el tótem</h3>
+                <p>Haz clic sobre el tótem y arrástralo. La tribu lo seguirá, se reagrupará y trabajará en los recursos cercanos según las habilidades de cada minion.</p>
+                <p class="tutorial-hint">Escape: pausar</p>
+              </div>
+            </article>
+            <h3 class="tutorial-roles-title">Tu tribu</h3>
+            <div class="tutorial-roles">
+              <article class="tutorial-role">
+                <span class="tutorial-role-icon"><span class="build-icon build-icon-gatherer"><span class="build-model build-model-gatherer"></span></span></span>
+                <span><strong>Recolector</strong><small>Minion básico. Recolecta Bayas y se puede especializar.</small></span>
+              </article>
+              <article class="tutorial-role">
+                <span class="tutorial-role-icon"><span class="build-icon build-icon-axe"><span class="build-model build-model-axe"></span></span></span>
+                <span><strong>Leñador</strong><small>Recolecta madera y combate con el hacha.</small></span>
+              </article>
+              <article class="tutorial-role">
+                <span class="tutorial-role-icon"><span class="build-icon build-icon-bow"><svg class="build-model build-bow-svg" viewBox="0 0 30 32" aria-hidden="true"><path d="M22 3.5 Q7.5 16 22 28.5" fill="none" stroke="#81512f" stroke-width="4.4" stroke-linecap="round"/><path d="M22 3.5 V28.5" fill="none" stroke="#e8d8a6" stroke-width="1.2"/><path d="M7.7 13.7 V18.3" fill="none" stroke="#888681" stroke-width="4.8" stroke-linecap="round"/></svg></span></span>
+                <span><strong>Cazador</strong><small>Caza animales salvajes y combate a distancia con su arco.</small></span>
+              </article>
+              <article class="tutorial-role">
+                <span class="tutorial-role-icon"><span class="build-icon build-icon-sword"><span class="build-model build-model-sword"><span class="sword-blade"></span><span class="sword-grip"></span><span class="sword-guard"></span></span></span></span>
+                <span><strong>Guardián</strong><small>Protector de la tribu. Se centra solo en combatir.</small></span>
+              </article>
+              <article class="tutorial-role">
+                <span class="tutorial-role-icon"><span class="build-icon build-icon-hammer"><span class="build-model build-model-hammer"><span class="hammer-handle"></span><span class="hammer-head"></span></span></span></span>
+                <span><strong>Artesana</strong><small>Minion avanzado. Recolecta Piedra y Sparks.</small></span>
+              </article>
+            </div>
+          </div>
+          <footer class="tutorial-footer"><button type="button" data-menu-action="back-main">Volver al menú</button><button type="button" data-menu-action="play">Jugar</button></footer>
+        </section>
+      </div>
+
+      <div id="pause-menu-overlay" class="menu-overlay menu-overlay-dim" data-menu-screen="pause" hidden>
+        <section class="menu-panel compact-menu-panel" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+          <p class="menu-kicker">Tribes Revival</p>
+          <h2 id="pause-title">Pausa</h2>
+          <nav class="main-menu-actions" aria-label="Menú de pausa">
+            <button type="button" data-menu-action="resume">Volver</button>
+            <button type="button" data-menu-action="open-save">Guardar</button>
+            <button type="button" data-menu-action="open-load">Cargar</button>
+            <button type="button" class="menu-secondary-button" data-menu-action="exit">Salir</button>
+          </nav>
+        </section>
+      </div>
+
+      <div id="slot-menu-overlay" class="menu-overlay menu-overlay-dim" data-menu-screen="slots" hidden>
+        <section class="menu-panel slot-menu-panel" role="dialog" aria-modal="true" aria-labelledby="slot-menu-title">
+          <header class="menu-panel-header">
+            <div><h2 id="slot-menu-title">Cargar</h2></div>
+            <button type="button" class="menu-back-button" data-menu-action="back">Volver</button>
+          </header>
+          <p id="slot-menu-description" class="menu-subtitle">Elige un slot para cargar.</p>
+          <div id="save-slot-list" class="save-slot-list"></div>
+          <p id="menu-feedback" class="menu-feedback" role="status" aria-live="polite"></p>
+        </section>
+      </div>
+
+      <div id="confirmation-overlay" class="menu-overlay menu-overlay-dim" data-menu-screen="confirmation" hidden>
+        <section class="menu-panel confirmation-panel" role="dialog" aria-modal="true" aria-labelledby="confirmation-title">
+          <p class="menu-kicker">Tribes Revival</p>
+          <h2 id="confirmation-title">¿Confirmar?</h2>
+          <p id="confirmation-message" class="menu-subtitle"></p>
+          <div class="confirmation-actions">
+            <button type="button" data-menu-action="cancel-confirmation">Cancelar</button>
+            <button type="button" class="menu-danger-button" data-menu-action="confirm-confirmation">Confirmar</button>
+          </div>
+        </section>
+      </div>
+
+      <section id="hud" aria-live="polite">
+        <div class="hud-left">
+          <div class="hud-buildings" aria-label="Construcciones">
+            <div class="build-entry">
+              <button type="button" class="build-card" data-build-item="gatherer" aria-label="Recolector" title="Recolector">
+                <span class="build-icon build-icon-gatherer" aria-hidden="true">
+                  <span class="build-model build-model-gatherer"></span>
+                </span>
+              </button>
+              <span id="cost-gatherer" class="build-cost" aria-label="Coste: 2 comida">
+                <span class="resource-square resource-square-food"></span>
+                <span class="resource-square resource-square-food"></span>
+              </span>
+            </div>
+            <div class="build-entry">
+              <button type="button" class="build-card" data-build-item="axe" aria-label="Convertir en Leñador" title="Convertir en Leñador">
+                <span class="build-icon build-icon-axe" aria-hidden="true">
+                  <span class="build-model build-model-axe"></span>
+                </span>
+              </button>
+              <span id="cost-axe" class="build-cost" aria-label="Coste: 2 madera">
+                <span class="resource-square resource-square-wood"></span>
+                <span class="resource-square resource-square-wood"></span>
+                <span class="resource-square resource-square-wood"></span>
+              </span>
+            </div>
+            <div class="build-entry">
+              <button type="button" class="build-card" data-build-item="bow" aria-label="Convertir en Cazador" title="Convertir en Cazador">
+                <span class="build-icon build-icon-bow" aria-hidden="true">
+                  <svg class="build-model build-bow-svg" viewBox="0 0 30 32" aria-hidden="true" focusable="false">
+                    <path d="M22 3.5 Q7.5 16 22 28.5" fill="none" stroke="#81512f" stroke-width="4.4" stroke-linecap="round" />
+                    <path d="M22 3.5 V28.5" fill="none" stroke="#e8d8a6" stroke-width="1.2" />
+                    <path d="M7.7 13.7 V18.3" fill="none" stroke="#888681" stroke-width="4.8" stroke-linecap="round" />
+                    <path d="M5.5 14.2 H9.9 M5.5 17.8 H9.9" fill="none" stroke="#585653" stroke-width="1" />
+                    <circle cx="22" cy="3.5" r="1.5" fill="#503a29" />
+                    <circle cx="22" cy="28.5" r="1.5" fill="#503a29" />
+                  </svg>
+                </span>
+              </button>
+              <span id="cost-bow" class="build-cost" aria-label="Coste: 2 madera">
+                <span class="resource-square resource-square-wood"></span>
+                <span class="resource-square resource-square-wood"></span>
+                <span class="resource-square resource-square-wood"></span>
+              </span>
+            </div>
+            <div class="build-entry">
+              <button type="button" class="build-card" data-build-item="sword" aria-label="Convertir en Guardián" title="Convertir en Guardián">
+                <span class="build-icon build-icon-sword" aria-hidden="true">
+                  <span class="build-model build-model-sword">
+                    <span class="sword-blade"></span>
+                    <span class="sword-grip"></span>
+                    <span class="sword-guard"></span>
+                  </span>
+                </span>
+              </button>
+              <span id="cost-sword" class="build-cost" aria-label="Coste: 2 oro">
+                <span class="resource-square resource-square-gold"></span>
+                <span class="resource-square resource-square-gold"></span>
+              </span>
+            </div>
+            <div id="artisan-build-entry" class="build-entry" hidden>
+              <button type="button" class="build-card" data-build-item="hammer" aria-label="Convertir en Artesana" title="Convertir en Artesana">
+                <span class="build-icon build-icon-hammer" aria-hidden="true">
+                  <span class="build-model build-model-hammer">
+                    <span class="hammer-handle"></span>
+                    <span class="hammer-head"></span>
+                  </span>
+                </span>
+              </button>
+              <span id="cost-hammer" class="build-cost" aria-label="Coste: 2 madera">
+                <span class="resource-square resource-square-wood"></span>
+                <span class="resource-square resource-square-wood"></span>
+              </span>
+            </div>
+            <div class="build-entry">
+              <button type="button" class="build-card" data-build-item="campfire" aria-label="Colocar hoguera. Coste: 2 de madera" title="Cura a tus minions, gasta comida">
+                <span class="build-icon build-icon-campfire" aria-hidden="true">
+                  <span class="build-model build-model-campfire"></span>
+                </span>
+              </button>
+              <span class="build-cost" aria-label="Coste: 2 madera">
+                <span class="resource-square resource-square-wood"></span>
+                <span class="resource-square resource-square-wood"></span>
+              </span>
+            </div>
+          </div>
+          <div class="hud-title">
+            <strong>Tribes Revival</strong>
+            <span id="hud-status">Inicializando…</span>
+            <span id="hud-progression">Nivel 1 · XP 0/12 · Puntos 0</span>
+            <span id="hud-inventory">Comida 0 · Madera 0 · Piedra 0 · Brillo 0 · Oro 0</span>
+          </div>
+        </div>
+        <div class="hud-controls" aria-label="Controles de partida">
+          <span id="hud-speed">Velocidad 1×</span>
+          <button type="button" data-action="pause">Pausa</button>
+          <button type="button" data-speed="1">1×</button>
+          <button type="button" data-speed="2">2×</button>
+          <button type="button" data-speed="3">3×</button>
+        </div>
+        <div class="hud-buildings hud-right-buildings" aria-label="Armadura y equipo">
+          <div id="shield-build-entry" class="build-entry" hidden>
+            <button type="button" class="build-card" data-build-item="shield" aria-label="Escudo +1 HP" title="Escudo +1 HP">
+              <span class="build-icon build-icon-shield" aria-hidden="true">
+                <span class="build-model build-model-shield"><span class="shield-stud"></span></span>
+              </span>
+            </button>
+            <span id="cost-shield" class="build-cost" aria-label="Coste: 2 oro">
+              <span class="resource-square resource-square-gold"></span>
+              <span class="resource-square resource-square-gold"></span>
+            </span>
+          </div>
+        </div>
+        <details class="hud-debug">
+          <summary>Debug</summary>
+          <div class="debug-actions">
+            <button type="button" data-debug-action="damage-one-minion">−1 vida a un minion</button>
+            <button type="button" data-debug-action="level-up">Subir 1 nivel</button>
+            <span class="debug-resource-title">Añadir recursos</span>
+            <div class="debug-resource-buttons">
+              <button type="button" data-debug-resource="food">+10 Comida</button>
+              <button type="button" data-debug-resource="wood">+10 Madera</button>
+              <button type="button" data-debug-resource="stone">+10 Piedra</button>
+              <button type="button" data-debug-resource="spark">+10 Brillo</button>
+              <button type="button" data-debug-resource="gold">+10 Oro</button>
+            </div>
+          </div>
+          <label>
+            Zoom mínimo · cerca
+            <output id="debug-zoom-min-value" for="debug-zoom-min">0.50×</output>
+            <input id="debug-zoom-min" data-debug="zoom-min" type="range" min="0.50" max="0.95" step="0.05" value="0.50" />
+          </label>
+          <label>
+            Zoom máximo · lejos
+            <output id="debug-zoom-max-value" for="debug-zoom-max">1.00×</output>
+            <input id="debug-zoom-max" data-debug="zoom-max" type="range" min="0.55" max="2.00" step="0.05" value="1.00" />
+          </label>
+        </details>
+      </section>
+      <section id="technology-hud" aria-label="Árbol de tecnologías">
+        <div id="technology-panel" class="technology-panel" hidden>
+          <strong>Árbol de tecnologías</strong>
+          <span id="technology-points-summary">Puntos disponibles: 0</span>
+          <div class="technology-options">
+            <button type="button" class="technology-option" data-unlock-technology="artisan">
+              <span class="technology-glyph technology-hammer-glyph" aria-hidden="true">
+                <span class="build-icon build-icon-hammer">
+                  <span class="build-model build-model-hammer">
+                    <span class="hammer-handle"></span>
+                    <span class="hammer-head"></span>
+                  </span>
+                </span>
+              </span>
+              <span class="technology-copy"><strong>Artesana</strong><small>Recolecta Piedra y Sparks</small></span>
+              <span class="technology-state" data-technology-state="artisan">1 punto</span>
+            </button>
+            <button type="button" class="technology-option" data-unlock-technology="shield">
+              <span class="technology-glyph technology-shield-glyph" aria-hidden="true">
+                <span class="build-icon build-icon-shield">
+                  <span class="build-model build-model-shield"><span class="shield-stud"></span></span>
+                </span>
+              </span>
+              <span class="technology-copy"><strong>Escudo</strong><small>Guardián +1 HP máximo</small></span>
+              <span class="technology-state" data-technology-state="shield">1 punto</span>
+            </button>
+          </div>
+        </div>
+        <button type="button" id="technology-toggle" class="technology-toggle" data-technology-toggle aria-expanded="false">
+          Tecnologías <span id="technology-point-badge">0</span>
+        </button>
+      </section>
+      <div id="game-over-overlay" class="game-over-overlay" hidden>
+        <section class="game-over-dialog" role="dialog" aria-modal="true" aria-labelledby="game-over-title">
+          <h1 id="game-over-title">Tu tribu a muerto</h1>
+          <button type="button" data-action="restart">Reiniciar</button>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
