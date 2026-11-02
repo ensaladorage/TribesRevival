@@ -151,6 +151,13 @@ export type MinionPurchaseCounts = {
   hunter: number;
   guardian: number;
   artisan: number;
+  mage: number;
+};
+
+export type ToolLevels = {
+  axe: number;
+  hammer: number;
+  sword: number;
 };
 
 export type ProgressionState = {
@@ -162,7 +169,7 @@ export type ProgressionState = {
 };
 
 export type GameState = {
-  version: 16;
+  version: 17;
   seed: string;
   tick: number;
   phase: GamePhase;
@@ -174,6 +181,7 @@ export type GameState = {
   barbarianCorpses: BarbarianCorpse[];
   /** Monotonic counters used to give purchased minions unique ids, never for pricing. */
   purchaseCounts: MinionPurchaseCounts;
+  toolLevels: ToolLevels;
   progression: ProgressionState;
   biomes: BiomeDefinition[];
   resources: ResourceNode[];

@@ -24,6 +24,7 @@ export const SURVIVAL_ROLES = [
   'hunter',
   'guardian',
   'artisan',
+  'mage',
 ] as const;
 export type SurvivalRole = (typeof SURVIVAL_ROLES)[number];
 

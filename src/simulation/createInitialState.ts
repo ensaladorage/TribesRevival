@@ -50,7 +50,7 @@ export function createInitialState(seed = DEFAULT_SURVIVAL_SEED): GameState {
   const secondRole = rosterRandom.nextInt(0, 1) === 0 ? 'lumberjack' : 'hunter';
 
   return {
-    version: 16,
+    version: 17,
     seed: blueprint.seed,
     tick: 0,
     phase: 'playing',
@@ -78,7 +78,9 @@ export function createInitialState(seed = DEFAULT_SURVIVAL_SEED): GameState {
       hunter: 0,
       guardian: 0,
       artisan: 0,
+      mage: 0,
     },
+    toolLevels: { axe: 0, hammer: 0, sword: 0 },
     progression: createInitialProgressionState(),
     biomes: [...blueprint.biomes],
     resources: [...blueprint.resources],

@@ -144,7 +144,13 @@ function isGameState(value: unknown): value is GameState {
   const purchases = value.purchaseCounts;
   const inventory = value.inventory;
   const weather = value.weather;
-  if (!isRecord(purchases) || !isRecord(inventory) || !isRecord(weather)) return false;
+  const toolLevels = value.toolLevels;
+  if (
+    !isRecord(purchases)
+    || !isRecord(inventory)
+    || !isRecord(weather)
+    || !isRecord(toolLevels)
+  ) return false;
 
   const validUnitCorpses = Array.isArray(value.corpses) && value.corpses.every((corpse) => (
     isRecord(corpse) && typeof corpse.id === 'string'
@@ -210,7 +216,7 @@ function isGameState(value: unknown): value is GameState {
     && isFiniteNumber(cloud.phaseElapsedSeconds) && isFiniteNumber(cloud.rainRemainingSeconds)
   ));
 
-  return value.version === 16
+  return value.version === 17
     && typeof value.seed === 'string'
     && isFiniteNumber(value.tick)
     && phases.includes(String(value.phase))
@@ -227,8 +233,11 @@ function isGameState(value: unknown): value is GameState {
     && validAnimals
     && validBarbarianCorpses
     && isRecord(purchases)
-    && ['gatherer', 'lumberjack', 'hunter', 'guardian', 'artisan']
+    && ['gatherer', 'lumberjack', 'hunter', 'guardian', 'artisan', 'mage']
       .every((role) => isFiniteNumber(purchases[role]))
+    && ['axe', 'hammer', 'sword'].every((tool) => (
+      isFiniteNumber(toolLevels[tool]) && toolLevels[tool] <= 10
+    ))
     && isFiniteNumber(value.progression.level, 1)
     && isFiniteNumber(value.progression.experience)
     && isFiniteNumber(value.progression.experienceToNextLevel, 1)
@@ -250,6 +259,18 @@ function isGameState(value: unknown): value is GameState {
     && isFiniteNumber(weather.nextCloudInSeconds)
     && isFiniteNumber(weather.nextCloudIndex)
     && validClouds;
+}
+
+function migrateGameState(value: unknown): GameState | null {
+  if (!isRecord(value) || (value.version !== 16 && value.version !== 17)) return null;
+  const migrated = JSON.parse(JSON.stringify(value)) as Record<string, unknown>;
+  const purchaseCounts = isRecord(migrated.purchaseCounts) ? migrated.purchaseCounts : {};
+  migrated.version = 17;
+  migrated.purchaseCounts = { ...purchaseCounts, mage: purchaseCounts.mage ?? 0 };
+  migrated.toolLevels = isRecord(migrated.toolLevels)
+    ? migrated.toolLevels
+    : { axe: 0, hammer: 0, sword: 0 };
+  return isGameState(migrated) ? migrated : null;
 }
 
 
@@ -298,12 +319,17 @@ export class SaveGameRepository {
       if (
         isRecord(parsed)
         && (parsed.schemaVersion !== SAVE_SCHEMA_VERSION
-          || (isRecord(parsed.gameState) && parsed.gameState.version !== 16))
+          || (isRecord(parsed.gameState)
+            && parsed.gameState.version !== 16 && parsed.gameState.version !== 17))
       ) {
         return { slot, status: 'invalid', reason: 'incompatible' };
       }
-      if (!isSaveEnvelope(parsed)) return { slot, status: 'invalid', reason: 'corrupt' };
-      return { slot, status: 'valid', save: parsed };
+      if (!isRecord(parsed)) return { slot, status: 'invalid', reason: 'corrupt' };
+      const gameState = migrateGameState(parsed.gameState);
+      if (!gameState) return { slot, status: 'invalid', reason: 'corrupt' };
+      const migrated = { ...parsed, gameState };
+      if (!isSaveEnvelope(migrated)) return { slot, status: 'invalid', reason: 'corrupt' };
+      return { slot, status: 'valid', save: migrated };
     } catch {
       return { slot, status: 'invalid', reason: 'corrupt' };
     }

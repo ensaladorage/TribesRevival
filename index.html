@@ -77,7 +77,12 @@
                 <span class="tutorial-role-icon"><span class="build-icon build-icon-hammer"><span class="build-model build-model-hammer"><span class="hammer-handle"></span><span class="hammer-head"></span></span></span></span>
                 <span><strong>Artesana</strong><small>Minion avanzado. Recolecta Piedra y Sparks.</small></span>
               </article>
+              <article class="tutorial-role">
+                <span class="tutorial-role-icon"><span class="build-icon build-icon-mage"><span class="build-model build-model-mage"></span></span></span>
+                <span><strong>Mago</strong><small>Se recluta con Brillo. Su habilidad se diseñará más adelante.</small></span>
+              </article>
             </div>
+            <p class="tutorial-hint">Invierte Piedra en mejorar hacha, martillo y espada. Cada herramienta puede llegar hasta +10.</p>
           </div>
           <footer class="tutorial-footer"><button type="button" data-menu-action="back-main">Volver al menú</button><button type="button" data-menu-action="play">Jugar</button></footer>
         </section>
@@ -124,7 +129,7 @@
         <div class="hud-left">
           <div class="hud-buildings" aria-label="Construcciones">
             <div class="build-entry">
-              <button type="button" class="build-card" data-build-item="gatherer" aria-label="Recolector" title="Recolector">
+              <button type="button" class="build-card hud-tooltip" data-build-item="gatherer" aria-label="Recolector">
                 <span class="build-icon build-icon-gatherer" aria-hidden="true">
                   <span class="build-model build-model-gatherer"></span>
                 </span>
@@ -135,7 +140,7 @@
               </span>
             </div>
             <div class="build-entry">
-              <button type="button" class="build-card" data-build-item="axe" aria-label="Convertir en Leñador" title="Convertir en Leñador">
+              <button type="button" class="build-card hud-tooltip" data-build-item="axe" aria-label="Convertir en Leñador">
                 <span class="build-icon build-icon-axe" aria-hidden="true">
                   <span class="build-model build-model-axe"></span>
                 </span>
@@ -147,7 +152,7 @@
               </span>
             </div>
             <div class="build-entry">
-              <button type="button" class="build-card" data-build-item="bow" aria-label="Convertir en Cazador" title="Convertir en Cazador">
+              <button type="button" class="build-card hud-tooltip" data-build-item="bow" aria-label="Convertir en Cazador">
                 <span class="build-icon build-icon-bow" aria-hidden="true">
                   <svg class="build-model build-bow-svg" viewBox="0 0 30 32" aria-hidden="true" focusable="false">
                     <path d="M22 3.5 Q7.5 16 22 28.5" fill="none" stroke="#81512f" stroke-width="4.4" stroke-linecap="round" />
@@ -166,7 +171,7 @@
               </span>
             </div>
             <div class="build-entry">
-              <button type="button" class="build-card" data-build-item="sword" aria-label="Convertir en Guardián" title="Convertir en Guardián">
+              <button type="button" class="build-card hud-tooltip" data-build-item="sword" aria-label="Convertir en Guardián">
                 <span class="build-icon build-icon-sword" aria-hidden="true">
                   <span class="build-model build-model-sword">
                     <span class="sword-blade"></span>
@@ -181,7 +186,7 @@
               </span>
             </div>
             <div id="artisan-build-entry" class="build-entry" hidden>
-              <button type="button" class="build-card" data-build-item="hammer" aria-label="Convertir en Artesana" title="Convertir en Artesana">
+              <button type="button" class="build-card hud-tooltip" data-build-item="hammer" aria-label="Convertir en Artesana">
                 <span class="build-icon build-icon-hammer" aria-hidden="true">
                   <span class="build-model build-model-hammer">
                     <span class="hammer-handle"></span>
@@ -194,8 +199,17 @@
                 <span class="resource-square resource-square-wood"></span>
               </span>
             </div>
+            <div id="mage-build-entry" class="build-entry">
+              <button type="button" class="build-card hud-tooltip" data-build-item="mage" aria-label="Reclutar Mago">
+                <span class="build-icon build-icon-mage" aria-hidden="true"><span class="build-model build-model-mage"></span></span>
+              </button>
+              <span id="cost-mage" class="build-cost" aria-label="Coste: 2 Brillo">
+                <span class="resource-square resource-square-spark"></span>
+                <span class="resource-square resource-square-spark"></span>
+              </span>
+            </div>
             <div class="build-entry">
-              <button type="button" class="build-card" data-build-item="campfire" aria-label="Colocar hoguera. Coste: 2 de madera" title="Cura a tus minions, gasta comida">
+              <button type="button" class="build-card hud-tooltip" data-build-item="campfire" aria-label="Colocar hoguera. Coste: 2 de madera">
                 <span class="build-icon build-icon-campfire" aria-hidden="true">
                   <span class="build-model build-model-campfire"></span>
                 </span>
@@ -210,19 +224,53 @@
             <strong>Tribes Revival</strong>
             <span id="hud-status">Inicializando…</span>
             <span id="hud-progression">Nivel 1 · XP 0/12 · Puntos 0</span>
-            <span id="hud-inventory">Comida 0 · Madera 0 · Piedra 0 · Brillo 0 · Oro 0</span>
+            <span id="hud-inventory" class="visually-hidden">Comida 0 · Madera 0 · Piedra 0 · Brillo 0 · Oro 0</span>
           </div>
         </div>
-        <div class="hud-controls" aria-label="Controles de partida">
-          <span id="hud-speed">Velocidad 1×</span>
-          <button type="button" data-action="pause">Pausa</button>
-          <button type="button" data-speed="1">1×</button>
-          <button type="button" data-speed="2">2×</button>
-          <button type="button" data-speed="3">3×</button>
+        <div id="resource-hud" class="resource-hud" aria-label="Recursos">
+          <div class="resource-counter" aria-label="Comida"><img class="resource-icon resource-icon-food" src="./src/assets/hud/food.svg" alt="" aria-hidden="true"><span id="resource-food" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Madera"><img class="resource-icon resource-icon-wood" src="./src/assets/hud/wood.svg" alt="" aria-hidden="true"><span id="resource-wood" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Piedra"><img class="resource-icon resource-icon-stone" src="./src/assets/hud/stone.svg" alt="" aria-hidden="true"><span id="resource-stone" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Brillo"><img class="resource-icon resource-icon-spark" src="./src/assets/hud/spark.svg" alt="" aria-hidden="true"><span id="resource-spark" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Oro"><img class="resource-icon resource-icon-gold" src="./src/assets/hud/gold.svg" alt="" aria-hidden="true"><span id="resource-gold" class="resource-amount">0</span></div>
+        </div>
+        <div id="debug-tools-panel" class="debug-tools-panel" hidden>
+          <div class="hud-controls" aria-label="Controles de partida">
+            <span id="hud-speed">Velocidad 1×</span>
+            <button type="button" class="hud-tooltip" data-action="pause" data-tooltip="Pausa o reanuda la partida">Pausa</button>
+            <button type="button" class="hud-tooltip" data-speed="1" data-tooltip="Velocidad normal">1×</button>
+            <button type="button" class="hud-tooltip" data-speed="2" data-tooltip="Velocidad rápida">2×</button>
+            <button type="button" class="hud-tooltip" data-speed="3" data-tooltip="Velocidad máxima">3×</button>
+          </div>
+          <details class="hud-debug">
+            <summary>Debug</summary>
+            <div class="debug-actions">
+              <button type="button" class="hud-tooltip" data-debug-action="damage-one-minion" data-tooltip="Quita 1 vida al minion con menos vida">−1 vida a un minion</button>
+              <button type="button" class="hud-tooltip" data-debug-action="level-up" data-tooltip="Concede un nivel y un punto tecnológico">Subir 1 nivel</button>
+              <span class="debug-resource-title">Añadir recursos</span>
+              <div class="debug-resource-buttons">
+                <button type="button" class="hud-tooltip" data-debug-resource="food" data-tooltip="Añade 10 de Comida">+10 Comida</button>
+                <button type="button" class="hud-tooltip" data-debug-resource="wood" data-tooltip="Añade 10 de Madera">+10 Madera</button>
+                <button type="button" class="hud-tooltip" data-debug-resource="stone" data-tooltip="Añade 10 de Piedra">+10 Piedra</button>
+                <button type="button" class="hud-tooltip" data-debug-resource="spark" data-tooltip="Añade 10 de Brillo">+10 Brillo</button>
+                <button type="button" class="hud-tooltip" data-debug-resource="gold" data-tooltip="Añade 10 de Oro">+10 Oro</button>
+              </div>
+            </div>
+            <label>
+              Zoom mínimo · cerca
+              <output id="debug-zoom-min-value" for="debug-zoom-min">0.50×</output>
+              <input id="debug-zoom-min" data-debug="zoom-min" type="range" min="0.50" max="0.95" step="0.05" value="0.50" />
+            </label>
+            <label>
+              Zoom máximo · lejos
+              <output id="debug-zoom-max-value" for="debug-zoom-max">1.00×</output>
+              <input id="debug-zoom-max" data-debug="zoom-max" type="range" min="0.55" max="2.00" step="0.05" value="1.00" />
+            </label>
+          </details>
         </div>
         <div class="hud-buildings hud-right-buildings" aria-label="Armadura y equipo">
           <div id="shield-build-entry" class="build-entry" hidden>
-            <button type="button" class="build-card" data-build-item="shield" aria-label="Escudo +1 HP" title="Escudo +1 HP">
+            <button type="button" class="build-card hud-tooltip" data-build-item="shield" aria-label="Escudo +1 HP">
               <span class="build-icon build-icon-shield" aria-hidden="true">
                 <span class="build-model build-model-shield"><span class="shield-stud"></span></span>
               </span>
@@ -233,38 +281,34 @@
             </span>
           </div>
         </div>
-        <details class="hud-debug">
-          <summary>Debug</summary>
-          <div class="debug-actions">
-            <button type="button" data-debug-action="damage-one-minion">−1 vida a un minion</button>
-            <button type="button" data-debug-action="level-up">Subir 1 nivel</button>
-            <span class="debug-resource-title">Añadir recursos</span>
-            <div class="debug-resource-buttons">
-              <button type="button" data-debug-resource="food">+10 Comida</button>
-              <button type="button" data-debug-resource="wood">+10 Madera</button>
-              <button type="button" data-debug-resource="stone">+10 Piedra</button>
-              <button type="button" data-debug-resource="spark">+10 Brillo</button>
-              <button type="button" data-debug-resource="gold">+10 Oro</button>
-            </div>
+      </section>
+      <div id="hud-menu-dock" aria-label="Menús de gestión">
+      <section id="upgrade-hud" aria-label="Mejoras">
+        <div id="upgrade-panel" class="technology-panel upgrade-panel" hidden>
+          <strong>Mejoras</strong>
+          <div class="upgrade-options">
+            <button type="button" class="technology-option upgrade-option hud-tooltip" data-upgrade-tool="axe">
+              <span class="build-icon build-icon-axe upgrade-tool-icon" aria-hidden="true"><span class="build-model build-model-axe"></span></span><strong id="upgrade-level-axe" class="upgrade-level">+0</strong>
+            </button>
+            <button type="button" class="technology-option upgrade-option hud-tooltip" data-upgrade-tool="hammer">
+              <span class="build-icon build-icon-hammer upgrade-tool-icon" aria-hidden="true"><span class="build-model build-model-hammer"><span class="hammer-handle"></span><span class="hammer-head"></span></span></span><strong id="upgrade-level-hammer" class="upgrade-level">+0</strong>
+            </button>
+            <button type="button" class="technology-option upgrade-option hud-tooltip" data-upgrade-tool="sword">
+              <span class="build-icon build-icon-sword upgrade-tool-icon" aria-hidden="true"><span class="build-model build-model-sword"><span class="sword-blade"></span><span class="sword-grip"></span><span class="sword-guard"></span></span></span><strong id="upgrade-level-sword" class="upgrade-level">+0</strong>
+              <span id="upgrade-effect-sword" class="visually-hidden">+0 daño por ataque</span><span id="upgrade-cost-sword" class="visually-hidden">Siguiente: 1 piedra</span>
+            </button>
+            <span id="upgrade-effect-axe" class="visually-hidden">+0 madera por acción</span><span id="upgrade-cost-axe" class="visually-hidden">Siguiente: 1 piedra</span>
+            <span id="upgrade-effect-hammer" class="visually-hidden">−0% tiempo de piedra</span><span id="upgrade-cost-hammer" class="visually-hidden">Siguiente: 1 piedra</span>
           </div>
-          <label>
-            Zoom mínimo · cerca
-            <output id="debug-zoom-min-value" for="debug-zoom-min">0.50×</output>
-            <input id="debug-zoom-min" data-debug="zoom-min" type="range" min="0.50" max="0.95" step="0.05" value="0.50" />
-          </label>
-          <label>
-            Zoom máximo · lejos
-            <output id="debug-zoom-max-value" for="debug-zoom-max">1.00×</output>
-            <input id="debug-zoom-max" data-debug="zoom-max" type="range" min="0.55" max="2.00" step="0.05" value="1.00" />
-          </label>
-        </details>
+        </div>
+        <button type="button" id="upgrade-toggle" class="technology-toggle" data-upgrade-toggle aria-expanded="false">Mejoras</button>
       </section>
       <section id="technology-hud" aria-label="Árbol de tecnologías">
         <div id="technology-panel" class="technology-panel" hidden>
           <strong>Árbol de tecnologías</strong>
           <span id="technology-points-summary">Puntos disponibles: 0</span>
           <div class="technology-options">
-            <button type="button" class="technology-option" data-unlock-technology="artisan">
+            <button type="button" class="technology-option hud-tooltip" data-unlock-technology="artisan" data-tooltip="Artesana&#10;Permite convertir un recolector en artesana para reunir Piedra y Brillo.">
               <span class="technology-glyph technology-hammer-glyph" aria-hidden="true">
                 <span class="build-icon build-icon-hammer">
                   <span class="build-model build-model-hammer">
@@ -273,16 +317,14 @@
                   </span>
                 </span>
               </span>
-              <span class="technology-copy"><strong>Artesana</strong><small>Recolecta Piedra y Sparks</small></span>
               <span class="technology-state" data-technology-state="artisan">1 punto</span>
             </button>
-            <button type="button" class="technology-option" data-unlock-technology="shield">
+            <button type="button" class="technology-option hud-tooltip" data-unlock-technology="shield" data-tooltip="Escudo&#10;Permite equipar a los guardianes para aumentar su vida máxima en 1.">
               <span class="technology-glyph technology-shield-glyph" aria-hidden="true">
                 <span class="build-icon build-icon-shield">
                   <span class="build-model build-model-shield"><span class="shield-stud"></span></span>
                 </span>
               </span>
-              <span class="technology-copy"><strong>Escudo</strong><small>Guardián +1 HP máximo</small></span>
               <span class="technology-state" data-technology-state="shield">1 punto</span>
             </button>
           </div>
@@ -291,6 +333,7 @@
           Tecnologías <span id="technology-point-badge">0</span>
         </button>
       </section>
+      </div>
       <div id="game-over-overlay" class="game-over-overlay" hidden>
         <section class="game-over-dialog" role="dialog" aria-modal="true" aria-labelledby="game-over-title">
           <h1 id="game-over-title">Tu tribu a muerto</h1>

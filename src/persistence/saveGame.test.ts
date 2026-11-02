@@ -68,6 +68,33 @@ describe('save game repository', () => {
     expect(slot.save.metadata.savedAt).toBe('2026-10-20T10:01:00.000Z');
   });
 
+  it('migrates a version 16 state with no tool or mage progress', () => {
+    const storage = createMemoryStorage();
+    const state = createInitialState('legacy-save');
+    const legacy = structuredClone(state) as unknown as Record<string, unknown>;
+    legacy.version = 16;
+    delete legacy.toolLevels;
+    const legacyPurchases = { ...(legacy.purchaseCounts as Record<string, number>) };
+    delete legacyPurchases.mage;
+    legacy.purchaseCounts = legacyPurchases;
+    storage.values.set('tribes-revival.save.v1.slot.1', JSON.stringify({
+      schemaVersion: 1,
+      metadata: {
+        savedAt: '2026-10-20T10:00:00.000Z',
+        level: state.progression.level,
+        minionCount: state.units.length,
+      },
+      gameState: legacy,
+    }));
+
+    const slot = new SaveGameRepository(storage).readSlot(1);
+    expect(slot.status).toBe('valid');
+    if (slot.status !== 'valid') throw new Error('Expected a migrated save slot');
+    expect(slot.save.gameState.version).toBe(17);
+    expect(slot.save.gameState.toolLevels).toEqual({ axe: 0, hammer: 0, sword: 0 });
+    expect(slot.save.gameState.purchaseCounts.mage).toBe(0);
+  });
+
   it('uses normalized state to detect unsaved changes while ignoring pause state', () => {
     const saved = createInitialState('dirty-state');
     const samePaused = structuredClone(saved);

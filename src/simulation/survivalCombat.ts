@@ -27,6 +27,17 @@ export const MINION_ATTACK_STATS: Readonly<Partial<Record<SurvivalRole, AttackSt
   hunter: { damage: 1, range: 5, cooldownSeconds: 1.3 },
 };
 
+export function getMinionAttackStats(
+  role: SurvivalRole,
+  swordLevel: number,
+): AttackStats | undefined {
+  const base = MINION_ATTACK_STATS[role];
+  if (!base) return undefined;
+  return role === 'guardian'
+    ? { ...base, damage: base.damage + Math.max(Math.floor(swordLevel), 0) * 0.5 }
+    : base;
+}
+
 export const ANIMAL_ATTACK_STATS: AttackStats = {
   damage: 1,
   range: 5,

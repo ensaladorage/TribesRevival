@@ -18,6 +18,7 @@ const ROLE_RESOURCE_AFFINITY: Readonly<Record<SurvivalRole, readonly ResourceTyp
   hunter: [],
   guardian: [],
   artisan: ['stone', 'spark'],
+  mage: [],
 };
 
 export const RESOURCE_DETECTION_RANGE_MULTIPLIER = 1.05;
@@ -30,6 +31,18 @@ export const STARTING_MINION_COUNT = 2;
 
 /** Maximum living minions allowed for each specialist role. */
 export const MAX_MINIONS_PER_TYPE = 5;
+export const MAX_TOOL_LEVEL = 10;
+export const MAGE_RECRUITMENT_COSTS: readonly number[] = [2, 3, 3, 4, 4];
+
+export function getToolUpgradeCost(nextLevel: number): number {
+  return Math.max(Math.min(Math.floor(nextLevel), MAX_TOOL_LEVEL), 1);
+}
+
+export function getMageRecruitmentCost(activeMages: number): number {
+  const count = Math.max(Math.floor(activeMages), 0);
+  return MAGE_RECRUITMENT_COSTS[Math.min(count, MAGE_RECRUITMENT_COSTS.length - 1)]
+    ?? MAGE_RECRUITMENT_COSTS[MAGE_RECRUITMENT_COSTS.length - 1];
+}
 
 /** Cost progression applied to the relevant active population count. */
 export const GATHERER_RECRUITMENT_COSTS: readonly number[] = [2, 3, 3, 4, 4, 4];

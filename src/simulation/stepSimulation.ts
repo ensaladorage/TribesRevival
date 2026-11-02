@@ -12,7 +12,10 @@ import {
   gatherFromNode,
   getResourceDetectionRadius,
   getMinionPurchaseCost,
+  getMageRecruitmentCost,
+  getToolUpgradeCost,
   getSpecializationRole,
+  MAX_TOOL_LEVEL,
   MAX_PLAYABLE_MINIONS,
   MAX_MINIONS_PER_TYPE,
   STARTING_MINION_COUNT,
@@ -40,7 +43,7 @@ import {
   CAMPFIRE_HEAL_INTERVAL_SECONDS,
   DAMAGE_FLASH_DURATION_SECONDS,
   HEAL_EFFECT_DURATION_SECONDS,
-  MINION_ATTACK_STATS,
+  getMinionAttackStats,
   MINION_THREAT_DETECTION_RADIUS,
   dealDamage,
   healCombatant,
@@ -84,6 +87,12 @@ export function clampWorldPosition(position: Vec2): Vec2 {
     x: clamp(position.x, TOTEM_EDGE_PADDING, WORLD_SIZE - TOTEM_EDGE_PADDING),
     y: clamp(position.y, TOTEM_EDGE_PADDING, WORLD_SIZE - TOTEM_EDGE_PADDING),
   };
+}
+
+function gatherActionDuration(state: GameState, resourceType: ResourceType): number {
+  if (resourceType !== 'stone') return GATHER_ACTION_DURATION_SECONDS;
+  const reduction = Math.min(Math.max(state.toolLevels.hammer, 0) * 0.05, 0.5);
+  return GATHER_ACTION_DURATION_SECONDS * (1 - reduction);
 }
 
 export function projectWithinRadius(position: Vec2, center: Vec2, radius: number): Vec2 {
@@ -908,12 +917,12 @@ function updateConflict(state: GameState, deltaSeconds: number): void {
 
   const totemMoving = state.totem.isCarried || state.totem.moving;
   for (const [index, unit] of state.units.entries()) {
-    const canFight = MINION_ATTACK_STATS[unit.role] !== undefined;
+    const canFight = getMinionAttackStats(unit.role, state.toolLevels.sword) !== undefined;
     if (totemMoving) {
       const currentTarget = state.barbarians.find((barbarian) => (
         barbarian.isAlive && barbarian.id === unit.task.targetEntityId
       ));
-      const stats = MINION_ATTACK_STATS[unit.role];
+      const stats = getMinionAttackStats(unit.role, state.toolLevels.sword);
       const stillCanFinishStrike = unit.task.kind === 'combat'
         && !!currentTarget
         && !!stats
@@ -971,7 +980,7 @@ function updateConflict(state: GameState, deltaSeconds: number): void {
       const barbarian = state.barbarians.find((candidate) => (
         candidate.isAlive && candidate.id === unit.task.targetEntityId
       ));
-      const stats = MINION_ATTACK_STATS[unit.role];
+      const stats = getMinionAttackStats(unit.role, state.toolLevels.sword);
       if (!barbarian || !stats) {
         setTaskState(
           unit,
@@ -1257,7 +1266,7 @@ function updateSurvivalUnit(
 
     unit.state = 'gathering';
     unit.actionProgressSeconds += deltaSeconds;
-    if (unit.actionProgressSeconds < GATHER_ACTION_DURATION_SECONDS) return;
+    if (unit.actionProgressSeconds < gatherActionDuration(state, resource.type)) return;
 
     // Hito 2A economy: one completed action always produces one whole unit.
     const gathered = gatherFromNode(resource, 1);
@@ -1271,7 +1280,8 @@ function updateSurvivalUnit(
       unit.id,
       resource.id,
       resource.type,
-      resource.yieldAmount ?? gathered.gathered,
+      (resource.yieldAmount ?? gathered.gathered)
+        + (resource.type === 'wood' ? state.toolLevels.axe : 0),
     );
     if (gathered.gathered > 0) {
       awardExperience(
@@ -1424,6 +1434,38 @@ function applyAction(state: GameState, action: InputAction): void {
         unit,
         returnToTotemTask(state, state.units.length - 1, 'action-complete'),
       );
+      return;
+    }
+    case 'recruit-mage': {
+      const activeMages = countUnitsWithRole(state.units, 'mage');
+      const cost = getMageRecruitmentCost(activeMages);
+      if (
+        state.units.length >= MAX_PLAYABLE_MINIONS
+        || activeMages >= MAX_MINIONS_PER_TYPE
+        || state.inventory.amounts.spark < cost
+      ) return;
+
+      state.inventory.amounts.spark -= cost;
+      state.purchaseCounts.mage += 1;
+      const unit = createUnitState(
+        `unit-mage-${String(state.purchaseCounts.mage).padStart(2, '0')}`,
+        'mage',
+        projectRecruitmentPosition(action.position, state.totem.position),
+      );
+      state.units.push(unit);
+      setTaskState(
+        unit,
+        returnToTotemTask(state, state.units.length - 1, 'action-complete'),
+      );
+      return;
+    }
+    case 'upgrade-tool': {
+      const currentLevel = state.toolLevels[action.tool];
+      if (currentLevel >= MAX_TOOL_LEVEL) return;
+      const cost = getToolUpgradeCost(currentLevel + 1);
+      if (state.inventory.amounts.stone < cost) return;
+      state.inventory.amounts.stone -= cost;
+      state.toolLevels[action.tool] += 1;
       return;
     }
     case 'unlock-technology':

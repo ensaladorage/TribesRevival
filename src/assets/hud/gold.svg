@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <title>Monedas de oro</title>
+  <polygon points="6,4 14,4 14,6 18,6 18,8 20,8 20,12 18,12 18,14 14,14 14,16 6,16 4,14 4,12 2,12 2,8 4,8 4,6 6,6" fill="#5e3517"/>
+  <polygon points="6,6 12,6 12,8 16,8 18,10 16,12 12,12 12,14 6,14 4,12 4,8 6,8" fill="#bd741a"/>
+  <rect x="6" y="8" width="8" height="2" fill="#f5bb32"/>
+  <rect x="8" y="10" width="6" height="2" fill="#d88b1d"/>
+  <rect x="6" y="6" width="6" height="2" fill="#ffdf60"/>
+  <polygon points="6,14 14,14 14,16 18,16 18,18 20,18 20,22 18,22 18,24 14,24 14,26 6,26 4,24 4,22 2,22 2,18 4,18 4,16 6,16" fill="#603818"/>
+  <polygon points="6,16 12,16 12,18 16,18 18,20 16,22 12,22 12,24 6,24 4,22 4,18 6,18" fill="#d58a1d"/>
+  <rect x="6" y="18" width="8" height="2" fill="#ffd64a"/>
+  <rect x="8" y="20" width="6" height="2" fill="#e9a622"/>
+  <rect x="6" y="16" width="6" height="2" fill="#ffea7a"/>
+  <rect x="4" y="22" width="2" height="2" fill="#93531a"/>
+  <polygon points="18,12 24,12 24,14 28,14 28,16 30,16 30,24 28,24 28,26 24,26 24,28 18,28 18,26 14,26 14,24 12,24 12,16 14,16 14,14 18,14" fill="#5b381a"/>
+  <polygon points="18,14 22,14 22,16 26,16 28,18 28,22 26,24 22,24 22,26 18,26 16,24 14,22 14,18 16,16 18,16" fill="#d88a18"/>
+  <polygon points="18,16 22,16 22,18 24,18 24,22 22,22 22,24 18,24 16,22 16,18 18,18" fill="#ffd54d"/>
+  <rect x="18" y="18" width="4" height="2" fill="#fff08a"/>
+  <rect x="20" y="20" width="2" height="2" fill="#e9a323"/>
+  <rect x="14" y="22" width="2" height="2" fill="#8e501a"/>
+</svg>
