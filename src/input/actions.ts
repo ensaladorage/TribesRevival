@@ -8,7 +8,6 @@ export type InputAction =
   | { type: 'drop-totem'; position: Vec2 }
   | { type: 'place-campfire'; position: Vec2 }
   | { type: 'recruit-gatherer'; position: Vec2 }
-  | { type: 'recruit-mage'; position: Vec2 }
   | { type: 'upgrade-tool'; tool: 'axe' | 'hammer' | 'sword' }
   | { type: 'transform-unit'; item: SpecializationItem; unitId: string }
   | { type: 'equip-shield'; unitId: string }

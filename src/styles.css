@@ -1,4 +1,7 @@
 :root {
+  --hud-button-outline-available: #B2B2A0;
+  --hud-button-outline-active: #0B0C14;
+  --hud-button-outline-hover: #f1d27a;
   color: #f4e8c1;
   background: #17131f;
   font-family: monospace;
@@ -179,17 +182,22 @@ body {
   width: 30px;
   height: 30px;
   opacity: 1;
+  object-fit: contain;
+  object-position: center;
   image-rendering: pixelated;
 }
 
-.resource-icon-food {
-  filter: brightness(1.12);
-  transform: scale(1.08);
+.hud-sprite-icon {
+  display: block;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
-.resource-icon-wood {
-  filter: brightness(1.45);
-  transform: scale(1.14);
+.hud-sprite-icon-minion {
+  transform: scale(1.4);
 }
 
 .resource-amount {
@@ -303,7 +311,7 @@ body {
   width: 100%;
   height: 100%;
   min-width: 0;
-  border: 1px solid #9d895d;
+  border: 1px solid var(--hud-button-outline-available);
   border-radius: 5px;
   padding: 4px;
   color: #f4e8c1;
@@ -313,18 +321,30 @@ body {
   cursor: grab;
 }
 
-.build-card:hover,
-.build-card:focus-visible,
-.build-card.is-dragging {
-  border-color: #f1d27a;
+.build-card:active,
+.build-card.is-dragging,
+.build-card[aria-pressed="true"] {
+  border-color: var(--hud-button-outline-active);
+  background: #403750;
+  outline: none;
+}
+
+.build-card:hover:not(:disabled),
+.build-card:focus-visible:not(:disabled) {
+  border-color: var(--hud-button-outline-hover);
   background: #403750;
   outline: none;
 }
 
 .build-card:disabled {
   cursor: not-allowed;
-  filter: grayscale(0.6);
-  opacity: 0.55;
+  border-color: #0B0C14;
+  background: rgb(43 37 56 / 50%);
+}
+
+.build-card:disabled .hud-sprite-icon {
+  filter: grayscale(1);
+  opacity: 0.8;
 }
 
 .build-icon {
@@ -333,21 +353,6 @@ body {
   height: 38px;
   place-items: center;
   color: #f1b35c;
-}
-
-.build-icon-gatherer {
-  color: #f1d27a;
-}
-
-.build-icon-mage {
-  color: #c6a4ff;
-}
-
-.build-icon-axe,
-.build-icon-bow,
-.build-icon-sword,
-.build-icon-hammer {
-  color: #b98158;
 }
 
 .build-cost {
@@ -359,181 +364,6 @@ body {
   flex-direction: column;
   gap: 3px;
   transform: translateY(-50%);
-}
-
-.build-model {
-  position: relative;
-  display: block;
-  width: 30px;
-  height: 30px;
-}
-
-.build-model-gatherer {
-  width: 18px;
-  height: 18px;
-  border-radius: 3px 3px 5px 5px;
-  background: #f1d27a;
-  box-shadow: inset 3px 0 rgb(255 255 255 / 18%), 2px 3px #17131f;
-}
-
-.build-model-gatherer::before {
-  position: absolute;
-  top: -7px;
-  left: 3px;
-  width: 12px;
-  height: 8px;
-  border-radius: 50%;
-  background: #f1d27a;
-  content: '';
-}
-
-.build-model-mage {
-  width: 18px;
-  height: 18px;
-  border: 2px solid #e9dcff;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff 0 10%, #9b6cff 28%, #593c9a 75%);
-  box-shadow: 0 0 9px #a276ff;
-}
-
-.build-model-axe::before {
-  position: absolute;
-  top: 4px;
-  left: 14px;
-  width: 4px;
-  height: 27px;
-  border-radius: 2px;
-  background: #9a6b43;
-  box-shadow: 2px 2px #17131f;
-  content: '';
-  transform: rotate(-32deg);
-}
-
-.build-model-axe::after {
-  position: absolute;
-  top: 1px;
-  left: 8px;
-  width: 16px;
-  height: 11px;
-  border-radius: 2px 7px 7px 2px;
-  background: #a5a5a2;
-  box-shadow: 2px 2px #17131f;
-  content: '';
-  transform: rotate(-32deg);
-}
-
-.build-model-hammer {
-  width: 30px;
-  height: 30px;
-}
-
-.hammer-handle {
-  position: absolute;
-  top: 11px;
-  left: 13px;
-  width: 4px;
-  height: 19px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, #70472e, #b17b4c 55%, #70472e);
-  box-shadow: 2px 2px #17131f;
-}
-
-.hammer-head {
-  position: absolute;
-  top: 3px;
-  left: 5px;
-  width: 21px;
-  height: 11px;
-  border: 1px solid #55565a;
-  border-radius: 2px;
-  background: linear-gradient(145deg, #d1d0ca, #85868a);
-  box-shadow: 2px 2px #17131f;
-}
-
-.build-model-shield {
-  width: 26px;
-  height: 26px;
-  border: 4px solid #70472e;
-  border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, #bd8b5b, #81512f 72%);
-  box-shadow: inset 1px 1px rgb(255 255 255 / 25%), 2px 3px #17131f;
-}
-
-.shield-stud {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 8px;
-  height: 8px;
-  border: 1px solid #56565a;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 25%, #e3e2dc, #77787d 78%);
-  box-shadow: 1px 1px #17131f;
-  transform: translate(-50%, -50%);
-}
-
-.build-bow-svg {
-  width: 30px;
-  height: 30px;
-  overflow: visible;
-}
-
-.sword-blade,
-.sword-grip,
-.sword-guard {
-  position: absolute;
-  left: 50%;
-  display: block;
-  transform: translateX(-50%);
-  box-shadow: 1px 1px #17131f;
-}
-
-.sword-blade {
-  top: 1px;
-  width: 7px;
-  height: 18px;
-  background: #d7d5cd;
-  clip-path: polygon(50% 0, 100% 18%, 78% 100%, 22% 100%, 0 18%);
-}
-
-.sword-grip {
-  top: 18px;
-  width: 4px;
-  height: 11px;
-  background: #9a6b43;
-}
-
-.sword-guard {
-  top: 17px;
-  width: 15px;
-  height: 3px;
-  border-radius: 1px;
-  background: #514943;
-}
-
-.build-model-campfire::before {
-  position: absolute;
-  right: 2px;
-  bottom: 2px;
-  left: 2px;
-  height: 8px;
-  border-radius: 50%;
-  background: #2f2631;
-  box-shadow: inset 0 2px rgb(255 255 255 / 14%);
-  content: '';
-}
-
-.build-model-campfire::after {
-  position: absolute;
-  top: 2px;
-  left: 10px;
-  width: 12px;
-  height: 20px;
-  border-radius: 55% 45% 45% 45%;
-  background: #ef5b2a;
-  box-shadow: 2px 2px #17131f;
-  content: '';
-  transform: rotate(12deg);
 }
 
 .resource-square {
@@ -785,13 +615,14 @@ body {
 
 .technology-toggle,
 .technology-panel {
-  border: 1px solid #9d895d;
+  border: 1px solid var(--hud-button-outline-available);
   border-radius: 5px;
   background: rgb(35 30 45 / 94%);
   box-shadow: 0 3px 12px rgb(0 0 0 / 40%);
 }
 
 .technology-toggle {
+  border-color: var(--hud-button-outline-available);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -802,9 +633,13 @@ body {
   pointer-events: auto;
 }
 
+.technology-toggle[aria-expanded="true"] {
+  border-color: var(--hud-button-outline-active);
+}
+
 .technology-toggle:hover,
 .technology-toggle:focus-visible {
-  border-color: #f1d27a;
+  border-color: var(--hud-button-outline-available);
   background: #403750;
   outline: none;
 }
@@ -857,7 +692,7 @@ body {
   gap: 8px;
   min-width: 124px;
   min-height: 54px;
-  border: 1px solid #685a4d;
+  border: 1px solid var(--hud-button-outline-available);
   border-radius: 4px;
   padding: 6px;
   color: #f4e8c1;
@@ -897,16 +732,27 @@ body {
   flex-direction: row;
 }
 
+.technology-option:active:not(:disabled),
+.technology-option[aria-pressed="true"]:not(:disabled) {
+  border-color: var(--hud-button-outline-active);
+}
+
 .technology-option:hover:not(:disabled),
 .technology-option:focus-visible:not(:disabled) {
-  border-color: #f1d27a;
+  border-color: var(--hud-button-outline-available);
   background: #403750;
   outline: none;
 }
 
 .technology-option:disabled {
-  cursor: default;
-  opacity: 0.62;
+  cursor: not-allowed;
+  border-color: #786d57;
+  background: rgb(37 43 56 / 50%);
+}
+
+.technology-option:disabled .hud-sprite-icon {
+  filter: grayscale(1);
+  opacity: 0.8;
 }
 
 .technology-glyph {
@@ -923,9 +769,9 @@ body {
   place-items: center;
 }
 
-.technology-hammer-glyph .build-icon {
-  width: 34px;
-  height: 34px;
+.technology-glyph > .hud-sprite-icon {
+  width: 30px;
+  height: 30px;
 }
 
 .technology-shield-glyph {
@@ -935,7 +781,8 @@ body {
   place-items: center;
 }
 
-.technology-shield-glyph .build-icon {
+.technology-hammer-glyph > .hud-sprite-icon,
+.technology-shield-glyph > .hud-sprite-icon {
   width: 34px;
   height: 34px;
 }
@@ -1137,7 +984,7 @@ body {
 }
 
 .hud-debug button {
-  border: 1px solid #786b50;
+  border: 1px solid var(--hud-button-outline-available);
   border-radius: 3px;
   padding: 4px 6px;
   color: #f4e8c1;
@@ -1147,15 +994,19 @@ body {
   cursor: pointer;
 }
 
+.hud-debug button:active {
+  border-color: var(--hud-button-outline-active);
+}
+
 .hud-debug button:hover,
 .hud-debug button:focus-visible {
-  border-color: #f1d27a;
+  border-color: var(--hud-button-outline-hover);
   background: #403750;
   outline: none;
 }
 
 .hud-controls button {
-  border: 1px solid #9d895d;
+  border: 1px solid var(--hud-button-outline-available);
   border-radius: 4px;
   padding: 4px 8px;
   color: #f4e8c1;
@@ -1164,9 +1015,14 @@ body {
   cursor: pointer;
 }
 
+.hud-controls button:active,
+.hud-controls button[aria-pressed="true"] {
+  border-color: var(--hud-button-outline-active);
+}
+
 .hud-controls button:hover,
 .hud-controls button:focus-visible {
-  border-color: #f1d27a;
+  border-color: var(--hud-button-outline-hover);
   background: #403750;
   outline: none;
 }
@@ -1207,7 +1063,7 @@ body {
   max-height: 100%;
   overflow: auto;
   padding: clamp(20px, 4vw, 38px);
-  border: 2px solid #9d895d;
+  border: 2px solid var(--hud-button-outline-available);
   border-radius: 8px;
   background: linear-gradient(155deg, rgb(55 47 66 / 98%), rgb(35 30 43 / 98%));
   box-shadow: 0 14px 42px rgb(0 0 0 / 60%), inset 0 1px rgb(255 255 255 / 8%);
@@ -1249,12 +1105,13 @@ body {
 
 .main-menu-panel {
   padding-block: clamp(32px, 7vh, 66px);
-  border-color: #b5a06a;
+  border-color: var(--hud-button-outline-available);
   background: linear-gradient(155deg, rgb(52 60 46 / 96%), rgb(39 33 48 / 97%) 55%);
 }
 
-.main-menu-panel .menu-kicker {
-  margin-bottom: 14px;
+#main-menu-title {
+  transform: translateY(-20px);
+  font-size: 50px;
 }
 
 .main-menu-panel .menu-subtitle {
@@ -1270,7 +1127,7 @@ body {
 
 .menu-panel button {
   min-height: 42px;
-  border: 1px solid #9d895d;
+  border: 1px solid var(--hud-button-outline-available);
   border-radius: 4px;
   padding: 8px 14px;
   color: #f4e8c1;
@@ -1283,7 +1140,7 @@ body {
 
 .menu-panel button:hover,
 .menu-panel button:focus-visible {
-  border-color: #f1d27a;
+  border-color: var(--hud-button-outline-available);
   background: #494054;
   outline: 2px solid rgb(241 210 122 / 50%);
   outline-offset: 2px;
@@ -1291,12 +1148,12 @@ body {
 
 .menu-panel .menu-secondary-button {
   margin-top: 8px;
-  border-color: #785f5a;
+  border-color: var(--hud-button-outline-available);
   background: #382b35;
 }
 
 .menu-panel .menu-danger-button {
-  border-color: #bd6554;
+  border-color: var(--hud-button-outline-available);
   background: #733d3a;
 }
 
@@ -1331,7 +1188,8 @@ body {
 }
 
 .menu-panel-header .menu-kicker {
-  margin-bottom: 4px;
+  margin-left: -515px;
+  margin-top: 20px;
   text-align: left;
 }
 
@@ -1425,7 +1283,7 @@ body {
 }
 
 .tutorial-role-icon .build-icon {
-  transform: scale(0.75);
+  transform: scale(0.9);
 }
 
 .tutorial-role > span:last-child {

@@ -42,12 +42,16 @@
 -   en el menú de slots, comprobar que cada guardado ocupado ofrece una papelera, cancelar conserva la partida y confirmar elimina solo el slot elegido; los slots vacíos no muestran la papelera;
 -   HUD manejable por teclado;
 -   comprobar la fila superior centrada de recursos, sus iconos y cantidades de tres o más cifras en 1280×720 y 1920×1080, y el reflujo en una ventana estrecha;
+-   comprobar que los sprites de comida, madera, piedra, Brillo y oro se ven en contadores y los cuadrados de colores permanecen en los costes; verificar que los iconos de minion, hacha, arco, espada, martillo, libro, escudo y Hoguera aparecen en tutorial/HUD/tecnologías/mejoras donde corresponda, sin cambios en los modelos de la escena;
 -   comprobar el orden lateral Recolector, Leñador, Cazador, Guardián, Artesana, Mago y Hoguera; Artesana y Mago solo aparecen tras sus tecnologías y el Escudo permanece arriba a la derecha;
 -   abrir/cerrar «Tecnologías» y «Mejoras» abajo a la izquierda; verificar exclusividad, posición de sus paneles, opciones de tecnologías en fila, orden izquierda-derecha, expansión y reflujo sin salir de pantalla;
 -   comprobar que las tarjetas de tecnología solo muestran icono y coste; el tooltip contextual muestra su nombre y descripción;
--   verificar el orden de tecnologías Artesana, Mago y Escudo; el Mago cuesta 1 punto y su tarjeta de reclutamiento aparece entre Artesana y Hoguera tras desbloquearlo;
--   comprobar que una partida anterior con Magos ya reclutados conserva el desbloqueo de la tecnología Mago al cargar;
--   revisar tooltips contextuales del HUD lateral en condiciones normales y bloqueadas (coste insuficiente, límites, falta de recolector y desbloqueos) y confirmar que no aparece un tooltip nativo duplicado;
+-   verificar el orden de tecnologías Artesana, Mago y Escudo; el Mago cuesta 1 punto y su objeto de transformación aparece entre Artesana y Hoguera tras desbloquearlo;
+-   arrastrar el objeto del Mago sobre un Recolector: debe cambiar de clase, consumir el Brillo correspondiente y no aumentar el número total de minions; al soltarlo en el mapa o sobre otra clase no debe transformarlo ni consumir recursos;
+-   comprobar que el objeto del Mago queda inactivo sin Recolectores, con Brillo insuficiente o al alcanzar el máximo de Magos;
+-   comprobar que una partida anterior conserva sus Magos y el desbloqueo tecnológico al cargar;
+-   revisar tooltips contextuales del HUD lateral en condiciones normales y bloqueadas (coste insuficiente, límites, falta de recolector y desbloqueos), confirmar que siguen legibles cuando el botón está inactivo y que no aparece un tooltip nativo duplicado;
+-   comprobar que el último recolector puede convertirse en leñador y en artesana si hay al menos un cazador; sin cazadores, ambas transformaciones quedan bloqueadas con el tooltip «No puedes convertir a tu último recolector»; Mago y Guardián sí pueden transformar al último recolector; sin recolectores, el botón de Artesana queda inactivo y el tooltip dice «Necesitas un recolector»;
 -   enfocar y pasar el cursor por cada mejora y verificar tooltip de efecto/coste; en nivel máximo debe decir «Max» y omitir el coste siguiente;
 -   verificar visualmente las bandas de nivel 0, +1/+2, +3/+4, +5/+6, +7/+8/+9 y +10 (`#A7A7A7`, `#3F8F54`, `#168397`, `#80508F`, `#B77D35`), comprobando que solo se tiñe el fondo de la tarjeta lateral y el rótulo de mejora, nunca el modelo;
 -   comprobar que debug, pausa y velocidad empiezan ocultos y se muestran/ocultan con `Insert` y `Numpad0`, conservando las acciones de sus botones.

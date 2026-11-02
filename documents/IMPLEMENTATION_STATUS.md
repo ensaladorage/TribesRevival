@@ -8,26 +8,32 @@ validación. No define mecánicas ni sustituye el GDD.
 ### Alcance de esta revisión
 
 Se han contrastado los documentos con el checkout local disponible y el
-código fuente actual. La rama está en `main`, alineada en commits con
-`origin/main`, pero hay modificaciones locales sin confirmar en código y
-documentación. La auditoría inicial no ejecutó tests ni build ni incluyó
-validación visual/manual. Después se implementaron ajustes del HUD, el
-desbloqueo tecnológico del Mago y el borrado confirmado de guardados; se
-ejecutó `npm run build`. Sigue pendiente la validación manual por el
-usuario.
+código fuente actual. Hay modificaciones locales sin confirmar en código y documentación.
+Esta revisión corrigió el flujo del Mago para que su objeto transforme
+un Recolector en lugar de crear un minion nuevo. Se ejecutó
+`npm run build`; queda pendiente la validación manual por el usuario.
 
-La inspección del código confirma que ya existen las acciones de
-reclutamiento exterior del Mago y de mejora de hacha, martillo y espada,
+La inspección del código confirma que ya existen la transformación
+exterior del Mago y las mejoras de hacha, martillo y espada,
 además de persistencia en `GameState` versión 17 y migración desde la
 versión 16. Esto acredita presencia de implementación en el checkout,
 pero no demuestra su funcionamiento en ejecución ni su validación manual.
 
 ### Cambios visibles en el código actual
 
--   **Mago:** la tecnología cuesta 1 punto y desbloquea una clase especial
-    de minion. Su reclutamiento consume Brillo, usa la curva `2, 3, 3, 4,
-    4` y respeta los límites global y por clase; la carga reconoce el
-    desbloqueo en partidas antiguas con Magos ya reclutados.
+-   **Conversión del último recolector:** se permite transformarlo en
+    leñador si existe al menos un cazador; sin cazadores, se mantiene el
+    bloqueo y el tooltip explica el requisito. La regla se aplica tanto
+    en la acción de simulación como en el estado interactivo del HUD.
+    Artesana comparte esta protección: sin Cazador no se puede convertir
+    al último Recolector. Mago y Guardián conservan la excepción por su
+    capacidad de combate. Pendiente de validación manual en el navegador.
+-   **Mago:** la tecnología cuesta 1 punto y desbloquea el objeto que
+    transforma un Recolector en Mago. La transformación consume Brillo
+    con la curva `2, 3, 3, 4, 4`, no aumenta la población total y respeta
+    el máximo de 5 Magos; una entrega inválida no consume recursos. El
+    modelo 3D de Artesana usa color gris. Compila; ambos cambios quedan
+    pendientes de validación manual.
 -   **Herramientas:** hay mejoras para hacha, martillo y espada, coste
     incremental en piedra, tope de nivel 10 y efectos conectados a la
     recolección de madera, duración de extracción y daño del Guardián.
@@ -42,14 +48,17 @@ pero no demuestra su funcionamiento en ejecución ni su validación manual.
     ahora indica que es avanzado, poderoso en combate y necesario para
     Mazmorras.
 -   **HUD:** la fila superior muestra los cinco recursos con iconos de
-    pixel art y sus cantidades. Comida, Madera y Piedra usan sprites
-    PNG en `sprites/` con siluetas de alpha binario; Brillo y Oro
-    conservan sus SVG. La lista
+    pixel art y sus cantidades. Comida, Madera, Piedra, Brillo y Oro
+    usan sprites PNG en `sprites/ui/`; los mismos iconos aparecen en
+    los indicadores de coste. Las imágenes elegidas para roles y
+    herramientas también sustituyen los modelos CSS en la lista lateral,
+    el panel de tecnologías y mejoras, el acceso al Escudo y el tutorial.
+    La Hoguera usa ahora su sprite en el botón del HUD; su modelo 3D de
+    gameplay y el preview de colocación no se han modificado. La lista
     lateral mantiene el orden aprobado y Artesana y Mago permanecen ocultos
     hasta desbloquear sus tecnologías. El panel tecnológico muestra
     Artesana, Mago y Escudo, en ese orden.
-    Comida y Madera reciben compensación leve de brillo y escala para
-    igualar la lectura de Piedra. Tecnologías y Mejoras comparten
+    Tecnologías y Mejoras comparten
     un dock inferior izquierdo, con apertura exclusiva y paneles que
     reacomodan sus tarjetas según el ancho disponible. Las tres tarjetas
     de mejora muestran icono a la izquierda y nivel o `Max` a la derecha,
@@ -108,9 +117,9 @@ equivalen a una auditoría actual de los hitos 0--5.
 ### Tareas pendientes prioritarias
 
 1.  Probar manualmente la tecnología del Mago: coste de 1 punto, posición
-    después de Artesana en el menú, aparición de su tarjeta entre Artesana
-    y Hoguera, reclutamiento con Brillo, límites y partida antigua con
-    Magos ya reclutados.
+    después de Artesana en el menú, aparición de su objeto entre Artesana
+    y Hoguera, conversión de Recolector con Brillo, límites, cancelación
+    sobre objetivos inválidos y partida antigua con Magos ya transformados.
 2.  Probar las mejoras de hacha, martillo y espada: coste en piedra,
     niveles `0–10`, efecto por nivel, tope, compra sin recursos
     suficientes y feedback visual.

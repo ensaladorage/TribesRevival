@@ -11,9 +11,8 @@
       <div id="game-root"></div>
       <div id="main-menu-overlay" class="menu-overlay" data-menu-screen="main">
         <section class="menu-panel main-menu-panel" aria-labelledby="main-menu-title">
-          <p class="menu-kicker">Una tribu. Un tótem. Un mundo por sobrevivir.</p>
           <h1 id="main-menu-title">Tribes Revival</h1>
-          <p class="menu-subtitle">Guía a tu tribu y ayúdala a prosperar.</p>
+          <p class="menu-kicker">La supervivencia de la Tribu depende de ti</p>
           <nav class="main-menu-actions" aria-label="Menú principal">
             <button type="button" data-menu-action="play">Jugar</button>
             <button type="button" data-menu-action="tutorial">Tutorial</button>
@@ -26,9 +25,9 @@
         <section class="menu-panel tutorial-panel" role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
           <header class="menu-panel-header">
             <div>
-              <p class="menu-kicker">Guía rápida</p>
               <h2 id="tutorial-title">Cómo jugar</h2>
             </div>
+               <p class="menu-kicker">Guía rápida</p>
             <button type="button" class="menu-back-button" data-menu-action="back-main">Volver</button>
           </header>
           <div class="tutorial-content">
@@ -58,27 +57,27 @@
             <h3 class="tutorial-roles-title">Tu tribu</h3>
             <div class="tutorial-roles">
               <article class="tutorial-role">
-                <span class="tutorial-role-icon"><span class="build-icon build-icon-gatherer"><span class="build-model build-model-gatherer"></span></span></span>
+                <span class="tutorial-role-icon"><span class="build-icon"><img class="hud-sprite-icon" src="./sprites/ui/icon-minion.png" alt="" aria-hidden="true" /></span></span>
                 <span><strong>Recolector</strong><small>Minion básico. Recolecta Bayas y se puede especializar.</small></span>
               </article>
               <article class="tutorial-role">
-                <span class="tutorial-role-icon"><span class="build-icon build-icon-axe"><span class="build-model build-model-axe"></span></span></span>
+                <span class="tutorial-role-icon"><span class="build-icon"><img class="hud-sprite-icon" src="./sprites/ui/icon-axe.png" alt="" aria-hidden="true" /></span></span>
                 <span><strong>Leñador</strong><small>Recolecta madera y combate con el hacha.</small></span>
               </article>
               <article class="tutorial-role">
-                <span class="tutorial-role-icon"><span class="build-icon build-icon-bow"><svg class="build-model build-bow-svg" viewBox="0 0 30 32" aria-hidden="true"><path d="M22 3.5 Q7.5 16 22 28.5" fill="none" stroke="#81512f" stroke-width="4.4" stroke-linecap="round"/><path d="M22 3.5 V28.5" fill="none" stroke="#e8d8a6" stroke-width="1.2"/><path d="M7.7 13.7 V18.3" fill="none" stroke="#888681" stroke-width="4.8" stroke-linecap="round"/></svg></span></span>
+                <span class="tutorial-role-icon"><span class="build-icon"><img class="hud-sprite-icon" src="./sprites/ui/icon-bow.png" alt="" aria-hidden="true" /></span></span>
                 <span><strong>Cazador</strong><small>Caza animales salvajes y combate a distancia con su arco.</small></span>
               </article>
               <article class="tutorial-role">
-                <span class="tutorial-role-icon"><span class="build-icon build-icon-sword"><span class="build-model build-model-sword"><span class="sword-blade"></span><span class="sword-grip"></span><span class="sword-guard"></span></span></span></span>
+                <span class="tutorial-role-icon"><span class="build-icon"><img class="hud-sprite-icon" src="./sprites/ui/icon-sword.png" alt="" aria-hidden="true" /></span></span>
                 <span><strong>Guardián</strong><small>Protector de la tribu. Se centra solo en combatir.</small></span>
               </article>
               <article class="tutorial-role">
-                <span class="tutorial-role-icon"><span class="build-icon build-icon-hammer"><span class="build-model build-model-hammer"><span class="hammer-handle"></span><span class="hammer-head"></span></span></span></span>
+                <span class="tutorial-role-icon"><span class="build-icon"><img class="hud-sprite-icon" src="./sprites/ui/icon-hammer.png" alt="" aria-hidden="true" /></span></span>
                 <span><strong>Artesana</strong><small>Minion avanzado. Recolecta Piedra y Sparks.</small></span>
               </article>
               <article class="tutorial-role">
-                <span class="tutorial-role-icon"><span class="build-icon build-icon-mage"><span class="build-model build-model-mage"></span></span></span>
+                <span class="tutorial-role-icon"><span class="build-icon"><img class="hud-sprite-icon" src="./sprites/ui/icon-mage.png" alt="" aria-hidden="true" /></span></span>
                 <span><strong>Mago</strong><small>Minion avanzado. Poderoso en combate. Necesario para Mazmorras.</small></span>
               </article>
             </div>
@@ -89,7 +88,6 @@
 
       <div id="pause-menu-overlay" class="menu-overlay menu-overlay-dim" data-menu-screen="pause" hidden>
         <section class="menu-panel compact-menu-panel" role="dialog" aria-modal="true" aria-labelledby="pause-title">
-          <p class="menu-kicker">Tribes Revival</p>
           <h2 id="pause-title">Pausa</h2>
           <nav class="main-menu-actions" aria-label="Menú de pausa">
             <button type="button" data-menu-action="resume">Volver</button>
@@ -129,9 +127,7 @@
           <div class="hud-buildings" aria-label="Construcciones">
             <div class="build-entry">
               <button type="button" class="build-card hud-tooltip" data-build-item="gatherer" aria-label="Recolector">
-                <span class="build-icon build-icon-gatherer" aria-hidden="true">
-                  <span class="build-model build-model-gatherer"></span>
-                </span>
+                <span class="build-icon" aria-hidden="true"><img class="hud-sprite-icon hud-sprite-icon-minion" src="./sprites/ui/icon-minion.png" alt="" /></span>
               </button>
               <span id="cost-gatherer" class="build-cost" aria-label="Coste: 2 comida">
                 <span class="resource-square resource-square-food"></span>
@@ -140,9 +136,7 @@
             </div>
             <div class="build-entry">
               <button type="button" class="build-card hud-tooltip" data-build-item="axe" aria-label="Convertir en Leñador">
-                <span class="build-icon build-icon-axe" aria-hidden="true">
-                  <span class="build-model build-model-axe"></span>
-                </span>
+                <span class="build-icon" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-axe.png" alt="" /></span>
               </button>
               <span id="cost-axe" class="build-cost" aria-label="Coste: 2 madera">
                 <span class="resource-square resource-square-wood"></span>
@@ -152,15 +146,8 @@
             </div>
             <div class="build-entry">
               <button type="button" class="build-card hud-tooltip" data-build-item="bow" aria-label="Convertir en Cazador">
-                <span class="build-icon build-icon-bow" aria-hidden="true">
-                  <svg class="build-model build-bow-svg" viewBox="0 0 30 32" aria-hidden="true" focusable="false">
-                    <path d="M22 3.5 Q7.5 16 22 28.5" fill="none" stroke="#81512f" stroke-width="4.4" stroke-linecap="round" />
-                    <path d="M22 3.5 V28.5" fill="none" stroke="#e8d8a6" stroke-width="1.2" />
-                    <path d="M7.7 13.7 V18.3" fill="none" stroke="#888681" stroke-width="4.8" stroke-linecap="round" />
-                    <path d="M5.5 14.2 H9.9 M5.5 17.8 H9.9" fill="none" stroke="#585653" stroke-width="1" />
-                    <circle cx="22" cy="3.5" r="1.5" fill="#503a29" />
-                    <circle cx="22" cy="28.5" r="1.5" fill="#503a29" />
-                  </svg>
+                <span class="build-icon" aria-hidden="true">
+                  <img class="hud-sprite-icon" src="./sprites/ui/icon-bow.png" alt="" />
                 </span>
               </button>
               <span id="cost-bow" class="build-cost" aria-label="Coste: 2 madera">
@@ -171,13 +158,7 @@
             </div>
             <div class="build-entry">
               <button type="button" class="build-card hud-tooltip" data-build-item="sword" aria-label="Convertir en Guardián">
-                <span class="build-icon build-icon-sword" aria-hidden="true">
-                  <span class="build-model build-model-sword">
-                    <span class="sword-blade"></span>
-                    <span class="sword-grip"></span>
-                    <span class="sword-guard"></span>
-                  </span>
-                </span>
+                <span class="build-icon" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-sword.png" alt="" /></span>
               </button>
               <span id="cost-sword" class="build-cost" aria-label="Coste: 2 oro">
                 <span class="resource-square resource-square-gold"></span>
@@ -186,12 +167,7 @@
             </div>
             <div id="artisan-build-entry" class="build-entry" hidden>
               <button type="button" class="build-card hud-tooltip" data-build-item="hammer" aria-label="Convertir en Artesana">
-                <span class="build-icon build-icon-hammer" aria-hidden="true">
-                  <span class="build-model build-model-hammer">
-                    <span class="hammer-handle"></span>
-                    <span class="hammer-head"></span>
-                  </span>
-                </span>
+                <span class="build-icon" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-hammer.png" alt="" /></span>
               </button>
               <span id="cost-hammer" class="build-cost" aria-label="Coste: 2 madera">
                 <span class="resource-square resource-square-wood"></span>
@@ -199,8 +175,8 @@
               </span>
             </div>
             <div id="mage-build-entry" class="build-entry" hidden>
-              <button type="button" class="build-card hud-tooltip" data-build-item="mage" aria-label="Reclutar Mago">
-                <span class="build-icon build-icon-mage" aria-hidden="true"><span class="build-model build-model-mage"></span></span>
+              <button type="button" class="build-card hud-tooltip" data-build-item="mage" aria-label="Convertir en Mago">
+                <span class="build-icon" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-mage.png" alt="" /></span>
               </button>
               <span id="cost-mage" class="build-cost" aria-label="Coste: 2 Brillo">
                 <span class="resource-square resource-square-spark"></span>
@@ -209,9 +185,7 @@
             </div>
             <div class="build-entry">
               <button type="button" class="build-card hud-tooltip" data-build-item="campfire" aria-label="Colocar hoguera. Coste: 2 de madera">
-                <span class="build-icon build-icon-campfire" aria-hidden="true">
-                  <span class="build-model build-model-campfire"></span>
-                </span>
+                <span class="build-icon" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-fireplace.png" alt="" /></span>
               </button>
               <span class="build-cost" aria-label="Coste: 2 madera">
                 <span class="resource-square resource-square-wood"></span>
@@ -227,11 +201,11 @@
           </div>
         </div>
         <div id="resource-hud" class="resource-hud" aria-label="Recursos">
-          <div class="resource-counter" aria-label="Comida"><img class="resource-icon resource-icon-food" src="./sprites/Food.png" alt="" aria-hidden="true"><span id="resource-food" class="resource-amount">0</span></div>
-          <div class="resource-counter" aria-label="Madera"><img class="resource-icon resource-icon-wood" src="./sprites/Wood.png" alt="" aria-hidden="true"><span id="resource-wood" class="resource-amount">0</span></div>
-          <div class="resource-counter" aria-label="Piedra"><img class="resource-icon resource-icon-stone" src="./sprites/Stone.png" alt="" aria-hidden="true"><span id="resource-stone" class="resource-amount">0</span></div>
-          <div class="resource-counter" aria-label="Brillo"><img class="resource-icon resource-icon-spark" src="./src/assets/hud/spark.svg" alt="" aria-hidden="true"><span id="resource-spark" class="resource-amount">0</span></div>
-          <div class="resource-counter" aria-label="Oro"><img class="resource-icon resource-icon-gold" src="./src/assets/hud/gold.svg" alt="" aria-hidden="true"><span id="resource-gold" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Comida"><img class="resource-icon" src="./sprites/ui/resource-food.png" alt="" aria-hidden="true"><span id="resource-food" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Madera"><img class="resource-icon" src="./sprites/ui/resource-wood.png" alt="" aria-hidden="true"><span id="resource-wood" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Piedra"><img class="resource-icon" src="./sprites/ui/resource-stone.png" alt="" aria-hidden="true"><span id="resource-stone" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Brillo"><img class="resource-icon" src="./sprites/ui/resource-spark.png" alt="" aria-hidden="true"><span id="resource-spark" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Oro"><img class="resource-icon" src="./sprites/ui/resource-gold.png" alt="" aria-hidden="true"><span id="resource-gold" class="resource-amount">0</span></div>
         </div>
         <div id="debug-tools-panel" class="debug-tools-panel" hidden>
           <div class="hud-controls" aria-label="Controles de partida">
@@ -270,9 +244,7 @@
         <div class="hud-buildings hud-right-buildings" aria-label="Armadura y equipo">
           <div id="shield-build-entry" class="build-entry" hidden>
             <button type="button" class="build-card hud-tooltip" data-build-item="shield" aria-label="Escudo +1 HP">
-              <span class="build-icon build-icon-shield" aria-hidden="true">
-                <span class="build-model build-model-shield"><span class="shield-stud"></span></span>
-              </span>
+              <span class="build-icon" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-shield.png" alt="" /></span>
             </button>
             <span id="cost-shield" class="build-cost" aria-label="Coste: 2 oro">
               <span class="resource-square resource-square-gold"></span>
@@ -287,13 +259,13 @@
           <strong>Mejoras</strong>
           <div class="upgrade-options">
             <button type="button" class="technology-option upgrade-option hud-tooltip" data-upgrade-tool="axe">
-              <span class="build-icon build-icon-axe upgrade-tool-icon" aria-hidden="true"><span class="build-model build-model-axe"></span></span><strong id="upgrade-level-axe" class="upgrade-level">+0</strong>
+              <span class="build-icon upgrade-tool-icon" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-axe.png" alt="" /></span><strong id="upgrade-level-axe" class="upgrade-level">+0</strong>
             </button>
             <button type="button" class="technology-option upgrade-option hud-tooltip" data-upgrade-tool="hammer">
-              <span class="build-icon build-icon-hammer upgrade-tool-icon" aria-hidden="true"><span class="build-model build-model-hammer"><span class="hammer-handle"></span><span class="hammer-head"></span></span></span><strong id="upgrade-level-hammer" class="upgrade-level">+0</strong>
+              <span class="build-icon upgrade-tool-icon" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-hammer.png" alt="" /></span><strong id="upgrade-level-hammer" class="upgrade-level">+0</strong>
             </button>
             <button type="button" class="technology-option upgrade-option hud-tooltip" data-upgrade-tool="sword">
-              <span class="build-icon build-icon-sword upgrade-tool-icon" aria-hidden="true"><span class="build-model build-model-sword"><span class="sword-blade"></span><span class="sword-grip"></span><span class="sword-guard"></span></span></span><strong id="upgrade-level-sword" class="upgrade-level">+0</strong>
+              <span class="build-icon upgrade-tool-icon" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-sword.png" alt="" /></span><strong id="upgrade-level-sword" class="upgrade-level">+0</strong>
               <span id="upgrade-effect-sword" class="visually-hidden">+0 daño por ataque</span><span id="upgrade-cost-sword" class="visually-hidden">Siguiente: 1 piedra</span>
             </button>
             <span id="upgrade-effect-axe" class="visually-hidden">+0 madera por acción</span><span id="upgrade-cost-axe" class="visually-hidden">Siguiente: 1 piedra</span>
@@ -308,28 +280,15 @@
           <span id="technology-points-summary">Puntos disponibles: 0</span>
           <div class="technology-options">
             <button type="button" class="technology-option hud-tooltip" data-unlock-technology="artisan" data-tooltip="Artesana&#10;Permite convertir un recolector en artesana para reunir Piedra y Brillo.">
-              <span class="technology-glyph technology-hammer-glyph" aria-hidden="true">
-                <span class="build-icon build-icon-hammer">
-                  <span class="build-model build-model-hammer">
-                    <span class="hammer-handle"></span>
-                    <span class="hammer-head"></span>
-                  </span>
-                </span>
-              </span>
+              <span class="technology-glyph technology-hammer-glyph" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-hammer.png" alt="" /></span>
               <span class="technology-state" data-technology-state="artisan">1 punto</span>
             </button>
-            <button type="button" class="technology-option hud-tooltip" data-unlock-technology="mage" data-tooltip="Mago&#10;Desbloquea la clase especial Mago y su reclutamiento con Brillo.">
-              <span class="technology-glyph" aria-hidden="true">
-                <span class="build-icon build-icon-mage"><span class="build-model build-model-mage"></span></span>
-              </span>
+            <button type="button" class="technology-option hud-tooltip" data-unlock-technology="mage" data-tooltip="Mago&#10;Permite convertir un recolector en Mago para entrar en mazmorras">
+              <span class="technology-glyph" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-mage.png" alt="" /></span>
               <span class="technology-state" data-technology-state="mage">1 punto</span>
             </button>
             <button type="button" class="technology-option hud-tooltip" data-unlock-technology="shield" data-tooltip="Escudo&#10;Permite equipar a los guardianes para aumentar su vida máxima en 1.">
-              <span class="technology-glyph technology-shield-glyph" aria-hidden="true">
-                <span class="build-icon build-icon-shield">
-                  <span class="build-model build-model-shield"><span class="shield-stud"></span></span>
-                </span>
-              </span>
+              <span class="technology-glyph technology-shield-glyph" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-shield.png" alt="" /></span>
               <span class="technology-state" data-technology-state="shield">1 punto</span>
             </button>
           </div>

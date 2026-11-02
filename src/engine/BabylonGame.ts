@@ -25,8 +25,8 @@ import {
 } from '../simulation/stepSimulation';
 import {
   countUnitsWithRole,
-  canConvertLastGathererToLumberjack,
-  getMageRecruitmentCost,
+  canConvertLastGathererToNonCombatSpecialist,
+  getMageSpecializationCost,
   getMinionPurchaseCost,
   getToolUpgradeCost,
   MAX_TOOL_LEVEL,
@@ -101,7 +101,7 @@ type WeatherCloudView = {
   rainMaterial: StandardMaterial;
 };
 
-type HudBuildItem = 'campfire' | 'gatherer' | 'mage' | 'shield' | SpecializationItem;
+type HudBuildItem = 'campfire' | 'gatherer' | 'shield' | SpecializationItem;
 type MenuScreen = 'main' | 'tutorial' | 'pause' | 'slots' | 'confirmation' | 'game';
 type SlotMenuMode = 'save' | 'load';
 type ConfirmationAction = 'exit' | 'overwrite' | 'delete';
@@ -682,7 +682,7 @@ export class BabylonGame {
       hunter: '#8ed6d1',
       explorer: '#a7a0d8',
       guardian: '#d27575',
-      artisan: '#d79aff',
+      artisan: '#a5a5a2',
       mage: '#a276ff',
     }[role];
   }
@@ -1321,12 +1321,10 @@ export class BabylonGame {
         this.actionQueue.enqueue({ type: 'place-campfire', position });
       } else if (item === 'gatherer' && position) {
         this.actionQueue.enqueue({ type: 'recruit-gatherer', position });
-      } else if (item === 'mage' && position) {
-        this.actionQueue.enqueue({ type: 'recruit-mage', position });
       } else if (item === 'shield') {
         const unitId = this.pickUnitIdAt(event.clientX, event.clientY);
         if (unitId) this.actionQueue.enqueue({ type: 'equip-shield', unitId });
-      } else if (item === 'axe' || item === 'bow' || item === 'sword' || item === 'hammer') {
+      } else if (item === 'axe' || item === 'bow' || item === 'sword' || item === 'hammer' || item === 'mage') {
         const unitId = this.pickUnitIdAt(event.clientX, event.clientY);
         if (unitId) {
           this.actionQueue.enqueue({ type: 'transform-unit', item, unitId });
@@ -1691,15 +1689,6 @@ export class BabylonGame {
     }
     if (this.menuScreen === 'slots') this.renderSaveSlots();
 
-    if (this.menuScreen === 'pause') {
-      document.querySelector<HTMLButtonElement>('[data-menu-action="resume"]')?.focus();
-    } else if (this.menuScreen === 'tutorial') {
-      document.querySelector<HTMLButtonElement>('[data-menu-action="back-main"]')?.focus();
-    } else if (this.menuScreen === 'slots') {
-      document.querySelector<HTMLButtonElement>('#save-slot-list button:not(:disabled)')?.focus();
-    } else if (this.menuScreen === 'main') {
-      document.querySelector<HTMLButtonElement>('[data-menu-action="play"]')?.focus();
-    }
   }
 
   private openSlotMenu(mode: SlotMenuMode): void {
@@ -1877,7 +1866,6 @@ export class BabylonGame {
     if (body) body.textContent = message;
     if (confirm) confirm.textContent = confirmLabel;
     this.setMenuScreen('confirmation');
-    confirm?.focus();
   }
 
   private confirmPendingAction(): void {
@@ -2902,6 +2890,7 @@ export class BabylonGame {
     const speed = document.querySelector<HTMLElement>('#hud-speed');
     const inventory = document.querySelector<HTMLElement>('#hud-inventory');
     const pauseButton = document.querySelector<HTMLButtonElement>('[data-action="pause"]');
+    const speedButtons = document.querySelectorAll<HTMLButtonElement>('[data-speed]');
     const gameOverOverlay = document.querySelector<HTMLElement>('#game-over-overlay');
     const gathererButton = document.querySelector<HTMLButtonElement>('[data-build-item="gatherer"]');
     const mageButton = document.querySelector<HTMLButtonElement>('[data-build-item="mage"]');
@@ -2966,13 +2955,13 @@ export class BabylonGame {
     const artisanLimitReached = countUnitsWithRole(this.state.units, 'artisan') >= MAX_MINIONS_PER_TYPE;
     const gathererUnavailable = countUnitsWithRole(this.state.units, 'gatherer') === 0;
     const guardianUnavailable = gathererUnavailable;
-    const axeBlockedByLastGatherer = !canConvertLastGathererToLumberjack(this.state.units);
+    const nonCombatSpecialistBlockedByLastGatherer = !canConvertLastGathererToNonCombatSpecialist(this.state.units);
     const gathererCost = getMinionPurchaseCost(
       this.state.units.length,
       STARTING_MINION_COUNT,
     );
     const mageCount = countUnitsWithRole(this.state.units, 'mage');
-    const mageCost = getMageRecruitmentCost(mageCount);
+    const mageCost = getMageSpecializationCost(mageCount);
     const axeCost = getMinionPurchaseCost(countUnitsWithRole(this.state.units, 'lumberjack'));
     const bowCost = getMinionPurchaseCost(countUnitsWithRole(this.state.units, 'hunter'));
     const artisanCost = getMinionPurchaseCost(countUnitsWithRole(this.state.units, 'artisan'));
@@ -2999,6 +2988,9 @@ export class BabylonGame {
       button.removeAttribute('title');
       button.dataset.tooltip = text;
     };
+    const tooltipWithReason = (description: string, reason: string): string => (
+      reason ? `${description}\n${reason}` : description
+    );
 
     if (this.state.progression.level > this.lastObservedProgressionLevel) {
       this.technologyTreeOpen = true;
@@ -3033,7 +3025,7 @@ export class BabylonGame {
       const unlocked = this.state.progression.unlockedTechnologies.includes(technology);
       const technologyDetails = {
         artisan: ['Artesana', 'Permite convertir un recolector en artesana para reunir Piedra y Brillo.'],
-        mage: ['Mago', 'Desbloquea la clase especial Mago y su reclutamiento con Brillo.'],
+        mage: ['Mago', 'Permite convertir un recolector en Mago para entrar en mazmorras'],
         shield: ['Escudo', 'Permite equipar a los guardianes para aumentar su vida máxima en 1.'],
       } as const;
       if (button) {
@@ -3095,32 +3087,60 @@ export class BabylonGame {
       gathererButton.disabled = totalMinionLimitReached
         || amounts.food < gathererCost
         || this.state.phase !== 'playing';
-      setHudTooltip(gathererButton, `Recolector\nRecluta un minion básico.\n${totalMinionLimitReached ? 'Límite de tribu alcanzado' : amounts.food < gathererCost ? `Falta comida · Coste: ${gathererCost}` : `Coste: ${gathererCost} comida`}`);
+      setHudTooltip(gathererButton, tooltipWithReason(
+        'Recolector\nRecluta un minion básico.',
+        totalMinionLimitReached ? 'Límite de tribu alcanzado' : '',
+      ));
       gathererButton.setAttribute('aria-label', totalMinionLimitReached ? 'Máximo alcanzado' : 'Recolector');
     }
     if (mageButton) {
       const mageLimitReached = mageCount >= MAX_MINIONS_PER_TYPE;
-      mageButton.disabled = totalMinionLimitReached
-        || !mageUnlocked
+      mageButton.disabled = !mageUnlocked
+        || gathererUnavailable
         || mageLimitReached
         || amounts.spark < mageCost
         || this.state.phase !== 'playing';
-      setHudTooltip(mageButton, `Mago\nClase especial; habilidad por definir.\n${!mageUnlocked ? 'Desbloquéalo en Tecnologías' : totalMinionLimitReached ? 'Límite de tribu alcanzado' : mageLimitReached ? 'Límite de Magos alcanzado' : amounts.spark < mageCost ? `Falta Brillo · Coste: ${mageCost}` : `Coste: ${mageCost} Brillo`}`);
-      mageButton.setAttribute('aria-label', `Reclutar Mago${mageLimitReached ? '. Máximo alcanzado.' : ''}`);
+      const mageReason = !mageUnlocked
+        ? 'Desbloquéalo en Tecnologías'
+        : gathererUnavailable
+          ? 'Necesitas un recolector'
+          : mageLimitReached
+            ? 'Límite de Magos alcanzado'
+            : '';
+      setHudTooltip(mageButton, tooltipWithReason(
+        'Mago\nConvierte un recolector en mago para entrar en mazmorras.',
+        mageReason,
+      ));
+      mageButton.setAttribute('aria-label', gathererUnavailable
+        ? 'Necesitas un recolector para convertirlo en Mago'
+        : `Convertir en Mago${mageLimitReached ? '. Máximo alcanzado.' : ''}`);
     }
     if (axeButton) {
       axeButton.disabled = lumberjackLimitReached
-        || axeBlockedByLastGatherer
+        || gathererUnavailable
+        || nonCombatSpecialistBlockedByLastGatherer
         || amounts.wood < axeCost
         || this.state.phase !== 'playing';
-      setHudTooltip(axeButton, `Leñador\nConvierte un recolector en leñador.\n${lumberjackLimitReached ? 'Límite de leñadores alcanzado' : axeBlockedByLastGatherer ? 'Necesitas conservar un recolector' : amounts.wood < axeCost ? `Falta madera · Coste: ${axeCost}` : `Coste: ${axeCost} madera`}`);
+      const axeDisabledReason = gathererUnavailable
+        ? 'Necesitas un recolector'
+        : lumberjackLimitReached
+          ? 'Límite de leñadores alcanzado'
+          : nonCombatSpecialistBlockedByLastGatherer
+            ? 'No puedes convertir a tu último recolector'
+            : '';
+      setHudTooltip(axeButton, tooltipWithReason(
+        'Leñador\nConvierte un recolector en leñador.',
+        axeDisabledReason,
+      ));
       axeButton.setAttribute(
         'aria-label',
-        lumberjackLimitReached
-          ? 'Máximo alcanzado'
-          : axeBlockedByLastGatherer
-            ? 'Solo tienes un recolector'
-            : 'Convertir en Leñador',
+        gathererUnavailable
+          ? 'Necesitas un recolector'
+          : lumberjackLimitReached
+            ? 'Máximo alcanzado'
+            : nonCombatSpecialistBlockedByLastGatherer
+              ? 'No puedes convertir a tu último recolector'
+              : 'Convertir en Leñador',
       );
     }
     if (bowButton) {
@@ -3129,7 +3149,15 @@ export class BabylonGame {
         || amounts.wood < bowCost
         || this.state.phase !== 'playing';
       const bowLabel = hunterLimitReached ? 'Máximo alcanzado' : 'Convertir en Cazador';
-      setHudTooltip(bowButton, `Cazador\nConvierte un recolector en cazador, experto en arco.\n${hunterLimitReached ? 'Límite de cazadores alcanzado' : gathererUnavailable ? 'Necesitas un recolector' : amounts.wood < bowCost ? `Falta madera · Coste: ${bowCost}` : `Coste: ${bowCost} madera`}`);
+      const bowReason = hunterLimitReached
+        ? 'Límite de cazadores alcanzado'
+        : gathererUnavailable
+          ? 'Necesitas un recolector'
+          : '';
+      setHudTooltip(bowButton, tooltipWithReason(
+        'Cazador\nConvierte un recolector en cazador.',
+        bowReason,
+      ));
       bowButton.setAttribute('aria-label', bowLabel);
     }
     if (swordButton) {
@@ -3137,7 +3165,15 @@ export class BabylonGame {
         || guardianUnavailable
         || amounts.gold < 2
         || this.state.phase !== 'playing';
-      setHudTooltip(swordButton, `Guardián\nConvierte un recolector en guardián de combate.\n${guardianLimitReached ? 'Límite de guardianes alcanzado' : guardianUnavailable ? 'Necesitas un recolector' : amounts.gold < 2 ? 'Falta oro · Coste: 2' : 'Coste: 2 oro'}`);
+      const swordReason = guardianLimitReached
+        ? 'Límite de guardianes alcanzado'
+        : guardianUnavailable
+          ? 'Necesitas un recolector'
+          : '';
+      setHudTooltip(swordButton, tooltipWithReason(
+        'Guardián\nConvierte un recolector en guardián de combate.',
+        swordReason,
+      ));
       swordButton.setAttribute('aria-label', guardianLimitReached
         ? 'Máximo alcanzado'
         : guardianUnavailable
@@ -3147,10 +3183,27 @@ export class BabylonGame {
     if (hammerButton) {
       hammerButton.disabled = artisanLimitReached
         || gathererUnavailable
+        || nonCombatSpecialistBlockedByLastGatherer
         || amounts.wood < artisanCost
         || this.state.phase !== 'playing';
-      const hammerLabel = artisanLimitReached ? 'Máximo alcanzado' : 'Convertir en Artesana';
-      setHudTooltip(hammerButton, `Artesana\nConvierte un recolector en artesana para reunir Piedra y Brillo.\n${artisanLimitReached ? 'Límite de artesanas alcanzado' : gathererUnavailable ? 'Necesitas un recolector' : amounts.wood < artisanCost ? `Falta madera · Coste: ${artisanCost}` : `Coste: ${artisanCost} madera`}`);
+      const hammerReason = artisanLimitReached
+        ? 'Límite de artesanas alcanzado'
+        : gathererUnavailable
+          ? 'Necesitas un recolector'
+          : nonCombatSpecialistBlockedByLastGatherer
+            ? 'No puedes convertir a tu último recolector'
+            : '';
+      const hammerLabel = artisanLimitReached
+        ? 'Máximo alcanzado'
+        : gathererUnavailable
+          ? 'Necesitas un recolector'
+          : nonCombatSpecialistBlockedByLastGatherer
+            ? 'No puedes convertir a tu último recolector'
+            : 'Convertir en Artesana';
+      setHudTooltip(hammerButton, tooltipWithReason(
+        'Artesana\nConvierte un recolector en artesana para reunir Piedra y Brillo.',
+        hammerReason,
+      ));
       hammerButton.setAttribute('aria-label', hammerLabel);
     }
     if (shieldButton) {
@@ -3160,7 +3213,15 @@ export class BabylonGame {
         || guardianCount === 0
         || amounts.gold < shieldCost
         || this.state.phase !== 'playing';
-      setHudTooltip(shieldButton, `Escudo\nAumenta en 1 la vida máxima de un guardián.\n${allGuardiansEquipped ? 'Todos los guardianes ya tienen escudo' : guardianCount === 0 ? 'Necesitas un guardián' : amounts.gold < shieldCost ? `Falta oro · Coste: ${shieldCost}` : `Coste: ${shieldCost} oro`}`);
+      const shieldReason = allGuardiansEquipped
+        ? 'Todos los guardianes ya tienen escudo'
+        : guardianCount === 0
+          ? 'Necesitas un guardián'
+          : '';
+      setHudTooltip(shieldButton, tooltipWithReason(
+        'Escudo\nAumenta en 1 la vida máxima de un guardián.',
+        shieldReason,
+      ));
       shieldButton.setAttribute('aria-label', shieldLabel);
     }
     if (campfireButton) {
@@ -3168,7 +3229,10 @@ export class BabylonGame {
       campfireButton.disabled = campfireLimitReached
         || amounts.wood < CAMPFIRE_WOOD_COST
         || this.state.phase !== 'playing';
-      setHudTooltip(campfireButton, `Hoguera\nCura a los minions cercanos consumiendo comida.\n${campfireLimitReached ? 'Límite de hogueras alcanzado' : amounts.wood < CAMPFIRE_WOOD_COST ? `Falta madera · Coste: ${CAMPFIRE_WOOD_COST}` : `Coste: ${CAMPFIRE_WOOD_COST} madera`}`);
+      setHudTooltip(campfireButton, tooltipWithReason(
+        'Hoguera\nCura a los minions cercanos consumiendo comida.',
+        campfireLimitReached ? 'Límite de hogueras alcanzado' : '',
+      ));
       campfireButton.setAttribute('aria-label', campfireLimitReached ? 'Máximo alcanzado' : 'Hoguera');
       campfireButton.setAttribute('aria-pressed', String(this.hudItemDragging === 'campfire'));
     }
@@ -3217,11 +3281,7 @@ export class BabylonGame {
       }
     }
     if (gameOverOverlay) {
-      const wasHidden = gameOverOverlay.hidden;
       gameOverOverlay.hidden = this.state.phase !== 'defeat';
-      if (wasHidden && !gameOverOverlay.hidden) {
-        gameOverOverlay.querySelector<HTMLButtonElement>('[data-action="restart"]')?.focus();
-      }
     }
     pauseButton.textContent = this.state.phase === 'paused'
       ? 'Reanudar'
@@ -3229,6 +3289,10 @@ export class BabylonGame {
         ? 'Derrota'
         : 'Pausa';
     pauseButton.disabled = this.state.phase === 'defeat';
+    pauseButton.setAttribute('aria-pressed', String(this.state.phase === 'paused'));
+    for (const button of speedButtons) {
+      button.setAttribute('aria-pressed', String(Number(button.dataset.speed) === this.speedMultiplier));
+    }
     this.updateDebugHud();
     this.totemMaterial.diffuseColor = Color3.FromHexString(
       this.state.totem.isCarried ? '#f1b35c' : '#d8904f',

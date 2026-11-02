@@ -32,16 +32,16 @@ export const STARTING_MINION_COUNT = 2;
 /** Maximum living minions allowed for each specialist role. */
 export const MAX_MINIONS_PER_TYPE = 5;
 export const MAX_TOOL_LEVEL = 10;
-export const MAGE_RECRUITMENT_COSTS: readonly number[] = [2, 3, 3, 4, 4];
+export const MAGE_SPECIALIZATION_COSTS: readonly number[] = [2, 3, 3, 4, 4];
 
 export function getToolUpgradeCost(nextLevel: number): number {
   return Math.max(Math.min(Math.floor(nextLevel), MAX_TOOL_LEVEL), 1);
 }
 
-export function getMageRecruitmentCost(activeMages: number): number {
+export function getMageSpecializationCost(activeMages: number): number {
   const count = Math.max(Math.floor(activeMages), 0);
-  return MAGE_RECRUITMENT_COSTS[Math.min(count, MAGE_RECRUITMENT_COSTS.length - 1)]
-    ?? MAGE_RECRUITMENT_COSTS[MAGE_RECRUITMENT_COSTS.length - 1];
+  return MAGE_SPECIALIZATION_COSTS[Math.min(count, MAGE_SPECIALIZATION_COSTS.length - 1)]
+    ?? MAGE_SPECIALIZATION_COSTS[MAGE_SPECIALIZATION_COSTS.length - 1];
 }
 
 /** Cost progression applied to the relevant active population count. */
@@ -65,6 +65,7 @@ export function getSpecializationRole(item: SpecializationItem): SurvivalRole {
   if (item === 'axe') return 'lumberjack';
   if (item === 'bow') return 'hunter';
   if (item === 'hammer') return 'artisan';
+  if (item === 'mage') return 'mage';
   return 'guardian';
 }
 
@@ -75,11 +76,12 @@ export function countUnitsWithRole(
   return units.reduce((count, unit) => count + (unit.role === role ? 1 : 0), 0);
 }
 
-/** The last gatherer is protected from lumberjack conversion. */
-export function canConvertLastGathererToLumberjack(
+/** Keep one gatherer unless a hunter can provide food. */
+export function canConvertLastGathererToNonCombatSpecialist(
   units: readonly Pick<UnitState, 'role'>[],
 ): boolean {
-  return countUnitsWithRole(units, 'gatherer') > 1;
+  return countUnitsWithRole(units, 'gatherer') > 1
+    || countUnitsWithRole(units, 'hunter') > 0;
 }
 
 /**

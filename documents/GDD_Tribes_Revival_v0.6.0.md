@@ -500,17 +500,26 @@ placeholder 3D sigue al cursor durante el arrastre. Si el punto soltado
 está a más de `15 m` del tótem, el minion aparece automáticamente en el
 borde de ese radio; después regresa al tótem y entra en la formación.
 Los roles especializados no se convierten entre sí: solo un `gatherer`
-puede recibir el hacha o el arco, y la transformación es irreversible.
-Si el objeto se suelta fuera de un `gatherer`, la compra se cancela y no
-se consume madera.
+puede recibir el hacha, el arco, el martillo, la espada o el libro del
+Mago, y la transformación es irreversible. La transformación del Mago
+consume Brillo según la curva indicada abajo y no aumenta la población
+total. Si el objeto se suelta fuera de un `gatherer`, la conversión se
+cancela y no se consume ningún recurso.
 Los tooltips básicos del HUD son `Recolector`, `Convertir en Leñador` y
-`Convertir en Cazador`. Cuando solo queda un recolector, el tooltip del
-hacha cambia a `Solo tienes un recolector` y el icono queda inhabilitado
-aunque haya madera suficiente. La tienda se presenta como una columna
-vertical; sus costes quedan fuera de cada tarjeta, centrados a la
-derecha. Al arrastrar un objeto se muestra su placeholder 3D bajo el
-cursor y la entrega sobre un minion admite una pequeña tolerancia
-visual.
+`Convertir en Cazador`. La conversión del último recolector en leñador
+queda permitida si ya existe al menos un cazador, que puede obtener
+comida mediante la caza. Si no hay cazadores, la conversión del último
+recolector sigue bloqueada y el tooltip indica `No puedes convertir a tu
+último recolector`. Si no quedan recolectores, la opción de leñador queda
+inhabilitada y el tooltip indica `Necesitas un recolector`. La Artesana
+tiene la misma protección: no se permite transformar al último
+Recolector si no hay un Cazador que pueda conseguir comida. Si hay un
+Cazador, se permite la conversión, igual que con el Leñador. Mago y
+Guardián pueden transformar al último Recolector por su capacidad de
+combate. La tienda se presenta como una columna vertical; sus costes
+quedan fuera de cada tarjeta, centrados a la derecha. Al arrastrar un
+objeto se muestra su placeholder 3D bajo el cursor y la entrega sobre un
+minion admite una pequeña tolerancia visual.
 La hoguera es un objeto de soporte del HUD: cuesta `2` de madera y se
 coloca en el mapa. La hoguera cuesta `2` de madera y se coloca en el mapa. Las unidades próximas consumen `1` de comida para recuperar `1` punto de vida.
 ### Progresión y tecnologías
@@ -525,11 +534,11 @@ valores de XP y progresión se centralizan en la configuración de
 balance.
 El panel se muestra en la parte inferior izquierda. Al desbloquear una
 tecnología, su objeto aparece en la barra lateral izquierda. El Mago es
-una clase especial de minion: su tecnología desbloquea la tarjeta de
-reclutamiento, que aparece después de Artesana y antes de Hoguera. El
-Escudo conserva su acceso separado arriba a la derecha. Los objetos se
-arrastran sobre un objetivo válido; una asignación inválida no consume
-recursos.
+una clase especial de minion: su tecnología desbloquea el libro para
+transformar un `gatherer` en Mago. El objeto aparece después de Artesana
+y antes de Hoguera. El Escudo conserva su acceso separado arriba a la
+derecha. Los objetos se arrastran sobre un objetivo válido; una
+asignación inválida no consume recursos.
   --------------------------------------------------------------------------------
   Tecnología        Desbloqueo y      Coste posterior    Límite y tooltip
                     efecto
@@ -541,10 +550,11 @@ recursos.
                     `artisan`, capaz  no modifica el
                     de recolectar     máximo global
                     piedra y Brillo
-  Clase especial:   1 punto; habilita Brillo, progresión  Máximo global de 8
-  Mago              la clase Mago y    `2, 3, 3, 4, 4`    unidades y máximo de
-                    su reclutamiento                     5 Magos; habilidad
-                    con Brillo                            por definir
+  Clase especial:   1 punto; habilita Brillo, progresión  Máximo 5 Magos;
+  Mago              el libro para      `2, 3, 3, 4, 4`    convierte un
+                    convertir un                          `gatherer`; no
+                    `gatherer` en                         aumenta población
+                    Mago                                  total
   Defensa: Escudo   1 punto; habilita Oro, progresión    Un escudo por Guardián;
                     equipar un        por Guardianes     `Escudo +1 HP` /
                     `guardian` sin    equipados          `Máximo alcanzado` cuando
@@ -597,9 +607,9 @@ tooltip contextual que se usa para las mejoras y los objetos del HUD.
 
 ## 12. Clases legendarias
 
-Hay tres clases legendarias: **Mago** (libro), **Pícaro** (daga) y **Paladín** (espada luminosa). La tecnología de Mago cuesta 1 punto; tras desbloquearla, se recluta con Brillo mediante su tarjeta del HUD. La curva inicial propuesta para el reclutamiento del Mago es `2, 3, 3, 4, 4`. El Pícaro tiene menos vida que las demás clases legendarias y puede asestar golpes críticos; sus valores numéricos quedan por definir. Las curvas de Pícaro y Paladín siguen sin fijarse y no deben inventarse como decisiones de diseño.
+Hay tres clases legendarias: **Mago** (libro), **Pícaro** (daga) y **Paladín** (espada luminosa). La tecnología de Mago cuesta 1 punto. En el exterior, el libro transforma un `gatherer` válido en Mago, consume Brillo con la curva inicial `2, 3, 3, 4, 4` y no aumenta la población total. La transformación es irreversible y no consume recursos si falla. El Pícaro tiene menos vida que las demás clases legendarias y puede asestar golpes críticos; sus valores numéricos quedan por definir. Las curvas de Pícaro y Paladín siguen sin fijarse y no deben inventarse como decisiones de diseño.
 
-El límite global de la tribu exterior es de 8 unidades y solo puede haber una clase legendaria activa fuera de una cueva. La regla de selección o sustitución debe mantener un único arquetipo legendario exterior. Los objetos solo se aplican a objetivos válidos y no consumen Brillo si el reclutamiento falla. Las especializaciones del Mago —Nigromante y Fuego— quedan fuera del alcance actual y se reservan para una ampliación futura.
+El límite global de la tribu exterior es de 8 unidades y solo puede haber una clase legendaria activa fuera de una cueva. La regla de selección o sustitución debe mantener un único arquetipo legendario exterior. Las especializaciones del Mago —Nigromante y Fuego— quedan fuera del alcance actual y se reservan para una ampliación futura.
 
 ## 13. Fronteras, campamentos y jefes
 

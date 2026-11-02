@@ -6,13 +6,13 @@ import {
   chooseCollectDropTask,
   chooseGatherTask,
   canRoleGatherResource,
-  canConvertLastGathererToLumberjack,
+  canConvertLastGathererToNonCombatSpecialist,
   collectDrop,
   countUnitsWithRole,
   gatherFromNode,
   getResourceDetectionRadius,
   getMinionPurchaseCost,
-  getMageRecruitmentCost,
+  getMageSpecializationCost,
   getToolUpgradeCost,
   getSpecializationRole,
   MAX_TOOL_LEVEL,
@@ -1436,30 +1436,6 @@ function applyAction(state: GameState, action: InputAction): void {
       );
       return;
     }
-    case 'recruit-mage': {
-      if (!state.progression.unlockedTechnologies.includes('mage')) return;
-      const activeMages = countUnitsWithRole(state.units, 'mage');
-      const cost = getMageRecruitmentCost(activeMages);
-      if (
-        state.units.length >= MAX_PLAYABLE_MINIONS
-        || activeMages >= MAX_MINIONS_PER_TYPE
-        || state.inventory.amounts.spark < cost
-      ) return;
-
-      state.inventory.amounts.spark -= cost;
-      state.purchaseCounts.mage += 1;
-      const unit = createUnitState(
-        `unit-mage-${String(state.purchaseCounts.mage).padStart(2, '0')}`,
-        'mage',
-        projectRecruitmentPosition(action.position, state.totem.position),
-      );
-      state.units.push(unit);
-      setTaskState(
-        unit,
-        returnToTotemTask(state, state.units.length - 1, 'action-complete'),
-      );
-      return;
-    }
     case 'upgrade-tool': {
       const currentLevel = state.toolLevels[action.tool];
       if (currentLevel >= MAX_TOOL_LEVEL) return;
@@ -1497,7 +1473,10 @@ function applyAction(state: GameState, action: InputAction): void {
       if (!unit || unit.role !== 'gatherer') return;
       if (action.item === 'hammer'
         && !state.progression.unlockedTechnologies.includes('artisan')) return;
-      if (action.item === 'axe' && !canConvertLastGathererToLumberjack(state.units)) return;
+      if (action.item === 'mage'
+        && !state.progression.unlockedTechnologies.includes('mage')) return;
+      if (action.item === 'axe' && !canConvertLastGathererToNonCombatSpecialist(state.units)) return;
+      if (action.item === 'hammer' && !canConvertLastGathererToNonCombatSpecialist(state.units)) return;
 
       const purchaseKey = action.item === 'axe'
         ? 'lumberjack'
@@ -1505,12 +1484,22 @@ function applyAction(state: GameState, action: InputAction): void {
           ? 'hunter'
           : action.item === 'hammer'
             ? 'artisan'
-            : 'guardian';
+            : action.item === 'mage'
+              ? 'mage'
+              : 'guardian';
       const targetRole = getSpecializationRole(action.item);
       const activeTargetMinions = countUnitsWithRole(state.units, targetRole);
       if (activeTargetMinions >= MAX_MINIONS_PER_TYPE) return;
-      const cost = action.item === 'sword' ? 2 : getMinionPurchaseCost(activeTargetMinions);
-      const costType = action.item === 'sword' ? 'gold' : 'wood';
+      const cost = action.item === 'sword'
+        ? 2
+        : action.item === 'mage'
+          ? getMageSpecializationCost(activeTargetMinions)
+          : getMinionPurchaseCost(activeTargetMinions);
+      const costType = action.item === 'sword'
+        ? 'gold'
+        : action.item === 'mage'
+          ? 'spark'
+          : 'wood';
       if (state.inventory.amounts[costType] < cost) return;
 
       state.inventory.amounts[costType] -= cost;

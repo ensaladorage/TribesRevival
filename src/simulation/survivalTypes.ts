@@ -10,7 +10,7 @@ export const MAX_ACTIVE_CAMPFIRES = 2;
 export const CAMPFIRE_LIFETIME_SECONDS = 120;
 export const CAMPFIRE_TOTEM_MAX_DISTANCE = 30;
 
-export type SpecializationItem = 'axe' | 'bow' | 'sword' | 'hammer';
+export type SpecializationItem = 'axe' | 'bow' | 'sword' | 'hammer' | 'mage';
 export type TechnologyId = 'artisan' | 'mage' | 'shield';
 
 export const BIOME_IDS = ['clearing', 'meadow', 'forest', 'rocky', 'ruins'] as const;
