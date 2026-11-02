@@ -3,7 +3,7 @@
 **Propósito:** registro del estado real conocido de implementación y
 validación. No define mecánicas ni sustituye el GDD.
 
-## Revisión de progreso --- 01-11-2026
+## Revisión de progreso --- 02-11-2026
 
 ### Alcance de esta revisión
 
@@ -11,9 +11,10 @@ Se han contrastado los documentos con el checkout local disponible y el
 código fuente actual. La rama está en `main`, alineada en commits con
 `origin/main`, pero hay modificaciones locales sin confirmar en código y
 documentación. La auditoría inicial no ejecutó tests ni build ni incluyó
-validación visual/manual. Después se implementó el rediseño de HUD
-registrado abajo y se ejecutó `npm run build`; sigue pendiente la
-validación manual de interfaz por el usuario.
+validación visual/manual. Después se implementaron ajustes del HUD, el
+desbloqueo tecnológico del Mago y el borrado confirmado de guardados; se
+ejecutó `npm run build`. Sigue pendiente la validación manual por el
+usuario.
 
 La inspección del código confirma que ya existen las acciones de
 reclutamiento exterior del Mago y de mejora de hacha, martillo y espada,
@@ -23,21 +24,32 @@ pero no demuestra su funcionamiento en ejecución ni su validación manual.
 
 ### Cambios visibles en el código actual
 
--   **Mago:** hay una acción de reclutamiento que consume Brillo, usa la
-    curva `2, 3, 3, 4, 4` y respeta los límites global y por clase.
+-   **Mago:** la tecnología cuesta 1 punto y desbloquea una clase especial
+    de minion. Su reclutamiento consume Brillo, usa la curva `2, 3, 3, 4,
+    4` y respeta los límites global y por clase; la carga reconoce el
+    desbloqueo en partidas antiguas con Magos ya reclutados.
 -   **Herramientas:** hay mejoras para hacha, martillo y espada, coste
     incremental en piedra, tope de nivel 10 y efectos conectados a la
     recolección de madera, duración de extracción y daño del Guardián.
 -   **Guardado:** el estado actual es versión 17; el lector acepta v16 y
     v17 y rellena valores por defecto para los niveles y compras del
-    Mago ausentes en v16.
--   **Validación pendiente:** la corrección de disposición de nivel del
-    menú de mejoras no tiene build ni revisión visual en esta iteración;
-    queda pendiente la comprobación manual del usuario.
--   **HUD:** los recursos muestran cinco iconos SVG de pixel art hechos
-    para el proyecto y sus cantidades en una fila
-    superior; la lista lateral sigue el orden aprobado y conserva
-    Artesana oculta hasta desbloquearla. Tecnologías y Mejoras comparten
+    Mago ausentes en v16. Los slots ocupados tienen una acción de borrado
+    con confirmación, tanto desde Guardar como desde Cargar.
+-   **Validación pendiente:** la tarjeta de tecnología del Mago y el flujo
+    de borrado de slots compilan; queda pendiente comprobarlos manualmente
+    en el juego.
+-   **Tutorial:** retirado el texto sobre mejoras; la descripción del Mago
+    ahora indica que es avanzado, poderoso en combate y necesario para
+    Mazmorras.
+-   **HUD:** la fila superior muestra los cinco recursos con iconos de
+    pixel art y sus cantidades. Comida, Madera y Piedra usan sprites
+    PNG en `sprites/` con siluetas de alpha binario; Brillo y Oro
+    conservan sus SVG. La lista
+    lateral mantiene el orden aprobado y Artesana y Mago permanecen ocultos
+    hasta desbloquear sus tecnologías. El panel tecnológico muestra
+    Artesana, Mago y Escudo, en ese orden.
+    Comida y Madera reciben compensación leve de brillo y escala para
+    igualar la lectura de Piedra. Tecnologías y Mejoras comparten
     un dock inferior izquierdo, con apertura exclusiva y paneles que
     reacomodan sus tarjetas según el ancho disponible. Las tres tarjetas
     de mejora muestran icono a la izquierda y nivel o `Max` a la derecha,
@@ -48,7 +60,9 @@ pero no demuestra su funcionamiento en ejecución ni su validación manual.
     acceso superior derecho. Se corrigió la posición de Tecnologías, la
     orientación horizontal de las tarjetas, el color aplicado al fondo
     de la tarjeta lateral, el tooltip nativo duplicado y el anclaje de
-    tooltips superiores/derechos para que aparezcan hacia dentro.
+    tooltips superiores/derechos para que aparezcan hacia dentro. El
+    tooltip de Artesana se alinea desde el borde izquierdo de su tarjeta
+    para que el texto se extienda hacia el interior de la pantalla.
 -   **Debug:** el bloque agrupa pausa y velocidad, permanece oculto al
     inicio y se alterna con `Insert` o `Numpad0`; sus acciones se
     conservaron. La presentación queda pendiente de playtest manual.
@@ -59,8 +73,8 @@ pero no demuestra su funcionamiento en ejecución ni su validación manual.
 
 ### Decisiones de diseño vigentes registradas
 
-No se han comunicado decisiones nuevas desde la última revisión. Se
-mantienen las decisiones aprobadas:
+La decisión añadida en esta revisión es que el Mago requiera desbloquear
+su tecnología por 1 punto; se mantienen las decisiones aprobadas:
 
 -   En cuevas, el héroe legendario inicial cuenta para el límite de su
     clase; puede haber hasta cinco unidades legendarias adicionales, con
@@ -93,9 +107,10 @@ equivalen a una auditoría actual de los hitos 0--5.
 
 ### Tareas pendientes prioritarias
 
-1.  Probar manualmente el reclutamiento del Mago: selección del libro,
-    coste en Brillo, consumo correcto del recurso, límite de la tribu y
-    comportamiento cuando la compra no puede realizarse.
+1.  Probar manualmente la tecnología del Mago: coste de 1 punto, posición
+    después de Artesana en el menú, aparición de su tarjeta entre Artesana
+    y Hoguera, reclutamiento con Brillo, límites y partida antigua con
+    Magos ya reclutados.
 2.  Probar las mejoras de hacha, martillo y espada: coste en piedra,
     niveles `0–10`, efecto por nivel, tope, compra sin recursos
     suficientes y feedback visual.
@@ -109,11 +124,11 @@ equivalen a una auditoría actual de los hitos 0--5.
 
 ### Evidencia de esta revisión
 
-Se actualizó el GDD v0.6.0 para registrar el orden del HUD y la nueva
-tabla de colores; QA_TEST_PLAN recoge los puntos de comprobación manual.
-La compilación acredita coherencia de tipos y empaquetado, no el aspecto
-visual ni la interacción en navegador. Quedan pendientes la comprobación
-manual de posiciones, contadores, tooltips, colores, reflujo y botones.
+Se actualizó el GDD v0.6.0 para registrar el orden del HUD, la nueva tabla
+de colores y el desbloqueo del Mago; QA_TEST_PLAN recoge los puntos de
+comprobación manual. La compilación acredita coherencia de tipos y
+empaquetado, no el aspecto visual ni la interacción en navegador. Quedan
+pendientes las comprobaciones manuales del HUD y del desbloqueo.
 
 ------------------------------------------------------------------------
 

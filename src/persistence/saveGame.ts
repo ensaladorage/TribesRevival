@@ -30,7 +30,7 @@ export type SaveSlotStatus =
   | { slot: SaveSlotId; status: 'valid'; save: SaveEnvelope }
   | { slot: SaveSlotId; status: 'invalid'; reason: 'corrupt' | 'incompatible' };
 
-export type SaveStorage = Pick<Storage, 'getItem' | 'setItem'>;
+export type SaveStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -134,7 +134,7 @@ function isBiome(value: unknown): boolean {
 function isGameState(value: unknown): value is GameState {
   if (!isRecord(value) || !isRecord(value.totem) || !isRecord(value.progression)) return false;
   const phases = ['playing', 'paused', 'victory', 'defeat'];
-  const technologyIds = ['artisan', 'shield'];
+  const technologyIds = ['artisan', 'mage', 'shield'];
   const amountLists = [
     value.totem.position,
     value.totem.dragTarget,
@@ -267,6 +267,14 @@ function migrateGameState(value: unknown): GameState | null {
   const purchaseCounts = isRecord(migrated.purchaseCounts) ? migrated.purchaseCounts : {};
   migrated.version = 17;
   migrated.purchaseCounts = { ...purchaseCounts, mage: purchaseCounts.mage ?? 0 };
+  if (isRecord(migrated.progression)) {
+    const unlockedTechnologies = Array.isArray(migrated.progression.unlockedTechnologies)
+      ? migrated.progression.unlockedTechnologies
+      : [];
+    if (Number(purchaseCounts.mage ?? 0) > 0 && !unlockedTechnologies.includes('mage')) {
+      migrated.progression.unlockedTechnologies = [...unlockedTechnologies, 'mage'];
+    }
+  }
   migrated.toolLevels = isRecord(migrated.toolLevels)
     ? migrated.toolLevels
     : { axe: 0, hammer: 0, sword: 0 };
@@ -349,11 +357,16 @@ export class SaveGameRepository {
     this.storage.setItem(`${SAVE_KEY_PREFIX}${slot}`, JSON.stringify(save));
     return save;
   }
+
+  public delete(slot: SaveSlotId): void {
+    this.storage.removeItem(`${SAVE_KEY_PREFIX}${slot}`);
+  }
 }
 
 export function createBrowserSaveRepository(): SaveGameRepository {
   return new SaveGameRepository({
     getItem: (key) => window.localStorage.getItem(key),
     setItem: (key, value) => window.localStorage.setItem(key, value),
+    removeItem: (key) => window.localStorage.removeItem(key),
   });
 }

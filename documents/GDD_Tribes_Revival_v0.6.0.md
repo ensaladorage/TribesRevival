@@ -524,9 +524,12 @@ Cada tecnología cuesta 1 punto y solo se puede desbloquear una vez. Los
 valores de XP y progresión se centralizan en la configuración de
 balance.
 El panel se muestra en la parte inferior izquierda. Al desbloquear una
-tecnología, su objeto aparece en la barra lateral izquierda. El Escudo
-conserva su acceso separado arriba a la derecha. Los objetos se arrastran
-sobre un objetivo válido; una asignación inválida no consume recursos.
+tecnología, su objeto aparece en la barra lateral izquierda. El Mago es
+una clase especial de minion: su tecnología desbloquea la tarjeta de
+reclutamiento, que aparece después de Artesana y antes de Hoguera. El
+Escudo conserva su acceso separado arriba a la derecha. Los objetos se
+arrastran sobre un objetivo válido; una asignación inválida no consume
+recursos.
   --------------------------------------------------------------------------------
   Tecnología        Desbloqueo y      Coste posterior    Límite y tooltip
                     efecto
@@ -538,13 +541,16 @@ sobre un objetivo válido; una asignación inválida no consume recursos.
                     `artisan`, capaz  no modifica el
                     de recolectar     máximo global
                     piedra y Brillo
+  Clase especial:   1 punto; habilita Brillo, progresión  Máximo global de 8
+  Mago              la clase Mago y    `2, 3, 3, 4, 4`    unidades y máximo de
+                    su reclutamiento                     5 Magos; habilidad
+                    con Brillo                            por definir
   Defensa: Escudo   1 punto; habilita Oro, progresión    Un escudo por Guardián;
                     equipar un        por Guardianes     `Escudo +1 HP` /
                     `guardian` sin    equipados          `Máximo alcanzado` cuando
                     escudo,           `2, 3, 3, 4, 4`    todos los Guardianes
                     aumentando su                        tienen uno
                     vida máxima en 1
-                    HP
   --------------------------------------------------------------------------------
 El Guardián sigue disponible mediante su transformación existente por 2
 de oro, sin requisito de nivel. Al equiparlo, el Guardián gana `1` HP
@@ -571,13 +577,12 @@ La piedra se utiliza para mejorar hacha, martillo y espada. Cada herramienta tie
 Las mejoras se compran desde un menú independiente, coherente con el panel de experiencia/tecnologías. Los botones «Tecnologías» y «Mejoras» se sitúan juntos abajo a la izquierda; solo puede estar abierto uno de los dos paneles. Las tarjetas se ordenan de izquierda a derecha y se distribuyen en filas cuando no caben en el ancho disponible. En «Mejoras», hacha, martillo y espada aparecen en ese orden, con el icono a la izquierda y el nivel a la derecha. Cada tarjeta reserva espacio para mostrar el nivel o `Max` junto al icono. El fondo de cada tarjeta lateral refleja el color del nivel; en la tarjeta de mejora el icono conserva su color base y el nivel usa la banda correspondiente. El efecto y el coste de la siguiente mejora se consultan mediante tooltip al pasar el cursor o enfocar la tarjeta; en nivel 10 se muestra `Max` y no hay coste siguiente. Las compras son atómicas: si falta piedra, ni el inventario ni el nivel cambian, y el nivel máximo es 10.
 
 La fila superior centrada presenta, en este orden, Comida, Madera,
-Piedra, Brillo y Oro, cada una con su icono vectorial de estilo pixel art
-y cantidad. Los
+Piedra, Brillo y Oro, cada una con su icono de pixel art y cantidad. Los
 contadores reservan espacio para al menos tres cifras, se amplían con
 valores mayores y pueden pasar a varias líneas si la pantalla es estrecha.
 La barra lateral izquierda lista Recolector, Leñador, Cazador, Guardián,
-Artesana, Mago y Hoguera, en ese orden. Artesana solo aparece tras su
-desbloqueo.
+Artesana, Mago y Hoguera, en ese orden. Artesana y Mago solo aparecen
+tras desbloquear sus tecnologías; el Escudo sigue en su acceso separado.
 
 El color de nivel se aplica al fondo de la tarjeta lateral y al rótulo de
 nivel de la tarjeta de mejora, sin teñir el modelo del objeto. Nivel 0
@@ -592,7 +597,7 @@ tooltip contextual que se usa para las mejoras y los objetos del HUD.
 
 ## 12. Clases legendarias
 
-Hay tres clases legendarias reclutables mediante objetos: **Mago** (libro), **Pícaro** (daga) y **Paladín** (espada luminosa). El coste se paga en Brillo y cada clase tiene una curva de coste independiente configurable. La curva inicial propuesta para el Mago es `2, 3, 3, 4, 4`. El Pícaro tiene menos vida que las demás clases legendarias y puede asestar golpes críticos; sus valores numéricos quedan por definir. Las curvas de Pícaro y Paladín siguen sin fijarse y no deben inventarse como decisiones de diseño.
+Hay tres clases legendarias: **Mago** (libro), **Pícaro** (daga) y **Paladín** (espada luminosa). La tecnología de Mago cuesta 1 punto; tras desbloquearla, se recluta con Brillo mediante su tarjeta del HUD. La curva inicial propuesta para el reclutamiento del Mago es `2, 3, 3, 4, 4`. El Pícaro tiene menos vida que las demás clases legendarias y puede asestar golpes críticos; sus valores numéricos quedan por definir. Las curvas de Pícaro y Paladín siguen sin fijarse y no deben inventarse como decisiones de diseño.
 
 El límite global de la tribu exterior es de 8 unidades y solo puede haber una clase legendaria activa fuera de una cueva. La regla de selección o sustitución debe mantener un único arquetipo legendario exterior. Los objetos solo se aplican a objetivos válidos y no consumen Brillo si el reclutamiento falla. Las especializaciones del Mago —Nigromante y Fuego— quedan fuera del alcance actual y se reservan para una ampliación futura.
 
@@ -615,6 +620,8 @@ Cada cueva conserva su estado: enemigos derrotados, jefe derrotado, cofres abier
 ## 15. Guardado como comportamiento del juego
 
 La partida debe permitir guardar y cargar el estado local. El estado persistente debe incluir inventario, unidades, progresión, niveles de herramientas, clases legendarias, regiones desbloqueadas, llaves y estado de cuevas/cofres. La carga de partidas antiguas debe conservar el progreso existente y asignar valores seguros a campos añadidos posteriormente. Las unidades temporales de una expedición no deben guardarse como parte de la tribu exterior. No se contempla sincronización en la nube ni multijugador online.
+
+Cada slot ocupado ofrece una opción para eliminar la partida. Antes de borrarla, el juego solicita confirmación explícita; cancelar conserva el guardado y confirmar elimina solo el slot seleccionado. Los slots vacíos no muestran la opción de borrado.
 
 ---
 

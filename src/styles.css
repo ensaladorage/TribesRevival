@@ -178,7 +178,18 @@ body {
   flex: 0 0 30px;
   width: 30px;
   height: 30px;
+  opacity: 1;
   image-rendering: pixelated;
+}
+
+.resource-icon-food {
+  filter: brightness(1.12);
+  transform: scale(1.08);
+}
+
+.resource-icon-wood {
+  filter: brightness(1.45);
+  transform: scale(1.14);
 }
 
 .resource-amount {
@@ -860,6 +871,16 @@ body {
   position: relative;
 }
 
+.technology-option[data-unlock-technology="artisan"].hud-tooltip::after {
+  left: 0;
+  transform: translateY(4px);
+}
+
+.technology-option[data-unlock-technology="artisan"].hud-tooltip:hover::after,
+.technology-option[data-unlock-technology="artisan"].hud-tooltip:focus-visible::after {
+  transform: translateY(0);
+}
+
 .hud-controls button.hud-tooltip,
 .hud-debug button.hud-tooltip {
   position: relative;
@@ -1454,13 +1475,52 @@ body {
   gap: 9px;
 }
 
+.save-slot-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+
 .save-slot-button {
   display: flex;
   min-height: 68px !important;
+  flex: 1 1 auto;
+  min-width: 0;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   text-align: left;
+}
+
+.menu-panel .save-slot-delete {
+  display: grid;
+  width: 48px;
+  min-width: 48px;
+  min-height: 68px;
+  flex: 0 0 48px;
+  place-items: center;
+  padding: 8px;
+  border-color: #8e554b;
+  color: #f0b2a2;
+  background: #392b32;
+}
+
+.save-slot-delete svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.menu-panel .save-slot-delete:hover,
+.menu-panel .save-slot-delete:focus-visible {
+  border-color: #e28772;
+  color: #ffe2d8;
+  background: #633d3d;
 }
 
 .save-slot-button:disabled {
@@ -1538,6 +1598,10 @@ body {
 
   .tutorial-role small {
     font-size: 9px;
+  }
+
+  .save-slot-row {
+    align-items: stretch;
   }
 
   .save-slot-button {

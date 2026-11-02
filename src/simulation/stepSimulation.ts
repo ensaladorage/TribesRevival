@@ -1437,6 +1437,7 @@ function applyAction(state: GameState, action: InputAction): void {
       return;
     }
     case 'recruit-mage': {
+      if (!state.progression.unlockedTechnologies.includes('mage')) return;
       const activeMages = countUnitsWithRole(state.units, 'mage');
       const cost = getMageRecruitmentCost(activeMages);
       if (

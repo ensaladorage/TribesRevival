@@ -79,10 +79,9 @@
               </article>
               <article class="tutorial-role">
                 <span class="tutorial-role-icon"><span class="build-icon build-icon-mage"><span class="build-model build-model-mage"></span></span></span>
-                <span><strong>Mago</strong><small>Se recluta con Brillo. Su habilidad se diseñará más adelante.</small></span>
+                <span><strong>Mago</strong><small>Minion avanzado. Poderoso en combate. Necesario para Mazmorras.</small></span>
               </article>
             </div>
-            <p class="tutorial-hint">Invierte Piedra en mejorar hacha, martillo y espada. Cada herramienta puede llegar hasta +10.</p>
           </div>
           <footer class="tutorial-footer"><button type="button" data-menu-action="back-main">Volver al menú</button><button type="button" data-menu-action="play">Jugar</button></footer>
         </section>
@@ -199,7 +198,7 @@
                 <span class="resource-square resource-square-wood"></span>
               </span>
             </div>
-            <div id="mage-build-entry" class="build-entry">
+            <div id="mage-build-entry" class="build-entry" hidden>
               <button type="button" class="build-card hud-tooltip" data-build-item="mage" aria-label="Reclutar Mago">
                 <span class="build-icon build-icon-mage" aria-hidden="true"><span class="build-model build-model-mage"></span></span>
               </button>
@@ -228,9 +227,9 @@
           </div>
         </div>
         <div id="resource-hud" class="resource-hud" aria-label="Recursos">
-          <div class="resource-counter" aria-label="Comida"><img class="resource-icon resource-icon-food" src="./src/assets/hud/food.svg" alt="" aria-hidden="true"><span id="resource-food" class="resource-amount">0</span></div>
-          <div class="resource-counter" aria-label="Madera"><img class="resource-icon resource-icon-wood" src="./src/assets/hud/wood.svg" alt="" aria-hidden="true"><span id="resource-wood" class="resource-amount">0</span></div>
-          <div class="resource-counter" aria-label="Piedra"><img class="resource-icon resource-icon-stone" src="./src/assets/hud/stone.svg" alt="" aria-hidden="true"><span id="resource-stone" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Comida"><img class="resource-icon resource-icon-food" src="./sprites/Food.png" alt="" aria-hidden="true"><span id="resource-food" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Madera"><img class="resource-icon resource-icon-wood" src="./sprites/Wood.png" alt="" aria-hidden="true"><span id="resource-wood" class="resource-amount">0</span></div>
+          <div class="resource-counter" aria-label="Piedra"><img class="resource-icon resource-icon-stone" src="./sprites/Stone.png" alt="" aria-hidden="true"><span id="resource-stone" class="resource-amount">0</span></div>
           <div class="resource-counter" aria-label="Brillo"><img class="resource-icon resource-icon-spark" src="./src/assets/hud/spark.svg" alt="" aria-hidden="true"><span id="resource-spark" class="resource-amount">0</span></div>
           <div class="resource-counter" aria-label="Oro"><img class="resource-icon resource-icon-gold" src="./src/assets/hud/gold.svg" alt="" aria-hidden="true"><span id="resource-gold" class="resource-amount">0</span></div>
         </div>
@@ -318,6 +317,12 @@
                 </span>
               </span>
               <span class="technology-state" data-technology-state="artisan">1 punto</span>
+            </button>
+            <button type="button" class="technology-option hud-tooltip" data-unlock-technology="mage" data-tooltip="Mago&#10;Desbloquea la clase especial Mago y su reclutamiento con Brillo.">
+              <span class="technology-glyph" aria-hidden="true">
+                <span class="build-icon build-icon-mage"><span class="build-model build-model-mage"></span></span>
+              </span>
+              <span class="technology-state" data-technology-state="mage">1 punto</span>
             </button>
             <button type="button" class="technology-option hud-tooltip" data-unlock-technology="shield" data-tooltip="Escudo&#10;Permite equipar a los guardianes para aumentar su vida máxima en 1.">
               <span class="technology-glyph technology-shield-glyph" aria-hidden="true">

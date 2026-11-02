@@ -31,6 +31,7 @@
 
 ### Pruebas manuales
 
+-   revisar el tutorial: no debe aparecer el texto que explica mejoras y el Mago debe decir «Minion avanzado. Poderoso en combate. Necesario para Mazmorras.»;
 -   cámara en 1280×720 y 1920×1080;
 -   zoom mínimo y máximo;
 -   arrastre del tótem sobre terreno libre y bloqueado;
@@ -38,11 +39,14 @@
 -   combate con ocho unidades;
 -   pérdida de foco del navegador;
 -   guardado durante recolección y combate;
+-   en el menú de slots, comprobar que cada guardado ocupado ofrece una papelera, cancelar conserva la partida y confirmar elimina solo el slot elegido; los slots vacíos no muestran la papelera;
 -   HUD manejable por teclado;
 -   comprobar la fila superior centrada de recursos, sus iconos y cantidades de tres o más cifras en 1280×720 y 1920×1080, y el reflujo en una ventana estrecha;
--   comprobar el orden lateral Recolector, Leñador, Cazador, Guardián, Artesana, Mago y Hoguera; Artesana solo aparece desbloqueada y el Escudo permanece arriba a la derecha;
+-   comprobar el orden lateral Recolector, Leñador, Cazador, Guardián, Artesana, Mago y Hoguera; Artesana y Mago solo aparecen tras sus tecnologías y el Escudo permanece arriba a la derecha;
 -   abrir/cerrar «Tecnologías» y «Mejoras» abajo a la izquierda; verificar exclusividad, posición de sus paneles, opciones de tecnologías en fila, orden izquierda-derecha, expansión y reflujo sin salir de pantalla;
 -   comprobar que las tarjetas de tecnología solo muestran icono y coste; el tooltip contextual muestra su nombre y descripción;
+-   verificar el orden de tecnologías Artesana, Mago y Escudo; el Mago cuesta 1 punto y su tarjeta de reclutamiento aparece entre Artesana y Hoguera tras desbloquearlo;
+-   comprobar que una partida anterior con Magos ya reclutados conserva el desbloqueo de la tecnología Mago al cargar;
 -   revisar tooltips contextuales del HUD lateral en condiciones normales y bloqueadas (coste insuficiente, límites, falta de recolector y desbloqueos) y confirmar que no aparece un tooltip nativo duplicado;
 -   enfocar y pasar el cursor por cada mejora y verificar tooltip de efecto/coste; en nivel máximo debe decir «Max» y omitir el coste siguiente;
 -   verificar visualmente las bandas de nivel 0, +1/+2, +3/+4, +5/+6, +7/+8/+9 y +10 (`#A7A7A7`, `#3F8F54`, `#168397`, `#80508F`, `#B77D35`), comprobando que solo se tiñe el fondo de la tarjeta lateral y el rótulo de mejora, nunca el modelo;

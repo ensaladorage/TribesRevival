@@ -104,7 +104,7 @@ type WeatherCloudView = {
 type HudBuildItem = 'campfire' | 'gatherer' | 'mage' | 'shield' | SpecializationItem;
 type MenuScreen = 'main' | 'tutorial' | 'pause' | 'slots' | 'confirmation' | 'game';
 type SlotMenuMode = 'save' | 'load';
-type ConfirmationAction = 'exit' | 'overwrite';
+type ConfirmationAction = 'exit' | 'overwrite' | 'delete';
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -177,6 +177,7 @@ export class BabylonGame {
   private confirmationReturnScreen: MenuScreen = 'pause';
   private confirmationAction: ConfirmationAction | null = null;
   private pendingOverwriteSlot: SaveSlotId | null = null;
+  private pendingDeleteSlot: SaveSlotId | null = null;
   private lastSavedFingerprint: string | null = null;
 
   public constructor(canvas: HTMLCanvasElement) {
@@ -1529,7 +1530,7 @@ export class BabylonGame {
     if (
       !button
       || button.disabled
-      || (technology !== 'artisan' && technology !== 'shield')
+      || (technology !== 'artisan' && technology !== 'mage' && technology !== 'shield')
     ) return;
 
     this.pendingTechnologyUnlock = technology;
@@ -1580,6 +1581,11 @@ export class BabylonGame {
         if (!getSaveSlotIds().includes(slot)) return;
         if (action === 'save-slot') this.selectSaveSlot(slot);
         else this.selectLoadSlot(slot);
+        break;
+      }
+      case 'delete-slot': {
+        const slot = Number(button.dataset.slot) as SaveSlotId;
+        if (getSaveSlotIds().includes(slot)) this.selectDeleteSlot(slot);
         break;
       }
       case 'confirm-confirmation':
@@ -1714,7 +1720,9 @@ export class BabylonGame {
     }
   }
 
-  private createSaveSlotButton(slotStatus: SaveSlotStatus): HTMLButtonElement {
+  private createSaveSlotButton(slotStatus: SaveSlotStatus): HTMLDivElement {
+    const row = document.createElement('div');
+    row.className = 'save-slot-row';
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'save-slot-button';
@@ -1752,7 +1760,20 @@ export class BabylonGame {
 
     main.append(title, detail);
     button.append(main, progress, actionLabel);
-    return button;
+    row.append(button);
+
+    if (slotStatus.status !== 'empty') {
+      const deleteButton = document.createElement('button');
+      deleteButton.type = 'button';
+      deleteButton.className = 'save-slot-delete';
+      deleteButton.dataset.menuAction = 'delete-slot';
+      deleteButton.dataset.slot = String(slotStatus.slot);
+      deleteButton.setAttribute('aria-label', `Eliminar partida del Slot ${slotStatus.slot}`);
+      deleteButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-.8 13H6.8L6 7m3 3v7m6-7v7"/></svg>';
+      row.append(deleteButton);
+    }
+
+    return row;
   }
 
   private selectSaveSlot(slot: SaveSlotId): void {
@@ -1778,6 +1799,27 @@ export class BabylonGame {
       return;
     }
     this.startLoadedGame(result.save.gameState);
+  }
+
+  private selectDeleteSlot(slot: SaveSlotId): void {
+    if (this.saveRepository.readSlot(slot).status === 'empty') return;
+    this.pendingDeleteSlot = slot;
+    this.requestConfirmation(
+      'delete',
+      'slots',
+      `¿Seguro que quieres eliminar la partida del Slot ${slot}? Esta acción no se puede deshacer.`,
+      'Eliminar partida',
+    );
+  }
+
+  private deleteSaveSlot(slot: SaveSlotId): void {
+    try {
+      this.saveRepository.delete(slot);
+      this.renderSaveSlots();
+      this.showMenuFeedback(`Partida eliminada del Slot ${slot}.`);
+    } catch {
+      this.showMenuFeedback('No se pudo eliminar la partida guardada.');
+    }
   }
 
   private performSave(slot: SaveSlotId): void {
@@ -1825,7 +1867,13 @@ export class BabylonGame {
     const title = document.querySelector<HTMLElement>('#confirmation-title');
     const body = document.querySelector<HTMLElement>('#confirmation-message');
     const confirm = document.querySelector<HTMLButtonElement>('[data-menu-action="confirm-confirmation"]');
-    if (title) title.textContent = action === 'overwrite' ? '¿Sobrescribir partida?' : '¿Salir sin guardar?';
+    if (title) {
+      title.textContent = action === 'overwrite'
+        ? '¿Sobrescribir partida?'
+        : action === 'delete'
+          ? '¿Eliminar partida?'
+          : '¿Salir sin guardar?';
+    }
     if (body) body.textContent = message;
     if (confirm) confirm.textContent = confirmLabel;
     this.setMenuScreen('confirmation');
@@ -1842,12 +1890,18 @@ export class BabylonGame {
       this.pendingOverwriteSlot = null;
       this.setMenuScreen('slots');
       this.performSave(slot);
+    } else if (action === 'delete' && this.pendingDeleteSlot !== null) {
+      const slot = this.pendingDeleteSlot;
+      this.pendingDeleteSlot = null;
+      this.setMenuScreen('slots');
+      this.deleteSaveSlot(slot);
     }
   }
 
   private cancelPendingAction(): void {
     this.confirmationAction = null;
     this.pendingOverwriteSlot = null;
+    this.pendingDeleteSlot = null;
     this.setMenuScreen(this.confirmationReturnScreen);
   }
 
@@ -2928,8 +2982,10 @@ export class BabylonGame {
     const guardianCount = countUnitsWithRole(this.state.units, 'guardian');
     const shieldCost = getMinionPurchaseCost(shieldedGuardianCount);
     const artisanUnlocked = this.state.progression.unlockedTechnologies.includes('artisan');
+    const mageUnlocked = this.state.progression.unlockedTechnologies.includes('mage');
     const shieldUnlocked = this.state.progression.unlockedTechnologies.includes('shield');
     const artisanEntry = document.querySelector<HTMLElement>('#artisan-build-entry');
+    const mageEntry = document.querySelector<HTMLElement>('#mage-build-entry');
     const shieldEntry = document.querySelector<HTMLElement>('#shield-build-entry');
     const progressionHud = document.querySelector<HTMLElement>('#hud-progression');
     const technologyPanel = document.querySelector<HTMLElement>('#technology-panel');
@@ -2971,12 +3027,13 @@ export class BabylonGame {
     if (technologyPointsSummary) {
       technologyPointsSummary.textContent = `Puntos disponibles: ${this.state.progression.technologyPoints}`;
     }
-    for (const technology of ['artisan', 'shield'] as const) {
+    for (const technology of ['artisan', 'mage', 'shield'] as const) {
       const button = document.querySelector<HTMLButtonElement>(`[data-unlock-technology="${technology}"]`);
       const stateLabel = document.querySelector<HTMLElement>(`[data-technology-state="${technology}"]`);
       const unlocked = this.state.progression.unlockedTechnologies.includes(technology);
       const technologyDetails = {
         artisan: ['Artesana', 'Permite convertir un recolector en artesana para reunir Piedra y Brillo.'],
+        mage: ['Mago', 'Desbloquea la clase especial Mago y su reclutamiento con Brillo.'],
         shield: ['Escudo', 'Permite equipar a los guardianes para aumentar su vida máxima en 1.'],
       } as const;
       if (button) {
@@ -2989,6 +3046,7 @@ export class BabylonGame {
       if (stateLabel) stateLabel.textContent = unlocked ? 'Desbloqueada' : '1 punto';
     }
     if (artisanEntry) artisanEntry.hidden = !artisanUnlocked;
+    if (mageEntry) mageEntry.hidden = !mageUnlocked;
     if (shieldEntry) shieldEntry.hidden = !shieldUnlocked;
     this.updateBuildCost(
       document.querySelector<HTMLElement>('#cost-gatherer'),
@@ -3043,10 +3101,11 @@ export class BabylonGame {
     if (mageButton) {
       const mageLimitReached = mageCount >= MAX_MINIONS_PER_TYPE;
       mageButton.disabled = totalMinionLimitReached
+        || !mageUnlocked
         || mageLimitReached
         || amounts.spark < mageCost
         || this.state.phase !== 'playing';
-      setHudTooltip(mageButton, `Mago\nUnidad legendaria; habilidad por definir.\n${totalMinionLimitReached ? 'Límite de tribu alcanzado' : mageLimitReached ? 'Límite de Magos alcanzado' : amounts.spark < mageCost ? `Falta Brillo · Coste: ${mageCost}` : `Coste: ${mageCost} Brillo`}`);
+      setHudTooltip(mageButton, `Mago\nClase especial; habilidad por definir.\n${!mageUnlocked ? 'Desbloquéalo en Tecnologías' : totalMinionLimitReached ? 'Límite de tribu alcanzado' : mageLimitReached ? 'Límite de Magos alcanzado' : amounts.spark < mageCost ? `Falta Brillo · Coste: ${mageCost}` : `Coste: ${mageCost} Brillo`}`);
       mageButton.setAttribute('aria-label', `Reclutar Mago${mageLimitReached ? '. Máximo alcanzado.' : ''}`);
     }
     if (axeButton) {

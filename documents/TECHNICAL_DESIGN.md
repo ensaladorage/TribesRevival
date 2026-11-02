@@ -93,6 +93,10 @@ definición concreta del estado actual. El lector de guardados conserva
 compatibilidad con la versión 16 y normaliza los campos de herramientas
 y reclutamiento del Mago al cargarla.
 
+`SaveGameRepository` administra slots locales, incluyendo la eliminación
+de un slot. La interfaz pide confirmación antes de invocar esa operación;
+el repositorio solo elimina la clave del slot solicitado.
+
 ------------------------------------------------------------------------
 
 ## Contratos de simulación, recursos y tareas
