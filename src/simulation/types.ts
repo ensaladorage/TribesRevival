@@ -11,6 +11,8 @@ import type {
   ResourceAmounts,
   TechnologyId,
 } from './survivalTypes';
+import type { MinionIdleState } from './minionIdle';
+import type { MinionNavigationState } from './minionNavigation';
 
 export type Vec2 = {
   x: number;
@@ -31,6 +33,8 @@ export type TotemState = {
 };
 
 export type UnitState = {
+  idleMovement?: MinionIdleState;
+  navigation?: MinionNavigationState;
   id: string;
   position: Vec2;
   role: SurvivalRole;

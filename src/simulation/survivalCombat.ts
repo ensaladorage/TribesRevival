@@ -1,5 +1,6 @@
 import type { Vec2 } from './types';
 import type { SurvivalRole } from './survivalTypes';
+import { getToolEffect } from './economyConfig';
 
 export const MINION_MAX_HEALTH = 4;
 export const BARBARIAN_MAX_HEALTH = 5;
@@ -7,7 +8,8 @@ export const BARBARIAN_ATTACK_DAMAGE = 1;
 export const BARBARIAN_ATTACK_RANGE = 1.2;
 export const BARBARIAN_ATTACK_COOLDOWN_SECONDS = 2.5;
 export const BARBARIAN_DETECTION_RADIUS = 15;
-export const BARBARIAN_MOVEMENT_SPEED = 8;
+export const BARBARIAN_CHASE_SPEED = 7;
+export const BARBARIAN_RETURN_SPEED = 8;
 export const BARBARIAN_RESPAWN_SECONDS = 60;
 export const MINION_THREAT_DETECTION_RADIUS = 18;
 export const COMBAT_ALERT_DURATION_SECONDS = 1.4;
@@ -34,7 +36,7 @@ export function getMinionAttackStats(
   const base = MINION_ATTACK_STATS[role];
   if (!base) return undefined;
   return role === 'guardian'
-    ? { ...base, damage: base.damage + Math.max(Math.floor(swordLevel), 0) * 0.5 }
+    ? { ...base, damage: base.damage + (getToolEffect('sword', swordLevel).guardianDamageBonus ?? 0) }
     : base;
 }
 

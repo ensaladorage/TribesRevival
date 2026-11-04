@@ -5,22 +5,28 @@ import { createSeededRandom } from './seededRandom';
 import {
   chooseCollectDropTask,
   chooseGatherTask,
-  canRoleGatherResource,
+  canRoleGatherNode,
   canConvertLastGathererToNonCombatSpecialist,
   collectDrop,
   countUnitsWithRole,
   gatherFromNode,
   getResourceDetectionRadius,
-  getMinionPurchaseCost,
-  getMageSpecializationCost,
-  getToolUpgradeCost,
   getSpecializationRole,
-  MAX_TOOL_LEVEL,
-  MAX_PLAYABLE_MINIONS,
-  MAX_MINIONS_PER_TYPE,
-  STARTING_MINION_COUNT,
   totalResourceAmount,
 } from './survivalRules';
+import {
+  MAX_PLAYABLE_MINIONS,
+  MAX_TOOL_LEVEL,
+  canAffordCost,
+  getGatherActionDurationMultiplier,
+  getGathererRecruitmentCost,
+  getShieldCost,
+  getSpecializationCost,
+  getSpecializationLimit,
+  getToolUpgradeCost,
+  rollsToolBonusResource,
+  spendCost,
+} from './economyConfig';
 import {
   createEmptyResourceAmounts,
   CAMPFIRE_HEALING_RADIUS,
@@ -30,15 +36,16 @@ import {
   CAMPFIRE_WOOD_COST,
   RESOURCE_TYPES,
 } from './survivalTypes';
-import type { ResourceType, TaskCause, UnitTask } from './survivalTypes';
+import type { ResourceNode, ResourceType, TaskCause, UnitTask } from './survivalTypes';
 import {
   ANIMAL_ATTACK_STATS,
   BARBARIAN_ATTACK_COOLDOWN_SECONDS,
   BARBARIAN_ATTACK_DAMAGE,
   BARBARIAN_ATTACK_RANGE,
+  BARBARIAN_CHASE_SPEED,
   BARBARIAN_DETECTION_RADIUS,
-  BARBARIAN_MOVEMENT_SPEED,
   BARBARIAN_RESPAWN_SECONDS,
+  BARBARIAN_RETURN_SPEED,
   COMBAT_ALERT_DURATION_SECONDS,
   CAMPFIRE_HEAL_INTERVAL_SECONDS,
   DAMAGE_FLASH_DURATION_SECONDS,
@@ -57,20 +64,41 @@ import {
 } from './survivalCatalog';
 import { updateWeather } from './weatherSystem';
 import { PROGRESSION_BALANCE, awardExperience, unlockTechnology } from './progression';
+import {
+  MINION_NAVIGATION_CONFIG, chooseNavigationStep, idleYieldTarget, velocityTowards,
+  createMinionNavigationState, planMinionRoute, segmentIsClear,
+  type NavigationAgent,
+} from './minionNavigation';
+import { assignCombatPositions, combatPositionRadius } from './minionCombatPositions';
+import { chooseEntityCalls, type EntityCall } from './minionAwareness';
+import {
+  MINION_IDLE_CONFIG,
+  chooseIdleDestination,
+  createMinionIdleState,
+  isWithinTotemRange,
+  idleWaitSeconds,
+  totemRangeEntry,
+  type IdleArea,
+} from './minionIdle';
 
 export const WORLD_SIZE = 160;
-export const UNIT_SPEED = 8;
-export const TOTEM_CHASE_SPEED = UNIT_SPEED * 1.5;
-export const HUNTER_COMBAT_SPEED = 6;
+export const UNIT_SPEED = 6;
+export const TOTEM_FOLLOW_SPEED = 10;
+export const TOTEM_RETURN_SPEED = 8;
+export const HUNTER_COMBAT_SPEED = UNIT_SPEED;
 export const HUNTER_TOTEM_LEASH_RADIUS = 10;
 export const FORMATION_RADIUS = 4;
 export const RECRUITMENT_RADIUS = 15;
 export const TOTEM_EDGE_PADDING = 2;
 export const FORMATION_TOLERANCE = 0.08;
 export const GATHER_ACTION_DURATION_SECONDS = 1.5;
+export const RESOURCE_SOURCE_GATHER_DURATION_SECONDS = {
+  tree: 3,
+  'stone-vein': { 1: 5, 2: 7 },
+} as const;
 export const TOTEM_NO_STOP_RADIUS = 2;
 export const UNIT_COLLISION_RADIUS = 0.45;
-export const UNIT_ACTOR_SEPARATION = 0.94;
+export const UNIT_ACTOR_SEPARATION = MINION_NAVIGATION_CONFIG.minimumSeparation;
 export const TOTEM_CLEARANCE_EPSILON = 0.02;
 const ATTACK_LUNGE_DURATION_SECONDS = 0.22;
 
@@ -89,10 +117,16 @@ export function clampWorldPosition(position: Vec2): Vec2 {
   };
 }
 
-function gatherActionDuration(state: GameState, resourceType: ResourceType): number {
-  if (resourceType !== 'stone') return GATHER_ACTION_DURATION_SECONDS;
-  const reduction = Math.min(Math.max(state.toolLevels.hammer, 0) * 0.05, 0.5);
-  return GATHER_ACTION_DURATION_SECONDS * (1 - reduction);
+function gatherActionDuration(state: GameState, resource: ResourceNode): number {
+  const baseDuration = resource.source === 'tree'
+    ? RESOURCE_SOURCE_GATHER_DURATION_SECONDS.tree
+    : resource.source === 'stone-vein'
+      ? RESOURCE_SOURCE_GATHER_DURATION_SECONDS['stone-vein'][resource.tier === 2 ? 2 : 1]
+      : GATHER_ACTION_DURATION_SECONDS;
+  const tool = resource.type === 'wood' ? 'axe' : resource.type === 'stone' ? 'hammer' : null;
+  if (!tool) return baseDuration;
+  return baseDuration
+    / getGatherActionDurationMultiplier(tool, state.toolLevels[tool]);
 }
 
 export function projectWithinRadius(position: Vec2, center: Vec2, radius: number): Vec2 {
@@ -131,6 +165,135 @@ function formationTarget(state: GameState, index: number): Vec2 {
   };
 }
 
+function idleArea(state: GameState): IdleArea {
+  return {
+    center: state.totem.position,
+    commandRadius: state.totem.commandRadius,
+    minimumCoordinate: TOTEM_EDGE_PADDING,
+    maximumCoordinate: WORLD_SIZE - TOTEM_EDGE_PADDING,
+  };
+}
+
+type NavigationFrame = {
+  deltaSeconds: number;
+  origins: Map<string, Vec2>;
+  reservations: Map<string, NavigationAgent>;
+  combatPositions: Map<string, Vec2>;
+};
+
+function holdsWorkingPosition(state: GameState, unit: UnitState): boolean {
+  if (unit.attackLockRemainingSeconds > 0) return true;
+  if (unit.task.kind === 'gather' && unit.state === 'gathering') return true;
+  if (unit.task.kind === 'loot-corpse' && unit.actionProgressSeconds > 0) return true;
+  if (unit.task.kind === 'combat') {
+    const target = state.barbarians.find((target) => target.id === unit.task.targetEntityId && target.isAlive);
+    const stats = getMinionAttackStats(unit.role, state.toolLevels.sword);
+    const offset = unit.navigation?.combatOffset;
+    return !!target && !!stats && !!offset
+      && distanceBetween(unit.position, { x: target.position.x + offset.x, y: target.position.y + offset.y }) <= 0.1
+      && distanceBetween(unit.position, target.position) <= stats.range;
+  }
+  if (unit.task.kind === 'hunt') {
+    const target = state.animals.find((target) => target.id === unit.task.targetEntityId && target.isAlive);
+    return !!target && distanceBetween(unit.position, target.position) <= ANIMAL_ATTACK_STATS.range;
+  }
+  return false;
+}
+
+function navigationAgent(state: GameState, unit: UnitState, frame: NavigationFrame): NavigationAgent {
+  const reserved = frame.reservations.get(unit.id);
+  if (reserved) return reserved;
+  const index = state.units.indexOf(unit);
+  const position = frame.origins.get(unit.id) ?? unit.position;
+  let destination: Vec2 | null = null;
+  let speed = UNIT_SPEED;
+  let fixed = holdsWorkingPosition(state, unit);
+  if (state.totem.isCarried || state.totem.moving) {
+    destination = formationTarget(state, index);
+    speed = TOTEM_FOLLOW_SPEED;
+    fixed ||= unit.withdrawAfterAttack;
+  } else if (unit.task.kind === 'idle') {
+    destination = (unit.idleMovement?.waitRemainingSeconds ?? 0) > 0 ? null : unit.idleMovement?.destination ?? null;
+    speed = MINION_IDLE_CONFIG.speed;
+  } else if (unit.task.kind === 'gather') {
+    const resource = resourceForTask(state, unit);
+    if (resource) destination = resourceApproachPosition(position, resource);
+  } else if (unit.task.kind === 'collect-drop') {
+    destination = state.drops.find((drop) => drop.id === unit.task.targetResourceId)?.position ?? null;
+  } else if (unit.task.kind === 'loot-corpse') {
+    const corpse = state.barbarianCorpses.find((corpse) => corpse.id === unit.task.targetEntityId);
+    if (corpse) destination = approachPoint(position, corpse.position, 1.25);
+  } else if (unit.task.kind === 'return-to-totem' || unit.task.kind === 'flee') {
+    destination = unit.task.kind === 'return-to-totem'
+      ? totemRangeEntry(position, idleArea(state))
+      : approachPoint(position, state.totem.position, TOTEM_NO_STOP_RADIUS + TOTEM_CLEARANCE_EPSILON);
+    speed = unit.task.kind === 'return-to-totem' ? TOTEM_RETURN_SPEED : TOTEM_FOLLOW_SPEED;
+  } else if (unit.task.kind === 'combat') {
+    const target = state.barbarians.find((target) => target.id === unit.task.targetEntityId && target.isAlive);
+    const stats = getMinionAttackStats(unit.role, state.toolLevels.sword);
+    if (target && stats) {
+      destination = frame.combatPositions.get(unit.id) ?? unit.position;
+    }
+    speed = UNIT_SPEED;
+  } else if (unit.task.kind === 'hunt') {
+    const target = state.animals.find((target) => target.id === unit.task.targetEntityId && target.isAlive);
+    if (target) {
+      destination = approachPoint(position, target.position, ANIMAL_ATTACK_STATS.range);
+    }
+  }
+  const committedWaypoint = destination && unit.navigation && distanceBetween(unit.navigation.goal, destination) <= 0.6
+    ? unit.navigation.waypoints[0] : null;
+  const movingTarget = !fixed ? committedWaypoint ?? destination : null;
+  return {
+    id: unit.id, position, fixed, priority: fixed ? 3 : unit.task.kind === 'idle' ? 1 : 2,
+    velocity: movingTarget ? velocityTowards(position, movingTarget, speed) : { x: 0, y: 0 },
+    stopAfterSeconds: movingTarget ? distanceBetween(position, movingTarget) / speed : 0,
+    tickVelocity: { x: 0, y: 0 },
+  };
+}
+
+function navigationNeighbors(state: GameState, unit: UnitState, frame: NavigationFrame): NavigationAgent[] {
+  return [
+    ...state.units.filter((other) => other.id !== unit.id).map((other) => navigationAgent(state, other, frame)),
+    ...state.barbarians.filter((other) => other.isAlive).map((other): NavigationAgent => ({
+      id: other.id, position: other.position, velocity: { x: 0, y: 0 }, tickVelocity: { x: 0, y: 0 },
+      priority: 4, fixed: true, stopAfterSeconds: 0,
+    })),
+  ];
+}
+
+function cancelIdleMovement(unit: UnitState): void {
+  if (!unit.idleMovement) return;
+  unit.idleMovement.destination = null;
+  unit.idleMovement.waitRemainingSeconds = 0;
+}
+
+function idleNeighbors(state: GameState, unit: UnitState) {
+  return state.units.filter((other) => other.id !== unit.id)
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .map((other) => ({ position: other.position,
+      destination: other.idleMovement?.destination ?? (other.task.kind === 'return-to-totem' ? other.task.destination : null) }));
+}
+
+function updateIdleMovement(state: GameState, unit: UnitState, deltaSeconds: number, navigation: NavigationFrame): void {
+  const idle = unit.idleMovement ??= createMinionIdleState();
+  if (!idle.destination && idle.waitRemainingSeconds <= 0) {
+    idle.waitRemainingSeconds = idleWaitSeconds(state.seed, unit.id, idle.step);
+    idle.destination = chooseIdleDestination(state.seed, unit.id, idle.step, unit.position, idleArea(state), idleNeighbors(state, unit));
+    idle.step += 1;
+  }
+  unit.state = 'idle';
+  if (idle.waitRemainingSeconds > 0) {
+    idle.waitRemainingSeconds = Math.max(0, idle.waitRemainingSeconds - deltaSeconds);
+    const yieldTarget = idleYieldTarget(navigationAgent(state, unit, navigation), navigationNeighbors(state, unit, navigation));
+    if (yieldTarget) moveUnitTowards(state, unit, yieldTarget, MINION_IDLE_CONFIG.speed * deltaSeconds, navigation);
+    return;
+  }
+  if (idle.destination && moveUnitTowards(state, unit, idle.destination, MINION_IDLE_CONFIG.speed * deltaSeconds, navigation)) {
+    idle.destination = null;
+  }
+}
+
 export function projectRecruitmentPosition(position: Vec2, totemPosition: Vec2): Vec2 {
   return projectWithinRadius(position, totemPosition, RECRUITMENT_RADIUS);
 }
@@ -160,16 +323,70 @@ export function projectOutsideTotemClearance(position: Vec2, totemPosition: Vec2
   });
 }
 
-function moveUnitTowards(state: GameState, unit: UnitState, destination: Vec2, distance: number): boolean {
+function moveUnitTowards(state: GameState, unit: UnitState, destination: Vec2, distance: number, frame: NavigationFrame): boolean {
   const safeDestination = projectOutsideTotemClearance(destination, state.totem.position, unit.id);
-  const reached = moveTowards(unit.position, safeDestination, distance);
-  if (reached) {
-    Object.assign(unit.position, projectOutsideTotemClearance(unit.position, state.totem.position, unit.id));
+  const agent = { ...navigationAgent(state, unit, frame), position: { ...unit.position }, fixed: false };
+  const memory = unit.navigation ??= createMinionNavigationState(safeDestination);
+  const neighbors = navigationNeighbors(state, unit, frame);
+  const isAllowed = (point: Vec2) => {
+      if (point.x < TOTEM_EDGE_PADDING || point.y < TOTEM_EDGE_PADDING
+        || point.x > WORLD_SIZE - TOTEM_EDGE_PADDING || point.y > WORLD_SIZE - TOTEM_EDGE_PADDING) return false;
+      if (!state.totem.moving && !state.totem.isCarried && unit.task.kind === 'idle') {
+        if (!isWithinTotemRange(point, idleArea(state))) return false;
+        if (distanceBetween(point, state.totem.position) < Math.min(distanceBetween(unit.position, state.totem.position), TOTEM_NO_STOP_RADIUS + TOTEM_CLEARANCE_EPSILON) - 1e-8) return false;
+      }
+      return !(unit.role === 'hunter' && unit.task.kind === 'combat')
+        || distanceBetween(point, state.totem.position) <= Math.min(state.totem.commandRadius, HUNTER_TOTEM_LEASH_RADIUS) + 1e-8;
+    };
+  if (distanceBetween(memory.goal, safeDestination) > 0.6) {
+    memory.waypoints = [];
+    memory.side = 0;
+    memory.replanSeconds = 0;
   }
-  return reached;
+  memory.goal = { ...safeDestination };
+  memory.replanSeconds = Math.max(0, memory.replanSeconds - frame.deltaSeconds);
+  memory.sideHoldSeconds = Math.max(0, memory.sideHoldSeconds - frame.deltaSeconds);
+  while (memory.waypoints.length && distanceBetween(unit.position, memory.waypoints[0]) < 0.08) memory.waypoints.shift();
+  const obstacles = neighbors.filter((other) => other.fixed || memory.blockedSeconds >= 0.3);
+  const next = memory.waypoints[0] ?? safeDestination;
+  if (memory.replanSeconds <= 0 && (!memory.waypoints.length || !segmentIsClear(unit.position, next, obstacles, 0.96))) {
+    memory.waypoints = planMinionRoute(unit.position, safeDestination, obstacles, isAllowed);
+    memory.replanSeconds = 0.6;
+  }
+  if (memory.waypoints.length === 1) memory.waypoints[0] = { ...safeDestination };
+  const waypoint = memory.waypoints[0] ?? safeDestination;
+  const routeUnavailable = memory.waypoints.length === 0 && !segmentIsClear(unit.position, safeDestination, obstacles);
+  const result = routeUnavailable ? { position: { ...unit.position }, velocity: { x: 0, y: 0 }, blocked: true } : chooseNavigationStep({
+    agent, destination: waypoint, speed: distance / Math.max(frame.deltaSeconds, 1e-8),
+    deltaSeconds: frame.deltaSeconds, neighbors, isAllowed,
+    previousVelocity: memory.velocity, preferredSide: memory.side,
+  });
+  const forward = velocityTowards(unit.position, waypoint, 1);
+  const turn = forward.x * result.velocity.y - forward.y * result.velocity.x;
+  if (Math.abs(turn) > 1e-6) {
+    if (!memory.side) memory.side = Math.sign(turn);
+    memory.sideHoldSeconds = 0.6;
+  }
+  if (memory.sideHoldSeconds <= 0 && !result.blocked) memory.side = 0;
+  memory.velocity = result.velocity;
+  memory.blockedSeconds = result.blocked ? memory.blockedSeconds + frame.deltaSeconds : 0;
+  if (memory.blockedSeconds >= 0.3 && memory.replanSeconds <= 0) {
+    memory.waypoints = planMinionRoute(unit.position, safeDestination, neighbors, isAllowed);
+    memory.side = 0;
+    memory.replanSeconds = 0.6;
+  }
+  Object.assign(unit.position, result.position);
+  const origin = frame.origins.get(unit.id) ?? agent.position;
+  frame.reservations.set(unit.id, {
+    ...agent, position: origin, velocity: result.velocity,
+    stopAfterSeconds: distanceBetween(origin, waypoint) / Math.max(Math.hypot(result.velocity.x, result.velocity.y), 1e-8),
+    tickVelocity: { x: (unit.position.x - origin.x) / frame.deltaSeconds, y: (unit.position.y - origin.y) / frame.deltaSeconds },
+  });
+  if (memory.blockedSeconds >= 1.2 && unit.task.kind === 'idle') cancelIdleMovement(unit);
+  return distanceBetween(unit.position, safeDestination) <= FORMATION_TOLERANCE;
 }
 
-function separatePair(first: Vec2, second: Vec2, minDistance: number, seed: string): void {
+function separatePair(first: Vec2, second: Vec2, minDistance: number, seed: string, firstShare = 0.5): void {
   let dx = second.x - first.x;
   let dy = second.y - first.y;
   let distance = Math.hypot(dx, dy);
@@ -178,15 +395,15 @@ function separatePair(first: Vec2, second: Vec2, minDistance: number, seed: stri
     const angle = (stableHash(seed) / 0xffffffff) * Math.PI * 2;
     dx = Math.cos(angle);
     dy = Math.sin(angle);
-    distance = 1;
+    distance = 0;
   }
-  const adjustment = (minDistance - distance) * 0.5;
-  const nx = dx / distance;
-  const ny = dy / distance;
-  first.x -= nx * adjustment;
-  first.y -= ny * adjustment;
-  second.x += nx * adjustment;
-  second.y += ny * adjustment;
+  const adjustment = minDistance - distance;
+  const nx = distance > 0 ? dx / distance : dx;
+  const ny = distance > 0 ? dy / distance : dy;
+  first.x -= nx * adjustment * firstShare;
+  first.y -= ny * adjustment * firstShare;
+  second.x += nx * adjustment * (1 - firstShare);
+  second.y += ny * adjustment * (1 - firstShare);
 }
 
 function resolveActorSpacing(state: GameState): void {
@@ -202,6 +419,15 @@ function resolveActorSpacing(state: GameState): void {
       ))
       : unit.position;
     Object.assign(unit.position, safePosition);
+    if (!state.totem.isCarried && !state.totem.moving && unit.task.kind === 'idle'
+      && unit.idleMovement?.destination) {
+      Object.assign(unit.position, projectWithinRadius(
+        unit.position, state.totem.position, state.totem.commandRadius,
+      ));
+      Object.assign(unit.position, clampWorldPosition(projectOutsideTotemClearance(
+        unit.position, state.totem.position, unit.id,
+      )));
+    }
   };
   for (const unit of units) {
     constrainUnit(unit);
@@ -212,12 +438,15 @@ function resolveActorSpacing(state: GameState): void {
       const first = units[firstIndex];
       for (let secondIndex = firstIndex + 1; secondIndex < units.length; secondIndex += 1) {
         const second = units[secondIndex];
-        separatePair(first.position, second.position, UNIT_ACTOR_SEPARATION, `${first.id}:${second.id}`);
+        const firstFixed = holdsWorkingPosition(state, first);
+        const secondFixed = holdsWorkingPosition(state, second);
+        const firstShare = firstFixed && !secondFixed ? 0 : secondFixed && !firstFixed ? 1 : 0.5;
+        separatePair(first.position, second.position, UNIT_ACTOR_SEPARATION, `${first.id}:${second.id}`, firstShare);
         constrainUnit(first);
         constrainUnit(second);
       }
       for (const barbarian of barbarians) {
-        separatePair(first.position, barbarian.position, UNIT_ACTOR_SEPARATION, `${first.id}:${barbarian.id}`);
+        separatePair(first.position, barbarian.position, UNIT_ACTOR_SEPARATION, `${first.id}:${barbarian.id}`, 1);
         constrainUnit(first);
       }
     }
@@ -237,25 +466,48 @@ function resolveActorSpacing(state: GameState): void {
   }
 }
 
-function combatApproachPoint(state: GameState, unit: UnitState, target: BarbarianState, range: number): Vec2 {
-  const attackers = state.units
-    .filter((candidate) => candidate.task.kind === 'combat' && candidate.task.targetEntityId === target.id)
-    .sort((first, second) => first.id.localeCompare(second.id));
-  const slot = Math.max(attackers.findIndex((candidate) => candidate.id === unit.id), 0);
-  const count = Math.max(attackers.length, 1);
-  const phase = (stableHash(target.id) / 0xffffffff) * Math.PI * 2;
-  const angle = phase + (slot / count) * Math.PI * 2;
-  const radius = Math.max(0.6, range - 0.12);
-  const attackPosition = {
-    x: target.position.x + Math.cos(angle) * radius,
-    y: target.position.y + Math.sin(angle) * radius,
-  };
-  return unit.role === 'hunter'
-    ? projectWithinRadius(attackPosition, state.totem.position, Math.min(
-      state.totem.commandRadius,
-      HUNTER_TOTEM_LEASH_RADIUS,
-    ))
-    : attackPosition;
+function reserveCombatPositions(state: GameState, frame: NavigationFrame): void {
+  for (const target of state.barbarians.filter((other) => other.isAlive).sort((a, b) => a.id.localeCompare(b.id))) {
+    const attackers = state.units.filter((unit) => unit.task.kind === 'combat' && unit.task.targetEntityId === target.id);
+    const occupied = state.units.filter((unit) => !attackers.includes(unit) && holdsWorkingPosition(state, unit)).map((unit) => unit.position);
+    occupied.push(...frame.combatPositions.values());
+    const positions = assignCombatPositions(target.position, attackers.map((unit) => ({
+      id: unit.id, position: unit.position, range: getMinionAttackStats(unit.role, state.toolLevels.sword)!.range,
+      ranged: unit.role === 'hunter',
+      offset: unit.navigation?.combatTargetId === target.id ? unit.navigation.combatOffset : null,
+    })), occupied, (attacker, point) => point.x >= TOTEM_EDGE_PADDING && point.y >= TOTEM_EDGE_PADDING
+      && point.x <= WORLD_SIZE - TOTEM_EDGE_PADDING && point.y <= WORLD_SIZE - TOTEM_EDGE_PADDING
+      && distanceBetween(point, state.totem.position) >= TOTEM_NO_STOP_RADIUS + TOTEM_CLEARANCE_EPSILON
+      && (attacker.ranged === false || distanceBetween(point, state.totem.position) <= Math.min(state.totem.commandRadius, HUNTER_TOTEM_LEASH_RADIUS))
+      && state.barbarians.every((other) => !other.isAlive || other.id === target.id || distanceBetween(point, other.position) >= UNIT_ACTOR_SEPARATION));
+    for (const unit of attackers) {
+      const position = positions.get(unit.id)!;
+      frame.combatPositions.set(unit.id, position);
+      const memory = unit.navigation ??= createMinionNavigationState(position);
+      memory.combatTargetId = target.id;
+      memory.combatOffset = { x: position.x - target.position.x, y: position.y - target.position.y };
+    }
+  }
+}
+
+function moveBarbarianTowards(state: GameState, barbarian: BarbarianState, destination: Vec2, distance: number, frame: NavigationFrame): boolean {
+  const zero = { x: 0, y: 0 };
+  const neighbors: NavigationAgent[] = state.units.map((unit) => {
+    const origin = frame.origins.get(unit.id) ?? unit.position;
+    const velocity = frame.reservations.get(unit.id)?.tickVelocity ?? zero;
+    return { id: unit.id, position: origin, velocity, tickVelocity: velocity, stopAfterSeconds: frame.deltaSeconds, fixed: true, priority: 4 };
+  });
+  neighbors.push(...state.barbarians.filter((other) => other.isAlive && other.id !== barbarian.id).map((other) => ({
+    id: other.id, position: other.position, velocity: zero, tickVelocity: zero, stopAfterSeconds: 0, fixed: true, priority: 4,
+  })));
+  const result = chooseNavigationStep({
+    agent: { id: barbarian.id, position: barbarian.position, velocity: zero, tickVelocity: zero, stopAfterSeconds: 0, fixed: false, priority: 2 },
+    destination, speed: distance / frame.deltaSeconds, deltaSeconds: frame.deltaSeconds, neighbors,
+    isAllowed: (point) => point.x >= TOTEM_EDGE_PADDING && point.y >= TOTEM_EDGE_PADDING
+      && point.x <= WORLD_SIZE - TOTEM_EDGE_PADDING && point.y <= WORLD_SIZE - TOTEM_EDGE_PADDING,
+  });
+  Object.assign(barbarian.position, result.position);
+  return distanceBetween(barbarian.position, destination) <= FORMATION_TOLERANCE;
 }
 
 function idleTask(cause: TaskCause = 'no-valid-resource'): UnitTask {
@@ -268,6 +520,9 @@ function idleTask(cause: TaskCause = 'no-valid-resource'): UnitTask {
 }
 
 function setTaskState(unit: UnitState, task: UnitTask): void {
+  if (unit.task.kind !== task.kind || unit.task.targetEntityId !== task.targetEntityId
+    || unit.task.targetResourceId !== task.targetResourceId) unit.navigation = undefined;
+  if (task.kind !== 'idle' || unit.task.kind !== 'idle') cancelIdleMovement(unit);
   unit.task = task;
   unit.actionProgressSeconds = 0;
   if (task.kind !== 'combat') unit.withdrawAfterAttack = false;
@@ -433,13 +688,6 @@ function updateCampfireLifetimes(state: GameState, deltaSeconds: number): void {
   });
 }
 
-function isWithinTotemIdleRadius(state: GameState, position: Vec2): boolean {
-  const dx = position.x - state.totem.position.x;
-  const dy = position.y - state.totem.position.y;
-  const radius = Math.max(state.totem.commandRadius, FORMATION_RADIUS);
-  return dx * dx + dy * dy <= radius * radius;
-}
-
 function dropPositionNear(
   state: GameState,
   position: Vec2,
@@ -505,7 +753,7 @@ function returnToTotemTask(state: GameState, index: number, cause: TaskCause): U
   return {
     kind: 'return-to-totem',
     targetResourceId: null,
-    destination: formationTarget(state, index),
+    destination: totemRangeEntry(state.units[index].position, idleArea(state)),
     cause,
   };
 }
@@ -549,7 +797,7 @@ function dispatchResourceCall(state: GameState, caller: UnitState): boolean {
       const dx = resource.position.x - caller.position.x;
       const dy = resource.position.y - caller.position.y;
       return resource.amount > 0
-        && !canRoleGatherResource(caller.role, resource.type, resource.source)
+        && !canRoleGatherNode(caller.role, resource, state.toolLevels)
         && resource.id !== caller.cancelledTargetId
         && !(caller.task.kind === 'gather' && caller.task.targetResourceId === resource.id)
         && !alreadyAssigned.has(resource.id)
@@ -572,7 +820,7 @@ function dispatchResourceCall(state: GameState, caller: UnitState): boolean {
         && (candidate.task.kind === 'idle' || candidate.task.kind === 'return-to-totem')
         && totalResourceAmount(candidate.cargo.amounts) === 0
         && candidate.cancelledTargetId !== resource.id
-        && canRoleGatherResource(candidate.role, resource.type, resource.source)
+        && canRoleGatherNode(candidate.role, resource, state.toolLevels)
       ))
       .sort((first, second) => {
         const firstDx = first.position.x - resource.position.x;
@@ -870,7 +1118,7 @@ function applyMinionAttack(
   targetKind: 'barbarian' | 'animal',
 ): boolean {
   unit.attackCooldownRemainingSeconds = stats.cooldownSeconds;
-  if (unit.role === 'hunter') unit.attackLockRemainingSeconds = ATTACK_LUNGE_DURATION_SECONDS;
+  unit.attackLockRemainingSeconds = ATTACK_LUNGE_DURATION_SECONDS;
   addEffect(state, 'attack-lunge', unit.id, target.position, ATTACK_LUNGE_DURATION_SECONDS);
   const result = dealDamage('minion', targetKind, target, stats.damage);
   target.health = result.health;
@@ -884,8 +1132,23 @@ function applyMinionAttack(
   return result.defeated;
 }
 
-function updateConflict(state: GameState, deltaSeconds: number): void {
+function updateConflict(state: GameState, deltaSeconds: number, navigation: NavigationFrame): void {
   updateRespawnsAndFauna(state, deltaSeconds);
+  const totemMoving = state.totem.isCarried || state.totem.moving;
+  const entityCalls = totemMoving ? new Map<string, EntityCall>() : chooseEntityCalls(
+    state.units.map((unit) => ({
+      id: unit.id, position: unit.position, currentKind: unit.task.kind, currentTargetId: unit.task.targetEntityId,
+      available: (unit.task.kind === 'idle' || unit.task.kind === 'return-to-totem') && totalResourceAmount(unit.cargo.amounts) === 0,
+      canFight: getMinionAttackStats(unit.role, state.toolLevels.sword) !== undefined,
+      canHunt: unit.role === 'hunter',
+    })),
+    [...state.barbarians.map(({ id, position, isAlive }) => ({ id, position, isAlive, kind: 'combat' as const })),
+      ...state.animals.map(({ id, position, isAlive }) => ({ id, position, isAlive, kind: 'hunt' as const }))],
+    MINION_THREAT_DETECTION_RADIUS, getResourceDetectionRadius(state.totem.commandRadius),
+    (unit, entity) => entity.kind !== 'combat' || !unit.canHunt
+      || distanceBetween(entity.position, state.totem.position) <= Math.min(state.totem.commandRadius, HUNTER_TOTEM_LEASH_RADIUS)
+        + combatPositionRadius(getMinionAttackStats('hunter', state.toolLevels.sword)!.range, true),
+  );
 
   for (const barbarian of state.barbarians) {
     if (!barbarian.isAlive) continue;
@@ -915,7 +1178,6 @@ function updateConflict(state: GameState, deltaSeconds: number): void {
     }
   }
 
-  const totemMoving = state.totem.isCarried || state.totem.moving;
   for (const [index, unit] of state.units.entries()) {
     const canFight = getMinionAttackStats(unit.role, state.toolLevels.sword) !== undefined;
     if (totemMoving) {
@@ -936,7 +1198,10 @@ function updateConflict(state: GameState, deltaSeconds: number): void {
     }
 
     unit.withdrawAfterAttack = false;
-    const threat = nearestBarbarian(unit, state.barbarians, MINION_THREAT_DETECTION_RADIUS);
+    const call = entityCalls.get(unit.id);
+    const calledEnemy = call?.kind === 'combat'
+      ? state.barbarians.find((enemy) => enemy.id === call.targetId && enemy.isAlive) : null;
+    const threat = nearestBarbarian(unit, state.barbarians, MINION_THREAT_DETECTION_RADIUS) ?? calledEnemy;
     if (canFight && threat) {
       const target = chooseCombatTarget(state, unit) ?? threat;
       setTaskState(unit, entityTask('combat', 'threat-nearby', target.id));
@@ -955,11 +1220,13 @@ function updateConflict(state: GameState, deltaSeconds: number): void {
       const currentAnimal = state.animals.find((animal) => (
         animal.isAlive && animal.id === unit.task.targetEntityId
       ));
+      const calledAnimal = call?.kind === 'hunt'
+        ? state.animals.find((animal) => animal.id === call.targetId && animal.isAlive) : null;
       const rabbit = currentAnimal
-        && distanceBetween(unit.position, currentAnimal.position)
-          <= getResourceDetectionRadius(state.totem.commandRadius) + 2
+        && (distanceBetween(unit.position, currentAnimal.position)
+          <= getResourceDetectionRadius(state.totem.commandRadius) + 2 || currentAnimal.id === calledAnimal?.id)
         ? currentAnimal
-        : chooseRabbit(state, unit);
+        : chooseRabbit(state, unit) ?? calledAnimal;
       if (rabbit) {
         setTaskState(unit, entityTask('hunt', 'animal-found', rabbit.id));
         continue;
@@ -968,11 +1235,14 @@ function updateConflict(state: GameState, deltaSeconds: number): void {
     if (unit.task.kind === 'hunt') setTaskState(unit, idleTask('no-valid-resource'));
   }
 
+  reserveCombatPositions(state, navigation);
   for (const [index, unit] of state.units.entries()) {
-    if (unit.role === 'hunter' && unit.attackLockRemainingSeconds > 0) continue;
+    if (unit.attackLockRemainingSeconds > 0) continue;
 
     if (unit.task.kind === 'flee') {
-      moveUnitTowards(state, unit, formationTarget(state, index), TOTEM_CHASE_SPEED * deltaSeconds);
+      moveUnitTowards(state, unit,
+        approachPoint(unit.position, state.totem.position, TOTEM_NO_STOP_RADIUS + TOTEM_CLEARANCE_EPSILON),
+        TOTEM_FOLLOW_SPEED * deltaSeconds, navigation);
       continue;
     }
 
@@ -1002,24 +1272,20 @@ function updateConflict(state: GameState, deltaSeconds: number): void {
         }
         continue;
       }
-      if (unit.role === 'hunter'
-        && distance <= stats.range + 1e-6
-        && unit.attackCooldownRemainingSeconds <= 1e-9) {
-        applyMinionAttack(state, unit, barbarian, stats, 'barbarian');
-        continue;
-      }
-      const attackPosition = combatApproachPoint(state, unit, barbarian, stats.range);
+      const attackPosition = navigation.combatPositions.get(unit.id) ?? unit.position;
       const distanceToSlot = distanceBetween(unit.position, attackPosition);
-      if (distanceToSlot > 0.2) {
+      if (distanceToSlot > 0.025) {
         moveUnitTowards(
           state,
           unit,
           attackPosition,
-          (unit.role === 'hunter' ? HUNTER_COMBAT_SPEED : UNIT_SPEED) * deltaSeconds,
+          UNIT_SPEED * deltaSeconds,
+          navigation,
         );
       }
-      if (unit.role !== 'hunter'
+      if (distanceBetween(unit.position, attackPosition) <= 0.15
         && distanceBetween(unit.position, barbarian.position) <= stats.range + 1e-6
+        && (unit.role !== 'hunter' || distanceBetween(unit.position, barbarian.position) >= stats.range - 0.6)
         && unit.attackCooldownRemainingSeconds <= 1e-9) {
         applyMinionAttack(state, unit, barbarian, stats, 'barbarian');
       }
@@ -1046,6 +1312,7 @@ function updateConflict(state: GameState, deltaSeconds: number): void {
           unit,
           approachPoint(unit.position, animal.position, ANIMAL_ATTACK_STATS.range),
           UNIT_SPEED * deltaSeconds,
+          navigation,
         );
       }
       if (distanceBetween(unit.position, animal.position) <= ANIMAL_ATTACK_STATS.range + 1e-6
@@ -1064,10 +1331,11 @@ function updateConflict(state: GameState, deltaSeconds: number): void {
       barbarian.returningToSpawn = false;
       const distance = distanceBetween(barbarian.position, target.position);
       if (distance > BARBARIAN_ATTACK_RANGE) {
-        moveTowards(
-          barbarian.position,
+        moveBarbarianTowards(
+          state, barbarian,
           approachPoint(barbarian.position, target.position, BARBARIAN_ATTACK_RANGE),
-          BARBARIAN_MOVEMENT_SPEED * deltaSeconds,
+          BARBARIAN_CHASE_SPEED * deltaSeconds,
+          navigation,
         );
       }
       if (distanceBetween(barbarian.position, target.position) <= BARBARIAN_ATTACK_RANGE + 1e-6) {
@@ -1092,10 +1360,11 @@ function updateConflict(state: GameState, deltaSeconds: number): void {
     const distanceToSpawn = distanceBetween(barbarian.position, barbarian.spawnPosition);
     if (barbarian.returningToSpawn || (hadTarget && distanceToSpawn > 0.25)) {
       barbarian.returningToSpawn = true;
-      const reachedSpawn = moveTowards(
-        barbarian.position,
+      const reachedSpawn = moveBarbarianTowards(
+        state, barbarian,
         barbarian.spawnPosition,
-        BARBARIAN_MOVEMENT_SPEED * deltaSeconds,
+        BARBARIAN_RETURN_SPEED * deltaSeconds,
+        navigation,
       );
       if (reachedSpawn) {
         barbarian.returningToSpawn = false;
@@ -1137,10 +1406,11 @@ function updateConflict(state: GameState, deltaSeconds: number): void {
       );
       continue;
     }
-    const reachedPatrolTarget = moveTowards(
-      barbarian.position,
+    const reachedPatrolTarget = moveBarbarianTowards(
+      state, barbarian,
       barbarian.patrolTarget,
       BARBARIAN_PATROL_SPEED * deltaSeconds,
+      navigation,
     );
     if (reachedPatrolTarget) {
       barbarian.patrolWaitRemainingSeconds = patrolWaitSeconds(
@@ -1158,6 +1428,7 @@ function updateSurvivalUnit(
   unit: UnitState,
   index: number,
   deltaSeconds: number,
+  navigation: NavigationFrame,
 ): void {
   if (unit.role === 'hunter' && unit.attackLockRemainingSeconds > 0) return;
 
@@ -1167,9 +1438,8 @@ function updateSurvivalUnit(
       return;
     }
 
-    // Priority order: enemies (when combat exists) > resources > drops.
-    // The enemy branch will be inserted before this resource selection; the
-    // totem pickup interruption is handled outside autonomous task choice.
+    // Conflict and totem movement have already taken precedence. Work remains
+    // available every tick, even while the unit is waiting or strolling.
     const gatherTask = chooseGatherTask({
       role: unit.role,
       unitPosition: unit.position,
@@ -1177,6 +1447,7 @@ function updateSurvivalUnit(
       commandRadius: state.totem.commandRadius,
       cargo: unit.cargo,
       resources: state.resources,
+      toolLevels: state.toolLevels,
       reservedTargetIds: reservedTargetIds(state, unit, 'gather'),
       excludedTargetId: unit.cancelledTargetId,
     });
@@ -1203,8 +1474,10 @@ function updateSurvivalUnit(
     }
 
     setTaskState(unit, gatherTask);
-    if (!isWithinTotemIdleRadius(state, unit.position)) {
+    if (!isWithinTotemRange(unit.position, idleArea(state))) {
       setTaskState(unit, returnToTotemTask(state, index, 'no-valid-resource'));
+    } else {
+      updateIdleMovement(state, unit, deltaSeconds, navigation);
     }
     return;
   }
@@ -1219,7 +1492,7 @@ function updateSurvivalUnit(
     }
 
     const lootInteractionPosition = approachPoint(unit.position, corpse.position, 1.25);
-    if (!moveUnitTowards(state, unit, lootInteractionPosition, UNIT_SPEED * deltaSeconds)) {
+    if (!moveUnitTowards(state, unit, lootInteractionPosition, UNIT_SPEED * deltaSeconds, navigation)) {
       unit.state = 'looting-corpse';
       return;
     }
@@ -1259,6 +1532,7 @@ function updateSurvivalUnit(
       unit,
       resourceApproachPosition(unit.position, resource),
       UNIT_SPEED * deltaSeconds,
+      navigation,
     )) {
       unit.state = 'seeking-task';
       return;
@@ -1266,7 +1540,7 @@ function updateSurvivalUnit(
 
     unit.state = 'gathering';
     unit.actionProgressSeconds += deltaSeconds;
-    if (unit.actionProgressSeconds < gatherActionDuration(state, resource.type)) return;
+    if (unit.actionProgressSeconds < gatherActionDuration(state, resource)) return;
 
     // Hito 2A economy: one completed action always produces one whole unit.
     const gathered = gatherFromNode(resource, 1);
@@ -1281,7 +1555,15 @@ function updateSurvivalUnit(
       resource.id,
       resource.type,
       (resource.yieldAmount ?? gathered.gathered)
-        + (resource.type === 'wood' ? state.toolLevels.axe : 0),
+        + ((resource.type === 'wood' || resource.type === 'stone')
+          && rollsToolBonusResource({
+            seed: state.seed,
+            tick: state.tick,
+            unitId: unit.id,
+            nodeId: resource.id,
+            tool: resource.type === 'wood' ? 'axe' : 'hammer',
+            level: state.toolLevels[resource.type === 'wood' ? 'axe' : 'hammer'],
+          }) ? 1 : 0),
     );
     if (gathered.gathered > 0) {
       awardExperience(
@@ -1300,7 +1582,7 @@ function updateSurvivalUnit(
       return;
     }
 
-    if (!moveUnitTowards(state, unit, drop.position, UNIT_SPEED * deltaSeconds)) {
+    if (!moveUnitTowards(state, unit, drop.position, UNIT_SPEED * deltaSeconds, navigation)) {
       unit.state = 'collecting-drop';
       return;
     }
@@ -1313,10 +1595,16 @@ function updateSurvivalUnit(
   }
 
   if (unit.task.kind === 'return-to-totem') {
-    const destination = unit.task.destination ?? formationTarget(state, index);
-    if (!moveUnitTowards(state, unit, destination, TOTEM_CHASE_SPEED * deltaSeconds)) {
-      unit.state = 'returning-to-totem';
-      return;
+    // Old saves may still contain a central regroup destination. Stop as soon
+    // as command range is reached, regardless of that obsolete destination.
+    if (!isWithinTotemRange(unit.position, idleArea(state))) {
+      const destination = totemRangeEntry(unit.position, idleArea(state));
+      unit.task.destination = destination;
+      moveUnitTowards(state, unit, destination, TOTEM_RETURN_SPEED * deltaSeconds, navigation);
+      if (!isWithinTotemRange(unit.position, idleArea(state))) {
+        unit.state = 'returning-to-totem';
+        return;
+      }
     }
 
     setTaskState(unit, idleTask('action-complete'));
@@ -1328,20 +1616,21 @@ function updateFormationUnit(
   unit: UnitState,
   index: number,
   deltaSeconds: number,
+  navigation: NavigationFrame,
 ): boolean {
   const target = formationTarget(state, index);
-  const reached = moveUnitTowards(state, unit, target, TOTEM_CHASE_SPEED * deltaSeconds);
+  cancelIdleMovement(unit);
+  const reached = moveUnitTowards(state, unit, target, TOTEM_FOLLOW_SPEED * deltaSeconds, navigation);
   const distanceToTarget = Math.hypot(
     target.x - unit.position.x,
     target.y - unit.position.y,
   );
 
-  unit.state = state.totem.isCarried || state.totem.moving
-    ? 'follow-totem'
-    : 'formation';
+  const inFormation = reached || distanceToTarget <= FORMATION_TOLERANCE;
+  unit.state = !state.totem.isCarried && inFormation ? 'formation' : 'follow-totem';
   unit.task = idleTask('totem-moved');
 
-  return reached || distanceToTarget <= FORMATION_TOLERANCE;
+  return inFormation;
 }
 
 function applyAction(state: GameState, action: InputAction): void {
@@ -1351,9 +1640,8 @@ function applyAction(state: GameState, action: InputAction): void {
     return;
   }
 
-  if (action.type === 'debug-add-resource') {
-    const amount = Number.isFinite(action.amount) ? Math.max(action.amount, 0) : 0;
-    state.inventory.amounts[action.resource] += amount;
+  if (action.type === 'debug-add-all-resources') {
+    for (const resource of RESOURCE_TYPES) state.inventory.amounts[resource] += 100;
     return;
   }
 
@@ -1413,16 +1701,13 @@ function applyAction(state: GameState, action: InputAction): void {
       state.nextCampfireId += 1;
       return;
     case 'recruit-gatherer': {
-      const cost = getMinionPurchaseCost(
-        state.units.length,
-        STARTING_MINION_COUNT,
-      );
+      const cost = getGathererRecruitmentCost(state.units.length);
       if (
         state.units.length >= MAX_PLAYABLE_MINIONS
-        || state.inventory.amounts.food < cost
+        || !canAffordCost(state.inventory.amounts, cost)
       ) return;
 
-      state.inventory.amounts.food -= cost;
+      spendCost(state.inventory.amounts, cost);
       state.purchaseCounts.gatherer += 1;
       const unit = createUnitState(
         `unit-gatherer-${String(state.purchaseCounts.gatherer + 1).padStart(2, '0')}`,
@@ -1432,16 +1717,17 @@ function applyAction(state: GameState, action: InputAction): void {
       state.units.push(unit);
       setTaskState(
         unit,
-        returnToTotemTask(state, state.units.length - 1, 'action-complete'),
+        isWithinTotemRange(unit.position, idleArea(state))
+          ? idleTask('action-complete')
+          : returnToTotemTask(state, state.units.length - 1, 'action-complete'),
       );
       return;
     }
     case 'upgrade-tool': {
       const currentLevel = state.toolLevels[action.tool];
       if (currentLevel >= MAX_TOOL_LEVEL) return;
-      const cost = getToolUpgradeCost(currentLevel + 1);
-      if (state.inventory.amounts.stone < cost) return;
-      state.inventory.amounts.stone -= cost;
+      const cost = getToolUpgradeCost(action.tool, currentLevel + 1);
+      if (!cost || !spendCost(state.inventory.amounts, cost)) return;
       state.toolLevels[action.tool] += 1;
       return;
     }
@@ -1456,10 +1742,9 @@ function applyAction(state: GameState, action: InputAction): void {
       const shieldsInUse = state.units.filter((candidate) => (
         candidate.role === 'guardian' && candidate.hasShield
       )).length;
-      const cost = getMinionPurchaseCost(shieldsInUse);
-      if (state.inventory.amounts.gold < cost) return;
+      const cost = getShieldCost(shieldsInUse);
+      if (!spendCost(state.inventory.amounts, cost)) return;
 
-      state.inventory.amounts.gold -= cost;
       unit.hasShield = true;
       unit.maxHealth += PROGRESSION_BALANCE.shieldMaximumHealthBonus;
       unit.health = Math.min(
@@ -1489,20 +1774,10 @@ function applyAction(state: GameState, action: InputAction): void {
               : 'guardian';
       const targetRole = getSpecializationRole(action.item);
       const activeTargetMinions = countUnitsWithRole(state.units, targetRole);
-      if (activeTargetMinions >= MAX_MINIONS_PER_TYPE) return;
-      const cost = action.item === 'sword'
-        ? 2
-        : action.item === 'mage'
-          ? getMageSpecializationCost(activeTargetMinions)
-          : getMinionPurchaseCost(activeTargetMinions);
-      const costType = action.item === 'sword'
-        ? 'gold'
-        : action.item === 'mage'
-          ? 'spark'
-          : 'wood';
-      if (state.inventory.amounts[costType] < cost) return;
+      if (activeTargetMinions >= getSpecializationLimit(action.item)) return;
+      const cost = getSpecializationCost(action.item, activeTargetMinions);
+      if (!spendCost(state.inventory.amounts, cost)) return;
 
-      state.inventory.amounts[costType] -= cost;
       state.purchaseCounts[purchaseKey] += 1;
       unit.role = targetRole;
       setTaskState(unit, idleTask('action-complete'));
@@ -1536,14 +1811,21 @@ export function stepSimulation(
   updateWeather(state, deltaSeconds);
 
   updateMinionAttackCooldowns(state, deltaSeconds);
+  const navigation: NavigationFrame = {
+    deltaSeconds,
+    origins: new Map(state.units.map((unit) => [unit.id, { ...unit.position }])),
+    reservations: new Map(),
+    combatPositions: new Map(),
+  };
 
+  // Resolve threat/animal calls before resource calls consume free responders.
+  if (options.enableSurvival) updateConflict(state, deltaSeconds, navigation);
   if (options.enableSurvival && !state.totem.isCarried && !state.totem.moving) {
     // Calls are a lightweight coordination pass: a minion can ask for help
     // without dropping its own active task, and every target is still reserved
     // for at most one responder.
     for (const caller of state.units) dispatchResourceCall(state, caller);
   }
-  if (options.enableSurvival) updateConflict(state, deltaSeconds);
 
   let allUnitsInFormation = true;
   for (const [index, unit] of state.units.entries()) {
@@ -1568,11 +1850,11 @@ export function stepSimulation(
           resourceForTask(state, unit)?.id ?? null,
         );
       }
-      if (!updateFormationUnit(state, unit, index, deltaSeconds)) {
+      if (!updateFormationUnit(state, unit, index, deltaSeconds, navigation)) {
         allUnitsInFormation = false;
       }
     } else {
-      updateSurvivalUnit(state, unit, index, deltaSeconds);
+      updateSurvivalUnit(state, unit, index, deltaSeconds, navigation);
     }
   }
 

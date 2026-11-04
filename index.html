@@ -196,7 +196,7 @@
           <div class="hud-title">
             <strong>Tribes Revival</strong>
             <span id="hud-status">Inicializando…</span>
-            <span id="hud-progression">Nivel 1 · XP 0/12 · Puntos 0</span>
+            <span id="hud-progression">Nivel 0 · XP 0/12 · Puntos 0</span>
             <span id="hud-inventory" class="visually-hidden">Comida 0 · Madera 0 · Piedra 0 · Brillo 0 · Oro 0</span>
           </div>
         </div>
@@ -220,14 +220,7 @@
             <div class="debug-actions">
               <button type="button" class="hud-tooltip" data-debug-action="damage-one-minion" data-tooltip="Quita 1 vida al minion con menos vida">−1 vida a un minion</button>
               <button type="button" class="hud-tooltip" data-debug-action="level-up" data-tooltip="Concede un nivel y un punto tecnológico">Subir 1 nivel</button>
-              <span class="debug-resource-title">Añadir recursos</span>
-              <div class="debug-resource-buttons">
-                <button type="button" class="hud-tooltip" data-debug-resource="food" data-tooltip="Añade 10 de Comida">+10 Comida</button>
-                <button type="button" class="hud-tooltip" data-debug-resource="wood" data-tooltip="Añade 10 de Madera">+10 Madera</button>
-                <button type="button" class="hud-tooltip" data-debug-resource="stone" data-tooltip="Añade 10 de Piedra">+10 Piedra</button>
-                <button type="button" class="hud-tooltip" data-debug-resource="spark" data-tooltip="Añade 10 de Brillo">+10 Brillo</button>
-                <button type="button" class="hud-tooltip" data-debug-resource="gold" data-tooltip="Añade 10 de Oro">+10 Oro</button>
-              </div>
+              <button type="button" class="hud-tooltip" data-debug-action="add-all-resources" data-tooltip="Añade 100 de cada recurso">+100 de todos los recursos</button>
             </div>
             <label>
               Zoom mínimo · cerca
@@ -278,18 +271,23 @@
         <div id="technology-panel" class="technology-panel" hidden>
           <strong>Árbol de tecnologías</strong>
           <span id="technology-points-summary">Puntos disponibles: 0</span>
-          <div class="technology-options">
-            <button type="button" class="technology-option hud-tooltip" data-unlock-technology="artisan" data-tooltip="Artesana&#10;Permite convertir un recolector en artesana para reunir Piedra y Brillo.">
+          <div class="technology-tree-buttons" aria-label="Árboles tecnológicos">
+            <button type="button" class="technology-toggle" data-technology-tree="survival" aria-expanded="false" aria-controls="technology-tree-content">Supervivencia</button>
+            <button type="button" class="technology-toggle" data-technology-tree="exploration" aria-expanded="false" aria-controls="technology-tree-content">Exploración</button>
+            <button type="button" class="technology-toggle" data-technology-tree="combat" aria-expanded="false" aria-controls="technology-tree-content">Combate</button>
+          </div>
+          <div id="technology-tree-content" class="technology-options" role="group" hidden>
+            <button type="button" class="technology-option hud-tooltip" data-unlock-technology="artisan">
               <span class="technology-glyph technology-hammer-glyph" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-hammer.png" alt="" /></span>
-              <span class="technology-state" data-technology-state="artisan">1 punto</span>
+              <span class="technology-state" data-technology-state="artisan"></span>
             </button>
-            <button type="button" class="technology-option hud-tooltip" data-unlock-technology="mage" data-tooltip="Mago&#10;Permite convertir un recolector en Mago para entrar en mazmorras">
+            <button type="button" class="technology-option hud-tooltip" data-unlock-technology="mage">
               <span class="technology-glyph" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-mage.png" alt="" /></span>
-              <span class="technology-state" data-technology-state="mage">1 punto</span>
+              <span class="technology-state" data-technology-state="mage"></span>
             </button>
-            <button type="button" class="technology-option hud-tooltip" data-unlock-technology="shield" data-tooltip="Escudo&#10;Permite equipar a los guardianes para aumentar su vida máxima en 1.">
+            <button type="button" class="technology-option hud-tooltip" data-unlock-technology="shield">
               <span class="technology-glyph technology-shield-glyph" aria-hidden="true"><img class="hud-sprite-icon" src="./sprites/ui/icon-shield.png" alt="" /></span>
-              <span class="technology-state" data-technology-state="shield">1 punto</span>
+              <span class="technology-state" data-technology-state="shield"></span>
             </button>
           </div>
         </div>

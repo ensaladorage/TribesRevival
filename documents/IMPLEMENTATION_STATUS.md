@@ -3,6 +3,187 @@
 **Propósito:** registro del estado real conocido de implementación y
 validación. No define mecánicas ni sustituye el GDD.
 
+**Alcance de persistencia:** el guardado y la carga de la versión actual
+funcionan. La compatibilidad y migración entre versiones se aplazan a una
+fase avanzada; las menciones a v16/v17 más abajo documentan comportamiento
+ya existente, no trabajo ni validación que debamos priorizar ahora.
+
+## Revisión de progreso --- 04-11-2026
+
+### Formación exclusiva del movimiento del tótem
+
+- Eliminado el retorno sin trabajo a slots de 3,25 m. El descanso empieza
+  donde termina la tarea si está dentro del radio de mando, incluida la
+  franja exterior al anillo de paseos de 8 m. Fuera de rango, vuelve solo
+  hasta entrar por el borde más cercano, a 8 m/s, y pasa a idle.
+- Formación reservada al seguimiento del tótem a 10 m/s; se marca al alcanzar
+  el slot y después se reevalúan tareas/idle. La huida ya no usa ese slot.
+  Reclutamiento dentro del rango empieza disponible sin regreso central.
+- Los destinos antiguos de `return-to-totem` no fuerzan volver al centro:
+  se recalcula el acceso y se cancela al estar dentro. GameState v17 sin
+  migración adicional.
+- Verificado: TypeScript y 36 pruebas dirigidas de decisiones idle/rango,
+  geometría de navegación y persistencia. Se adaptaron expectativas antiguas
+  de regresión; no se ejecutó automatización visual ni del loop de gameplay.
+- Pendiente de validación manual: finales de cada tarea dentro/fuera del
+  rango, cargas antiguas, retorno al borde y transición formación/idle al
+  mover el tótem con 2 y 8 minions.
+
+### Comunicación de enemigos y animales
+
+- Implementado `minionAwareness.ts` e integrado con detección, combate y
+  caza: cualquier minion puede compartir avistamientos actuales; un objetivo
+  sin atender llama al combatiente/cazador libre más cercano, fuera incluso
+  de su radio personal. Mantiene reservas observadas y evita duplicarlas por
+  llamadas; enemigos antes que animales y recursos. Respeta roles, tareas
+  ocupadas, movimiento del tótem y límite de combate del cazador.
+- Las llamadas son temporales, silenciosas y usan tareas/campos existentes.
+  GameState v17 no necesita migración ni campos nuevos.
+- Verificado: TypeScript y 21 pruebas dirigidas de reglas puras de llamadas,
+  posiciones de combate y persistencia en tres archivos. No se han añadido
+  ni ejecutado pruebas visuales o del loop de gameplay para esta ampliación.
+- Pendiente: comprobar manualmente llamadas a respondedores lejanos, pérdida
+  de objetivos, prioridades y ausencia de aglomeraciones con la tribu completa.
+
+### Actualización de pruebas existentes de combate
+
+- Adaptados los escenarios de `stepSimulation.test.ts` a huecos de ataque
+  válidos, fuera del tótem y sin bárbaros solapados. La retirada comprueba
+  avance hacia el tótem admitiendo rodeos; el cooldown conserva sus plazos
+  y verifica el siguiente golpe desde una posición válida.
+- El regreso a aparición compara coordenadas con tolerancia decimal.
+- Verificado: las 42 pruebas existentes de ese archivo pasan. Este ajuste
+  modifica pruebas y documentación, sin cambiar la lógica de juego. La
+  fluidez visual y el playtest de navegación siguen pendientes del usuario.
+
+### Continuidad de navegación y posiciones de combate
+
+- Implementados rodeos con waypoints alrededor de trabajadores/actores,
+  continuidad del lado de evasión y replanteamiento espaciado ante bloqueo.
+  El idle espera antes de descartar su destino. Las reservas predicen el
+  siguiente waypoint en vez de prolongar el movimiento hasta el objetivo final.
+- Reservas de combate en `minionCombatPositions.ts`: conserva huecos válidos
+  al incorporarse atacantes; anillos separados de cuerpo a cuerpo y cazadores,
+  espera exterior si no hay plaza, validación de espacio y límites.
+- Bárbaros y aliados evitan sus trayectorias; la corrección residual de un
+  minion contra un bárbaro ya no desplaza al enemigo.
+- Velocidad ordinaria/caza/combate 6 m/s, idle 3 m/s, seguimiento del tótem
+  10 m/s y retorno sin trabajo 8 m/s. Sustituye los parámetros anteriores.
+- Bárbaros: persecución a 7 m/s y regreso al punto de aparición a 8 m/s.
+- El campo opcional de navegación conserva rutas y offsets en GameState v17;
+  los guardados anteriores no lo necesitan. No cambia inventario ni progresión.
+- Verificado: TypeScript, 37 pruebas dirigidas en cuatro archivos (geometría,
+  asignación de huecos, idle y persistencia) y `git diff --check`.
+  No se ejecutaron pruebas visuales ni del loop de gameplay.
+- Pendiente de playtest manual: vibraciones, bloqueos, rodeos a trabajadores,
+  combate con 2/8 minions y distintos roles, bordes y varios bárbaros.
+
+### Evitación entre aliados y visibilidad idle
+
+- Navegación compartida en idle, trabajo, regreso, formación, caza, huida
+  y combate: predicción de 0,6 s, separación de 0,94 m, desvíos, frenado y
+  espera. Se comprueban posiciones iniciales y movimientos reservados por tick.
+- Los idles ceden ante tareas activas, incluso durante pausas; los trabajadores
+  estacionarios conservan prioridad. Un paseo bloqueado descarta su destino
+  para replantearlo tras otra pausa. Las acciones comprueban la llegada resuelta.
+- Idle y reagrupación puntúan visibilidad y espacio entre aliados; se comparte
+  orientación de cámara y se permite usar la zona posterior. La reagrupación
+  conserva su objetivo durante el regreso para evitar cambios de slot continuos.
+- Se mantienen 3 m/s, destinos idle 4–8 m, pausas 1–3 s y regreso a 3,25 m.
+  No se añaden datos de navegación persistentes; se mantiene GameState v17.
+- Verificado: TypeScript y 30 pruebas dirigidas de geometría, idle y persistencia
+  en 3 archivos. No se han ejecutado pruebas visuales ni del loop de gameplay.
+- Pendiente: validación manual de cruces, fluidez, bloqueos, prioridades y
+  visibilidad con 2 y 8 minions, también cerca de los bordes y en combate.
+
+### Idle dinámico y reagrupación
+
+- Implementado `minionIdle.ts`: paseos a 3 m/s, destinos de 4–8 m,
+  pausas deterministas de 1–3 s y retorno sin trabajo a 3,25 m.
+- El paseo conserva la tarea idle y la búsqueda de trabajo en cada tick.
+  Se permiten trabajos encadenados; sin trabajo, fuera de 4 m se regresa.
+  Asignar otra tarea o mover el tótem cancela destino/espera del paseo.
+- La carga v16/v17 normaliza los nuevos datos idle opcionales y conserva
+  los válidos; no cambia la versión del estado ni los identificadores de tareas.
+- Verificado: TypeScript y 17 pruebas dirigidas de funciones puras y
+  persistencia en 2 archivos. Sin automatización visual ni del loop.
+- Pendiente: validar manualmente ritmo, separación, bordes, interrupciones,
+  retorno y guardado/carga con 2 y 8 minions.
+
+### Correcciones de HUD y nivel inicial
+
+- Retirado el coste en puntos de los tooltips tecnológicos; sigue visible
+  junto al icono y disponible en la etiqueta accesible del botón.
+
+- El nivel inicial pasa a 0 con 0 XP, requisito inicial de 12 XP y 0 puntos.
+  Guardados y metadatos admiten nivel 0; los niveles existentes se conservan.
+- Los paneles de gestión se posicionan sobre la fila de botones sin afectar
+  su distribución; los tooltips de sus tarjetas se ajustan al área visible
+  del juego al pasar el puntero, recibir foco o redimensionar.
+- El requisito tecnológico se expresa como «Nivel requerido: 2» para
+  Artesana/Mago y «Nivel requerido: 1» para Escudo.
+- Verificado: TypeScript, 16 pruebas dirigidas de progresión y persistencia,
+  y `git diff --check`. Servidor Vite disponible (HTTP 200).
+- Pendiente: revisión visual manual de tooltips, botón Mejoras y reflujo.
+
+### Tiempos de recolección
+
+- Las acciones de árbol usan una base de 3 s; vetas de piedra tier 1,
+  5 s; vetas tier 2, 7 s. Se conserva el efecto de velocidad de las
+  herramientas sobre los tiempos base; los demás nodos mantienen 1,5 s.
+- Verificado mediante TypeScript. Pendiente validar visualmente el ritmo
+  en juego; no se han automatizado comprobaciones de loop de gameplay.
+
+### Tres árboles tecnológicos, primera iteración
+
+- Catálogo compartido por compra y HUD: Supervivencia/Artesana y
+  Exploración/Mago requieren nivel 2; Combate/Escudo requiere nivel 1.
+  Todas cuestan 1 punto; no se añadieron las tecnologías propuestas futuras.
+- El panel abre con tres botones cerrados. Solo un árbol puede desplegarse,
+  en una fila horizontal con reflujo, manteniendo los iconos y estilos actuales.
+  Los tooltips incluyen nivel mínimo sin avisos de puntos faltantes.
+- Se mantiene v17 y los desbloqueos previos; la selección del árbol no se guarda.
+- Verificado: TypeScript y pruebas dirigidas de progresión/persistencia
+  (`16` pruebas, `2` archivos). Incluyen requisitos con puntos disponibles,
+  compra única, falta de puntos y conservación de desbloqueos heredados.
+- Pendiente: comprobación manual del panel, teclado, reflujo y compras visibles.
+
+### Economía y mejoras, fase 1
+
+- **Economía centralizada:** `economyConfig.ts` es la fuente única de las
+  curvas de Recolector, especializaciones, Escudo y herramientas. La
+  simulación y el HUD consultan las mismas reglas; las compras consumen
+  recursos solo cuando puede completarse toda la operación.
+- **Minions:** Recolector conserva la curva por población viva; Leñador,
+  Cazador, Artesana, Guardián y Escudo usan su curva por unidades activas.
+  El Mago exterior transforma un Recolector por 2 Brillo, no aumenta la
+  población y se limita a uno. Muertes y transformaciones recalculan desde
+  la composición actual.
+- **Herramientas:** los niveles 0–10 guardan costes de piedra, Brillo y Oro
+  según corresponda. Hacha y Martillo usan velocidad `+0,5 %` a `+5 %` y
+  probabilidad de un único drop adicional `0 %` a `30 %`; Espada aumenta
+  el daño del Guardián `+0,25` a `+2,50`.
+- **Piedra II:** `ResourceNode` admite tier serializable; una veta II queda
+  bloqueada hasta Martillo +5. La generación de vetas II sigue aplazada
+  porque sus parámetros de balance no están aprobados.
+- **Guardado:** se conserva `GameState` v17. Al leer v16/v17 parcial se
+  normalizan niveles de herramienta ausentes y los nodos sin tier se tratan
+  como nivel 1, sin descartar el resto de la partida.
+
+### Evidencia automática
+
+- `npx tsc -b --pretty false`: correcto.
+- `npm test`: correcto, 9 archivos y 82 pruebas. Incluye curvas, costes
+  mixtos atómicos, Mago exterior, recálculo de Guardián, efectos/tablas,
+  requisito Martillo +5 y migración v16/v17 parcial.
+
+### Validación manual pendiente
+
+Comprobar en navegador los costes e indicadores mixtos, recursos faltantes,
+el límite exterior del Mago, los procs visibles de madera/piedra, el ritmo de
+recolección y el balance del daño. Estas comprobaciones no se han sustituido
+por automatización visual ni de loop de juego.
+
 ## Revisión de progreso --- 02-11-2026
 
 ### Alcance de esta revisión

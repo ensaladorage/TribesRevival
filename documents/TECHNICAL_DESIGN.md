@@ -89,9 +89,11 @@ type GameState = {
 ```
 
 El esquema mostrado es orientativo; `src/simulation/types.ts` es la
-definición concreta del estado actual. El lector de guardados conserva
-compatibilidad con la versión 16 y normaliza los campos de herramientas
-y el contador de Magos al cargarla.
+definición concreta del estado actual. El flujo de guardar y cargar la
+versión actual funciona. Aunque el lector implementa compatibilidad con v16
+y normaliza algunos campos heredados o parciales, ampliar y validar
+compatibilidad entre versiones queda aplazado a una fase avanzada: no es un
+objetivo de trabajo ni una matriz de pruebas activa en esta etapa.
 
 `SaveGameRepository` administra slots locales, incluyendo la eliminación
 de un slot. La interfaz pide confirmación antes de invocar esa operación;
@@ -105,9 +107,27 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
 
 ### Contratos
 
+-   Los paneles de gestión se anclan de forma absoluta sobre la fila de
+    botones del dock, sin participar en su ancho. Los tooltips de sus tarjetas
+    se ajustan a los límites visibles del juego al recibir puntero o foco y
+    al redimensionar. El nivel inicial es 0; la lectura de guardados admite
+    nivel 0 tanto en el estado como en sus metadatos, sin renumerar partidas
+    existentes ni cambiar la versión del esquema.
+
+-   `technologyConfig.ts` define los tres árboles y el catálogo de tecnologías
+    con identificador, árbol, orden, coste y nivel mínimo. La simulación y el
+    HUD comparten `canUnlockTechnology`; `progression.ts` valida antes de
+    descontar puntos y registrar el desbloqueo. Los identificadores persistidos
+    no cambian y los requisitos solo se aplican a nuevas compras. El árbol
+    seleccionado pertenece al estado temporal del HUD, no a `GameState`.
+
 -   `ResourceNode` representa un nodo serializable con `id`, tipo,
     bioma, posición, cantidad restante, cantidad máxima, ritmo de
-    recolección, radio de interacción y marca de recurso secundario.
+    recolección, radio de interacción, marca de recurso secundario y un tier
+    opcional; la ausencia de tier significa nivel 1 para guardados heredados.
+-   `economyConfig.ts` concentra curvas, límites, costes compuestos y
+    efectos de herramientas. La simulación decide compras y el HUD solo
+    consulta esas mismas funciones para no duplicar reglas.
 -   `ResourceDrop` representa la carga dejada en el suelo: tipo,
     cantidad, posición y nodo de origen. No pertenece al tótem y puede
     ser recogido por cualquier unidad libre.
@@ -142,16 +162,79 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
     normal, por lo que un nodo o drop disponible puede detectarse de
     nuevo.
 -   La recolección es transaccional: al llegar al radio de interacción
-    comienza una acción de `1.5` segundos, pero el nodo y la carga no
+    comienza una acción. El tiempo base es `3` segundos por árbol,
+    `5` segundos por veta de piedra tier 1, `7` segundos por veta tier 2
+    y `1.5` segundos para otros nodos; las mejoras de herramienta reducen
+    el tiempo de árbol/piedra según su efecto. El nodo y la carga no
     cambian hasta completarla. Si el tótem se mueve durante esa ventana,
     el progreso se descarta y el nodo conserva su cantidad original; no
     se crea un drop parcial.
--   El radio de mando del tótem (`10` metros en la configuración
-    inicial) funciona también como radio de calma: un minion sin tarea
-    puede quedarse `idle` dentro de él y seguir escaneando. Tras
-    completar un nodo o recoger un drop, primero busca otra tarea local;
-    solo vuelve a la formación si no encuentra nada y está fuera de ese
-    radio.
+-   `minionIdle.ts` centraliza el paseo: destinos entre 4 y 8 m, velocidad
+    3 m/s y pausas 1–3 s. Ese anillo solo selecciona destinos preferidos;
+    la posición inicial del descanso puede estar en cualquier punto válido
+    dentro del radio real de mando. Los trayectos son cortos y evitan cruzar
+    el anillo interior; los candidatos fuera del mapa se descartan.
+-   Tras completar un trabajo, el minion primero busca otra tarea local.
+    Solo regresa si no encuentra trabajo y está fuera del radio de mando.
+    Dentro de ese radio mantiene `task.kind = idle` y alterna paseo y pausa, sin
+    perder la disponibilidad para tareas o llamadas. Las interrupciones
+    cancelan destino y espera; no reinician el contador de paseo.
+-   `UnitState.idleMovement` es opcional y serializa destino, espera restante
+    y contador. La semilla, ID de unidad y contador gobiernan la secuencia,
+    sin depender del render ni de aleatoriedad global. La carga v16/v17
+    inicializa solo datos idle ausentes o inválidos, conservando el resto
+    del estado y la versión 17. La formación durante arrastre sigue usando
+    su radio original. `totemRangeEntry` proyecta el retorno sin trabajo
+    sobre el radio de mando; `isWithinTotemRange` determina cuándo detenerlo.
+    `return-to-totem` recalcula el punto de entrada y cancela el regreso
+    inmediatamente al estar dentro, ignorando destinos centrales de guardados
+    anteriores. No asigna slots ni necesita migración de GameState v17.
+    `formationTarget` solo se usa en seguimiento/formación al mover el tótem;
+    una huida se dirige hacia el tótem respetando su despeje, sin slot asignado.
+-   `minionNavigation.ts` contiene funciones puras de evitación: mínima
+    separación 0,94 m, horizonte 0,6 s, candidatos directos y desviados
+    ±25/50/75 grados, velocidad normal o mitad y espera cuando no hay paso.
+    El movimiento compartido conserva el objetivo de tarea y determina
+    la llegada desde la posición resuelta, no desde la intención de avanzar.
+-   Cada tick construye posiciones iniciales y reservas de trayectorias,
+    transmitidas explícitamente a conflicto, supervivencia y formación.
+    Los segmentos efectivos se comprueban continuamente para evitar cruces
+    entre endpoints despejados; la predicción cesa cuando se alcanza el destino.
+    La prioridad favorece trabajadores estacionarios y tareas activas frente
+    al idle, con desempate por ID y preferencia lateral determinista. Los
+    idles en pausa pueden ceder ante un trabajador que se aproxima.
+-   La separación residual entre aliados mueve preferentemente al actor
+    que no está trabajando y resuelve también posiciones coincidentes.
+    Sigue siendo una salvaguarda posterior a la evitación, no el sistema
+    principal de navegación. La reacción de enemigos conserva sus reglas.
+-   La navegación conserva una ruta de puntos intermedios elegida mediante
+    un pequeño grafo de visibilidad alrededor de actores. Un rodeo a un
+    trabajador conserva la ruta; los cruces móviles mantienen lado de evasión
+    al menos 0,6 s y puntúan continuidad de dirección. El bloqueo activa
+    replanteamiento con espera, limitado a una consulta cada 0,6 s; el idle
+    descarta el destino tras 1,2 s sin poder avanzar. Se reinicia la ruta
+    al cambiar tarea/objetivo. Movimiento ordinario y combate comparten
+    6 m/s; idle usa 3 m/s, seguimiento del tótem 10 m/s y retorno sin
+    trabajo 8 m/s mediante constantes separadas.
+-   `minionCombatPositions.ts` reserva huecos geométricamente libres por
+    objetivo antes de mover atacantes: conserva los offsets válidos antes
+    de asignar nuevas posiciones, anillo de seis plazas a 0,98 m para
+    cuerpo a cuerpo, espera a 2,1 m y anillo de cazadores a 4,6 m. Los
+    candidatos se descartan por límites, tótem, trabajadores, otras reservas
+    y otros bárbaros. Los cazadores reposicionan antes de atacar; los golpes
+    requieren alcance real y proximidad al hueco. Los bárbaros también
+    comprueban las trayectorias reservadas de aliados antes de desplazarse.
+    La corrección residual minion/bárbaro nunca mueve al bárbaro.
+-   `worldView.ts` comparte la orientación fija entre cámara y simulación.
+    Los candidatos idle se puntúan por dirección posterior y proximidad
+    a posiciones/destinos aliados (radio 1,5 m, peso 2 para aglomeración).
+    El retorno al rango usa la entrada más cercana sin puntuación visual ni
+    slots centrales. Las reservas de trayectorias son temporales por tick.
+    El campo opcional `UnitState.navigation` guarda objetivo, waypoints,
+    velocidad previa, lado/espera de evasión, temporizadores y offset de
+    combate para mantener continuidad tras cargar. Los guardados sin él
+    siguen siendo válidos; los datos de navegación malformados se descartan
+    conservando la unidad y el resto del progreso. Se mantiene GameState v17.
 -   No existe hambre en el diseño actual. La comida es un recurso
     almacenado que se gastará en curación mediante hoguera y en compras
     o transformaciones que la requieran.
@@ -217,6 +300,20 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
     libre con afinidad válida; no desbloquea recursos sin recolector
     jugable. La comunicación es puramente interna y no genera feedback
     visual ni sonoro.
+-   `minionAwareness.ts` calcula llamadas de enemigos y animales desde una
+    instantánea de unidades/objetivos vivos por tick. Ordena enemigos antes
+    que animales y desempata por distancia e ID. Conserva asignaciones
+    existentes mientras haya observación real; para objetivos sin atender
+    reserva un único combatiente/cazador libre, sin carga. Un respondedor
+    recibe como máximo una llamada. La elegibilidad del cazador considera
+    su leash y el radio de posición de combate compartido con las reservas.
+    No propaga mensajes recursivos ni persiste una memoria de entidades ocultas.
+-   `updateConflict` combina detección personal y llamadas recibidas, con
+    prioridad de amenazas sobre caza. La comunicación permite conservar un
+    objetivo remoto observado por un compañero, sin ampliar el radio personal.
+    Las llamadas se resuelven antes que las de recursos; se suspenden durante
+    el movimiento del tótem. Usa `combat`/`hunt` y causas existentes:
+    no cambia GameState v17 ni añade alertas o datos de guardado.
 -   Los drops son universales para todos los roles y por eso no
     requieren llamadas; cada drop sigue representando una unidad
     individual.
@@ -247,8 +344,8 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
     drops usa PRNG con semilla; no depende de `Math.random()`, meshes ni
     DOM. Los bárbaros reaparecen en `60 s`, los conejos en `30 s`.
 -   El combate corre en el tick fijo de `20 Hz`, con cooldown global por
-    minion, bloqueo breve del cazador durante el golpe, leash de `10 m`
-    al tótem y velocidad de combate de `6 m/s`; conserva selección
+    minion, bloqueo de 0,22 s de los minions durante el golpe, leash de `10 m`
+    al tótem y velocidad normal y de combate de `6 m/s`; conserva selección
     equilibrada de objetivos y posiciones de ataque distribuidas. Roles
     armados responden automáticamente; roles sin arma huyen.
 -   La separación y el despeje del tótem se aplican en simulación; la
@@ -257,6 +354,8 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
 -   Al mover el tótem, los combatientes completan como máximo un golpe
     en curso y se reagrupan. Los bárbaros abandonan la persecución
     cuando todos los minions salen de `15 m`.
+-   Los bárbaros usan velocidades separadas: `7 m/s` al perseguir minions
+    y `8 m/s` al volver a su punto de aparición.
 -   Las barras de vida y alertas 2D del bárbaro se destruyen al morir y
     se crean de nuevo al respawn.
 -   La tarea de saqueo reserva el cadáver para un minion. Tras `1,5 s`

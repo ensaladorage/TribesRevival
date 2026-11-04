@@ -7,7 +7,8 @@ import {
   RECRUITMENT_RADIUS,
   TOTEM_CLEARANCE_EPSILON,
   TOTEM_NO_STOP_RADIUS,
-  TOTEM_CHASE_SPEED,
+  TOTEM_FOLLOW_SPEED,
+  TOTEM_RETURN_SPEED,
   UNIT_SPEED,
   applyInputActions,
   projectOutsideTotemClearance,
@@ -56,12 +57,14 @@ describe('stepSimulation', () => {
 
   it('engages detected barbarians, applies hunter damage, and signals once per encounter', () => {
     const state = createInitialState('hito-4-combat');
-    const hunter = createUnitState('test-hunter', 'hunter', { x: 80, y: 80 });
+    // Start in a valid ranged slot, outside the totem's no-stop footprint.
+    const hunter = createUnitState('test-hunter', 'hunter', { x: 80.4, y: 80 });
     const barbarian = state.barbarians[0];
     state.units = [hunter];
     state.barbarians = [barbarian];
     state.animals = [];
     state.resources = [];
+    state.totem.position = { x: 80, y: 86 };
     barbarian.position = { x: 85, y: 80 };
     barbarian.patrolCenter = { ...barbarian.position };
     barbarian.patrolTarget = { ...barbarian.position };
@@ -83,7 +86,7 @@ describe('stepSimulation', () => {
     expect(state.phase).toBe('playing');
   });
 
-  it('slows the hunter in combat, locks movement during the strike, and keeps it in the totem leash', () => {
+  it('caps hunter combat movement at normal speed, locks the strike, and respects the totem leash', () => {
     const state = createInitialState('hunter-leash-and-strike');
     const hunter = createUnitState('leashed-hunter', 'hunter', { x: 84, y: 80 });
     const barbarian = state.barbarians[0];
@@ -138,7 +141,7 @@ describe('stepSimulation', () => {
     state.resources = [];
     state.totem.position = { x: 80, y: 80 };
     state.totem.moving = true;
-    barbarian.position = { x: 40.9, y: 40 };
+    barbarian.position = { x: 40.98, y: 40 };
     barbarian.health = 5;
     barbarian.patrolCenter = { ...barbarian.position };
     barbarian.patrolTarget = { ...barbarian.position };
@@ -159,7 +162,14 @@ describe('stepSimulation', () => {
     stepSimulation(state, TICK, [], { enableSurvival: true });
     expect(barbarian.health).toBe(3);
     expect(guardian.task.kind).not.toBe('combat');
-    expect(guardian.position.x).toBeGreaterThan(40);
+    // Withdrawal may initially steer sideways around the enemy rather than along +X.
+    const distanceBeforeRetreat = clearanceDistance(guardian.position, state.totem.position);
+    for (let tick = 0; tick < 20; tick += 1) {
+      stepSimulation(state, TICK, [], { enableSurvival: true });
+    }
+    expect(guardian.task.kind).not.toBe('combat');
+    expect(clearanceDistance(guardian.position, state.totem.position)).toBeLessThan(distanceBeforeRetreat);
+    expect(barbarian.health).toBe(3);
   });
 
   it('keeps a minion attack cooldown when its target dies and selects another target', () => {
@@ -167,13 +177,13 @@ describe('stepSimulation', () => {
     const hunter = createUnitState('global-cooldown-hunter', 'hunter', { x: 40, y: 40 });
     const [first, second] = state.barbarians;
     state.units = [hunter];
-    state.totem.position = { x: 40, y: 50 };
+    state.totem.position = { x: 40, y: 46 };
     state.barbarians = [first, second];
     state.animals = [];
     state.resources = [];
-    first.position = { x: 44.5, y: 40 };
+    first.position = { x: 44.6, y: 40 };
     first.health = 1;
-    second.position = { x: 44.8, y: 40 };
+    second.position = { x: 44.8, y: 45 };
     first.patrolCenter = { ...first.position };
     second.patrolCenter = { ...second.position };
     first.patrolTarget = { ...first.position };
@@ -190,8 +200,14 @@ describe('stepSimulation', () => {
       stepSimulation(state, TICK, [], { enableSurvival: true });
     }
     expect(second.health).toBe(5);
+    expect(hunter.attackCooldownRemainingSeconds).toBeCloseTo(0.05);
+    // Isolate cooldown expiry from travel time to the second target's slot.
+    hunter.position = { x: 40, y: 40 };
+    hunter.navigation = undefined;
+    second.position = { x: 44.6, y: 40 };
     stepSimulation(state, TICK, [], { enableSurvival: true });
     expect(second.health).toBe(4);
+    expect(hunter.attackCooldownRemainingSeconds).toBeCloseTo(1.3);
   });
 
   it('waits at a deterministic patrol point and moves at the slower patrol speed', () => {
@@ -233,7 +249,7 @@ describe('stepSimulation', () => {
     )).toBeLessThanOrEqual(BARBARIAN_PATROL_RADIUS + 1e-6);
   });
 
-  it('returns a disengaged barbarian to spawn at chase speed before slow patrol resumes', () => {
+  it('returns a disengaged barbarian to spawn at 8 m/s before slow patrol resumes', () => {
     const state = createInitialState('barbarian-return-home');
     const unit = createUnitState('far-away-minion', 'gatherer', { x: 10, y: 10 });
     const barbarian = state.barbarians[0];
@@ -260,7 +276,8 @@ describe('stepSimulation', () => {
     for (let tick = 0; tick < 30; tick += 1) {
       stepSimulation(state, TICK, [], { enableSurvival: true });
     }
-    expect(barbarian.position).toEqual(spawn);
+    expect(barbarian.position.x).toBeCloseTo(spawn.x, 8);
+    expect(barbarian.position.y).toBeCloseTo(spawn.y, 8);
     expect(barbarian.returningToSpawn).toBe(false);
     expect(barbarian.patrolWaitRemainingSeconds).toBeGreaterThanOrEqual(2);
     expect(barbarian.patrolWaitRemainingSeconds).toBeLessThanOrEqual(4);
@@ -475,7 +492,9 @@ describe('stepSimulation', () => {
     state.barbarians = [barbarian];
     state.animals = [];
     state.resources = [];
-    barbarian.position = { x: 81, y: 80 };
+    // Reserve the melee ring away from the totem so the first tick can strike.
+    state.totem.position = { x: 80, y: 86 };
+    barbarian.position = { x: 80.98, y: 80 };
     barbarian.health = 1;
     barbarian.patrolCenter = { ...barbarian.position };
     barbarian.patrolTarget = { ...barbarian.position };
@@ -531,20 +550,17 @@ describe('stepSimulation', () => {
     expect(state.effects).toHaveLength(0);
   });
 
-  it('damages one minion by one point and grants debug resources in batches of ten', () => {
+  it('damages one minion by one point and grants one hundred of every debug resource', () => {
     const state = createInitialState();
 
     stepSimulation(state, TICK, [
       { type: 'debug-damage-one-minion' },
-      { type: 'debug-add-resource', resource: 'food', amount: 10 },
-      { type: 'debug-add-resource', resource: 'wood', amount: 10 },
-      { type: 'debug-add-resource', resource: 'stone', amount: 10 },
-      { type: 'debug-add-resource', resource: 'spark', amount: 10 },
+      { type: 'debug-add-all-resources' },
     ]);
 
     expect(state.units.filter((unit) => unit.health === 3)).toHaveLength(1);
     expect(state.units.filter((unit) => unit.health === 4)).toHaveLength(1);
-    expect(state.inventory.amounts).toEqual({ food: 10, wood: 10, stone: 10, spark: 10, gold: 0 });
+    expect(state.inventory.amounts).toEqual({ food: 100, wood: 100, stone: 100, spark: 100, gold: 100 });
   });
 
   it('keeps a corpse on the map and triggers defeat when the last minion dies', () => {
@@ -921,7 +937,7 @@ describe('stepSimulation', () => {
       .toBeLessThanOrEqual(FORMATION_RADIUS + 0.001);
   });
 
-  it('moves minions toward the totem fifty percent faster without changing gather speed', () => {
+  it('uses separate speeds for following and returning to the totem', () => {
     const following = createInitialState('totem-chase-speed');
     following.units = [createUnitState('following-minion', 'gatherer', { x: 80, y: 80 })];
     following.totem.isCarried = true;
@@ -932,8 +948,9 @@ describe('stepSimulation', () => {
     expect(Math.hypot(
       following.units[0].position.x - 80,
       following.units[0].position.y - 80,
-    )).toBeCloseTo(TOTEM_CHASE_SPEED * TICK);
-    expect(TOTEM_CHASE_SPEED).toBe(UNIT_SPEED * 1.5);
+    )).toBeCloseTo(TOTEM_FOLLOW_SPEED * TICK);
+    expect(TOTEM_FOLLOW_SPEED).toBe(10);
+    expect(TOTEM_RETURN_SPEED).toBe(8);
 
     const returning = createInitialState('totem-return-speed');
     returning.units = [createUnitState('returning-minion', 'gatherer', { x: 80, y: 80 })];
@@ -947,7 +964,10 @@ describe('stepSimulation', () => {
 
     stepSimulation(returning, TICK, [], { enableSurvival: true });
 
-    expect(returning.units[0].position.x - 80).toBeCloseTo(TOTEM_CHASE_SPEED * TICK);
+    expect(Math.hypot(returning.units[0].position.x - 80, returning.units[0].position.y - 80))
+      .toBeCloseTo(TOTEM_RETURN_SPEED * TICK);
+    expect(clearanceDistance(returning.units[0].position, returning.totem.position))
+      .toBeLessThan(Math.hypot(20, 20));
 
     const gathering = createInitialState('gather-speed-unchanged');
     gathering.units = [createUnitState('gathering-minion', 'gatherer', { x: 80, y: 80 })];
@@ -1198,12 +1218,12 @@ describe('stepSimulation', () => {
     state.units = [state.units[0]];
     state.resources = [];
     state.drops = [];
-    state.units[0].position = { x: 86, y: 80 };
+    state.units[0].position = { x: 89, y: 80 };
 
     stepSimulation(state, TICK, [], { enableSurvival: true });
 
     expect(state.units[0].task.kind).toBe('idle');
-    expect(state.units[0].position).toEqual({ x: 86, y: 80 });
+    expect(state.units[0].position).toEqual({ x: 89, y: 80 });
 
     state.units[0].position = { x: 95, y: 80 };
     stepSimulation(state, TICK, [], { enableSurvival: true });

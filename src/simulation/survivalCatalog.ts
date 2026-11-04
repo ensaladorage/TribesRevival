@@ -384,6 +384,7 @@ export function createResourceNodes(
         amount: maxAmount,
         maxAmount,
         gatherRate: 1,
+        tier: 1 as const,
         ...(type === 'wood' && RESOURCE_SOURCES[type] === 'tree'
           ? { yieldAmount: treeYieldRandom.nextInt(2, 3) }
           : {}),
@@ -431,6 +432,7 @@ export function createResourceNodes(
       amount: 1,
       maxAmount: 1,
       gatherRate: 1,
+      tier: 1 as const,
       yieldAmount: TWIG_NODE_YIELD,
     };
   });

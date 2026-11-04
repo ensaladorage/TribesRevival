@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createInitialState } from '../simulation/createInitialState';
+import { chooseIdleDestination } from '../simulation/minionIdle';
+import { createMinionNavigationState } from '../simulation/minionNavigation';
 import {
   getSaveFingerprint,
   SaveGameRepository,
@@ -17,6 +19,65 @@ function createMemoryStorage(): SaveStorage & { values: Map<string, string> } {
 }
 
 describe('save game repository', () => {
+  it('preserves a committed route and combat offset without requiring them in older saves', () => {
+    const repository = new SaveGameRepository(createMemoryStorage());
+    const state = createInitialState('navigation-save');
+    state.units[0].navigation = { ...createMinionNavigationState({ x: 85, y: 82 }),
+      waypoints: [{ x: 83, y: 83 }], velocity: { x: 3, y: 2 }, side: 1, sideHoldSeconds: 0.4,
+      combatTargetId: 'barbarian-1', combatOffset: { x: 0.98, y: 0 } };
+    repository.save(1, state, '2026-11-04T10:00:00.000Z');
+    const slot = repository.readSlot(1);
+    if (slot.status !== 'valid') throw new Error('Expected a valid save slot');
+    expect(slot.save.gameState).toEqual(state);
+    expect(slot.save.gameState.units[1].navigation).toBeUndefined();
+  });
+
+  it('preserves an idle destination, pause and deterministic continuation', () => {
+    const repository = new SaveGameRepository(createMemoryStorage());
+    const state = createInitialState('idle-save');
+    state.units[0].idleMovement = { destination: { x: 82.6, y: 81 }, waitRemainingSeconds: 0.8, step: 12 };
+    repository.save(1, state, '2026-11-04T10:00:00.000Z');
+    const slot = repository.readSlot(1);
+    if (slot.status !== 'valid') throw new Error('Expected a valid save slot');
+    expect(slot.save.gameState).toEqual(state);
+    const restored = slot.save.gameState.units[0];
+    const area = { center: state.totem.position, commandRadius: 10, minimumCoordinate: 2, maximumCoordinate: 158 };
+    expect(chooseIdleDestination(state.seed, restored.id, restored.idleMovement!.step, restored.position, area))
+      .toEqual(chooseIdleDestination(state.seed, state.units[0].id, 12, state.units[0].position, area));
+  });
+
+  it.each([16, 17])('initializes absent or malformed idle data in v%s without losing existing progress', (version) => {
+    const storage = createMemoryStorage();
+    const state = createInitialState('legacy-idle-save');
+    state.inventory.amounts.gold = 7;
+    state.progression.unlockedTechnologies = ['artisan'];
+    const stored = structuredClone(state) as unknown as Record<string, unknown>;
+    stored.version = version;
+    const units = stored.units as Array<Record<string, unknown>>;
+    delete units[0].idleMovement;
+    units[1].idleMovement = { destination: null, waitRemainingSeconds: -1, step: 1.5 };
+    storage.values.set('tribes-revival.save.v1.slot.1', JSON.stringify({
+      schemaVersion: 1,
+      metadata: { savedAt: '2026-11-04T10:00:00.000Z', level: 0, minionCount: 2 },
+      gameState: stored,
+    }));
+    const slot = new SaveGameRepository(storage).readSlot(1);
+    if (slot.status !== 'valid') throw new Error('Expected a migrated save slot');
+    expect(slot.save.gameState).toEqual(state);
+  });
+
+  it('preserves points and existing technology unlocks without applying new purchase requirements on load', () => {
+    const repository = new SaveGameRepository(createMemoryStorage());
+    const state = createInitialState('technology-trees-save');
+    state.progression.technologyPoints = 4;
+    state.progression.unlockedTechnologies = ['artisan', 'mage', 'shield'];
+    repository.save(1, state, '2026-11-04T10:00:00.000Z');
+    const slot = repository.readSlot(1);
+    if (slot.status !== 'valid') throw new Error('Expected a valid save slot');
+    expect(slot.save.gameState.version).toBe(17);
+    expect(slot.save.gameState.progression).toEqual(state.progression);
+  });
+
   it('lists three empty slots and saves a resumable snapshot with metadata', () => {
     const storage = createMemoryStorage();
     const repository = new SaveGameRepository(storage);
@@ -94,6 +155,31 @@ describe('save game repository', () => {
     expect(slot.save.gameState.version).toBe(17);
     expect(slot.save.gameState.toolLevels).toEqual({ axe: 0, hammer: 0, sword: 0 });
     expect(slot.save.gameState.purchaseCounts.mage).toBe(0);
+  });
+
+  it('normalizes partial v17 tool levels and treats legacy resource nodes as tier one', () => {
+    const storage = createMemoryStorage();
+    const state = createInitialState('partial-v17-save');
+    state.toolLevels = { axe: 8, hammer: 5, sword: 3 };
+    const partial = structuredClone(state) as unknown as Record<string, unknown>;
+    partial.toolLevels = { axe: 8 };
+    const resources = partial.resources as Array<Record<string, unknown>>;
+    delete resources[0].tier;
+    storage.values.set('tribes-revival.save.v1.slot.1', JSON.stringify({
+      schemaVersion: 1,
+      metadata: {
+        savedAt: '2026-11-04T10:00:00.000Z',
+        level: state.progression.level,
+        minionCount: state.units.length,
+      },
+      gameState: partial,
+    }));
+
+    const slot = new SaveGameRepository(storage).readSlot(1);
+    expect(slot.status).toBe('valid');
+    if (slot.status !== 'valid') throw new Error('Expected a normalized v17 save slot');
+    expect(slot.save.gameState.toolLevels).toEqual({ axe: 8, hammer: 0, sword: 0 });
+    expect(slot.save.gameState.resources[0].tier).toBeUndefined();
   });
 
   it('uses normalized state to detect unsaved changes while ignoring pause state', () => {

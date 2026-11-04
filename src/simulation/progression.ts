@@ -1,8 +1,9 @@
 import type { ProgressionState } from './types';
 import type { TechnologyId } from './survivalTypes';
+import { canUnlockTechnology, getTechnology } from './technologyConfig';
 
 export const PROGRESSION_BALANCE = {
-  initialLevel: 1,
+  initialLevel: 0,
   initialExperience: 0,
   initialTechnologyPoints: 0,
   experiencePerGatherAction: 1,
@@ -10,7 +11,6 @@ export const PROGRESSION_BALANCE = {
   experiencePerBarbarianDefeated: 5,
   initialExperienceToNextLevel: 12,
   experienceRequirementIncreasePerLevel: 12,
-  technologyPointCost: 1,
   shieldMaximumHealthBonus: 1,
 } as const;
 
@@ -44,12 +44,10 @@ export function unlockTechnology(
   progression: ProgressionState,
   technology: TechnologyId,
 ): boolean {
-  if (
-    progression.technologyPoints < PROGRESSION_BALANCE.technologyPointCost
-    || progression.unlockedTechnologies.includes(technology)
-  ) return false;
+  const definition = getTechnology(technology);
+  if (!definition || !canUnlockTechnology(progression, technology)) return false;
 
-  progression.technologyPoints -= PROGRESSION_BALANCE.technologyPointCost;
+  progression.technologyPoints -= definition.cost;
   progression.unlockedTechnologies.push(technology);
   return true;
 }

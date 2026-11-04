@@ -16,6 +16,13 @@ import {
 } from '@babylonjs/core';
 import { ActionQueue } from '../input/actions';
 import { createInitialState } from '../simulation/createInitialState';
+import { WORLD_VIEW_YAW } from '../simulation/worldView';
+import {
+  TECHNOLOGIES,
+  TECHNOLOGY_TREES,
+  canUnlockTechnology,
+  type TechnologyTreeId,
+} from '../simulation/technologyConfig';
 import {
   clampWorldPosition,
   HUNTER_TOTEM_LEASH_RADIUS,
@@ -26,15 +33,19 @@ import {
 import {
   countUnitsWithRole,
   canConvertLastGathererToNonCombatSpecialist,
-  getMageSpecializationCost,
-  getMinionPurchaseCost,
-  getToolUpgradeCost,
-  MAX_TOOL_LEVEL,
-  MAX_PLAYABLE_MINIONS,
-  MAX_MINIONS_PER_TYPE,
   getResourceDetectionRadius,
-  STARTING_MINION_COUNT,
 } from '../simulation/survivalRules';
+import {
+  MAX_PLAYABLE_MINIONS,
+  MAX_TOOL_LEVEL,
+  canAffordCost,
+  getGathererRecruitmentCost,
+  getShieldCost,
+  getSpecializationCost,
+  getSpecializationLimit,
+  getToolEffect,
+  getToolUpgradeCost,
+} from '../simulation/economyConfig';
 import type {
   AnimalState,
   BarbarianCorpse,
@@ -51,6 +62,7 @@ import type {
   BiomeId,
   ResourceDrop,
   ResourceNode,
+  ResourceCost,
   ResourceType,
   SpecializationItem,
   WorldDecoration,
@@ -70,7 +82,7 @@ const FIXED_DT = 1 / 20;
 const MAX_STEPS_PER_FRAME = 4;
 const BASE_VIEW_HEIGHT = 72;
 const CAMERA_DISTANCE = 120;
-const CAMERA_YAW = Math.PI / 4;
+const CAMERA_YAW = WORLD_VIEW_YAW;
 const CAMERA_PITCH = (35 * Math.PI) / 180;
 const CAMERA_ZOOM_LIMIT_MIN = 0.5;
 const CAMERA_ZOOM_LIMIT_MAX = 2;
@@ -166,6 +178,7 @@ export class BabylonGame {
   private hudPreviewPosition: Vec2 | null = null;
   private hudHeldItemMeshes: Mesh[] = [];
   private technologyTreeOpen = false;
+  private selectedTechnologyTree: TechnologyTreeId | null = null;
   private upgradeMenuOpen = false;
   private debugToolsVisible = false;
   private lastObservedProgressionLevel = this.state.progression.level;
@@ -228,6 +241,9 @@ export class BabylonGame {
     window.removeEventListener('pointerup', this.handleHudPointerUp);
     window.removeEventListener('pointercancel', this.handleHudPointerCancel);
     this.canvas.removeEventListener('wheel', this.handleWheel);
+    const menuDock = document.querySelector('#hud-menu-dock');
+    menuDock?.removeEventListener('pointerover', this.handleManagementTooltip);
+    menuDock?.removeEventListener('focusin', this.handleManagementTooltip);
     this.healthOverlay.remove();
     this.alertAudioContext?.close();
     this.scene.onPointerObservable.removeCallback(this.handlePointer);
@@ -249,7 +265,38 @@ export class BabylonGame {
   private readonly resize = (): void => {
     this.engine.resize();
     this.updateCameraProjection();
+    for (const button of document.querySelectorAll<HTMLButtonElement>('#hud-menu-dock .technology-option:hover, #hud-menu-dock .technology-option:focus-visible')) {
+      this.positionManagementTooltip(button);
+    }
   };
+
+  private readonly handleManagementTooltip = (event: Event): void => {
+    const button = event.target instanceof Element
+      ? event.target.closest<HTMLButtonElement>('.technology-option.hud-tooltip') : null;
+    if (button) this.positionManagementTooltip(button);
+  };
+
+  private positionManagementTooltip(button: HTMLButtonElement): void {
+    const shell = document.querySelector('#game-shell');
+    if (!shell) return;
+    const bounds = shell.getBoundingClientRect();
+    const buttonBounds = button.getBoundingClientRect();
+    const tooltip = getComputedStyle(button, '::after');
+    const width = Number.parseFloat(tooltip.width);
+    const height = Number.parseFloat(tooltip.height);
+    if (!Number.isFinite(width) || !Number.isFinite(height)) return;
+    const margin = 10;
+    const left = Math.max(bounds.left, 0) + margin;
+    const right = Math.min(bounds.right, window.innerWidth) - margin;
+    const top = Math.max(bounds.top, 0) + margin;
+    const bottom = Math.min(bounds.bottom, window.innerHeight) - margin;
+    // Pseudo-element coordinates are relative to the button padding box.
+    const originX = buttonBounds.left + button.clientLeft;
+    const originY = buttonBounds.top + button.clientTop;
+    button.style.setProperty('--menu-tooltip-left', `${clamp(buttonBounds.left, left, Math.max(left, right - width)) - originX}px`);
+    button.style.setProperty('--menu-tooltip-top', `${clamp(buttonBounds.top - height - 8, top, Math.max(top, bottom - height)) - originY}px`);
+    button.style.setProperty('--menu-tooltip-bottom', 'auto');
+  }
 
   private readonly frame = (): void => {
     const frameSeconds = Math.min(this.engine.getDeltaTime() / 1000, 0.25);
@@ -1268,6 +1315,9 @@ export class BabylonGame {
     window.addEventListener('pointerup', this.handleHudPointerUp);
     window.addEventListener('pointercancel', this.handleHudPointerCancel);
     this.canvas.addEventListener('wheel', this.handleWheel, { passive: false });
+    const menuDock = document.querySelector('#hud-menu-dock');
+    menuDock?.addEventListener('pointerover', this.handleManagementTooltip);
+    menuDock?.addEventListener('focusin', this.handleManagementTooltip);
     const hud = document.querySelector('#hud');
     hud?.addEventListener('click', this.handleHudClick);
     hud?.addEventListener('pointerdown', this.handleHudPointerDown);
@@ -1482,19 +1532,14 @@ export class BabylonGame {
       return;
     }
 
-    const tool = button.dataset.upgradeTool;
-    if (tool === 'axe' || tool === 'hammer' || tool === 'sword') {
-      this.actionQueue.enqueue({ type: 'upgrade-tool', tool });
+    if (button.dataset.debugAction === 'add-all-resources') {
+      this.actionQueue.enqueue({ type: 'debug-add-all-resources' });
       return;
     }
 
-    const debugResource = button.dataset.debugResource as ResourceType | undefined;
-    if (debugResource && RESOURCE_TYPES.includes(debugResource)) {
-      this.actionQueue.enqueue({
-        type: 'debug-add-resource',
-        resource: debugResource,
-        amount: 10,
-      });
+    const tool = button.dataset.upgradeTool;
+    if (tool === 'axe' || tool === 'hammer' || tool === 'sword') {
+      this.actionQueue.enqueue({ type: 'upgrade-tool', tool });
       return;
     }
 
@@ -1518,7 +1563,15 @@ export class BabylonGame {
     const target = event.target as HTMLElement;
     if (target.closest<HTMLButtonElement>('[data-technology-toggle]')) {
       this.technologyTreeOpen = !this.technologyTreeOpen;
+      this.selectedTechnologyTree = null;
       if (this.technologyTreeOpen) this.upgradeMenuOpen = false;
+      this.updateHud();
+      return;
+    }
+
+    const tree = target.closest<HTMLButtonElement>('[data-technology-tree]')?.dataset.technologyTree;
+    if (tree && Object.hasOwn(TECHNOLOGY_TREES, tree)) {
+      this.selectedTechnologyTree = this.selectedTechnologyTree === tree ? null : tree as TechnologyTreeId;
       this.updateHud();
       return;
     }
@@ -1528,7 +1581,8 @@ export class BabylonGame {
     if (
       !button
       || button.disabled
-      || (technology !== 'artisan' && technology !== 'mage' && technology !== 'shield')
+      || !technology
+      || !canUnlockTechnology(this.state.progression, technology)
     ) return;
 
     this.pendingTechnologyUnlock = technology;
@@ -1913,6 +1967,7 @@ export class BabylonGame {
     this.hudPointerTarget = null;
     this.hudPreviewPosition = null;
     this.technologyTreeOpen = false;
+    this.selectedTechnologyTree = null;
     this.upgradeMenuOpen = false;
     this.debugToolsVisible = false;
     this.pendingTechnologyUnlock = null;
@@ -2949,27 +3004,28 @@ export class BabylonGame {
       if (amount) amount.textContent = String(Math.floor(amounts[resource]));
     }
     const totalMinionLimitReached = this.state.units.length >= MAX_PLAYABLE_MINIONS;
-    const lumberjackLimitReached = countUnitsWithRole(this.state.units, 'lumberjack') >= MAX_MINIONS_PER_TYPE;
-    const hunterLimitReached = countUnitsWithRole(this.state.units, 'hunter') >= MAX_MINIONS_PER_TYPE;
-    const guardianLimitReached = countUnitsWithRole(this.state.units, 'guardian') >= MAX_MINIONS_PER_TYPE;
-    const artisanLimitReached = countUnitsWithRole(this.state.units, 'artisan') >= MAX_MINIONS_PER_TYPE;
+    const lumberjackCount = countUnitsWithRole(this.state.units, 'lumberjack');
+    const hunterCount = countUnitsWithRole(this.state.units, 'hunter');
+    const guardianCount = countUnitsWithRole(this.state.units, 'guardian');
+    const artisanCount = countUnitsWithRole(this.state.units, 'artisan');
+    const lumberjackLimitReached = lumberjackCount >= getSpecializationLimit('axe');
+    const hunterLimitReached = hunterCount >= getSpecializationLimit('bow');
+    const guardianLimitReached = guardianCount >= getSpecializationLimit('sword');
+    const artisanLimitReached = artisanCount >= getSpecializationLimit('hammer');
     const gathererUnavailable = countUnitsWithRole(this.state.units, 'gatherer') === 0;
     const guardianUnavailable = gathererUnavailable;
     const nonCombatSpecialistBlockedByLastGatherer = !canConvertLastGathererToNonCombatSpecialist(this.state.units);
-    const gathererCost = getMinionPurchaseCost(
-      this.state.units.length,
-      STARTING_MINION_COUNT,
-    );
+    const gathererCost = getGathererRecruitmentCost(this.state.units.length);
     const mageCount = countUnitsWithRole(this.state.units, 'mage');
-    const mageCost = getMageSpecializationCost(mageCount);
-    const axeCost = getMinionPurchaseCost(countUnitsWithRole(this.state.units, 'lumberjack'));
-    const bowCost = getMinionPurchaseCost(countUnitsWithRole(this.state.units, 'hunter'));
-    const artisanCost = getMinionPurchaseCost(countUnitsWithRole(this.state.units, 'artisan'));
+    const mageCost = getSpecializationCost('mage', mageCount);
+    const axeCost = getSpecializationCost('axe', lumberjackCount);
+    const bowCost = getSpecializationCost('bow', hunterCount);
+    const swordCost = getSpecializationCost('sword', guardianCount);
+    const artisanCost = getSpecializationCost('hammer', artisanCount);
     const shieldedGuardianCount = this.state.units.filter((unit) => (
       unit.role === 'guardian' && unit.hasShield
     )).length;
-    const guardianCount = countUnitsWithRole(this.state.units, 'guardian');
-    const shieldCost = getMinionPurchaseCost(shieldedGuardianCount);
+    const shieldCost = getShieldCost(shieldedGuardianCount);
     const artisanUnlocked = this.state.progression.unlockedTechnologies.includes('artisan');
     const mageUnlocked = this.state.progression.unlockedTechnologies.includes('mage');
     const shieldUnlocked = this.state.progression.unlockedTechnologies.includes('shield');
@@ -2993,6 +3049,7 @@ export class BabylonGame {
     );
 
     if (this.state.progression.level > this.lastObservedProgressionLevel) {
+      if (!this.technologyTreeOpen) this.selectedTechnologyTree = null;
       this.technologyTreeOpen = true;
       this.upgradeMenuOpen = false;
     }
@@ -3019,23 +3076,32 @@ export class BabylonGame {
     if (technologyPointsSummary) {
       technologyPointsSummary.textContent = `Puntos disponibles: ${this.state.progression.technologyPoints}`;
     }
-    for (const technology of ['artisan', 'mage', 'shield'] as const) {
+    const treeContent = document.querySelector<HTMLElement>('#technology-tree-content');
+    if (treeContent) {
+      treeContent.hidden = this.selectedTechnologyTree === null;
+      treeContent.setAttribute('aria-label', this.selectedTechnologyTree
+        ? TECHNOLOGY_TREES[this.selectedTechnologyTree] : 'Tecnologías');
+    }
+    for (const treeButton of document.querySelectorAll<HTMLButtonElement>('[data-technology-tree]')) {
+      treeButton.setAttribute('aria-expanded', String(treeButton.dataset.technologyTree === this.selectedTechnologyTree));
+    }
+    for (const definition of TECHNOLOGIES) {
+      const { id: technology, tree, order, cost, minimumLevel, name, description } = definition;
       const button = document.querySelector<HTMLButtonElement>(`[data-unlock-technology="${technology}"]`);
       const stateLabel = document.querySelector<HTMLElement>(`[data-technology-state="${technology}"]`);
       const unlocked = this.state.progression.unlockedTechnologies.includes(technology);
-      const technologyDetails = {
-        artisan: ['Artesana', 'Permite convertir un recolector en artesana para reunir Piedra y Brillo.'],
-        mage: ['Mago', 'Permite convertir un recolector en Mago para entrar en mazmorras'],
-        shield: ['Escudo', 'Permite equipar a los guardianes para aumentar su vida máxima en 1.'],
-      } as const;
+      const costText = `${cost} ${cost === 1 ? 'punto' : 'puntos'}`;
+      const requirementText = `Nivel requerido: ${minimumLevel}`;
       if (button) {
-        button.disabled = unlocked || this.state.progression.technologyPoints < 1;
+        button.hidden = tree !== this.selectedTechnologyTree;
+        button.style.order = String(order);
+        button.disabled = !canUnlockTechnology(this.state.progression, technology);
         button.setAttribute('aria-pressed', String(unlocked));
-        const [name, description] = technologyDetails[technology];
-        setHudTooltip(button, `${name}\n${description}\n${unlocked ? 'Ya desbloqueada' : 'Coste: 1 punto tecnológico'}`);
-        button.setAttribute('aria-label', `${name}. ${description}. ${unlocked ? 'Ya desbloqueada.' : 'Coste: 1 punto tecnológico.'}`);
+        const tooltip = `${name}\n${description}\n${unlocked ? 'Ya desbloqueada' : requirementText}`;
+        setHudTooltip(button, tooltip);
+        button.setAttribute('aria-label', `${tooltip.replaceAll('\n', '. ')}${unlocked ? '' : `. Coste: ${costText}`}`);
       }
-      if (stateLabel) stateLabel.textContent = unlocked ? 'Desbloqueada' : '1 punto';
+      if (stateLabel) stateLabel.textContent = unlocked ? 'Desbloqueada' : costText;
     }
     if (artisanEntry) artisanEntry.hidden = !artisanUnlocked;
     if (mageEntry) mageEntry.hidden = !mageUnlocked;
@@ -3043,49 +3109,34 @@ export class BabylonGame {
     this.updateBuildCost(
       document.querySelector<HTMLElement>('#cost-gatherer'),
       gathererCost,
-      'comida',
-      'resource-square-food',
     );
     this.updateBuildCost(
       document.querySelector<HTMLElement>('#cost-mage'),
       mageCost,
-      'Brillo',
-      'resource-square-spark',
     );
     this.updateBuildCost(
       document.querySelector<HTMLElement>('#cost-axe'),
       axeCost,
-      'madera',
-      'resource-square-wood',
     );
     this.updateBuildCost(
       document.querySelector<HTMLElement>('#cost-bow'),
       bowCost,
-      'madera',
-      'resource-square-wood',
     );
-    const swordCost = 2;
     this.updateBuildCost(
       document.querySelector<HTMLElement>('#cost-sword'),
       swordCost,
-      'oro',
-      'resource-square-gold',
     );
     this.updateBuildCost(
       document.querySelector<HTMLElement>('#cost-hammer'),
       artisanCost,
-      'madera',
-      'resource-square-wood',
     );
     this.updateBuildCost(
       document.querySelector<HTMLElement>('#cost-shield'),
       shieldCost,
-      'oro',
-      'resource-square-gold',
     );
     if (gathererButton) {
       gathererButton.disabled = totalMinionLimitReached
-        || amounts.food < gathererCost
+        || !canAffordCost(amounts, gathererCost)
         || this.state.phase !== 'playing';
       setHudTooltip(gathererButton, tooltipWithReason(
         'Recolector\nRecluta un minion básico.',
@@ -3094,11 +3145,11 @@ export class BabylonGame {
       gathererButton.setAttribute('aria-label', totalMinionLimitReached ? 'Máximo alcanzado' : 'Recolector');
     }
     if (mageButton) {
-      const mageLimitReached = mageCount >= MAX_MINIONS_PER_TYPE;
+      const mageLimitReached = mageCount >= getSpecializationLimit('mage');
       mageButton.disabled = !mageUnlocked
         || gathererUnavailable
         || mageLimitReached
-        || amounts.spark < mageCost
+        || !canAffordCost(amounts, mageCost)
         || this.state.phase !== 'playing';
       const mageReason = !mageUnlocked
         ? 'Desbloquéalo en Tecnologías'
@@ -3119,7 +3170,7 @@ export class BabylonGame {
       axeButton.disabled = lumberjackLimitReached
         || gathererUnavailable
         || nonCombatSpecialistBlockedByLastGatherer
-        || amounts.wood < axeCost
+        || !canAffordCost(amounts, axeCost)
         || this.state.phase !== 'playing';
       const axeDisabledReason = gathererUnavailable
         ? 'Necesitas un recolector'
@@ -3146,7 +3197,7 @@ export class BabylonGame {
     if (bowButton) {
       bowButton.disabled = hunterLimitReached
         || gathererUnavailable
-        || amounts.wood < bowCost
+        || !canAffordCost(amounts, bowCost)
         || this.state.phase !== 'playing';
       const bowLabel = hunterLimitReached ? 'Máximo alcanzado' : 'Convertir en Cazador';
       const bowReason = hunterLimitReached
@@ -3163,7 +3214,7 @@ export class BabylonGame {
     if (swordButton) {
       swordButton.disabled = guardianLimitReached
         || guardianUnavailable
-        || amounts.gold < 2
+        || !canAffordCost(amounts, swordCost)
         || this.state.phase !== 'playing';
       const swordReason = guardianLimitReached
         ? 'Límite de guardianes alcanzado'
@@ -3184,7 +3235,7 @@ export class BabylonGame {
       hammerButton.disabled = artisanLimitReached
         || gathererUnavailable
         || nonCombatSpecialistBlockedByLastGatherer
-        || amounts.wood < artisanCost
+        || !canAffordCost(amounts, artisanCost)
         || this.state.phase !== 'playing';
       const hammerReason = artisanLimitReached
         ? 'Límite de artesanas alcanzado'
@@ -3211,7 +3262,7 @@ export class BabylonGame {
       const shieldLabel = allGuardiansEquipped ? 'Máximo alcanzado' : 'Escudo +1 HP';
       shieldButton.disabled = allGuardiansEquipped
         || guardianCount === 0
-        || amounts.gold < shieldCost
+        || !canAffordCost(amounts, shieldCost)
         || this.state.phase !== 'playing';
       const shieldReason = allGuardiansEquipped
         ? 'Todos los guardianes ya tienen escudo'
@@ -3243,35 +3294,37 @@ export class BabylonGame {
       const effectLabel = document.querySelector<HTMLElement>(`#upgrade-effect-${tool}`);
       const sideButton = document.querySelector<HTMLButtonElement>(`[data-build-item="${tool === 'axe' ? 'axe' : tool === 'hammer' ? 'hammer' : 'sword'}"]`);
       const level = this.state.toolLevels[tool];
-      const nextCost = getToolUpgradeCost(level + 1);
+      const nextCost = getToolUpgradeCost(tool, level + 1);
       const labels = { axe: 'Hacha', hammer: 'Martillo', sword: 'Espada' } as const;
-      const effects = {
-        axe: `+${level} madera por acción`,
-        hammer: `−${level * 5}% tiempo de piedra`,
-        sword: `+${level * 0.5} daño por ataque`,
-      } as const;
+      const formatEffect = (effect: ReturnType<typeof getToolEffect>): string => {
+        if (tool === 'sword') return `+${effect.guardianDamageBonus ?? 0} daño de Guardián`;
+        return `Velocidad ${effect.gatherSpeedPercent ?? 0}%, Recurso Extra ${effect.bonusResourceChance ?? 0}%`;
+      };
+      const effect = getToolEffect(tool, level);
+      const nextEffect = level < MAX_TOOL_LEVEL ? getToolEffect(tool, level + 1) : null;
       const levelBand = level === 0 ? 0 : level <= 2 ? 1 : level <= 4 ? 2 : level <= 6 ? 3 : level <= 9 ? 4 : 5;
       const levelColors = ['', '#A7A7A7', '#3F8F54', '#168397', '#80508F', '#B77D35'] as const;
       const levelColor = levelColors[levelBand];
       const tooltip = level >= MAX_TOOL_LEVEL
-        ? `${labels[tool]} +${level}\n${effects[tool]}\nMax`
-        : `${labels[tool]} +${level}\n${effects[tool]}\nSiguiente nivel: ${nextCost} ${nextCost === 1 ? 'piedra' : 'piedras'}`;
+        ? `${formatEffect(effect)}\nMax`
+        : `Actual: ${formatEffect(effect)}\nSiguiente: ${formatEffect(nextEffect ?? {})}\nCoste: ${this.formatCost(nextCost ?? {})}`;
       if (button) {
         if (levelLabel) {
           levelLabel.textContent = level >= MAX_TOOL_LEVEL ? 'Max' : `+${level}`;
           levelLabel.className = `upgrade-level${levelBand ? ` level-band-${levelBand}` : ''}`;
         }
         button.disabled = level >= MAX_TOOL_LEVEL
-          || amounts.stone < nextCost
+          || !nextCost
+          || !canAffordCost(amounts, nextCost)
           || this.state.phase !== 'playing';
         setHudTooltip(button, tooltip);
-        button.setAttribute('aria-label', `${labels[tool]} ${level >= MAX_TOOL_LEVEL ? 'Max' : `+${level}`}. ${effects[tool]}. ${level >= MAX_TOOL_LEVEL ? 'Nivel máximo.' : `Siguiente mejora: ${nextCost} ${nextCost === 1 ? 'piedra' : 'piedras'}.`}`);
+        button.setAttribute('aria-label', `${labels[tool]} ${level >= MAX_TOOL_LEVEL ? 'Max' : `+${level}`}. ${formatEffect(effect)}. ${level >= MAX_TOOL_LEVEL ? 'Nivel máximo.' : `Siguiente mejora: ${this.formatCost(nextCost ?? {})}.`}`);
       }
-      if (effectLabel) effectLabel.textContent = effects[tool];
+      if (effectLabel) effectLabel.textContent = formatEffect(effect);
       if (costLabel) {
         costLabel.textContent = level >= MAX_TOOL_LEVEL
           ? 'Max'
-          : `Siguiente: ${nextCost} ${nextCost === 1 ? 'piedra' : 'piedras'}`;
+          : `Siguiente: ${this.formatCost(nextCost ?? {})}`;
       }
       if (sideButton) {
         const entry = sideButton.closest<HTMLElement>('.build-entry');
@@ -3301,32 +3354,43 @@ export class BabylonGame {
 
   private updateBuildCost(
     container: HTMLElement | null,
-    cost: number | null,
-    resourceLabel: string,
-    squareClass: string,
+    cost: ResourceCost | null,
   ): void {
     if (!container) return;
 
-    const normalizedCost = cost === null ? null : Math.max(Math.floor(cost), 0);
-    if (container.dataset.costValue !== String(normalizedCost)) {
+    const costKey = cost === null ? 'null' : JSON.stringify(cost);
+    if (container.dataset.costValue !== costKey) {
       container.replaceChildren();
-      if (normalizedCost !== null) {
-        for (let index = 0; index < normalizedCost; index += 1) {
-          const square = document.createElement('span');
-          square.className = `resource-square ${squareClass}`;
-          square.setAttribute('aria-hidden', 'true');
-          container.append(square);
+      if (cost !== null) {
+        for (const resource of RESOURCE_TYPES) {
+          const amount = Math.max(Math.floor(cost[resource] ?? 0), 0);
+          for (let index = 0; index < amount; index += 1) {
+            const square = document.createElement('span');
+            square.className = `resource-square resource-square-${resource === 'spark' ? 'spark' : resource}`;
+            square.setAttribute('aria-hidden', 'true');
+            container.append(square);
+          }
         }
       }
-      container.dataset.costValue = String(normalizedCost);
+      container.dataset.costValue = costKey;
     }
 
     container.setAttribute(
       'aria-label',
-      normalizedCost === null
+      cost === null
         ? 'Límite de minions alcanzado'
-        : `Coste: ${normalizedCost} ${resourceLabel}`,
+        : `Coste: ${this.formatCost(cost)}`,
     );
+  }
+
+  private formatCost(cost: ResourceCost): string {
+    const labels: Record<ResourceType, string> = {
+      food: 'comida', wood: 'madera', stone: 'piedra', spark: 'Brillo', gold: 'oro',
+    };
+    return RESOURCE_TYPES
+      .filter((resource) => (cost[resource] ?? 0) > 0)
+      .map((resource) => `${cost[resource]} ${labels[resource]}`)
+      .join(' · ') || 'sin coste';
   }
 
   private updateDebugHud(): void {

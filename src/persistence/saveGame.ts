@@ -1,4 +1,5 @@
 import type { GameState } from '../simulation/types';
+import { createMinionIdleState } from '../simulation/minionIdle';
 import {
   BIOME_IDS,
   RESOURCE_TYPES,
@@ -64,6 +65,22 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((entry) => typeof entry === 'string');
 }
 
+function isIdleMovement(value: unknown): boolean {
+  return isRecord(value)
+    && (value.destination === null || isVec2(value.destination))
+    && isFiniteNumber(value.waitRemainingSeconds)
+    && isFiniteNumber(value.step) && Number.isSafeInteger(value.step);
+}
+
+function isNavigation(value: unknown): boolean {
+  return isRecord(value) && isVec2(value.goal) && isVec2(value.velocity)
+    && Array.isArray(value.waypoints) && value.waypoints.every(isVec2)
+    && (value.side === -1 || value.side === 0 || value.side === 1)
+    && isFiniteNumber(value.sideHoldSeconds) && isFiniteNumber(value.blockedSeconds)
+    && isFiniteNumber(value.replanSeconds) && isNullableString(value.combatTargetId)
+    && (value.combatOffset === null || isVec2(value.combatOffset));
+}
+
 function isUnit(value: unknown): boolean {
   if (!isRecord(value) || !isRecord(value.cargo) || !isRecord(value.task)) return false;
   const unitStates = [
@@ -96,7 +113,9 @@ function isUnit(value: unknown): boolean {
     && isFiniteNumber(value.actionProgressSeconds)
     && isFiniteNumber(value.attackCooldownRemainingSeconds)
     && isFiniteNumber(value.attackLockRemainingSeconds)
-    && typeof value.withdrawAfterAttack === 'boolean';
+    && typeof value.withdrawAfterAttack === 'boolean'
+    && (value.idleMovement === undefined || isIdleMovement(value.idleMovement))
+    && (value.navigation === undefined || isNavigation(value.navigation));
 }
 
 function isResourceNode(value: unknown): boolean {
@@ -113,6 +132,7 @@ function isResourceNode(value: unknown): boolean {
     && isFiniteNumber(value.amount)
     && isFiniteNumber(value.maxAmount)
     && isFiniteNumber(value.gatherRate)
+    && (value.tier === undefined || value.tier === 1 || value.tier === 2)
     && (value.yieldAmount === undefined || isFiniteNumber(value.yieldAmount));
 }
 
@@ -238,7 +258,7 @@ function isGameState(value: unknown): value is GameState {
     && ['axe', 'hammer', 'sword'].every((tool) => (
       isFiniteNumber(toolLevels[tool]) && toolLevels[tool] <= 10
     ))
-    && isFiniteNumber(value.progression.level, 1)
+    && isFiniteNumber(value.progression.level)
     && isFiniteNumber(value.progression.experience)
     && isFiniteNumber(value.progression.experienceToNextLevel, 1)
     && isFiniteNumber(value.progression.technologyPoints)
@@ -275,9 +295,26 @@ function migrateGameState(value: unknown): GameState | null {
       migrated.progression.unlockedTechnologies = [...unlockedTechnologies, 'mage'];
     }
   }
-  migrated.toolLevels = isRecord(migrated.toolLevels)
-    ? migrated.toolLevels
-    : { axe: 0, hammer: 0, sword: 0 };
+  const storedToolLevels = isRecord(migrated.toolLevels) ? migrated.toolLevels : {};
+  const normalizedToolLevel = (tool: 'axe' | 'hammer' | 'sword'): number => {
+    const value = storedToolLevels[tool];
+    return isFiniteNumber(value) && value <= 10 ? value : 0;
+  };
+  migrated.toolLevels = {
+    axe: normalizedToolLevel('axe'),
+    hammer: normalizedToolLevel('hammer'),
+    sword: normalizedToolLevel('sword'),
+  };
+  if (Array.isArray(migrated.units)) {
+    for (const unit of migrated.units) {
+      if (isRecord(unit) && unit.navigation !== undefined && !isNavigation(unit.navigation)) {
+        delete unit.navigation;
+      }
+      if (isRecord(unit) && !isIdleMovement(unit.idleMovement)) {
+        unit.idleMovement = createMinionIdleState();
+      }
+    }
+  }
   return isGameState(migrated) ? migrated : null;
 }
 
@@ -288,7 +325,7 @@ function isSaveEnvelope(value: unknown): value is SaveEnvelope {
   if (!isRecord(value.metadata) || !isGameState(value.gameState)) return false;
   return typeof value.metadata.savedAt === 'string'
     && Number.isFinite(Date.parse(value.metadata.savedAt))
-    && isFiniteNumber(value.metadata.level, 1)
+    && isFiniteNumber(value.metadata.level)
     && isFiniteNumber(value.metadata.minionCount);
 }
 

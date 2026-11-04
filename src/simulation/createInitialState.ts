@@ -10,6 +10,7 @@ import { createEmptyResourceAmounts } from './survivalTypes';
 import { MINION_MAX_HEALTH } from './survivalCombat';
 import { createWeatherState } from './weatherSystem';
 import { createInitialProgressionState } from './progression';
+import { createMinionIdleState } from './minionIdle';
 import type { GameState } from './types';
 
 export function createUnitState(
@@ -19,6 +20,7 @@ export function createUnitState(
 ): GameState['units'][number] {
   return {
     id,
+    idleMovement: createMinionIdleState(),
     position,
     role,
     hasShield: false,

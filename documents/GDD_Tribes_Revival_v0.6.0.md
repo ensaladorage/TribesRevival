@@ -279,6 +279,21 @@ herramienta no limita la recogida física; sí determina la recolección y
 el combate: `lumberjack`, `hunter` y `guardian` luchan con sus
 diferencias de alcance y daño; los roles sin arma no combaten y huyen al
 detectar un bárbaro.
+
+Los minions comparten avistamientos de enemigos y animales mediante llamadas
+internas silenciosas, igual que los nodos de recursos. Cualquier rol puede
+avisar: para enemigos usa el radio de amenaza actual (`18 m`); para animales,
+el radio de detección de recursos. Una llamada asigna al combatiente libre
+más cercano o, para un animal, al cazador libre más cercano, aunque el objetivo
+quede fuera de su detección personal. Libre significa en idle o regresando al
+tótem y sin carga. Si el objetivo ya está atendido, la llamada no añade más
+respondedores; los avistamientos directos conservan sus reglas habituales.
+Los enemigos tienen prioridad sobre animales y llamadas de recursos.
+Los roles sin arma siguen huyendo de amenazas cercanas, no combaten por un aviso.
+El aviso continúa mientras algún minion vea al objetivo vivo. Al morir o perderse
+el objetivo se vuelve a evaluar la tarea. Mover el tótem conserva su prioridad,
+y los cazadores respetan su límite de combate alrededor del tótem.
+
 La unidad elige tareas mediante una puntuación combinando afinidad de
 rol, distancia, urgencia, valor del recurso y seguridad. La prioridad
 global de las tareas autónomas queda fijada, de mayor a menor, como:
@@ -287,6 +302,52 @@ interrumpirá una tarea de recolección cuando se implemente el combate;
 un nodo válido tendrá prioridad sobre recoger un drop. Levantar el tótem
 no es una tarea autónoma: es una interrupción global que domina sobre
 cualquier tarea y cancela su acción activa.
+
+### Idle dinámico y regreso al rango
+
+Los minions sin trabajo alternan paseos a `3 m/s` con pausas
+de `1–3 s`. Sus destinos se distribuyen entre `4` y `8 m` del tótem,
+sin superar su radio de acción, con cambios de dirección de hasta `60°`.
+Cada unidad usa destinos y pausas propios; el grupo no pasea sincronizado.
+El idle conserva la búsqueda de trabajo: una tarea válida interrumpe
+inmediatamente el paseo o la pausa, y los minions pueden encadenar trabajos.
+
+Al terminar una tarea, si no encuentra otra y está dentro del radio real
+de mando del tótem, entra en idle desde su posición actual. El anillo de
+destinos preferidos de paseo (`4–8 m`) no es un límite que obligue a regresar:
+puede empezar una pausa más lejos si sigue dentro del radio de mando.
+Si está fuera de ese radio, regresa solo hasta entrar en él, por el punto
+de acceso más cercano, y entra en idle sin dirigirse a un hueco central.
+La formación es exclusiva del seguimiento cuando el jugador mueve el tótem:
+los minions lo alcanzan, ocupan la formación y después vuelven a buscar
+trabajo o pasan a idle. Terminar recolección, recogida, saqueo, caza o combate
+no activa la formación.
+Los bordes del mapa limitan los destinos; se mantienen la separación entre
+actores y la zona de exclusión del tótem. Combate, huida y movimiento del
+tótem conservan su prioridad. Mover el tótem cancela el paseo y su espera;
+tras recolocarse se busca trabajo antes de volver a pasear.
+
+Los minions anticipan los cruces con aliados hasta `0,6 s`, conservando
+`0,94 m` de separación. Pueden desviarse `25°`, `50°` o `75°` a ambos
+lados, reducir su velocidad a la mitad o esperar. Los minions en idle
+ceden ante los que tienen trabajo; los que están recolectando, saqueando
+o ejecutando golpes mantienen su posición. Entre unidades equivalentes,
+el identificador estable resuelve la prioridad de paso.
+
+Los rodeos mantienen puntos intermedios y el lado de evasión para evitar
+cambiar de dirección en cada tick. Si un trabajador ocupa el paso, se busca
+una ruta alrededor; si no existe una ruta libre, el minion espera y vuelve
+a evaluarla. Un idle bloqueado durante `1,2 s` descarta su destino y vuelve
+a alternar pausa y paseo. El movimiento normal, la caza y el combate usan
+`6 m/s`; el seguimiento del tótem usa `10 m/s` y el retorno sin trabajo
+usa `8 m/s`.
+
+Los destinos de paseo idle prefieren el frente y los laterales del tótem
+según la orientación fija de cámara. La preferencia es suave: la proximidad
+a otros minions y sus destinos, dentro de `1,5 m`, se penaliza con el doble
+de peso que la dirección posterior. Se permite pasar o descansar detrás
+si ofrece más espacio. Un paseo bloqueado se replantea tras otra pausa;
+trabajo, combate y huida conservan sus objetivos y prioridades actuales.
 ------------------------------------------------------------------------
 
 ---
@@ -359,6 +420,10 @@ por `lumberjack`; piedra y Brillo quedan visibles y serializables, pero
 no se asignan a ningún rol jugable hasta que exista un minion adecuado.
 Cada árbol entrega entre `2` y `3` maderas por acción de tala,
 representadas como drops físicos separados de una unidad cada uno.
+La acción tarda `3` segundos por árbol. La extracción de una veta de
+piedra de nivel 1 tarda `5` segundos; las futuras vetas de nivel 2
+tardarán `7` segundos. Las mejoras de herramienta aplican su bonificación
+de velocidad a estos tiempos base.
 Piedra y Brillo solo pueden recolectarse cuando exista un rol con la afinidad correspondiente. El oro procede de bárbaros y la comida obtenida de bayas, animales y bárbaros comparte un único recurso e inventario.
 Las ramitas son un pequeño asset marrón de ramas en el suelo. Cualquier
 rol de minion puede recolectarlas; al completar una acción, el nodo se
@@ -398,7 +463,7 @@ reagrupamiento sin cancelar un combate en curso.
     bárbaros a `18 m`. Se muestran signos de exclamación sobre quienes
     detectan y se reproduce un sonido breve una sola vez por encuentro,
     aunque ambos bandos se detecten.
--   Los bárbaros persiguen a `8 m/s`, seleccionan al minion vivo más
+-   Los bárbaros persiguen a `7 m/s`, seleccionan al minion vivo más
     cercano dentro de `15 m` y, si pierden el rastro lejos de su
     aparición, regresan a ella a `8 m/s`. Al llegar, esperan el
     intervalo determinista de patrulla y retoman su recorrido a `1 m/s`.
@@ -415,10 +480,15 @@ reagrupamiento sin cancelar un combate en curso.
 -   Los tres roles armados combaten automáticamente al detectar
     bárbaros; la IA selecciona la amenaza válida menos ocupada,
     priorizando distancia e identificador estable. Los atacantes usan
-    posiciones deterministas distribuidas alrededor del objetivo y
-    separación suave entre actores. Los conejos solo son objetivo del
-    `hunter`. El cazador se reposiciona a `6 m/s`, queda inmóvil durante
-    el impulso de ataque de `0,22 s` y no se aleja más del radio de
+    posiciones libres reservadas alrededor del objetivo, conservando su
+    hueco mientras sea válido. Guardianes y leñadores usan el anillo de
+    cuerpo a cuerpo, a `0,98 m`: caben seis posiciones separadas; si están
+    ocupadas, esperan en un anillo exterior a `2,1 m`. Los cazadores se
+    distribuyen a `4,6 m`, respetando alcance y radio del tótem. El movimiento
+    evita cuerpos aliados y enemigos; los minions no desplazan al bárbaro
+    mediante la separación. Los conejos solo son objetivo del
+    `hunter`. Los minions permanecen inmóviles durante el impulso de ataque
+    de `0,22 s`. El cazador se reposiciona a `6 m/s` y no se aleja más del radio de
     mando (`10 m`) del tótem.
 -   El enfriamiento es un temporizador restante por minion, compartido
     entre objetivos y tareas de combate/caza: solo se recarga al golpear
@@ -524,7 +594,7 @@ La hoguera es un objeto de soporte del HUD: cuesta `2` de madera y se
 coloca en el mapa. La hoguera cuesta `2` de madera y se coloca en el mapa. Las unidades próximas consumen `1` de comida para recuperar `1` punto de vida.
 ### Progresión y tecnologías
 La progresión es determinista. Comienza en nivel
-1, con 0 XP y 0 puntos tecnológicos. Cada acción de recolección
+0, con 0 XP y 0 puntos tecnológicos. Cada acción de recolección
 completada concede 1 XP, cada conejo cazado 3 XP y cada bárbaro
 derrotado 5 XP. El primer nivel requiere 12 XP; el requisito aumenta en
 12 XP por cada nivel posterior. Cada nivel concede 1 punto tecnológico.
@@ -532,6 +602,10 @@ El panel de tecnologías puede abrirse durante la partida y no la pausa.
 Cada tecnología cuesta 1 punto y solo se puede desbloquear una vez. Los
 valores de XP y progresión se centralizan en la configuración de
 balance.
+La primera iteración contiene tres árboles: Supervivencia (Artesana,
+nivel mínimo 2), Exploración (Mago, nivel mínimo 2) y Combate (Escudo,
+nivel mínimo 1). Comparten los puntos disponibles. Los requisitos de
+nivel se comprueban al comprar; no revocan desbloqueos de partidas anteriores.
 El panel se muestra en la parte inferior izquierda. Al desbloquear una
 tecnología, su objeto aparece en la barra lateral izquierda. El Mago es
 una clase especial de minion: su tecnología desbloquea el libro para
@@ -550,8 +624,8 @@ asignación inválida no consume recursos.
                     `artisan`, capaz  no modifica el
                     de recolectar     máximo global
                     piedra y Brillo
-  Clase especial:   1 punto; habilita Brillo, progresión  Máximo 5 Magos;
-  Mago              el libro para      `2, 3, 3, 4, 4`    convierte un
+  Clase especial:   1 punto; habilita Brillo, `2`          Máximo 1 Mago;
+  Mago              el libro para                         convierte un
                     convertir un                          `gatherer`; no
                     `gatherer` en                         aumenta población
                     Mago                                  total
@@ -578,13 +652,13 @@ martillo y el escudo usan modelos procedurales, sin assets externos.
 
 ## 11. Mejoras de herramientas
 
-La piedra se utiliza para mejorar hacha, martillo y espada. Cada herramienta tiene un nivel global compartido por todas las unidades de su clase, de `0` a `10`. La mejora de nivel `n` cuesta `n` unidades de piedra: la primera cuesta 1, la segunda 2 y así sucesivamente.
+La piedra se utiliza para mejorar hacha, martillo y espada. Cada herramienta tiene un nivel global compartido por todas las unidades de su clase, de `0` a `10`. La mejora de nivel `n` cuesta `n` unidades de piedra; los niveles 8–10 añaden Brillo y los niveles 9–10 Oro según la tabla de economía aprobada.
 
-- **Hacha:** añade `+1` madera por acción de tala por nivel.
-- **Martillo:** reduce un `5 %` el tiempo de extracción de piedra por nivel, hasta un máximo acumulado del `50 %` en nivel 10. El tiempo nunca puede ser cero ni negativo.
-- **Espada:** añade `+0,5` de daño por nivel.
+- **Hacha y Martillo:** aumentan la velocidad acumulada de recolección de `+0,5 %` a `+5 %` y la probabilidad de un único recurso adicional de `0 %` a `30 %`, según el nivel. El bonus crea un drop entero adicional, nunca una cantidad fraccionaria.
+- **Martillo +5:** permite extraer vetas de piedra de nivel 2. El tamaño, resistencia, tiempo y rendimiento de esas vetas siguen pendientes y no se generan todavía.
+- **Espada:** añade de `+0,25` a `+2,50` de daño acumulado al Guardián.
 
-Las mejoras se compran desde un menú independiente, coherente con el panel de experiencia/tecnologías. Los botones «Tecnologías» y «Mejoras» se sitúan juntos abajo a la izquierda; solo puede estar abierto uno de los dos paneles. Las tarjetas se ordenan de izquierda a derecha y se distribuyen en filas cuando no caben en el ancho disponible. En «Mejoras», hacha, martillo y espada aparecen en ese orden, con el icono a la izquierda y el nivel a la derecha. Cada tarjeta reserva espacio para mostrar el nivel o `Max` junto al icono. El fondo de cada tarjeta lateral refleja el color del nivel; en la tarjeta de mejora el icono conserva su color base y el nivel usa la banda correspondiente. El efecto y el coste de la siguiente mejora se consultan mediante tooltip al pasar el cursor o enfocar la tarjeta; en nivel 10 se muestra `Max` y no hay coste siguiente. Las compras son atómicas: si falta piedra, ni el inventario ni el nivel cambian, y el nivel máximo es 10.
+Las mejoras se compran desde un menú independiente, coherente con el panel de experiencia/tecnologías. Los botones «Tecnologías» y «Mejoras» se sitúan juntos abajo a la izquierda; solo puede estar abierto uno de los dos paneles. Las tarjetas se ordenan de izquierda a derecha y se distribuyen en filas cuando no caben en el ancho disponible. En «Mejoras», hacha, martillo y espada aparecen en ese orden, con el icono a la izquierda y el nivel a la derecha. Cada tarjeta reserva espacio para mostrar el nivel o `Max` junto al icono. El tooltip muestra efecto actual, siguiente efecto, coste compuesto y los recursos faltantes; en nivel 10 se muestra `Max` y no hay coste siguiente. Las compras son atómicas: si falta cualquier recurso, ni el inventario ni el nivel cambian, y el nivel máximo es 10.
 
 La fila superior centrada presenta, en este orden, Comida, Madera,
 Piedra, Brillo y Oro, cada una con su icono de pixel art y cantidad. Los
@@ -601,9 +675,18 @@ verde `#3F8F54`, `+5/+6` cian `#168397`, `+7/+8/+9` violeta `#80508F`
 y nivel 10 (`Max`) naranja `#B77D35`. El color complementa el número y
 no lo sustituye.
 
-Las tecnologías se presentan en una fila horizontal, con icono y coste en
-puntos en cada tarjeta. El nombre y la descripción aparecen en el mismo
-tooltip contextual que se usa para las mejoras y los objetos del HUD.
+Al abrir Tecnologías aparecen los botones Supervivencia, Exploración y
+Combate, inicialmente cerrados. Pulsar uno muestra sus tecnologías debajo,
+de izquierda a derecha y con reflujo cuando falta espacio. Solo hay un árbol
+desplegado; pulsar el activo lo cierra. Cada tarjeta conserva icono y coste
+en puntos. Su tooltip muestra nombre, descripción y nivel requerido, o
+el estado desbloqueado, sin avisos de puntos o recursos faltantes. Las demás
+tecnologías propuestas no forman parte de esta primera iteración.
+El coste en puntos se muestra junto al icono y no se repite en el tooltip.
+Los tooltips expresan el requisito como `Nivel requerido: 2` para Artesana
+y Mago y `Nivel requerido: 1` para Escudo, y se mantienen dentro del área
+visible del juego. Abrir y cerrar los paneles no desplaza los botones
+Tecnologías y Mejoras.
 
 ## 12. Clases legendarias
 
@@ -630,6 +713,11 @@ Cada cueva conserva su estado: enemigos derrotados, jefe derrotado, cofres abier
 ## 15. Guardado como comportamiento del juego
 
 La partida debe permitir guardar y cargar el estado local. El estado persistente debe incluir inventario, unidades, progresión, niveles de herramientas, clases legendarias, regiones desbloqueadas, llaves y estado de cuevas/cofres. La carga de partidas antiguas debe conservar el progreso existente y asignar valores seguros a campos añadidos posteriormente. Las unidades temporales de una expedición no deben guardarse como parte de la tribu exterior. No se contempla sincronización en la nube ni multijugador online.
+
+La compatibilidad entre versiones antiguas y nuevas es un objetivo de una
+fase avanzada. En la fase actual se da por funcional el flujo de guardar y
+cargar la versión vigente; no se exige ampliar ni probar migraciones entre
+versiones hasta que se reactive ese trabajo en el roadmap.
 
 Cada slot ocupado ofrece una opción para eliminar la partida. Antes de borrarla, el juego solicita confirmación explícita; cancelar conserva el guardado y confirmar elimina solo el slot seleccionado. Los slots vacíos no muestran la opción de borrado.
 

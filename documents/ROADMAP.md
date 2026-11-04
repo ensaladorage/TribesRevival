@@ -6,12 +6,20 @@
 
 Los hitos 0–5 establecieron la migración a 3D, el movimiento del tótem y formación, supervivencia, recursos, combate, progresión, menú/tutorial y guardado. Su estado registrado está en `IMPLEMENTATION_STATUS.md`; no usar esta sección como prueba de validación del repositorio actual.
 
+- [x] Incorporar idle dinámico determinista y reagrupación sin trabajo.
+- [x] Integrar evitación local entre minions y preferencia por posiciones idle visibles.
+- [ ] Validar manualmente cruces, cesión de paso y visibilidad con 2 y 8 minions.
+- [ ] Validar manualmente paseos, interrupciones, retorno solo al rango y formación exclusiva al mover el tótem con 2 y 8 minions.
+
 ## Hito 6 — Mejoras de herramientas y clases legendarias
 
 **Referencia de diseño:** GDD, secciones 11–12.
 
-- [ ] Validar manualmente menú, coste, niveles, efectos, límites y feedback visual de mejoras (la implementación está presente en el código local; ver `IMPLEMENTATION_STATUS.md`).
-- [ ] Validar manualmente el Mago y completar Pícaro y Paladín cuando se decidan sus costes exteriores.
+- [x] Centralizar e implementar las curvas exteriores de Recolector, especializaciones, Mago, Escudo y mejoras 0–10; queda validación manual de balance/HUD.
+- [x] Integrar la primera iteración de tres árboles con las tecnologías actuales y sus requisitos; ver estado y evidencia en `IMPLEMENTATION_STATUS.md`.
+- [ ] Validar manualmente navegación, reflujo y compras en los tres árboles.
+- [ ] Validar manualmente menú, costes mixtos, niveles, efectos, límites y feedback visual de mejoras.
+- [ ] Validar manualmente el Mago exterior (1 Mago, 2 Brillo) y completar Pícaro y Paladín cuando se decidan sus costes exteriores.
 - [ ] Definir las curvas de coste de Pícaro y Paladín antes de fijar su balance.
 
 ## Hito 7 — Fronteras, campamentos y jefes
@@ -43,13 +51,18 @@ Los hitos 0–5 establecieron la migración a 3D, el movimiento del tótem y for
 - [ ] Añadir audio y feedback de combate/recolección.
 - [ ] Evaluar postprocesado opcional sin acoplarlo al gameplay.
 
-## Hito 10 — Guardado y migración ampliada
+## Hito 10 — Guardado y migración ampliada (diferido)
+
+Este hito se pospone para una fase avanzada del proyecto. El flujo actual de
+guardar y cargar funciona; no dedicar trabajo ahora a probar ni ampliar la
+compatibilidad entre versiones antiguas y nuevas. Reactivar este hito cuando
+el alcance de persistencia del juego esté más completo.
 
 **Referencia de diseño:** GDD, sección 15; diseño técnico: `TECHNICAL_DESIGN.md`.
 
 - [ ] Añadir al estado persistente niveles de herramientas, clases legendarias, regiones, llaves y estados de cuevas/cofres.
 - [ ] Ampliar `GameState` desde la versión actual 17 y conservar la migración existente desde la versión 16, con valores por defecto seguros para los campos nuevos.
-- [ ] Validar ida y vuelta de guardado/carga y conservar inventario, unidades, nivel, XP, tecnologías y mundo generado.
+- [ ] En la fase avanzada, validar ida y vuelta y compatibilidad entre versiones, conservando inventario, unidades, nivel, XP, tecnologías y mundo generado.
 - [ ] Confirmar que las unidades temporales de cuevas no pasan al grupo exterior guardado.
 
 ## Reglas de planificación

@@ -2,6 +2,7 @@ import type { Vec2 } from './types';
 
 export const RESOURCE_TYPES = ['food', 'wood', 'stone', 'spark', 'gold'] as const;
 export type ResourceType = (typeof RESOURCE_TYPES)[number];
+export type ResourceCost = Partial<Record<ResourceType, number>>;
 export const BIOME_RESOURCE_TYPES = ['food', 'wood', 'stone', 'spark'] as const;
 
 export const CAMPFIRE_WOOD_COST = 2;
@@ -11,6 +12,8 @@ export const CAMPFIRE_LIFETIME_SECONDS = 120;
 export const CAMPFIRE_TOTEM_MAX_DISTANCE = 30;
 
 export type SpecializationItem = 'axe' | 'bow' | 'sword' | 'hammer' | 'mage';
+export const TOOL_IDS = ['axe', 'hammer', 'sword'] as const;
+export type ToolId = (typeof TOOL_IDS)[number];
 export type TechnologyId = 'artisan' | 'mage' | 'shield';
 
 export const BIOME_IDS = ['clearing', 'meadow', 'forest', 'rocky', 'ruins'] as const;
@@ -52,6 +55,8 @@ export type ResourceNode = {
   amount: number;
   maxAmount: number;
   gatherRate: number;
+  /** Missing on legacy saves means tier 1. Higher tiers can require a tool level. */
+  tier?: 1 | 2;
   /** Amount produced by a completed gather action; defaults to the node amount gathered. */
   yieldAmount?: number;
 };

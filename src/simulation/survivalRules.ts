@@ -1,4 +1,13 @@
 import type { UnitState, Vec2 } from './types';
+import type { ToolLevels } from './types';
+import {
+  MAX_PLAYABLE_MINIONS,
+  MAX_TOOL_LEVEL,
+  STARTING_MINION_COUNT,
+  getGathererRecruitmentCost,
+  getSpecializationCost,
+  isResourceNodeToolRequirementMet,
+} from './economyConfig';
 import type {
   ResourceAmounts,
   ResourceDrop,
@@ -24,41 +33,18 @@ const ROLE_RESOURCE_AFFINITY: Readonly<Record<SurvivalRole, readonly ResourceTyp
 export const RESOURCE_DETECTION_RANGE_MULTIPLIER = 1.05;
 
 /** Global living-minion cap, regardless of role. */
-export const MAX_PLAYABLE_MINIONS = 8;
+export { MAX_PLAYABLE_MINIONS, MAX_TOOL_LEVEL, STARTING_MINION_COUNT };
 
-/** Starting roster size used as the baseline for total-population pricing. */
-export const STARTING_MINION_COUNT = 2;
-
-/** Maximum living minions allowed for each specialist role. */
-export const MAX_MINIONS_PER_TYPE = 5;
-export const MAX_TOOL_LEVEL = 10;
-export const MAGE_SPECIALIZATION_COSTS: readonly number[] = [2, 3, 3, 4, 4];
-
-export function getToolUpgradeCost(nextLevel: number): number {
-  return Math.max(Math.min(Math.floor(nextLevel), MAX_TOOL_LEVEL), 1);
+/** Compatibility helpers for single-resource costs used by the original HUD. */
+export function getMinionPurchaseCost(activeMinions: number, startingMinions = 0): number {
+  const cost = startingMinions > 0
+    ? getGathererRecruitmentCost(activeMinions)
+    : getSpecializationCost('axe', activeMinions);
+  return Object.values(cost)[0] ?? 0;
 }
 
 export function getMageSpecializationCost(activeMages: number): number {
-  const count = Math.max(Math.floor(activeMages), 0);
-  return MAGE_SPECIALIZATION_COSTS[Math.min(count, MAGE_SPECIALIZATION_COSTS.length - 1)]
-    ?? MAGE_SPECIALIZATION_COSTS[MAGE_SPECIALIZATION_COSTS.length - 1];
-}
-
-/** Cost progression applied to the relevant active population count. */
-export const GATHERER_RECRUITMENT_COSTS: readonly number[] = [2, 3, 3, 4, 4, 4];
-
-/**
- * Pricing is based on active minions beyond the supplied baseline. Gatherers
- * use the global roster size with the starting population as baseline;
- * specialists use their own role count with no baseline.
- */
-export function getMinionPurchaseCost(activeMinions: number, startingMinions = 0): number {
-  const normalizedActiveCount = Math.max(Math.floor(activeMinions), 0);
-  const normalizedStartingCount = Math.max(Math.floor(startingMinions), 0);
-  const normalizedCount = Math.max(normalizedActiveCount - normalizedStartingCount, 0);
-  return GATHERER_RECRUITMENT_COSTS[
-    Math.min(normalizedCount, GATHERER_RECRUITMENT_COSTS.length - 1)
-  ] ?? GATHERER_RECRUITMENT_COSTS[GATHERER_RECRUITMENT_COSTS.length - 1];
+  return getSpecializationCost('mage', activeMages).spark ?? 0;
 }
 
 export function getSpecializationRole(item: SpecializationItem): SurvivalRole {
@@ -115,6 +101,15 @@ export function canRoleGatherResource(
 ): boolean {
   if (source === 'twigs') return type === 'wood';
   return ROLE_RESOURCE_AFFINITY[role].includes(type);
+}
+
+export function canRoleGatherNode(
+  role: SurvivalRole,
+  node: ResourceNode,
+  toolLevels: ToolLevels,
+): boolean {
+  return canRoleGatherResource(role, node.type, node.source)
+    && isResourceNodeToolRequirementMet(node, toolLevels);
 }
 
 export function gatherFromNode(
@@ -188,6 +183,7 @@ export function chooseGatherTask(input: {
   resources: readonly ResourceNode[];
   reservedTargetIds?: ReadonlySet<string>;
   excludedTargetId?: string | null;
+  toolLevels?: ToolLevels;
 }): UnitTask {
   if (totalResourceAmount(input.cargo.amounts) >= input.cargo.capacity) {
     return task('idle', 'over-capacity', null, null);
@@ -197,7 +193,7 @@ export function chooseGatherTask(input: {
   const candidates = input.resources
     .filter((resource) => (
       resource.amount > 0
-      && canRoleGatherResource(input.role, resource.type, resource.source)
+      && canRoleGatherNode(input.role, resource, input.toolLevels ?? { axe: 0, hammer: 0, sword: 0 })
       && resource.id !== input.excludedTargetId
       && !input.reservedTargetIds?.has(resource.id)
       && distanceSquared(resource.position, input.unitPosition) <= radiusSquared

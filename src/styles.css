@@ -418,6 +418,7 @@ body {
   bottom: 10px;
   left: 14px;
   display: flex;
+  width: calc(100% - 28px);
   max-width: calc(100% - 28px);
   align-items: flex-end;
   gap: 8px;
@@ -449,14 +450,17 @@ body {
 
 #technology-hud > .technology-panel,
 #upgrade-hud > .technology-panel {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 0;
   width: max-content;
-  max-width: min(calc(100vw - 28px), 900px);
+  max-width: min(100%, 900px);
   font-size: 14px;
   text-shadow: none;
 }
 
 #upgrade-hud > .technology-panel {
-  max-width: min(calc(100vw - 28px), 620px);
+  max-width: min(100%, 620px);
 }
 
 #technology-hud > .technology-toggle,
@@ -676,12 +680,18 @@ body {
   color: #b8d9b0;
 }
 
+.technology-tree-buttons,
 .technology-options {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: stretch;
   gap: 7px;
+}
+
+.technology-options[hidden],
+.technology-option[hidden] {
+  display: none;
 }
 
 .technology-option {
@@ -706,13 +716,16 @@ body {
   position: relative;
 }
 
-.technology-option[data-unlock-technology="artisan"].hud-tooltip::after {
-  left: 0;
+.technology-option.hud-tooltip::after {
+  top: var(--menu-tooltip-top, auto);
+  bottom: var(--menu-tooltip-bottom, calc(100% + 8px));
+  left: var(--menu-tooltip-left, 0px);
+  overflow-wrap: anywhere;
   transform: translateY(4px);
 }
 
-.technology-option[data-unlock-technology="artisan"].hud-tooltip:hover::after,
-.technology-option[data-unlock-technology="artisan"].hud-tooltip:focus-visible::after {
+.technology-option.hud-tooltip:hover::after,
+.technology-option.hud-tooltip:focus-visible::after {
   transform: translateY(0);
 }
 
@@ -883,13 +896,14 @@ body {
   #hud-menu-dock {
     bottom: 6px;
     left: 8px;
+    width: calc(100% - 16px);
     max-width: calc(100% - 16px);
     gap: 5px;
   }
 
   #technology-hud > .technology-panel,
   #upgrade-hud > .technology-panel {
-    max-width: calc(100vw - 16px);
+    max-width: 100%;
     padding: 7px;
   }
 
@@ -970,17 +984,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-
-.debug-resource-title {
-  color: #b8d9b0;
-  font-size: 12px;
-}
-
-.debug-resource-buttons {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
 }
 
 .hud-debug button {

@@ -1,5 +1,5 @@
 import type { Vec2 } from '../simulation/types';
-import type { ResourceType, SpecializationItem, TechnologyId } from '../simulation/survivalTypes';
+import type { SpecializationItem, TechnologyId, ToolId } from '../simulation/survivalTypes';
 import type { CombatantKind } from '../simulation/survivalCombat';
 
 export type InputAction =
@@ -8,14 +8,14 @@ export type InputAction =
   | { type: 'drop-totem'; position: Vec2 }
   | { type: 'place-campfire'; position: Vec2 }
   | { type: 'recruit-gatherer'; position: Vec2 }
-  | { type: 'upgrade-tool'; tool: 'axe' | 'hammer' | 'sword' }
+  | { type: 'upgrade-tool'; tool: ToolId }
   | { type: 'transform-unit'; item: SpecializationItem; unitId: string }
   | { type: 'equip-shield'; unitId: string }
   | { type: 'unlock-technology'; technology: TechnologyId }
   | { type: 'damage-unit'; unitId: string; amount: number; sourceKind: CombatantKind }
   | { type: 'debug-damage-one-minion' }
   | { type: 'debug-level-up' }
-  | { type: 'debug-add-resource'; resource: ResourceType; amount: number }
+  | { type: 'debug-add-all-resources' }
   | { type: 'toggle-pause' };
 
 export class ActionQueue {
