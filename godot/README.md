@@ -6,7 +6,7 @@ Motor verificado: Godot 4.7.2, GDScript, renderer Compatibility.
 
 ## Abrir
 
-Importar `project.godot` en Godot y ejecutar la escena principal (F6), o desde
+Importar `project.godot` en Godot y ejecutar el proyecto (F5), o desde
 la raíz del repositorio:
 
 ```sh
@@ -52,4 +52,22 @@ Consultar `MIGRATION_PLAN.md` y `MIGRATION_STATUS.md` antes de continuar.
 Las comprobaciones de scripts/datos no acreditan la calidad visual ni el
 playtest. Las fases con revisión manual pendiente permanecen abiertas.
 Los assets 3D son provisionales; los iconos se reutilizan del proyecto.
-La lista de comprobaciones manuales está en `MANUAL_QA.md`.
+La lista de comprobaciones manuales está en
+[`GODOT_MANUAL_QA.md`](../documents/GODOT_MANUAL_QA.md).
+
+## Exportar
+
+Las plantillas deben coincidir con Godot 4.7.2. El instalador local descarga
+las plantillas de la [publicación oficial](https://github.com/godotengine/godot/releases/tag/4.7.2-stable),
+verifica el SHA256 publicado e instala solo Linux/Windows x86_64 y web:
+
+```sh
+python3 godot/tools/install_templates.py
+bash godot/tools/export.sh
+```
+
+Los ZIP de desarrollo y `manifest.json` quedan en `godot/builds/`, fuera de
+Git. El script valida primero el proyecto, exporta las tres plataformas y
+comprueba únicamente la inicialización headless del menú Linux, sin entrar
+en una partida. Los ZIP incluyen la licencia del motor. Windows y la web
+requieren comprobación manual de arranque y gameplay en sus plataformas.

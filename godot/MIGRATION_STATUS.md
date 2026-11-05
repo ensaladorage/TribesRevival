@@ -5,9 +5,10 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 ## Continuidad
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
-- Fase actual: F9 preparación de exportaciones; F8 implementada con revisión manual pendiente.
-- Próxima tarea ejecutable: ejecutar exportación Linux/Windows/web y verificar
-  artefactos/arranque técnico; revisar manualmente F2/F5/F6/F7/F8.
+- Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
+- Próxima tarea ejecutable: recoger el primer resultado manual (solicitado en
+  el chat), reproducir y corregir cualquier fallo; completar la lista de QA
+  antes de cerrar F2/F5/F6/F7/F8/F9.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -25,7 +26,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F6 combate/clima | Lógica y feedback provisional integrados; playtest pendiente |
 | F7 compras/equipo | Comandos/drag-to-equip/HUD básico implementados; validación manual pendiente |
 | F8 UI/guardado | Menús/guardado/feedback provisional implementados; revisión manual pendiente |
-| F9 integración/exportación | Pendiente |
+| F9 integración/exportación | Linux/Windows/web exportados y empaquetados; menú Linux inicia headless; validación gráfica/manual pendiente |
 
 ## Pruebas y límites
 
@@ -38,7 +39,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   `git diff --check` correcto. Informes locales: `reports/f1-validation.log`.
 - Sin validación manual ni prueba de gameplay; no se afirma paridad todavía.
 - Export templates 4.7.2 instalados y verificados (13 archivos desktop/web).
-  Recibo `audit/export_templates.json`; builds todavía pendientes.
+  Recibo `audit/export_templates.json`; ZIP de desarrollo generados.
 - Pendientes de diseño heredados: cuevas/jefes/regiones y costes de Pícaro/
   Paladín. No bloquean la migración de los sistemas que sí existen.
 - El original mantiene guardados del navegador; portarlos a `user://` no
@@ -133,8 +134,8 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   corregido a constante de tema. Nueva validación completa posterior correcta:
   25 scripts/1 escena, 15.304 comparaciones y guardado actual, sin ticks de
   gameplay. Informe `reports/f8-menu-validation.log`. Sin validación visual.
-- F9 preparación independiente: iniciada instalación de templates oficiales
-  4.7.2 con SHA256 publicado; proceso debe consultarse hasta su resultado.
+- F9 preparación independiente: instalación de templates oficiales
+  4.7.2 terminada y verificada con SHA256 publicado.
 
 - F8d: feedback provisional de salud, escudos, herramientas/libro por rol,
   golpes/flashes/cruces de curación, cadáveres y loot, hogueras, alertas y
@@ -143,7 +144,34 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - F8d verificada técnicamente: scripts/importación/inicialización sin errores,
   pruebas de datos/reglas/guardado actuales correctas;
   `reports/f8-feedback-validation.log`. Sin capturas ni playtest automático.
-  `MANUAL_QA.md` enumera todas las revisiones aún pendientes.
+  `../documents/GODOT_MANUAL_QA.md` enumera todas las revisiones aún pendientes.
 - F9 templates: descarga oficial 4.7.2 validada con SHA256
   `f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011`;
   instalados Linux/Windows x86_64 y web, sin binarios añadidos a Git.
+
+## Entrega técnica de F9 (sin cierre de paridad)
+
+- `tools/export.sh`: validación previa, exportaciones reales Linux/Windows
+  x86_64 y web sin threads; arranque del menú Linux en headless y salida
+  inmediata, sin iniciar partida. Ejecución completa correcta.
+- Formatos confirmados: ELF x86_64, PE32+ x86_64, WebAssembly.
+- ZIP en `builds/TribesRevival-{linux,windows,web}-development.zip`, con
+  instrucciones y licencia de Godot. `builds/manifest.json` registra revisión,
+  hashes de fuentes, archivos y paquetes. Builds/cache/binarios fuera de Git.
+- Informes: `reports/export-all.log`, `reports/export-{linux,windows,web}.log`,
+  `reports/linux-startup.log`; no errores de scripts/referencias en esos runs.
+- Última validación de datos: 15.325 comparaciones (paridad TS, invariantes
+  puras y guardado actual), 4 mundos iniciales completos, compra posterior a
+  lectura JSON y tiempos por fuente/herramienta. No se ejecutó gameplay.
+- Revisión estática posterior incorporó los anillos de detección por minion
+  y de curación de hogueras del original (ningún anillo de reclutamiento),
+  leash visual de cazador, flash rojo y tono de alerta 880→620 Hz.
+- QA y auditoría se mantienen en `../documents/GODOT_MANUAL_QA.md` y
+  `../documents/GODOT_PARITY_AUDIT.md`; plan/status permanecen aquí por la
+  ruta solicitada explícitamente para la migración.
+- Original: 838 archivos intactos; 13 iconos copiados idénticos.
+- Servidores de revisión: Babylon `http://localhost:5173/TribesRevival/`
+  y build web Godot `http://localhost:8078/`, ambos con respuesta HTTP 200.
+- Pendiente: abrir gráficamente Windows/Linux/web y completar controles, IA,
+  combate, economía, menús, guardado y fluidez según QA. Los modelos/efectos
+  son provisionales. No hay evidencia para declarar la migración completa.

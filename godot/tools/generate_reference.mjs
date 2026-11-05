@@ -94,6 +94,11 @@ try {
     }),
     initialStates: seeds.map(seed => createInitialState(seed)),
     purchases:purchaseCases,
+    durations:[['tree','wood',1],['stone-vein','stone',1],['stone-vein','stone',2],['berry-bush','food',1],['ruin','spark',1],['twigs','wood',1]].flatMap(([source,type,tier])=>[0,5,10].map(level=>{
+      const base=source==='tree'?projection.RESOURCE_SOURCE_GATHER_DURATION_SECONDS.tree:source==='stone-vein'?projection.RESOURCE_SOURCE_GATHER_DURATION_SECONDS['stone-vein'][tier]:projection.GATHER_ACTION_DURATION_SECONDS;
+      const tool=type==='wood'?'axe':type==='stone'?'hammer':null;
+      return {node:{source,type,tier},levels:{axe:level,hammer:level,sword:0},result:base/(tool?economy.getGatherActionDurationMultiplier(tool,level):1)};
+    })),
     combat: {
       attacks:['explorer','gatherer','lumberjack','hunter','guardian','artisan','mage'].flatMap(role=>[0,5,10].map(level=>({role,level,result:combat.getMinionAttackStats(role,level) ?? null}))),
       damage:['minion','barbarian','animal'].flatMap(source=>['minion','barbarian','animal'].flatMap(target=>[-1,0,1,8].map(amount=>({source,target,amount,result:combat.dealDamage(source,target,{health:4,maxHealth:4},amount)})))),

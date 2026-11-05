@@ -94,7 +94,11 @@ static func _corpse_task(state: Dictionary, unit: Dictionary) -> Variant:
 	return {"kind": "loot-corpse", "targetEntityId": candidates[0].id, "targetResourceId": null, "destination": null, "cause": "corpse-found"}
 
 static func gather_duration(state: Dictionary, resource: Dictionary) -> float:
-	var base := 3.0 if resource.source == "tree" else (7.0 if resource.get("tier", 1) == 2 else 5.0) if resource.source == "stone-vein" else 1.5
+	var base := 1.5
+	if resource.source == "tree":
+		base = 3.0
+	elif resource.source == "stone-vein":
+		base = 7.0 if resource.get("tier", 1) == 2 else 5.0
 	var tool := "axe" if resource.type == "wood" else "hammer" if resource.type == "stone" else ""
 	return base / Economy.gather_speed_multiplier(tool, state.toolLevels[tool]) if not tool.is_empty() else base
 

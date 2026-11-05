@@ -84,6 +84,10 @@ commit local con archivos explícitos. No incluir el binario local de Godot,
 cachés, builds, `node_modules` ni archivos ajenos. Mantener Vite disponible
 para comparar manualmente; no modificar el original para servir Godot.
 
+QA y auditoría de la migración viven en `../documents/GODOT_MANUAL_QA.md` y
+`../documents/GODOT_PARITY_AUDIT.md`. Plan y estado se conservan en las rutas
+`godot/MIGRATION_PLAN.md` y `godot/MIGRATION_STATUS.md` solicitadas por el usuario.
+
 ## Referencias técnicas
 
 - [CLI headless, importación y exportación](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html)

@@ -16,6 +16,8 @@ var _alpha := 1.0
 var _played_alerts := {}
 var _alert_player: AudioStreamPlayer
 var _alert_sound: AudioStreamWAV
+var _command_radius := 10.0
+var _totem_position := {"x": 80.0, "y": 80.0}
 
 func setup(state: Dictionary) -> void:
 	for child in get_children():
@@ -24,7 +26,7 @@ func setup(state: Dictionary) -> void:
 	_played_alerts.clear()
 	_alert_player = AudioStreamPlayer.new()
 	_alert_player.stream = _make_alert_sound()
-	_alert_player.volume_db = -12
+	_alert_player.volume_db = 0
 	add_child(_alert_player)
 	for biome in state.biomes:
 		var disc := CylinderMesh.new()
@@ -47,6 +49,8 @@ func setup(state: Dictionary) -> void:
 func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float = 1.0) -> void:
 	_previous_positions = previous_positions
 	_alpha = alpha
+	_command_radius = state.totem.commandRadius
+	_totem_position = state.totem.position
 	var active := {}
 	for unit in state.units:
 		_sync_actor(unit, unit.role, active)
@@ -102,10 +106,24 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
 			health.pixel_size = 0.006
 			node.add_child(health)
 		_create_role_tool(node, kind)
+		if kind not in ["barbarian", "rabbit"]:
+			var ring := _range_ring(node, Color(0.945, 0.824, 0.478, 0.35))
+			ring.name = "DetectionRange"
 		_views[actor.id] = node
 	var previous: Dictionary = _previous_positions.get(actor.id, actor.position)
-	_views[actor.id].position = Vector3(lerpf(previous.x, actor.position.x, _alpha), 0, lerpf(previous.y, actor.position.y, _alpha))
+	var point := {"x": lerpf(previous.x, actor.position.x, _alpha), "y": lerpf(previous.y, actor.position.y, _alpha)}
+	if kind == "hunter" and actor.task.kind == "combat":
+		var dx: float = point.x - _totem_position.x
+		var dy: float = point.y - _totem_position.y
+		var distance := sqrt(dx * dx + dy * dy)
+		var radius := minf(_command_radius, 10.0)
+		if distance > radius and distance > 1e-8:
+			point = {"x": clampf(_totem_position.x + dx / distance * radius, 2, 158), "y": clampf(_totem_position.y + dy / distance * radius, 2, 158)}
+	_views[actor.id].position = Vector3(point.x, 0, point.y)
 	var node: Node3D = _views[actor.id]
+	if node.has_node("DetectionRange"):
+		var radius := maxf(_command_radius, 0) * 1.05
+		node.get_node("DetectionRange").scale = Vector3(radius, 1, radius)
 	if node.has_node("Health"):
 		node.get_node("Health").text = "%s / %s" % [actor.health, actor.maxHealth]
 	if actor.get("hasShield", false) and not node.has_node("Shield"):
@@ -116,6 +134,14 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
 		var view := _mesh(node, shield, Vector3(-0.43, 0.85, 0), Color("bdab81"))
 		view.name = "Shield"
 		view.rotation.z = PI / 2
+
+func _range_ring(parent: Node3D, color: Color) -> MeshInstance3D:
+	var ring := TorusMesh.new()
+	ring.inner_radius = 0.9775
+	ring.outer_radius = 1.0225
+	ring.rings = 64
+	ring.ring_segments = 8
+	return _mesh(parent, ring, Vector3(0, 0.08, 0), color)
 
 func _create_role_tool(node: Node3D, kind: String) -> void:
 	if kind in ["lumberjack", "artisan", "guardian", "barbarian"]:
@@ -166,6 +192,8 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 			flame.radius = 0.35
 			flame.height = 1.1
 			_mesh(node, flame, Vector3(0, 0.65, 0), Color("f6ad4b"))
+			var radius: float = campfire.healingRadius * 1.05
+			_range_ring(node, Color(0.455, 0.859, 0.416, 0.35)).scale = Vector3(radius, 1, radius)
 			_views[campfire.id] = node
 	for corpse in state.corpses + state.barbarianCorpses:
 		active[corpse.id] = true
@@ -188,7 +216,7 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 			var node: Node3D = _views[effect.targetId]
 			var body: MeshInstance3D = node.get_node("Body")
 			if effect.kind == "damage-flash":
-				body.material_override = _material(Color("fff2df"))
+				body.material_override = _material(Color("ef5b5b"))
 			elif effect.kind == "attack-lunge":
 				var direction := Vector3(effect.position.x - node.position.x, 0, effect.position.y - node.position.z).normalized()
 				body.position += direction * sin(effect.ageSeconds / effect.durationSeconds * PI) * 0.28
@@ -227,12 +255,21 @@ func _make_alert_sound() -> AudioStreamWAV:
 	if _alert_sound != null:
 		return _alert_sound
 	var samples := PackedByteArray()
-	var count := 2646
+	var count := 3308
 	samples.resize(count * 2)
+	var phase := 0.0
 	for index in count:
 		var time := float(index) / 22050.0
-		var envelope := 1.0 - float(index) / count
-		samples.encode_s16(index * 2, int(sin(time * TAU * 880) * envelope * 12000))
+		var frequency := 880.0 * pow(620.0 / 880.0, minf(time / 0.11, 1.0))
+		phase += TAU * frequency / 22050.0
+		var envelope: float
+		if time <= 0.012:
+			envelope = 0.0001 * pow(0.08 / 0.0001, time / 0.012)
+		elif time <= 0.14:
+			envelope = 0.08 * pow(0.0001 / 0.08, (time - 0.012) / 0.128)
+		else:
+			envelope = 0.0001
+		samples.encode_s16(index * 2, int((2.0 / PI) * asin(sin(phase)) * envelope * 32767))
 	_alert_sound = AudioStreamWAV.new()
 	_alert_sound.format = AudioStreamWAV.FORMAT_16_BITS
 	_alert_sound.mix_rate = 22050
@@ -325,6 +362,8 @@ func _material(color: Color) -> StandardMaterial3D:
 	if not _materials.has(color):
 		var material := StandardMaterial3D.new()
 		material.albedo_color = color
+		if color.a < 1:
+			material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 		material.roughness = 1.0
 		_materials[color] = material
 	return _materials[color]

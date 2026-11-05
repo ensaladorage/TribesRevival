@@ -1,5 +1,7 @@
 # Validación manual pendiente — Godot
 
+Proyecto y comandos: `../godot/README.md`.
+
 Usar el proyecto nativo o los builds de desarrollo. Comparar con Babylon
 servido en `/TribesRevival/`. No sustituir estos casos por automatización de
 capturas ni del loop de gameplay. Todos los casos están pendientes hasta

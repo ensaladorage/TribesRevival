@@ -14,6 +14,7 @@ const Movement = preload("res://scripts/simulation/minion_movement.gd")
 const Combat = preload("res://scripts/simulation/combat_rules.gd")
 const Commands = preload("res://scripts/simulation/commands.gd")
 const Saves = preload("res://scripts/persistence/save_repository.gd")
+const Work = preload("res://scripts/simulation/work_system.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -35,6 +36,8 @@ func _initialize() -> void:
 	_test_support(reference.support)
 	_test_purchases(reference.purchases)
 	_test_current_save()
+	for sample in reference.durations:
+		_equal(Work.gather_duration({"toolLevels": sample.levels}, sample.node), sample.result, "gather duration")
 	for sample in reference.combat.attacks:
 		_equal(Combat.minion_attack(sample.role, sample.level), sample.result, "attack statistics")
 	for sample in reference.combat.damage:
@@ -62,6 +65,11 @@ func _test_current_save() -> void:
 	_equal(loaded.status, "valid", "read current slot")
 	if loaded.status == "valid":
 		_equal(loaded.save.gameState, Saves.normalized_state(state), "current save round trip")
+		loaded.save.gameState.inventory.amounts.food = 2
+		Commands.apply(loaded.save.gameState, {"type": "recruit-gatherer", "position": {"x": 80, "y": 84}})
+		_equal(loaded.save.gameState.units.size(), 3, "purchase uses decoded JSON numbers")
+		_equal(loaded.save.gameState.inventory.amounts.food, 0, "post-load purchase cost")
+		_equal(loaded.save.gameState.units[2].id, "unit-gatherer-02", "post-load ID counter")
 	_equal(state.phase, "paused", "saving does not mutate live phase")
 	_equal(repository.save_slot(2, state, "2026-11-05T00:00:00Z").ok, true, "save second slot")
 	_equal(repository.delete_slot(1), OK, "delete selected slot")
