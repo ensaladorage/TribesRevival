@@ -63,8 +63,10 @@ de navegación.
 El usuario confirma curación con hoguera, lluvia y derrota → Reiniciar.
 Reporta que los indicadores de vida de los minions apenas se ven. Se amplía
 su presentación y se compensa el zoom para mantener el tamaño en pantalla,
-con contorno oscuro y colores aliados/enemigos. Pendiente su revisión manual:
-comprobar vida completa/dañada/curada, con escudo y en ambos extremos del zoom.
+con contorno oscuro y colores aliados/enemigos. El usuario confirma después
+«Si ya se ven bien», al comprobar cámara cerca/alejada y daño/curación en
+Linux. La legibilidad queda validada en ese recorrido. Escudo y otras
+plataformas no quedan acreditados por esa respuesta.
 
 El usuario no dispone de Windows y pide centrar las pruebas en Linux por
 ahora. Se aplaza esa prueba manual; el build Windows se conserva disponible.

@@ -6,11 +6,12 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
 - Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
-- Próxima tarea ejecutable: repetir legibilidad de HP al acercar/alejar en
-  el build Linux actualizado; continuar controles/slots/preview. Por decisión
+- Próxima tarea ejecutable: continuar controles/slots/preview en Linux;
+  HP ya confirmados legibles manualmente. Por decisión
   del usuario, prueba manual de Windows aplazada; centrar QA en Linux.
 - Incidencias reportadas resueltas por confirmación manual en Linux:
-  menús, segunda pulsación de reclutamiento y lag en los límites con 8 unidades.
+  menús, segunda pulsación de reclutamiento, lag en los límites con 8 unidades
+  y legibilidad de HP al cambiar zoom.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -27,7 +28,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F5 IA/recolección | Usuario confirma seguimiento/recolección y bordes con 8 unidades; cruces/llamadas/interrupciones pendientes |
 | F6 combate/clima | Usuario confirma combate, daño/botín, hoguera, lluvia y derrota/reinicio en Linux; huida/respawn pendientes |
 | F7 compras/equipo | Usuario confirma equipo/mejora/tecnología, reclutamiento consecutivo y uso de 8 unidades en Linux; preview/cancelación/clases pendientes |
-| F8 UI/guardado | Usuario confirma menús y guardado básico; HP ampliados tras su aviso, revisión manual pendiente; slots/Esc restantes pendientes |
+| F8 UI/guardado | Usuario confirma menús, guardado básico y HP legibles con zoom/daño/curación; slots/Esc restantes pendientes |
 | F9 integración/exportación | Tres builds exportados; recorridos Linux confirmados; Windows manual aplazado por usuario, QA Linux restante pendiente |
 
 ## Pruebas y límites
@@ -336,3 +337,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - El usuario no dispone de Windows y pide centrarse en Linux por ahora.
   Prueba Windows aplazada expresamente; el export sigue disponible y no se
   declara probado en ese sistema. No reabrir esta petición durante QA Linux.
+- Tras reabrir el ejecutable, a la comprobación de legibilidad con cámara
+  cerca/alejada y vida dañada/curada, responde «Si ya se ven bien».
+  Legibilidad de HP confirmada manualmente en Linux; incidencia cerrada.
+  No se extrapola a otras plataformas ni al caso específico del escudo.
