@@ -1,9 +1,13 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
 [node name="FeedbackMenu" type="VBoxContainer"]
+theme = ExtResource("theme")
 theme_override_constants/separation = 12
+custom_minimum_size = Vector2(444, 0)
 
 [node name="Title" type="Label" parent="."]
+theme_type_variation = &"MenuTitle"
 layout_mode = 2
 text = "Tribes Revival"
 theme_override_font_sizes/font_size = 28
@@ -18,5 +22,5 @@ autowrap_mode = 3
 [node name="Back" type="Button" parent="."]
 layout_mode = 2
 text = "Volver"
-custom_minimum_size = Vector2(0, 40)
-
+custom_minimum_size = Vector2(0, 42)
+theme_type_variation = &"TribesMenuButton"

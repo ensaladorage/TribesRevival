@@ -1,5 +1,6 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ResourceCost.tscn" id="cost"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon-minion.png" id="gatherer"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon-axe.png" id="axe"]
@@ -10,6 +11,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/icon-fireplace.png" id="campfire"]
 
 [node name="RecruitmentPanel" type="VBoxContainer"]
+theme = ExtResource("theme")
 theme_override_constants/separation = 5
 
 [node name="gathererRow" type="HBoxContainer" parent="."]
@@ -172,4 +174,3 @@ metadata/item = "campfire"
 layout_mode = 2
 size_flags_vertical = 4
 metadata/cost_for = "campfire"
-

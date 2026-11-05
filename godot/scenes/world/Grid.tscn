@@ -1,0 +1,520 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
+
+[sub_resource type="BoxMesh" id="mesh1"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat1"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh2"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat2"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh3"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat3"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh4"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat4"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh5"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat5"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh6"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat6"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh7"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat7"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh8"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat8"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh9"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat9"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh10"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat10"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh11"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat11"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh12"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat12"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh13"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat13"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh14"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat14"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh15"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat15"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh16"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat16"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh17"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat17"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh18"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat18"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh19"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat19"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh20"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat20"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh21"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat21"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh22"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat22"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh23"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat23"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh24"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat24"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh25"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat25"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh26"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat26"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh27"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat27"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh28"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat28"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh29"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat29"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh30"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat30"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh31"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat31"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh32"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat32"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh33"]
+size = Vector3(0.025, 0.001, 160)
+
+[sub_resource type="StandardMaterial3D" id="mat33"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[sub_resource type="BoxMesh" id="mesh34"]
+size = Vector3(160, 0.001, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="mat34"]
+albedo_color = Color(0.6941176470588235, 0.7058823529411765, 0.7098039215686275, 0.22)
+shading_mode = 0
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+
+[node name="Grid" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Default" type="Node3D" parent="Visual"]
+
+[node name="X0" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(0, 0.02, 80)
+mesh = SubResource("mesh1")
+material_override = SubResource("mat1")
+
+[node name="Z0" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 0)
+mesh = SubResource("mesh2")
+material_override = SubResource("mat2")
+
+[node name="X10" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(10, 0.02, 80)
+mesh = SubResource("mesh3")
+material_override = SubResource("mat3")
+
+[node name="Z10" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 10)
+mesh = SubResource("mesh4")
+material_override = SubResource("mat4")
+
+[node name="X20" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(20, 0.02, 80)
+mesh = SubResource("mesh5")
+material_override = SubResource("mat5")
+
+[node name="Z20" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 20)
+mesh = SubResource("mesh6")
+material_override = SubResource("mat6")
+
+[node name="X30" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(30, 0.02, 80)
+mesh = SubResource("mesh7")
+material_override = SubResource("mat7")
+
+[node name="Z30" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 30)
+mesh = SubResource("mesh8")
+material_override = SubResource("mat8")
+
+[node name="X40" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(40, 0.02, 80)
+mesh = SubResource("mesh9")
+material_override = SubResource("mat9")
+
+[node name="Z40" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 40)
+mesh = SubResource("mesh10")
+material_override = SubResource("mat10")
+
+[node name="X50" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(50, 0.02, 80)
+mesh = SubResource("mesh11")
+material_override = SubResource("mat11")
+
+[node name="Z50" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 50)
+mesh = SubResource("mesh12")
+material_override = SubResource("mat12")
+
+[node name="X60" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(60, 0.02, 80)
+mesh = SubResource("mesh13")
+material_override = SubResource("mat13")
+
+[node name="Z60" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 60)
+mesh = SubResource("mesh14")
+material_override = SubResource("mat14")
+
+[node name="X70" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(70, 0.02, 80)
+mesh = SubResource("mesh15")
+material_override = SubResource("mat15")
+
+[node name="Z70" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 70)
+mesh = SubResource("mesh16")
+material_override = SubResource("mat16")
+
+[node name="X80" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 80)
+mesh = SubResource("mesh17")
+material_override = SubResource("mat17")
+
+[node name="Z80" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 80)
+mesh = SubResource("mesh18")
+material_override = SubResource("mat18")
+
+[node name="X90" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(90, 0.02, 80)
+mesh = SubResource("mesh19")
+material_override = SubResource("mat19")
+
+[node name="Z90" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 90)
+mesh = SubResource("mesh20")
+material_override = SubResource("mat20")
+
+[node name="X100" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(100, 0.02, 80)
+mesh = SubResource("mesh21")
+material_override = SubResource("mat21")
+
+[node name="Z100" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 100)
+mesh = SubResource("mesh22")
+material_override = SubResource("mat22")
+
+[node name="X110" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(110, 0.02, 80)
+mesh = SubResource("mesh23")
+material_override = SubResource("mat23")
+
+[node name="Z110" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 110)
+mesh = SubResource("mesh24")
+material_override = SubResource("mat24")
+
+[node name="X120" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(120, 0.02, 80)
+mesh = SubResource("mesh25")
+material_override = SubResource("mat25")
+
+[node name="Z120" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 120)
+mesh = SubResource("mesh26")
+material_override = SubResource("mat26")
+
+[node name="X130" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(130, 0.02, 80)
+mesh = SubResource("mesh27")
+material_override = SubResource("mat27")
+
+[node name="Z130" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 130)
+mesh = SubResource("mesh28")
+material_override = SubResource("mat28")
+
+[node name="X140" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(140, 0.02, 80)
+mesh = SubResource("mesh29")
+material_override = SubResource("mat29")
+
+[node name="Z140" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 140)
+mesh = SubResource("mesh30")
+material_override = SubResource("mat30")
+
+[node name="X150" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(150, 0.02, 80)
+mesh = SubResource("mesh31")
+material_override = SubResource("mat31")
+
+[node name="Z150" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 150)
+mesh = SubResource("mesh32")
+material_override = SubResource("mat32")
+
+[node name="X160" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(160, 0.02, 80)
+mesh = SubResource("mesh33")
+material_override = SubResource("mat33")
+
+[node name="Z160" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(80, 0.02, 160)
+mesh = SubResource("mesh34")
+material_override = SubResource("mat34")

@@ -5,6 +5,9 @@
 
 [ext_resource type="PackedScene" path="res://scenes/world/Totem.tscn" id="totem"]
 
+[ext_resource type="PackedScene" path="res://scenes/world/Grid.tscn" id="grid"]
+[ext_resource type="PackedScene" path="res://scenes/world/TotemShadow.tscn" id="shadow"]
+
 [sub_resource type="PlaneMesh" id="Plane_ground"]
 size = Vector2(160, 160)
 
@@ -33,7 +36,7 @@ mesh = SubResource("Plane_ground")
 material_override = SubResource("Material_ground")
 
 [node name="Totem" parent="." instance=ExtResource("totem")]
-position = Vector3(80, 1.6, 80)
+position = Vector3(80, 2, 80)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("environment")
@@ -52,3 +55,8 @@ near = 0.1
 far = 1000.0
 current = true
 script = ExtResource("2_camera")
+
+[node name="Grid" parent="." instance=ExtResource("grid")]
+
+[node name="TotemShadow" parent="." instance=ExtResource("shadow")]
+position = Vector3(80, 0.04, 80)

@@ -12,7 +12,8 @@ revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=project, te
 records = []
 for platform in ("linux", "windows", "web"):
     folder = builds / platform
-    shutil.copy2(project / "distribution/GODOT_LICENSE.txt", folder / "GODOT_LICENSE.txt")
+    for license_file in (project / "distribution").glob("*.txt"):
+        shutil.copy2(license_file, folder / license_file.name)
     instructions = {
         "linux": "Extrae el ZIP y ejecuta ./TribesRevival.x86_64 (marca el archivo como ejecutable si hace falta).",
         "windows": "Extrae el ZIP y abre TribesRevival.exe.",
@@ -23,7 +24,7 @@ for platform in ("linux", "windows", "web"):
         + "\n\nJuego local para un jugador. Arrastra el tótem para guiar la tribu.\n"
         + "Rueda/+/-: zoom. Esc: pausa. 1/2/3: velocidad. Insert: debug.\n"
         + "La revisión visual y del gameplay sigue pendiente.\n"
-        + "La licencia de Godot Engine se incluye en GODOT_LICENSE.txt.\n"
+        + "Licencias: GODOT_LICENSE.txt y LIBERATION_FONTS_LICENSE.txt.\n"
     )
     files = sorted(path for path in folder.rglob("*") if path.is_file())
     if not files:
@@ -47,7 +48,7 @@ for platform in ("linux", "windows", "web"):
         {"path": str(path.relative_to(project)), "sha256": hashlib.file_digest(path.open("rb"), "sha256").hexdigest()}
         for path in sorted([
             project / "project.godot", project / "export_presets.cfg",
-            *[path for directory in ("scripts", "scenes", "assets") for path in (project / directory).rglob("*") if path.is_file()],
+            *[path for directory in ("scripts", "scenes", "assets", "themes", "distribution") for path in (project / directory).rglob("*") if path.is_file()],
         ])
     ],
 }, indent=2) + "\n")

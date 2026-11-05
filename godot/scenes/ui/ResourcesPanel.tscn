@@ -1,5 +1,6 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
 [ext_resource type="Texture2D" path="res://assets/ui/resource-food.png" id="food"]
 [ext_resource type="Texture2D" path="res://assets/ui/resource-wood.png" id="wood"]
 [ext_resource type="Texture2D" path="res://assets/ui/resource-stone.png" id="stone"]
@@ -7,6 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/resource-gold.png" id="gold"]
 
 [node name="ResourcesPanel" type="HFlowContainer"]
+theme = ExtResource("theme")
 mouse_filter = 2
 alignment = 1
 theme_override_constants/h_separation = 24
@@ -121,4 +123,3 @@ text = "0"
 tooltip_text = "Oro"
 mouse_filter = 2
 metadata/resource = "gold"
-

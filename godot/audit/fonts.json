@@ -1,0 +1,18 @@
+{
+  "package": "ttf-liberation 2.1.5-2",
+  "license": "SIL Open Font License 1.1",
+  "license_file": "distribution/LIBERATION_FONTS_LICENSE.txt",
+  "modified": false,
+  "files": [
+    {
+      "source": "/usr/share/fonts/liberation/LiberationMono-Regular.ttf",
+      "destination": "godot/assets/fonts/LiberationMono-Regular.ttf",
+      "sha256": "47ed5b5fcfe6b3c9228937b05de9c769f5fa55b777d539af0f65172f0a24c90b"
+    },
+    {
+      "source": "/usr/share/fonts/liberation/LiberationMono-Bold.ttf",
+      "destination": "godot/assets/fonts/LiberationMono-Bold.ttf",
+      "sha256": "1d8d631105d4cb6c562a0d90f591d6393007d71350c089aec81c37dc8da293ed"
+    }
+  ]
+}

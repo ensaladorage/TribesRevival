@@ -24,7 +24,7 @@ func _init(seed_text: String = State.DEFAULT_SEED) -> void:
 
 func _capture_positions() -> void:
 	previous_positions.clear()
-	for actor in state.units + state.barbarians + state.animals:
+	for actor in state.units + state.barbarians + state.animals + state.weather.clouds:
 		previous_positions[actor.id] = actor.position.duplicate()
 
 func enqueue(action: Dictionary) -> void:

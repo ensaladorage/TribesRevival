@@ -7,8 +7,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - Última fase cerrada: F7 (compras/equipo, confirmación final de colores Linux).
   F0, F1, F2, F3, F4 y F7 completadas antes del refactor visual.
 - Fase actual: F11 arquitectura visual editable; F10 paridad visual obligatoria.
-- Próxima tarea ejecutable: terminar cotejo F10 de entorno/menús y regenerar
-  exportaciones. F11 implementada a nivel estructural; revisión en editor y
+- Próxima tarea ejecutable: completar diferencias pendientes de F10 (gradiente
+  y espaciado del menú) y preparar revisión manual final Linux. Exportaciones
+  regeneradas y arranque headless Linux correcto. F11 implementada a nivel estructural; revisión en editor y
   funcionamiento percibido pendientes de la etapa manual final.
 - Decisión vigente: testeo manual al terminar la migración; no solicitar más
   recorridos intermedios ni centrarse en bugs menores. Windows manual aplazado.
@@ -35,7 +36,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F6 combate/clima | Usuario confirma combate, daño/botín, hoguera, lluvia y derrota/reinicio en Linux; huida/respawn pendientes |
 | F7 compras/equipo | Compras/equipo, preview, Mago único y Escudo +1 HP sin repetición confirmados en Linux; distinción visual del Mago confirmada («si, colores correctos»); cierre F7 previo al refactor |
 | F8 UI/guardado | Menús/HP y persistencia de los tres slots tras reabrir validados en Linux; borrado/cancelación correctos; resto de revisión UI pendiente |
-| F9 integración/exportación | Tres builds exportados; recorridos Linux confirmados; Windows manual aplazado por usuario, QA Linux restante pendiente |
+| F9 integración/exportación | Linux/Windows/web regenerados para la arquitectura nueva; arranque del menú Linux sin errores; testeo final Linux pendiente, Windows manual aplazado |
+| F10 paridad visual | Cotejo por fuentes de HUD, materiales, cámara, menús y efectos; menú inicial inspeccionado en capturas; diferencias artísticas y revisión en movimiento pendientes |
+| F11 escenas editables | Implementación estructural completa: escenas/Theme/variantes y sustituciones de apariencia; revisión manual del editor y funcionalidades tras refactor pendiente |
 
 ## Pruebas y límites
 
@@ -477,10 +480,52 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   esto es un cotejo de configuración, no equivalencia fotométrica medida.
 - Cámara conserva ortográfica, 45°/35°, altura 72×zoom, distancia 120 y límites
   vigentes. Menús opacos #777 y pausa (15,12,20)/72% según CSS original.
-- Validación técnica: 29 scripts/70 escenas, 101 callbacks aislados de menú,
+- Validación técnica: 33 scripts/72 escenas, 101 callbacks aislados de menú,
   cuatro pulsaciones y 15.669 comparaciones de datos. 838 originales y 13 iconos
   intactos. reports/editable-hp-validation.log. Sin gameplay/visual automatizado.
 - Pendientes F10: revisión perceptual/capturas comparables si se obtienen;
   gradientes/sombras CSS de menú, layout detallado de tutorial/slots, efectos
   animados y sprites definitivos. Diferencias conocidas quedan explícitas;
   no declarar F10 ni F11 completamente validadas por importar escenas.
+
+## F10b — Menús, efectos, fuente y exportación del bloque
+
+- Tótem como caja 2,4×4×1,6, altura 2/4,6 al portar, color de reposo/porte,
+  sombra plana y cuadrícula del mundo retomados del original. Materiales,
+  geometría, previews y flecha editables; main conecta estado sin construirlos.
+- Tutorial: diagrama SVG extraído del index.html original (solo xmlns para
+  importarlo aparte), seis tarjetas de roles y controles en la escena.
+  Procedencia/hash en audit/derived_ui_assets.json. Fuente Babylon intacta.
+- Tamaños y estilos de páginas, título 50 px, filas horizontales de slots y
+  botón de borrado separado alineados por fuentes. Páginas configurables por
+  PackedScene; conexiones buscan nombres recursivamente para permitir anidar
+  controles. Se conserva Salir como acción nativa ya existente en Godot.
+- Capturas estáticas reales del menú inicial a 1280×720 mediante Game Playtest:
+  reports/f10-babylon-main.jpg y f10-godot-main.jpg. No se pulsó Jugar ni se
+  automatizó gameplay. La primera comparación reveló sustitución de SystemFont
+  por fuente proporcional en web. Se incluye Liberation Mono Regular/Bold
+  (paquete local ttf-liberation 2.1.5-2, sin modificar) y su licencia OFL 1.1;
+  procedencia/hashes en audit/fonts.json. La captura posterior
+  reports/f10-godot-main-font.jpg confirma texto monoespaciado.
+- Diferencias inspeccionadas: menú Godot incluye Salir, tiene distinto espacio
+  vertical y fondo plano frente al gradiente verde/violeta CSS. No se afirma
+  coincidencia exacta de antialiasing/fuente elegida por cada navegador.
+- Nubes/lluvia: cinco volúmenes, escalas, transparencia/emisión originales,
+  diez gotas descendentes y leve oscilación según fase; todo en escena/script
+  de presentación. Snapshot efímero incluye posiciones de nubes para interpolar;
+  no añade datos persistidos ni modifica el sistema de clima/relleno.
+- Curación usa tres cruces ascendentes/escala como en Babylon, alerta usa
+  círculo de 22 px con desvanecimiento, y lunge toma amplitud 0,2 del original.
+  Los efectos continúan leyendo edad/duración del estado, sin producir daño.
+  La vida fraccionaria se presenta con ceil como las bolitas originales.
+- Drop.tscn es ahora la base real compartida de las cinco variantes de color.
+  Editar su geometría cambia todos los drops sin modificar el generador.
+- Paquetes incluyen licencia de fuentes y su manifiesto cubre también themes/
+  y distribution/. reports/ se excluye del importador mediante .gdignore para
+  no tratar capturas/fixtures diagnósticas como assets del juego.
+- Nuevas escenas y scripts importan sin errores: 33 scripts/72 escenas;
+  101 callbacks de menús, cuatro pulsaciones y 15.669 comparaciones puras.
+  reports/effects-source-parity-validation.log. Export final del bloque correcto: Linux/Windows/web y arranque headless
+  del menú Linux, sin errores. reports/f11-f10-export-all.log. Ningún test visual o de loop añadido.
+- F10/F11 siguen pendientes de la revisión manual final. No se extrapola la
+  captura del menú a materiales/efectos/HUD en una partida ni al editor nativo.

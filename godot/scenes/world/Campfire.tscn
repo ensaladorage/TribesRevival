@@ -60,28 +60,28 @@ script = ExtResource("script")
 [node name="Default" type="Node3D" parent="Visual"]
 
 [node name="Base" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.09, 0)
+position = Vector3(0, 0.12, 0)
 mesh = SubResource("mesh1")
 material_override = SubResource("mat1")
 
 [node name="LogA" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.25, 0)
+position = Vector3(0, 0.31, 0)
+rotation = Vector3(0, 0.785398, 0)
 mesh = SubResource("mesh2")
 material_override = SubResource("mat2")
 
 [node name="LogB" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.25, 0)
+position = Vector3(0, 0.38, 0)
 mesh = SubResource("mesh3")
 material_override = SubResource("mat3")
-rotation = Vector3(0, 1.5707963267948966, 0)
+rotation = Vector3(0, -0.785398, 0)
 
 [node name="Flame" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.8, 0)
+position = Vector3(0, 0.86, 0)
 mesh = SubResource("mesh4")
 material_override = SubResource("mat4")
 
 [node name="HealingRange" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.08, 0)
+position = Vector3(0, 0.06, 0)
 mesh = SubResource("mesh5")
 material_override = SubResource("mat5")
-

@@ -1,9 +1,13 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
 [node name="DefeatMenu" type="VBoxContainer"]
+theme = ExtResource("theme")
 theme_override_constants/separation = 12
+custom_minimum_size = Vector2(324, 0)
 
 [node name="Title" type="Label" parent="."]
+theme_type_variation = &"MenuTitle"
 layout_mode = 2
 text = "Tu tribu ha muerto"
 theme_override_font_sizes/font_size = 28
@@ -12,10 +16,11 @@ horizontal_alignment = 1
 [node name="Restart" type="Button" parent="."]
 layout_mode = 2
 text = "Reiniciar"
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 42)
+theme_type_variation = &"TribesMenuButton"
 
 [node name="Main" type="Button" parent="."]
 layout_mode = 2
 text = "Menú principal"
-custom_minimum_size = Vector2(0, 40)
-
+custom_minimum_size = Vector2(0, 42)
+theme_type_variation = &"TribesMenuButton"

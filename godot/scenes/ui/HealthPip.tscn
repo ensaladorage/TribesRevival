@@ -1,5 +1,8 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
 [node name="HealthPip" type="PanelContainer"]
+theme = ExtResource("theme")
 custom_minimum_size = Vector2(9, 9)
+theme_type_variation = &"AllyFilled"
 mouse_filter = 2

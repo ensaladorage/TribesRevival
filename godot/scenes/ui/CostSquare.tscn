@@ -1,5 +1,8 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
 [node name="CostSquare" type="PanelContainer"]
+theme = ExtResource("theme")
 custom_minimum_size = Vector2(8, 8)
+theme_type_variation = &"CostFood"
 mouse_filter = 2

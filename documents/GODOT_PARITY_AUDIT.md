@@ -16,7 +16,7 @@ La migración completa todavía no está acreditada.
 | Requisito | Evidencia actual | Falta para acreditarlo completamente |
 |---|---|---|
 | Rama exclusiva, original intacto | `migration/godot`; 838 hashes de archivos originales en `audit/source_inventory.json`, verificados por `tools/verify_original.py` | Mantener la comprobación en cada cambio |
-| Godot 4/GDScript/Compatibility | `project.godot`, 29 scripts/70 escenas, escena principal importada e inicializada headless; arranque gráfico Linux confirmado por usuario | Mantener estos contratos y terminar QA restante |
+| Godot 4/GDScript/Compatibility | `project.godot`, 33 scripts/72 escenas, escena principal importada e inicializada headless; arranque gráfico Linux confirmado por usuario | Mantener estos contratos y terminar QA restante |
 | Escena 3D y cámara | Contratos cotejados, validación técnica; usuario confirma cámara/zoom/arrastre/bordes con 8 unidades y Esc/velocidades; F2 cerrada en Linux | Mantener contratos y resolver los otros bloques de QA |
 | Estado y mundo deterministas | PRNG bit exacto UTF-16/Mulberry32 y estados iniciales completos comparados con TS en 4 semillas, incluida Unicode/emoji | Vista/generación percibida en partida |
 | Tótem/minions/IA/navegación | `minion_movement.gd`, `navigation.gd`, `minion_idle.gd`, `work_system.gd`; funciones puras comparadas con TS; usuario confirma arrastre/seguimiento y bordes con 8 unidades | Cruces, llamadas, obstáculos e interrupciones de F5 |
@@ -58,3 +58,10 @@ analizó con copia de solo lectura y helpers geométricos aislados; hay correcci
 de cesión/rutas, pendiente de comprobar en partida. No se ejecutó ese guardado
 automáticamente. El informe de lag de combate sigue pendiente de evidencia
 manual final; un ahorro en rutas no demuestra FPS de una batalla.
+
+El menú inicial sí se ha inspeccionado mediante capturas estáticas comparables
+1280×720 (sin entrar en partida). Se corrigió el fallback proporcional de web
+incluyendo Liberation Mono y licencia OFL. Persisten fondo plano/gradiente y
+espaciado del menú; Salir es una acción nativa de Godot. Materiales/cámara,
+cuadrícula/tótem, HUD, nubes/lluvia, curación y alertas se cotejaron por fuentes,
+pero la vista en movimiento sigue sin acreditación manual tras el refactor.

@@ -158,7 +158,9 @@ func _sync_view() -> void:
 	world_view.sync(session.state, session.previous_positions, session.accumulator / Session.FIXED_DT)
 	var totem: Dictionary = session.state.totem
 	var visual: Dictionary = drag_position if (dragging or totem.isCarried) and drag_position != null else totem.position
-	totem_view.position = Vector3(float(visual.x), 1.6 + (0.7 if dragging or totem.isCarried else 0.0), float(visual.y))
+	totem_view.position = Vector3(float(visual.x), 4.6 if dragging or totem.isCarried else 2.0, float(visual.y))
+	totem_view.present(dragging or totem.isCarried)
+	$TotemShadow.position = Vector3(visual.x, 0.04, visual.y)
 	direction_arrow.position = Vector3(visual.x, 3.1, visual.y)
 	direction_arrow.rotation.y = atan2(drag_direction.x, drag_direction.y)
 	direction_arrow.visible = dragging or totem.isCarried

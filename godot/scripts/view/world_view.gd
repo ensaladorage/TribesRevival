@@ -150,20 +150,15 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
 	node.present_health(actor, _health_pixel_size, _health_screen_up)
 	node.present(actor)
 
-func _billboard(id: String, scene: PackedScene) -> Label3D:
-	if not _views.has(id):
-		var label := scene.instantiate()
-		add_child(label)
-		_views[id] = label
-	return _views[id]
-
 func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 	for campfire in state.campfires:
 		active[campfire.id] = true
 		if not _views.has(campfire.id):
 			var node := _spawn(campfire_scene, campfire.position)
 			var radius: float = campfire.healingRadius * 1.05
-			node.get_node("Visual/Default/HealingRange").scale = Vector3(radius, 1, radius)
+			var ring: Node3D = node.find_child("HealingRange", true, false)
+			if ring != null:
+				ring.scale = Vector3(radius, 1, radius)
 			_views[campfire.id] = node
 	for corpse in state.corpses + state.barbarianCorpses:
 		active[corpse.id] = true
@@ -176,22 +171,31 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 	for effect in state.effects:
 		if effect.kind == "heal-crosses":
 			active[effect.id] = true
-			var label := _billboard(effect.id, heal_effect_scene)
-			label.position = Vector3(effect.position.x, 2.0 + effect.ageSeconds, effect.position.y)
+			if not _views.has(effect.id):
+				_views[effect.id] = _spawn(heal_effect_scene, effect.position)
+			var point: Dictionary = effect.position
+			for unit in state.units:
+				if unit.id == effect.targetId:
+					point = unit.position
+					break
+			if _views[effect.id].has_method("present"):
+				_views[effect.id].present(effect, point)
 		elif _views.has(effect.targetId) and _views[effect.targetId].has_method("flash"):
 			var node: Node3D = _views[effect.targetId]
 			if effect.kind == "damage-flash":
 				node.flash(Color("ef5b5b"))
 			elif effect.kind == "attack-lunge":
 				var direction := Vector3(effect.position.x - node.position.x, 0, effect.position.y - node.position.z).normalized()
-				node.lunge(direction, sin(effect.ageSeconds / effect.durationSeconds * PI) * 0.28)
+				node.lunge(direction, sin(clampf(effect.ageSeconds / effect.durationSeconds, 0, 1) * PI) * 0.2)
 	for alert in state.alerts:
 		active[alert.id] = true
-		var label := _billboard(alert.id, alert_scene)
+		if not _views.has(alert.id):
+			_views[alert.id] = _spawn(alert_scene, alert.position)
 		var point := Vector3(alert.position.x, 0, alert.position.y)
 		if _views.has(alert.detectorId):
 			point = _views[alert.detectorId].position
-		label.position = point + Vector3(0, 2.7, 0)
+		if _views[alert.id].has_method("present"):
+			_views[alert.id].present(point, alert.ageSeconds / alert.durationSeconds)
 		if alert.playSound and not _played_alerts.has(alert.id):
 			_played_alerts[alert.id] = true
 			_alert_player.play()
@@ -199,10 +203,10 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 		active[cloud.id] = true
 		if not _views.has(cloud.id):
 			_views[cloud.id] = _spawn(cloud_scene, cloud.position)
-		_views[cloud.id].position = Vector3(cloud.position.x, 11.0, cloud.position.y)
-		var rain: Node3D = _views[cloud.id].find_child("Rain", true, false)
-		if rain != null:
-			rain.visible = cloud.phase == "raining"
+		var previous: Dictionary = _previous_positions.get(cloud.id, cloud.position)
+		_views[cloud.id].position = Vector3(lerpf(previous.x, cloud.position.x, _alpha), 0, lerpf(previous.y, cloud.position.y, _alpha))
+		if _views[cloud.id].has_method("present"):
+			_views[cloud.id].present(cloud)
 
 func _make_alert_sound() -> AudioStreamWAV:
 	if _alert_sound != null:

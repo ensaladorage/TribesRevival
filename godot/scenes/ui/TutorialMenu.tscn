@@ -1,45 +1,285 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon-minion.png" id="minion"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon-axe.png" id="axe"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon-bow.png" id="bow"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon-sword.png" id="sword"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon-hammer.png" id="hammer"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon-mage.png" id="mage"]
+[ext_resource type="Texture2D" path="res://assets/ui/tutorial-movement.svg" id="diagram"]
+
 [node name="TutorialMenu" type="VBoxContainer"]
+theme = ExtResource("theme")
+custom_minimum_size = Vector2(912, 0)
 theme_override_constants/separation = 12
+metadata/panel_style = "TutorialPanel"
 
 [node name="Title" type="Label" parent="."]
+theme_type_variation = &"MenuTitle"
 layout_mode = 2
 text = "Cómo jugar"
-theme_override_font_sizes/font_size = 28
-horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
 
-[node name="Paragraph0" type="Label" parent="."]
+[node name="Movement" type="HBoxContainer" parent="."]
 layout_mode = 2
-text = "Sobrevive y progresa guiando a tu tribu con el tótem.\n\nArrástralo para explorar y reagrupar a los minions. Haz una parada junto a los recursos para que trabajen solos. El terreno vacío no mueve el tótem."
-custom_minimum_size = Vector2(400, 0)
-autowrap_mode = 3
+theme_override_constants/separation = 18
 
-[node name="Paragraph1" type="Label" parent="."]
+[node name="Diagram" type="TextureRect" parent="Movement"]
 layout_mode = 2
-text = "Recolector: comida. Leñador: madera y combate. Cazador: conejos y combate a distancia. Guardián: cuerpo a cuerpo. Artesana: piedra y Brillo. Mago: clase legendaria."
-custom_minimum_size = Vector2(400, 0)
-autowrap_mode = 3
+custom_minimum_size = Vector2(440, 160)
+size_flags_horizontal = 3
+texture = ExtResource("diagram")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Paragraph2" type="Label" parent="."]
+[node name="Copy" type="VBoxContainer" parent="Movement"]
 layout_mode = 2
-text = "Arrastra los botones laterales al mapa o el equipo sobre un Recolector. Investiga tecnologías y mejora herramientas. Las hogueras consumen comida para curar. Si muere toda la tribu, la partida termina."
-custom_minimum_size = Vector2(400, 0)
-autowrap_mode = 3
+size_flags_horizontal = 3
 
-[node name="Paragraph3" type="Label" parent="."]
+[node name="Heading" type="Label" parent="Movement/Copy"]
+layout_mode = 2
+text = "Mueve el tótem"
+theme_override_colors/font_color = Color(0.945, 0.824, 0.478, 1)
+
+[node name="Instructions" type="Label" parent="Movement/Copy"]
+layout_mode = 2
+text = "Haz clic sobre el tótem y arrástralo. La tribu lo seguirá, se reagrupará y trabajará en los recursos cercanos según las habilidades de cada minion."
+custom_minimum_size = Vector2(380, 0)
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 12
+
+[node name="Hint" type="Label" parent="Movement/Copy"]
+layout_mode = 2
+text = "Escape: pausar"
+theme_override_font_sizes/font_size = 11
+
+[node name="RolesHeading" type="Label" parent="."]
+layout_mode = 2
+text = "Tu tribu"
+theme_override_colors/font_color = Color(0.945, 0.824, 0.478, 1)
+
+[node name="Roles" type="GridContainer" parent="."]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 7
+theme_override_constants/v_separation = 7
+
+[node name="Role0" type="PanelContainer" parent="Roles"]
+layout_mode = 2
+custom_minimum_size = Vector2(450, 72)
+theme_type_variation = &"TutorialCard"
+
+[node name="Row" type="HBoxContainer" parent="Roles/Role0"]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="Roles/Role0/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+texture = ExtResource("minion")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Copy" type="VBoxContainer" parent="Roles/Role0/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Name" type="Label" parent="Roles/Role0/Row/Copy"]
+layout_mode = 2
+text = "Recolector"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.945, 0.824, 0.478, 1)
+
+[node name="Description" type="Label" parent="Roles/Role0/Row/Copy"]
+layout_mode = 2
+text = "Minion básico. Recolecta Bayas y se puede especializar."
+autowrap_mode = 3
+custom_minimum_size = Vector2(355, 0)
+theme_override_font_sizes/font_size = 10
+
+[node name="Role1" type="PanelContainer" parent="Roles"]
+layout_mode = 2
+custom_minimum_size = Vector2(450, 72)
+theme_type_variation = &"TutorialCard"
+
+[node name="Row" type="HBoxContainer" parent="Roles/Role1"]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="Roles/Role1/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+texture = ExtResource("axe")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Copy" type="VBoxContainer" parent="Roles/Role1/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Name" type="Label" parent="Roles/Role1/Row/Copy"]
+layout_mode = 2
+text = "Leñador"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.945, 0.824, 0.478, 1)
+
+[node name="Description" type="Label" parent="Roles/Role1/Row/Copy"]
+layout_mode = 2
+text = "Recolecta madera y combate con el hacha."
+autowrap_mode = 3
+custom_minimum_size = Vector2(355, 0)
+theme_override_font_sizes/font_size = 10
+
+[node name="Role2" type="PanelContainer" parent="Roles"]
+layout_mode = 2
+custom_minimum_size = Vector2(450, 72)
+theme_type_variation = &"TutorialCard"
+
+[node name="Row" type="HBoxContainer" parent="Roles/Role2"]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="Roles/Role2/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+texture = ExtResource("bow")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Copy" type="VBoxContainer" parent="Roles/Role2/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Name" type="Label" parent="Roles/Role2/Row/Copy"]
+layout_mode = 2
+text = "Cazador"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.945, 0.824, 0.478, 1)
+
+[node name="Description" type="Label" parent="Roles/Role2/Row/Copy"]
+layout_mode = 2
+text = "Caza animales salvajes y combate a distancia con su arco."
+autowrap_mode = 3
+custom_minimum_size = Vector2(355, 0)
+theme_override_font_sizes/font_size = 10
+
+[node name="Role3" type="PanelContainer" parent="Roles"]
+layout_mode = 2
+custom_minimum_size = Vector2(450, 72)
+theme_type_variation = &"TutorialCard"
+
+[node name="Row" type="HBoxContainer" parent="Roles/Role3"]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="Roles/Role3/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+texture = ExtResource("sword")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Copy" type="VBoxContainer" parent="Roles/Role3/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Name" type="Label" parent="Roles/Role3/Row/Copy"]
+layout_mode = 2
+text = "Guardián"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.945, 0.824, 0.478, 1)
+
+[node name="Description" type="Label" parent="Roles/Role3/Row/Copy"]
+layout_mode = 2
+text = "Protector de la tribu. Se centra solo en combatir."
+autowrap_mode = 3
+custom_minimum_size = Vector2(355, 0)
+theme_override_font_sizes/font_size = 10
+
+[node name="Role4" type="PanelContainer" parent="Roles"]
+layout_mode = 2
+custom_minimum_size = Vector2(450, 72)
+theme_type_variation = &"TutorialCard"
+
+[node name="Row" type="HBoxContainer" parent="Roles/Role4"]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="Roles/Role4/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+texture = ExtResource("hammer")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Copy" type="VBoxContainer" parent="Roles/Role4/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Name" type="Label" parent="Roles/Role4/Row/Copy"]
+layout_mode = 2
+text = "Artesana"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.945, 0.824, 0.478, 1)
+
+[node name="Description" type="Label" parent="Roles/Role4/Row/Copy"]
+layout_mode = 2
+text = "Minion avanzado. Recolecta Piedra y Brillo."
+autowrap_mode = 3
+custom_minimum_size = Vector2(355, 0)
+theme_override_font_sizes/font_size = 10
+
+[node name="Role5" type="PanelContainer" parent="Roles"]
+layout_mode = 2
+custom_minimum_size = Vector2(450, 72)
+theme_type_variation = &"TutorialCard"
+
+[node name="Row" type="HBoxContainer" parent="Roles/Role5"]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="Roles/Role5/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+texture = ExtResource("mage")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Copy" type="VBoxContainer" parent="Roles/Role5/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Name" type="Label" parent="Roles/Role5/Row/Copy"]
+layout_mode = 2
+text = "Mago"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.945, 0.824, 0.478, 1)
+
+[node name="Description" type="Label" parent="Roles/Role5/Row/Copy"]
+layout_mode = 2
+text = "Minion avanzado. Poderoso en combate. Necesario para Mazmorras."
+autowrap_mode = 3
+custom_minimum_size = Vector2(355, 0)
+theme_override_font_sizes/font_size = 10
+
+[node name="Controls" type="Label" parent="."]
 layout_mode = 2
 text = "Rueda / + / −: zoom · Esc: pausa · 1/2/3: velocidad · Insert: debug"
-custom_minimum_size = Vector2(400, 0)
-autowrap_mode = 3
+theme_override_font_sizes/font_size = 12
 
-[node name="Play" type="Button" parent="."]
+[node name="Footer" type="HBoxContainer" parent="."]
 layout_mode = 2
-text = "Jugar"
-custom_minimum_size = Vector2(0, 40)
+alignment = 2
 
-[node name="Back" type="Button" parent="."]
+[node name="Back" type="Button" parent="Footer"]
 layout_mode = 2
 text = "Volver"
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(160, 42)
+theme_type_variation = &"TribesMenuButton"
 
+[node name="Play" type="Button" parent="Footer"]
+layout_mode = 2
+text = "Jugar"
+custom_minimum_size = Vector2(160, 42)
+theme_type_variation = &"TribesMenuButton"

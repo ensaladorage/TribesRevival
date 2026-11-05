@@ -7,6 +7,7 @@ if [[ ! -x "$engine" ]]; then
   exit 1
 fi
 mkdir -p "$project_dir/reports"
+touch "$project_dir/reports/.gdignore"
 python3 "$project_dir/tools/verify_original.py"
 run_checked() {
   local report="$1"

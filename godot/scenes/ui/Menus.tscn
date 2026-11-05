@@ -38,6 +38,5 @@ mouse_filter = 2
 
 [node name="Panel" type="PanelContainer" parent="Layout/Center"]
 layout_mode = 2
-custom_minimum_size = Vector2(420, 0)
+custom_minimum_size = Vector2(0, 0)
 theme_type_variation = &"MenuPanel"
-

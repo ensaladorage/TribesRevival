@@ -1,0 +1,6 @@
+{
+  "description": "Original inline tutorial SVG extracted without changing its artwork; xmlns added for standalone import.",
+  "source": "index.html: tutorial-diagram svg",
+  "destination": "godot/assets/ui/tutorial-movement.svg",
+  "sha256": "d4e000d51838a35a77f12462d2a4b86559da63404fc779d5678bb33a17963138"
+}

@@ -1,10 +1,12 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon-hammer.png" id="artisan"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon-shield.png" id="shield"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon-mage.png" id="mage"]
 
 [node name="TechnologiesPanel" type="VBoxContainer"]
+theme = ExtResource("theme")
 
 [node name="Points" type="Label" parent="."]
 layout_mode = 2
@@ -66,4 +68,3 @@ expand_icon = true
 theme_override_constants/icon_max_width = 32
 texture_filter = 1
 metadata/technology = "mage"
-

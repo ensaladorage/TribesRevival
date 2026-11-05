@@ -1,7 +1,7 @@
 [gd_resource type="Theme" format=3]
 
-[sub_resource type="SystemFont" id="mono"]
-font_names = PackedStringArray("DejaVu Sans Mono", "Liberation Mono", "monospace")
+[ext_resource type="FontFile" path="res://assets/fonts/LiberationMono-Regular.ttf" id="mono"]
+[ext_resource type="FontFile" path="res://assets/fonts/LiberationMono-Bold.ttf" id="bold"]
 
 [sub_resource type="StyleBoxFlat" id="normal"]
 bg_color = Color(0.169, 0.145, 0.22, 0.92)
@@ -94,10 +94,10 @@ corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_left = 5
 corner_radius_bottom_right = 5
-content_margin_left = 24.0
-content_margin_top = 24.0
-content_margin_right = 24.0
-content_margin_bottom = 24.0
+content_margin_left = 38.0
+content_margin_top = 38.0
+content_margin_right = 38.0
+content_margin_bottom = 38.0
 
 [sub_resource type="StyleBoxFlat" id="level0"]
 bg_color = Color(0.16862745098039217, 0.1450980392156863, 0.2196078431372549, 1)
@@ -363,8 +363,109 @@ corner_radius_top_right = 5
 corner_radius_bottom_left = 5
 corner_radius_bottom_right = 5
 
+[sub_resource type="StyleBoxFlat" id="MainPanel"]
+bg_color = Color(0.17, 0.15, 0.19, 0.98)
+border_width_left = 1
+content_margin_left = 38.0
+border_width_top = 1
+content_margin_top = 38.0
+border_width_right = 1
+content_margin_right = 38.0
+border_width_bottom = 1
+content_margin_bottom = 38.0
+border_color = Color(0.698, 0.698, 0.627, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 12
+shadow_offset = Vector2(0, 8)
+
+[sub_resource type="StyleBoxFlat" id="TutorialPanel"]
+bg_color = Color(0.145, 0.122, 0.176, 0.98)
+border_width_left = 1
+content_margin_left = 24.0
+border_width_top = 1
+content_margin_top = 24.0
+border_width_right = 1
+content_margin_right = 24.0
+border_width_bottom = 1
+content_margin_bottom = 24.0
+border_color = Color(0.698, 0.698, 0.627, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 12
+shadow_offset = Vector2(0, 8)
+
+[sub_resource type="StyleBoxFlat" id="TutorialCard"]
+bg_color = Color(0.09, 0.075, 0.12, 0.45)
+border_width_left = 1
+content_margin_left = 8.0
+border_width_top = 1
+content_margin_top = 8.0
+border_width_right = 1
+content_margin_right = 8.0
+border_width_bottom = 1
+content_margin_bottom = 8.0
+border_color = Color(0.408, 0.353, 0.302, 0.85)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
+[sub_resource type="StyleBoxFlat" id="TribesMenuButton"]
+bg_color = Color(0.188, 0.165, 0.231, 1)
+border_width_left = 1
+content_margin_left = 8.0
+border_width_top = 1
+content_margin_top = 8.0
+border_width_right = 1
+content_margin_right = 8.0
+border_width_bottom = 1
+content_margin_bottom = 8.0
+border_color = Color(0.698, 0.698, 0.627, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
+[sub_resource type="StyleBoxFlat" id="DangerButton"]
+bg_color = Color(0.224, 0.169, 0.196, 1)
+border_width_left = 1
+content_margin_left = 8.0
+border_width_top = 1
+content_margin_top = 8.0
+border_width_right = 1
+content_margin_right = 8.0
+border_width_bottom = 1
+content_margin_bottom = 8.0
+border_color = Color(0.557, 0.333, 0.294, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
+[sub_resource type="StyleBoxFlat" id="alert"]
+bg_color = Color(0.765, 0.267, 0.224, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.941, 0.812, 1)
+corner_radius_top_left = 11
+corner_radius_top_right = 11
+corner_radius_bottom_left = 11
+corner_radius_bottom_right = 11
+shadow_color = Color(0, 0, 0, 0.7)
+shadow_size = 3
+shadow_offset = Vector2(0, 2)
+
 [resource]
-default_font = SubResource("mono")
+default_font = ExtResource("mono")
 default_font_size = 14
 Label/colors/font_color = Color(0.957, 0.91, 0.757, 1)
 Button/colors/font_color = Color(0.957, 0.91, 0.757, 1)
@@ -452,3 +553,26 @@ EnemyFilled/base_type = &"PanelContainer"
 EnemyFilled/styles/panel = SubResource("EnemyFilled")
 EnemyEmpty/base_type = &"PanelContainer"
 EnemyEmpty/styles/panel = SubResource("EnemyEmpty")
+MainPanel/base_type = &"PanelContainer"
+MainPanel/styles/panel = SubResource("MainPanel")
+TutorialPanel/base_type = &"PanelContainer"
+TutorialPanel/styles/panel = SubResource("TutorialPanel")
+TutorialCard/base_type = &"PanelContainer"
+TutorialCard/styles/panel = SubResource("TutorialCard")
+TribesMenuButton/base_type = &"Button"
+TribesMenuButton/styles/normal = SubResource("TribesMenuButton")
+TribesMenuButton/styles/hover = SubResource("hover")
+TribesMenuButton/styles/pressed = SubResource("pressed")
+TribesMenuButton/styles/disabled = SubResource("disabled")
+TribesMenuButton/styles/focus = SubResource("hover")
+DangerButton/base_type = &"Button"
+DangerButton/styles/normal = SubResource("DangerButton")
+DangerButton/styles/hover = SubResource("hover")
+DangerButton/styles/pressed = SubResource("pressed")
+DangerButton/styles/disabled = SubResource("disabled")
+DangerButton/styles/focus = SubResource("hover")
+Button/fonts/font = ExtResource("bold")
+MenuTitle/base_type = &"Label"
+MenuTitle/fonts/font = ExtResource("bold")
+AlertBadge/base_type = &"PanelContainer"
+AlertBadge/styles/panel = SubResource("alert")

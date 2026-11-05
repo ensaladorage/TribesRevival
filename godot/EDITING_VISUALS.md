@@ -31,8 +31,8 @@ controla el margen sobre el marcador, sin cambiar la vida real.
 
 Abrir `scenes/world/Tree.tscn`, `Rock.tscn`, `Bush.tscn`, `DropFood.tscn`,
 `Campfire.tscn`, etc. Editar meshes/materiales bajo `Visual/Default`, su escala
-o posición. Cada color de drop tiene su propia escena; `Drop.tscn` es una base
-editable de ejemplo.
+o posición. Cada color de drop tiene su propia escena; `Drop.tscn` es la base
+compartida por las cinco variantes; editar su geometría afecta a todas.
 
 Para reemplazar un modelo por pixel art, crear una escena con raíz `Node3D`,
 `Sprite3D` o `AnimatedSprite3D`, asignarle la textura/animaciones y colocarla en
@@ -46,7 +46,7 @@ La geometría predeterminada se oculta al asignar una sustitución; no se borra.
 nubes, hogueras y cuerpos. Para cambiar un tipo completo, asignar otra
 PackedScene al mismo identificador. Mantener los contratos de los personajes
 anteriores; los recursos solo requieren una raíz Node3D. Una hoguera personalizada
-puede conservar `Visual/Default/HealingRange` para el indicador; una nube puede
+puede conservar un nodo `HealingRange` para el indicador; una nube puede
 incluir un nodo `Rain` para alternarlo al llover. No renombrar claves semánticas.
 
 La generación determina posiciones/cantidades/tipos; `world_view.gd` instancia
@@ -65,8 +65,8 @@ no se ha generado el sprite definitivo pendiente del usuario.
 - `Overlay.tscn` contiene progreso y debug; `scenes/placement/` las
   previsualizaciones de arrastre.
 - Abrir `themes/TribesTheme.tres`: fuente, texto, botones, paneles, foco y
-  variantes de nivel/costes/vida. La fuente usa las familias monoespaciadas
-  del sistema con fallback; no incluye una fuente externa nueva.
+  variantes de nivel/costes/vida. La fuente monoespaciada Liberation Mono se incluye en assets/fonts para
+  mantener el aspecto en web/Windows/Linux; su licencia OFL acompaña los ZIP.
 
 Conservar los nombres de los paneles raíz y los controles referenciados, y la
 metadata `item`, `item_row`, `cost_for`, `resource`, `tree`, `tree_options`,

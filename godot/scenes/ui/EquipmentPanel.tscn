@@ -1,9 +1,11 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ResourceCost.tscn" id="cost"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon-shield.png" id="shield"]
 
 [node name="EquipmentPanel" type="VBoxContainer"]
+theme = ExtResource("theme")
 theme_override_constants/separation = 5
 
 [node name="shieldRow" type="HBoxContainer" parent="."]
@@ -28,4 +30,3 @@ expand_icon = true
 theme_override_constants/icon_max_width = 34
 texture_filter = 1
 metadata/item = "shield"
-

@@ -8,7 +8,7 @@ signal save_requested(slot: int)
 signal load_requested(slot: int)
 signal delete_requested(slot: int)
 
-const PAGES := {
+@export var page_scenes := {
 	"main": preload("res://scenes/ui/MainMenu.tscn"),
 	"tutorial": preload("res://scenes/ui/TutorialMenu.tscn"),
 	"pause": preload("res://scenes/ui/PauseMenu.tscn"),
@@ -42,12 +42,13 @@ func _clear(title: String, opaque: bool) -> void:
 		# An emitting button may belong to this page; detach, then free deferred.
 		_content.get_parent().remove_child(_content)
 		_content.queue_free()
-	_content = PAGES[screen].instantiate()
+	_content = page_scenes[screen].instantiate()
 	$Layout/Center/Panel.add_child(_content)
-	_content.get_node("Title").text = title
+	_content.find_child("Title", true, false).text = title
+	$Layout/Center/Panel.theme_type_variation = StringName(_content.get_meta("panel_style", "MenuPanel"))
 
 func _connect_button(node_name: String, callback: Callable) -> void:
-	_content.get_node(node_name).pressed.connect(callback)
+	_content.find_child(node_name, true, false).pressed.connect(callback)
 
 func show_main() -> void:
 	screen = "main"
@@ -76,8 +77,8 @@ func show_pause() -> void:
 func _confirmation(title: String, message: String, text: String, callback: Callable, cancel: Callable, opaque: bool) -> void:
 	screen = "confirmation"
 	_clear(title, opaque)
-	_content.get_node("Message").text = message
-	_content.get_node("Confirm").text = text
+	_content.find_child("Message").text = message
+	_content.find_child("Confirm").text = text
 	_connect_button("Confirm", callback)
 	_connect_button("Cancel", cancel)
 
@@ -111,7 +112,7 @@ func show_slots(mode: String, from_screen: String, slots: Array) -> void:
 	_clear("Guardar partida" if mode == "save" else "Cargar partida", origin == "main")
 	for slot in slots:
 		var row = SLOT_ROW.instantiate()
-		_content.get_node("Rows").add_child(row)
+		_content.find_child("Rows").add_child(row)
 		var button: Button = row.get_node("Select")
 		button.text = "Slot %s · Vacío" % slot.slot
 		if slot.status == "valid":
@@ -128,7 +129,8 @@ func show_slots(mode: String, from_screen: String, slots: Array) -> void:
 			else:
 				_request_load(slot.slot))
 		var delete: Button = row.get_node("Delete")
-		delete.text = "Eliminar slot %s" % slot.slot
+		delete.text = "×"
+		delete.tooltip_text = "Eliminar slot %s" % slot.slot
 		delete.visible = slot.status != "empty"
 		delete.pressed.connect(func(): _confirm_delete(slot.slot))
 	_connect_button("Back", show_pause if origin == "pause" else show_main)
@@ -151,7 +153,7 @@ func _request_load(slot: int) -> void:
 func show_message(message: String) -> void:
 	screen = "message"
 	_clear("Tribes Revival", origin == "main")
-	_content.get_node("Message").text = message
+	_content.find_child("Message").text = message
 	_connect_button("Back", func(): show_slots(slot_mode, origin, _slots))
 
 func handle_escape() -> void:
