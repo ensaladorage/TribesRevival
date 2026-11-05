@@ -30,10 +30,17 @@ static func closest_approach(first: Dictionary, second: Dictionary, horizon: flo
 
 static func segment_is_clear(start: Dictionary, end: Dictionary, obstacles: Array, clearance: float = 0.96) -> bool:
 	var velocity := Geo.velocity_towards(start, end, Geo.distance(start, end))
-	var first := {"position": start, "velocity": velocity, "stopAfterSeconds": 1.0}
+	var denominator: float = velocity.x * velocity.x + velocity.y * velocity.y
 	for obstacle in obstacles:
-		var second := {"position": obstacle.position, "velocity": {"x": 0, "y": 0}, "stopAfterSeconds": 0.0}
-		if closest_approach(first, second, 1.0) < minf(clearance, Geo.distance(start, obstacle.position)) - 1e-7:
+		# Obstacles are stationary here; project onto the segment directly.
+		# Moving-agent prediction still uses closest_approach below.
+		var dx: float = start.x - obstacle.position.x
+		var dy: float = start.y - obstacle.position.y
+		var initial := sqrt(dx * dx + dy * dy)
+		var time := clampf(-(dx * velocity.x + dy * velocity.y) / (denominator if denominator != 0 else 1.0), 0.0, 1.0)
+		var x: float = dx + velocity.x * time
+		var y: float = dy + velocity.y * time
+		if sqrt(x * x + y * y) < minf(clearance, initial) - 1e-7:
 			return false
 	return true
 
@@ -55,6 +62,12 @@ static func plan_route(start: Dictionary, goal: Dictionary, obstacles: Array, is
 	ordered.sort_custom(func(a, b): return a.id < b.id)
 	if _edge_allowed(start, goal, ordered, is_allowed):
 		return [goal.duplicate()]
+	# The start may overlap an obstacle and escape directly (tested above).
+	# Every generated graph point is >=1.02 m from obstacles, so no remaining
+	# edge can end at a goal inside the 0.96 m clearance circle.
+	for obstacle in ordered:
+		if Geo.distance(goal, obstacle.position) < 0.96 - 1e-7:
+			return []
 	var points: Array = [start, goal]
 	for obstacle in ordered:
 		for index in 12:
@@ -148,7 +161,15 @@ static func choose_step(input: Dictionary, is_allowed: Callable) -> Dictionary:
 					break
 				if not gives_way_to(agent, other) and not other.fixed and Geo.length(other.velocity) > 1e-8:
 					continue
-				if not _separation_is_safe(candidate, other, PREDICTION_SECONDS):
+				var predicted_other: Dictionary = other
+				if agent.priority == 1 and not other.fixed and other.get("waitingForClearance", false):
+					# Let an idle actor vacate the path of a blocked worker. Its
+					# requested future velocity is not motion already occurring.
+					# Actual tick paths were checked above and remain protected.
+					predicted_other = other.duplicate()
+					predicted_other.velocity = other.tickVelocity
+					predicted_other.stopAfterSeconds = delta
+				if not _separation_is_safe(candidate, predicted_other, PREDICTION_SECONDS):
 					safe = false
 					break
 			if not safe:
@@ -163,7 +184,7 @@ static func choose_step(input: Dictionary, is_allowed: Callable) -> Dictionary:
 			return {"position": best.position, "velocity": best.velocity, "blocked": false}
 	return {"position": agent.position.duplicate(), "velocity": {"x": 0.0, "y": 0.0}, "blocked": true}
 
-static func idle_yield_target(agent: Dictionary, neighbors: Array) -> Variant:
+static func idle_yield_target(agent: Dictionary, neighbors: Array, is_allowed: Callable = Callable()) -> Variant:
 	var ordered := neighbors.duplicate()
 	ordered.sort_custom(func(a, b): return a.id < b.id)
 	for other in ordered:
@@ -178,5 +199,16 @@ static func idle_yield_target(agent: Dictionary, neighbors: Array) -> Variant:
 		var side := {"x": -other.velocity.y / speed, "y": other.velocity.x / speed}
 		var dot: float = (agent.position.x - other.position.x) * side.x + (agent.position.y - other.position.y) * side.y
 		var side_sign := -1.0 if dot < 0 else 1.0
-		return {"x": agent.position.x + side.x * side_sign * 1.2, "y": agent.position.y + side.y * side_sign * 1.2}
+		var preferred := {"x": side.x * side_sign * 1.2, "y": side.y * side_sign * 1.2}
+		if not other.get("waitingForClearance", false):
+			return {"x": agent.position.x + preferred.x, "y": agent.position.y + preferred.y}
+		# A blocked worker cannot free the preferred spot for us. Choose a
+		# directly reachable nearby side instead of requesting an occupied goal.
+		for degrees in ANGLES:
+			var angle: float = degrees * PI / 180.0
+			var target := {"x": agent.position.x + preferred.x * cos(angle) - preferred.y * sin(angle), "y": agent.position.y + preferred.x * sin(angle) + preferred.y * cos(angle)}
+			if is_allowed.is_valid() and not is_allowed.call(target):
+				continue
+			if segment_is_clear(agent.position, target, ordered):
+				return target
 	return null

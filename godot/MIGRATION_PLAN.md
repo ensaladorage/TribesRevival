@@ -50,7 +50,9 @@ automática de localStorage del navegador en un ejecutable de escritorio.
 ## Fases y criterios de aceptación
 
 Cada fase registra implementación y evidencia por separado. Las fases con
-playtest pendiente no se declaran completas. Una revisión manual pendiente
+playtest pendiente no se declaran completas. Decisión actual del usuario:
+el testeo manual se concentra al terminar la migración; no solicitar pruebas
+entre subhitos ni dedicar esta etapa a bugs menores. Atender solo bloqueos graves. Una revisión manual pendiente
 permite continuar con módulos independientes según la autorización del usuario.
 
 | Fase | Trabajo y dependencias | Criterios para cierre |
@@ -65,6 +67,8 @@ permite continuar con módulos independientes según la autorización del usuari
 | F7 | Reclutamiento, transformaciones, escudo, mejoras; depende F4/F5/F6 | Límites/afinidad/costes vigentes, compra atómica; interacción y preview libres comprobados manualmente |
 | F8 | HUD/menús/tutorial/sonido/debug y guardado local; depende F2–F7 | Tres slots con ida/vuelta actual, borrar solo tras confirmar; main/tutorial/load opacos, pausa translúcida, carga enfoca tótem; revisión manual UI |
 | F9 | Integración y exportación Windows/Linux; secundaria web | Exportaciones reales generadas con templates compatibles; Linux abre; Windows probado manualmente o limitación explícita que impide cierre; paridad completa y validación manual resuelta |
+| F10 | Paridad visual obligatoria, empezando HUD/materiales globales | Referencias CSS/código/assets cotejadas: paleta, luz/sombras/exposición, cámara, UI y efectos; registrar diferencias y límites de inspección; no atribuir validación visual inexistente |
+| F11 (prioritaria actual) | Arquitectura visual editable, incremental y sin cambiar reglas | Minion/enemigos con AnimatedSprite3D y variantes; árbol/roca/arbusto/drop/interactivos como PackedScene intercambiables; HUD y paneles/menús Control en escenas, Theme central; referencias y señales válidas, sin dependencia lógica de assets |
 
 Decisión del usuario (2026-11-05): centrar la validación manual en Linux;
 no dispone de Windows y su prueba no es importante por ahora. Se aplaza esa
@@ -82,8 +86,9 @@ equivalen al cierre de una fase mayor.
 escenas sin frames, comprueba callbacks/lifetimes de menús y despacho de
 pulsar/soltar en árboles aislados sin mundo ni simulación,
 y ejecuta tests de datos/reglas puras disponibles.
-No ejecutar automatización visual, capturas, simulaciones largas ni tests del
-loop de gameplay. Las comprobaciones manuales corresponden al usuario.
+No ejecutar pruebas automatizadas visuales, simulaciones largas ni tests del
+loop de gameplay. La fase F10 permite inspección de capturas comparables si
+las herramientas lo permiten, sin convertirla en tests visuales automáticos. Las comprobaciones manuales corresponden al usuario.
 Godot puede imprimir errores de GDScript y devolver 0: el wrapper comprueba
 también los logs. Informes regenerables en `reports/`, excluidos de Git.
 
@@ -100,3 +105,14 @@ QA y auditoría de la migración viven en `../documents/GODOT_MANUAL_QA.md` y
 
 - [CLI headless, importación y exportación](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html)
 - [Camera3D y proyección de rayos](https://docs.godotengine.org/en/stable/classes/class_camera3d.html)
+
+## Orden actualizado (objetivo del usuario)
+
+Después de la corrección acotada del bloqueo de navegación ya diagnosticado,
+ejecutar F11 por componentes: HUD/Theme → menús → actores y variantes →
+recursos/interactivos. F10 acompaña cada componente y después revisa iluminación,
+cámara y efectos globales. Conservar sustitutos funcionales hasta validar
+referencias/contratos; pruebas de datos/estructura, sin playtest automatizado.
+Finalmente regenerar F9 y reunir pendientes para una única etapa manual Linux.
+No introducir arte definitivo: reutilizar iconos originales como sprites
+provisionales reemplazables desde inspector, sin generar sprites.

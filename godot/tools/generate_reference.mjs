@@ -18,7 +18,9 @@ try {
       const output = ts.transpileModule(source, {
         compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext },
       }).outputText.replace(/from (['"])(\.[^'"]+)\1/g, (_, quote, target) => `from ${quote}${target}.mjs${quote}`);
-      await writeFile(path.join(temporary, directory, name.replace(/\.ts$/, '.mjs')), output);
+      // Expose this private pure helper only in the disposable reference copy.
+      const extra = name === 'stepSimulation.ts' ? '\nexport { resourceApproachPosition };\n' : '';
+      await writeFile(path.join(temporary, directory, name.replace(/\.ts$/, '.mjs')), output + extra);
     }
   }
   const moduleAt = (name) => import(pathToFileURL(path.join(temporary, 'simulation', name + '.mjs')).href);
@@ -50,6 +52,19 @@ try {
     .map(obstacles => ({start:{x:80,y:80},goal:{x:85,y:80},obstacles,
       result:navigation.planMinionRoute({x:80,y:80},{x:85,y:80},obstacles,allowed)}));
   const edgeObstacles = createInitialState().barbarians.map(({id,position}) => ({id,position}));
+  for (const [start,goal] of [[{x:80,y:80},{x:84,y:80}],
+    [{x:84.2,y:80},{x:84.5,y:80}], [{x:83.8,y:80},{x:84.5,y:80}],
+    [{x:80,y:80},{x:84.96,y:80}], [{x:80,y:80},{x:85.2,y:80}]]) {
+    const obstacles=[...edgeObstacles,{id:'worker',position:{x:84,y:80}}];
+    routes.push({start,goal,obstacles,result:navigation.planMinionRoute(start,goal,obstacles,allowed)});
+  }
+  const segmentRandom=createSeededRandom('migration-segments');
+  const segments=Array.from({length:256},(_,index)=>{
+    const point=()=>({x:segmentRandom.nextFloat(2,158),y:segmentRandom.nextFloat(2,158)});
+    const start=point(),end=index%8===0?start:point();
+    const obstacles=Array.from({length:index%8},(_,i)=>({id:`obstacle-${i}`,position:point()}));
+    return {start,end,obstacles,result:navigation.segmentIsClear(start,end,obstacles)};
+  });
   for (const goal of [{x:-2,y:80},{x:2-1e-5,y:80},{x:2,y:80},
     {x:158,y:80},{x:158+1e-5,y:80},{x:162,y:80},
     {x:80,y:-2},{x:80,y:162},{x:162,y:162}]) {
@@ -111,7 +126,11 @@ try {
       damage:['minion','barbarian','animal'].flatMap(source=>['minion','barbarian','animal'].flatMap(target=>[-1,0,1,8].map(amount=>({source,target,amount,result:combat.dealDamage(source,target,{health:4,maxHealth:4},amount)})))),
       heal:[-1,0,1,8].map(amount=>({amount,result:combat.healCombatant({health:2,maxHealth:4},amount)})),
     },
-    support: {navigation:navCases,routes,idle:idleCases,combatSlots,awareness,
+    support: {navigation:navCases,routes,segments,idle:idleCases,combatSlots,awareness,
+      approaches:[{x:90,y:80},{x:90.2,y:80},{x:91.5,y:80},{x:94,y:80},{x:89.8,y:79.8}].flatMap(position=>[0,1.5].map(interactionRadius=>{
+        const resource={position:{x:90,y:80},interactionRadius};
+        return {position,resource,result:projection.resourceApproachPosition(position,resource)};
+      })),
       projection:[{x:80,y:80},{x:80.001,y:80},{x:-5,y:170},{x:100,y:120}].map(position=>({position,
         clearance:projection.projectOutsideTotemClearance(position,{x:80,y:80},'unit-a'),
         recruitment:projection.projectRecruitmentPosition(position,{x:80,y:80})})),

@@ -4,14 +4,16 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 ## Continuidad
 
-- Última fase cerrada: F2 (controles, con validación manual Linux).
-  F0, F1, F2, F3 y F4 completadas.
-- Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
-- Próxima tarea ejecutable: repetir distinción visual Mago/Recolector tras
-  restaurar la paleta original y completar IA/conflicto en Linux. Mago/Escudo
-  funcionales confirmados; controles, slots y preview/cancelación
-  ya confirmados. Por decisión
-  del usuario, prueba manual de Windows aplazada; centrar QA en Linux.
+- Última fase cerrada: F7 (compras/equipo, confirmación final de colores Linux).
+  F0, F1, F2, F3, F4 y F7 completadas antes del refactor visual.
+- Fase actual: F11 arquitectura visual editable; F10 paridad visual obligatoria.
+- Próxima tarea ejecutable: extraer HUD/paneles a escenas Control y Theme.
+  Después menús, actores AnimatedSprite3D, recursos/interactivos PackedScene.
+- Decisión vigente: testeo manual al terminar la migración; no solicitar más
+  recorridos intermedios ni centrarse en bugs menores. Windows manual aplazado.
+- F5/F6: atasco diagnosticado con copia de solo lectura del slot 1 y corregido
+  a nivel de navegación pura; repetición en partida y lag de combate pendientes
+  de la etapa manual final. No se ha avanzado automáticamente ese guardado.
 - Incidencias reportadas resueltas por confirmación manual en Linux:
   menús, segunda pulsación de reclutamiento, lag en los límites con 8 unidades
   y legibilidad de HP al cambiar zoom.
@@ -28,9 +30,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F2 controles | Completada: contratos cotejados, validación técnica y controles/cámara/bordes/Esc/velocidades confirmados en Linux |
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
-| F5 IA/recolección | Usuario confirma seguimiento/recolección y bordes con 8 unidades; cruces/llamadas/interrupciones pendientes |
+| F5 IA/recolección | Usuario confirma seguimiento/recolección y bordes con 8 unidades; movimiento e interrupciones confirmados; bloqueo/lag reportado, retest final pendiente |
 | F6 combate/clima | Usuario confirma combate, daño/botín, hoguera, lluvia y derrota/reinicio en Linux; huida/respawn pendientes |
-| F7 compras/equipo | Compras/equipo, preview, Mago único y Escudo +1 HP sin repetición confirmados en Linux; distinción visual del Mago corregida, repetición pendiente |
+| F7 compras/equipo | Compras/equipo, preview, Mago único y Escudo +1 HP sin repetición confirmados en Linux; distinción visual del Mago confirmada («si, colores correctos»); cierre F7 previo al refactor |
 | F8 UI/guardado | Menús/HP y persistencia de los tres slots tras reabrir validados en Linux; borrado/cancelación correctos; resto de revisión UI pendiente |
 | F9 integración/exportación | Tres builds exportados; recorridos Linux confirmados; Windows manual aplazado por usuario, QA Linux restante pendiente |
 
@@ -385,3 +387,30 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   de menús, cuatro pulsaciones de input, 15.342 comparaciones de datos,
   integridad de originales/iconos, tres exports y arranque headless Linux.
   Informe `reports/role-colors-export-all.log`; builds actualizados.
+
+## Objetivo ampliado y bloqueo del slot 1
+
+- El usuario confirma colores de Mago/Recolector. Se registra cierre F7 con
+  controles económicos, preview, cancelación y equipo ya confirmados en Linux.
+- Objetivo actualizado: F11 prioritaria para escenas realmente editables y
+  F10 paridad visual obligatoria. Testeo manual concentrado al final.
+- Slot 1 leído sin modificar; copia diagnóstica completa solo en reports/
+  ignorado. Un Leñador collect-drop está bloqueado por Guardián idle; la salida
+  preferida del Guardián está a su vez ocupada por una Artesana. No son reservas
+  duplicadas. La hipótesis inicial de radio de trabajo se descartó al comparar
+  la función pura con TypeScript; no se cambió ese radio.
+- El idle puede elegir una dirección lateral libre cuando el solicitante está
+  bloqueado. La predicción de ese solicitante usa movimiento real reservado,
+  manteniendo comprobación de trayectorias del tick. Flag efímero derivado de
+  navegación, sin campos nuevos de guardado ni cambios de velocidad/estadísticas.
+- Rutas a metas ocupadas se descartan tras comprobar escape directo: mismo
+  resultado [] y menos trabajo. Proyección estática de segmentos equivalente
+  al original en 256 referencias deterministas. Caso aislado: ~35,21 ms y
+  10.734 llamadas al predicado antes, ~0,017 ms y una llamada después.
+  Son medidas de función, no FPS ni un benchmark de combate jugado.
+- Validación: validate.sh correcto; 15.669 comparaciones puras, 101 de callbacks
+  de menú, cuatro pulsaciones de input, importación/25 scripts/1 escena;
+  838 fuentes originales y 13 iconos intactos. Informe
+  reports/blocked-yield-validation.log. Fixture mínima de geometría incluida;
+  no se guardan datos completos del jugador ni se ejecuta el loop.
+- Efecto en la partida del slot y lag de combate aún no validados manualmente.

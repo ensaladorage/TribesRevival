@@ -130,7 +130,7 @@ static func agent(state: Dictionary, unit: Dictionary, frame: Dictionary) -> Dic
 	if destination != null and memory != null and Geo.distance(memory.goal, destination) <= 0.6 and not memory.waypoints.is_empty():
 		committed = memory.waypoints[0]
 	var moving_target: Variant = (committed if committed != null else destination) if not fixed else null
-	return {"id": unit.id, "position": point, "fixed": fixed, "priority": 3 if fixed else (1 if unit.task.kind == "idle" else 2), "velocity": Geo.velocity_towards(point, moving_target, speed) if moving_target != null else {"x": 0, "y": 0}, "stopAfterSeconds": Geo.distance(point, moving_target) / speed if moving_target != null else 0.0, "tickVelocity": {"x": 0.0, "y": 0.0}}
+	return {"id": unit.id, "position": point, "fixed": fixed, "priority": 3 if fixed else (1 if unit.task.kind == "idle" else 2), "velocity": Geo.velocity_towards(point, moving_target, speed) if moving_target != null else {"x": 0, "y": 0}, "stopAfterSeconds": Geo.distance(point, moving_target) / speed if moving_target != null else 0.0, "tickVelocity": {"x": 0.0, "y": 0.0}, "waitingForClearance": memory != null and memory.blockedSeconds > 0 and Geo.length(memory.velocity) < 1e-8}
 
 static func neighbors(state: Dictionary, unit: Dictionary, frame: Dictionary) -> Array:
 	var result: Array = []
@@ -226,7 +226,9 @@ static func update_idle(state: Dictionary, unit: Dictionary, delta: float, frame
 	unit.state = "idle"
 	if idle.waitRemainingSeconds > 0:
 		idle.waitRemainingSeconds = maxf(0, idle.waitRemainingSeconds - delta)
-		var target: Variant = Nav.idle_yield_target(agent(state, unit, frame), neighbors(state, unit, frame))
+		var allowed := func(point: Dictionary) -> bool:
+			return point.x >= 2 and point.y >= 2 and point.x <= 158 and point.y <= 158 and Idle.within_range(point, area(state)) and Geo.distance(point, state.totem.position) >= minf(Geo.distance(unit.position, state.totem.position), TOTEM_CLEARANCE) - 1e-8
+		var target: Variant = Nav.idle_yield_target(agent(state, unit, frame), neighbors(state, unit, frame), allowed)
 		if target != null:
 			move_towards(state, unit, target, Idle.SPEED * delta, frame)
 		return

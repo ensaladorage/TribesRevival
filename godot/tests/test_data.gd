@@ -34,6 +34,7 @@ func _initialize() -> void:
 	_test_economy(reference.economy)
 	_test_transactions()
 	_test_support(reference.support)
+	_test_blocked_idle_yield()
 	_test_purchases(reference.purchases)
 	_test_current_save()
 	for sample in reference.durations:
@@ -52,6 +53,28 @@ func _initialize() -> void:
 			push_error(failure)
 		print("FAIL data parity: %d mismatches" % failures.size())
 		quit(1)
+
+func _test_blocked_idle_yield() -> void:
+	# Reduced geometry from the user's blocked slot. Pure step selection only.
+	var input: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/blocked_idle_yield.json"))
+	var original_destination: Dictionary = input.destination.duplicate()
+	input.destination = Navigation.idle_yield_target(input.agent, input.neighbors)
+	_equal(Navigation.segment_is_clear(input.agent.position, input.destination, input.neighbors), true, "idle yield target has a clear approach")
+	_equal(Navigation.plan_route(input.agent.position, input.destination, input.neighbors, _allowed).is_empty(), false, "blocked idle has a route to its yield target")
+	var result := Navigation.choose_step(input, _allowed)
+	_equal(result.blocked, false, "idle can yield to a stationary blocked collector")
+	for other in input.neighbors:
+		var candidate: Dictionary = input.agent.duplicate(true)
+		candidate.velocity = result.velocity
+		candidate.stopAfterSeconds = input.deltaSeconds
+		var actual_other: Dictionary = other.duplicate(true)
+		actual_other.velocity = other.tickVelocity
+		actual_other.stopAfterSeconds = input.deltaSeconds
+		_equal(Navigation.closest_approach(candidate, actual_other, input.deltaSeconds) >= minf(Navigation.MINIMUM_SEPARATION, Movement.Geo.distance(candidate.position, other.position)) - 1e-7, true, "idle yield protects actual tick paths")
+	for other in input.neighbors:
+		other.waitingForClearance = false
+	input.destination = original_destination
+	_equal(Navigation.choose_step(input, _allowed).blocked, true, "moving worker forecast remains protected")
 
 func _test_current_save() -> void:
 	# Isolated files only; never read or overwrite the player's actual slots.
@@ -98,6 +121,8 @@ func _allowed(point: Dictionary) -> bool:
 	return point.x >= 2 and point.x <= 158 and point.y >= 2 and point.y <= 158
 
 func _test_support(reference: Dictionary) -> void:
+	for sample in reference.approaches:
+		_equal(Movement.resource_approach(sample.position, sample.resource), sample.result, "resource approach inside/outside radius")
 	for sample in reference.projection:
 		_equal(Movement.outside_totem(sample.position, {"x": 80, "y": 80}, "unit-a"), sample.clearance, "totem clearance")
 		_equal(Movement.project_within(sample.position, {"x": 80, "y": 80}, 15), sample.recruitment, "recruitment projection")
@@ -106,6 +131,8 @@ func _test_support(reference: Dictionary) -> void:
 		_equal(Navigation.idle_yield_target(sample.input.agent, sample.input.neighbors), sample.yieldTarget, "yield")
 	for sample in reference.routes:
 		_equal(Navigation.plan_route(sample.start, sample.goal, sample.obstacles, _allowed), sample.result, "visibility route")
+	for sample in reference.segments:
+		_equal(Navigation.segment_is_clear(sample.start, sample.end, sample.obstacles), sample.result, "static segment clearance")
 	var allowed_calls := [0]
 	var allowed := func(point: Dictionary) -> bool:
 		allowed_calls[0] += 1

@@ -1,0 +1,232 @@
+{
+	"agent": {
+		"fixed": false,
+		"id": "unit-gatherer-01",
+		"position": {
+			"x": 113.276712167881,
+			"y": 99.8079706887104
+		},
+		"priority": 1,
+		"stopAfterSeconds": 0.0,
+		"tickVelocity": {
+			"x": 0.0,
+			"y": 0.0
+		},
+		"velocity": {
+			"x": 0,
+			"y": 0
+		}
+	},
+	"deltaSeconds": 0.05,
+	"destination": {
+		"x": 113.582042369712,
+		"y": 98.6474649938301
+	},
+	"neighbors": [
+		{
+			"fixed": false,
+			"id": "unit-initial-specialist-02",
+			"position": {
+				"x": 113.920475119099,
+				"y": 100.533665466602
+			},
+			"priority": 2,
+			"stopAfterSeconds": 0.0471675516869351,
+			"tickVelocity": {
+				"x": 0.0,
+				"y": 0.0
+			},
+			"velocity": {
+				"x": -5.80252847440172,
+				"y": -1.52665100915605
+			},
+			"waitingForClearance": true
+		},
+		{
+			"fixed": false,
+			"id": "unit-gatherer-02",
+			"position": {
+				"x": 111.773981048581,
+				"y": 100.903838337951
+			},
+			"priority": 1,
+			"stopAfterSeconds": 1.3615341889193,
+			"tickVelocity": {
+				"x": 0.0,
+				"y": 0.0
+			},
+			"velocity": {
+				"x": 2.92096877164091,
+				"y": 0.68406244970661
+			}
+		},
+		{
+			"fixed": false,
+			"id": "unit-gatherer-03",
+			"position": {
+				"x": 112.73517276395,
+				"y": 98.3734839143919
+			},
+			"priority": 1,
+			"stopAfterSeconds": 0.0,
+			"tickVelocity": {
+				"x": 0.0,
+				"y": 0.0
+			},
+			"velocity": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"fixed": false,
+			"id": "unit-gatherer-04",
+			"position": {
+				"x": 103.357377302666,
+				"y": 99.2471833102869
+			},
+			"priority": 1,
+			"stopAfterSeconds": 0.0,
+			"tickVelocity": {
+				"x": 0.0,
+				"y": 0.0
+			},
+			"velocity": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"fixed": false,
+			"id": "unit-gatherer-05",
+			"position": {
+				"x": 105.018198326845,
+				"y": 95.1653787276032
+			},
+			"priority": 1,
+			"stopAfterSeconds": 0.0,
+			"tickVelocity": {
+				"x": 0.0,
+				"y": 0.0
+			},
+			"velocity": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"fixed": false,
+			"id": "unit-gatherer-06",
+			"position": {
+				"x": 114.716720031975,
+				"y": 95.2202937879066
+			},
+			"priority": 1,
+			"stopAfterSeconds": 0.0,
+			"tickVelocity": {
+				"x": 0.0,
+				"y": 0.0
+			},
+			"velocity": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"fixed": false,
+			"id": "unit-gatherer-07",
+			"position": {
+				"x": 115.989932093015,
+				"y": 98.7916310757406
+			},
+			"priority": 1,
+			"stopAfterSeconds": 1.63816286329686,
+			"tickVelocity": {
+				"x": 0.0,
+				"y": 0.0
+			},
+			"velocity": {
+				"x": -0.684859004615183,
+				"y": 2.92078211166076
+			}
+		},
+		{
+			"fixed": true,
+			"id": "barbarian-01",
+			"position": {
+				"x": 27.9466480517176,
+				"y": 89.1510371667392
+			},
+			"priority": 4,
+			"stopAfterSeconds": 0.0,
+			"tickVelocity": {
+				"x": 0,
+				"y": 0
+			},
+			"velocity": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"fixed": true,
+			"id": "barbarian-02",
+			"position": {
+				"x": 126.980470283077,
+				"y": 35.986832936986
+			},
+			"priority": 4,
+			"stopAfterSeconds": 0.0,
+			"tickVelocity": {
+				"x": 0,
+				"y": 0
+			},
+			"velocity": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"fixed": true,
+			"id": "barbarian-03",
+			"position": {
+				"x": 146.157638629727,
+				"y": 147.180508711777
+			},
+			"priority": 4,
+			"stopAfterSeconds": 0.0,
+			"tickVelocity": {
+				"x": 0,
+				"y": 0
+			},
+			"velocity": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"fixed": true,
+			"id": "barbarian-04",
+			"position": {
+				"x": 69.6972150587618,
+				"y": 141.196395692225
+			},
+			"priority": 4,
+			"stopAfterSeconds": 0.0,
+			"tickVelocity": {
+				"x": 0,
+				"y": 0
+			},
+			"velocity": {
+				"x": 0,
+				"y": 0
+			}
+		}
+	],
+	"preferredSide": 0,
+	"previousVelocity": {
+		"x": 0.0,
+		"y": 0.0
+	},
+	"speed": 3.0
+}
