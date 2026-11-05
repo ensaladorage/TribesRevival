@@ -4,10 +4,10 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 ## Continuidad
 
-- Última fase completada: F1 (base); F0 (auditoría) completada.
-- Fase actual: F2 implementada parcialmente; F3 comienza con datos deterministas.
-- Próxima tarea ejecutable: portar PRNG y catálogo procedural con referencias
-  generadas desde TypeScript; después completar estado inicial y economía.
+- Última fase completada: F3 (datos deterministas/mundo). F0 y F1 completadas.
+- Fase actual: F4 (economía/progresión); F2 sigue abierta por pendientes manuales.
+- Próxima tarea ejecutable: portar economía y progresión con paridad de tablas
+  y reglas atómicas; después navegación/seguimiento/IA.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -19,7 +19,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F0 auditoría | Completada: 42 archivos con hashes/imports; originales verificados |
 | F1 base | Completada: editor importa, 1 script y 1 escena válidos; arranque sin ticks |
 | F2 controles | Cámara/arrastre/zoom/pausa/velocidad/debug implementados; flecha, ajustes y revisión manual pendientes |
-| F3 determinismo/mundo | Pendiente |
+| F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Pendiente |
 | F5 IA/recolección | Pendiente |
 | F6 combate/clima | Pendiente |
@@ -54,4 +54,13 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   Informe `reports/f2-validation.log`. Sin playtest. Falta flecha de arrastre,
   sliders de zoom y revisión manual; F2 no se declara completada.
 - Mientras no se migre formación (F5), `totem.moving` conserva la orden de
-  marcha después de soltar; todavía no hay unidades/trabajo en esta escena.
+  marcha después de soltar; hay unidades en el estado, todavía sin vista ni comportamiento autónomo.
+
+- F3: portados FNV-1a UTF-16/Mulberry32 bit a bit, 23 biomas por mundo Hito 3,
+  nodos y rendimientos, ramitas, decoración, cinco bárbaros, seis conejos,
+  roster inicial y estado v17 completo. `generate_reference.mjs` obtiene
+  referencias de TypeScript sin modificarlo ni ejecutar el loop.
+- F3 verificada: `bash godot/tools/validate.sh` correcto; 6 scripts/1 escena,
+  10.764 comparaciones de paridad sobre 4 semillas (incluye Unicode/emoji),
+  tolerancia numérica 1e-9, 42 originales intactos.
+  Informe `reports/f3-validation.log`. Esto valida datos, no gameplay ni píxeles.
