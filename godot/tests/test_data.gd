@@ -42,7 +42,7 @@ func _initialize() -> void:
 	for sample in reference.combat.heal:
 		_equal(Combat.heal({"health": 2, "maxHealth": 4}, sample.amount), sample.result, "healing rule")
 	if failures.is_empty():
-		print("PASS data parity: %d comparisons against TypeScript; 4 complete initial worlds; no gameplay ticks" % checks)
+		print("PASS data: %d comparisons (TypeScript parity, pure invariants, current saves); 4 worlds; no gameplay ticks" % checks)
 		quit(0)
 	else:
 		for failure in failures.slice(0, 20):

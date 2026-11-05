@@ -181,6 +181,9 @@ func update_state(state: Dictionary) -> void:
 				_items[item].visible = technology in state.progression.unlockedTechnologies
 				available = available and _items[item].visible
 		_items[item].text = ITEM_NAMES[item] + "\n" + _cost_text(cost)
+		if item in ["axe", "hammer", "sword"]:
+			_items[item].text = "%s +%s\n%s" % [ITEM_NAMES[item], state.toolLevels[item], _cost_text(cost)]
+			_apply_level_color(_items[item], state.toolLevels[item])
 		_items[item].disabled = not available or not Economy.can_afford(amounts, cost)
 		_items[item].tooltip_text = "Arrastra al terreno" if item in ["gatherer", "campfire"] else "Arrastra sobre un Guardián" if item == "shield" else "Arrastra sobre un Recolector"
 	for technology in Progression.TECHNOLOGIES:
@@ -191,6 +194,7 @@ func update_state(state: Dictionary) -> void:
 		var level: int = state.toolLevels[tool]
 		var name: String = {"axe": "Hacha", "hammer": "Martillo", "sword": "Espada"}[tool]
 		_upgrades[tool].text = "%s   %s" % [name, "Max" if level == 10 else "+%s" % level]
+		_apply_level_color(_upgrades[tool], level)
 		var upgrade: Variant = Economy.tool_upgrade(tool, level + 1)
 		_upgrades[tool].disabled = state.phase != "playing" or upgrade == null or not Economy.can_afford(amounts, upgrade.cost)
 		if upgrade == null:
@@ -203,3 +207,25 @@ static func _effect_text(tool: String, level: int) -> String:
 	if tool == "sword":
 		return "+%.2f daño" % effect.guardianDamageBonus
 	return "+%s%% velocidad · %s%% de +1 recurso" % [effect.gatherSpeedPercent, effect.bonusResourceChance]
+
+func _apply_level_color(button: Button, level: int) -> void:
+	if button.get_meta("tool_level", -1) == level:
+		return
+	button.set_meta("tool_level", level)
+	var color := Color("39464a")
+	if level == 10:
+		color = Color("b77d35")
+	elif level >= 7:
+		color = Color("80508f")
+	elif level >= 5:
+		color = Color("168397")
+	elif level >= 3:
+		color = Color("3f8f54")
+	elif level >= 1:
+		color = Color("a7a7a7")
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		var style := StyleBoxFlat.new()
+		style.bg_color = color.lightened(0.12) if state == "hover" else color
+		style.set_content_margin_all(8)
+		style.set_corner_radius_all(5)
+		button.add_theme_stylebox_override(state, style)

@@ -52,3 +52,4 @@ Consultar `MIGRATION_PLAN.md` y `MIGRATION_STATUS.md` antes de continuar.
 Las comprobaciones de scripts/datos no acreditan la calidad visual ni el
 playtest. Las fases con revisión manual pendiente permanecen abiertas.
 Los assets 3D son provisionales; los iconos se reutilizan del proyecto.
+La lista de comprobaciones manuales está en `MANUAL_QA.md`.

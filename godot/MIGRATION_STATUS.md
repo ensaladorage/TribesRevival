@@ -5,9 +5,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 ## Continuidad
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
-- Fase actual: F8 (guardado/menús implementados; feedback en curso).
-- Próxima tarea ejecutable: completar feedback visible (vida/alertas/efectos/
-  nubes/hogueras) y preparar exports; revisar manualmente F2/F5/F6/F7/F8.
+- Fase actual: F9 preparación de exportaciones; F8 implementada con revisión manual pendiente.
+- Próxima tarea ejecutable: ejecutar exportación Linux/Windows/web y verificar
+  artefactos/arranque técnico; revisar manualmente F2/F5/F6/F7/F8.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -22,9 +22,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
 | F5 IA/recolección | Implementada base, seguimiento/idle/navegación/trabajo; pendiente revisión manual e integración de conflicto F6 |
-| F6 combate/clima | Lógica integrada; efectos/vida/alertas/nubes/sonido y playtest pendientes |
+| F6 combate/clima | Lógica y feedback provisional integrados; playtest pendiente |
 | F7 compras/equipo | Comandos/drag-to-equip/HUD básico implementados; validación manual pendiente |
-| F8 UI/guardado | Menús/tutorial/slots/confirmación/reinicio implementados; feedback/revisión manual pendientes |
+| F8 UI/guardado | Menús/guardado/feedback provisional implementados; revisión manual pendiente |
 | F9 integración/exportación | Pendiente |
 
 ## Pruebas y límites
@@ -37,8 +37,8 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   inicialización de escena sin frames de gameplay; 42 originales intactos).
   `git diff --check` correcto. Informes locales: `reports/f1-validation.log`.
 - Sin validación manual ni prueba de gameplay; no se afirma paridad todavía.
-- Export templates: carpeta local vacía verificada; faltan templates 4.7.2.
-  Builds Windows/Linux/web todavía pendientes.
+- Export templates 4.7.2 instalados y verificados (13 archivos desktop/web).
+  Recibo `audit/export_templates.json`; builds todavía pendientes.
 - Pendientes de diseño heredados: cuevas/jefes/regiones y costes de Pícaro/
   Paladín. No bloquean la migración de los sistemas que sí existen.
 - El original mantiene guardados del navegador; portarlos a `user://` no
@@ -101,8 +101,8 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   paridad de estadísticas, daño y curación contra TS añadida a las reglas
   puras. Informe `reports/f6-validation.log`. No se ejecutó combate, clima
   ni gameplay automatizado; F6 no se declara completa.
-- F6 pendiente: barras de vida, alertas, animaciones/sonido, cadáveres,
-  hogueras y nubes visibles; probar manualmente daño/retirada/respawn/lluvia.
+- El feedback F6 se incorpora en F8d; sigue pendiente probar manualmente
+  daño/retirada/respawn/lluvia y presentación.
 
 - F7: comandos atómicos separados, población máxima 8, especializaciones,
   protección de proveedor de comida, 1 Mago exterior por 2 Brillo, Escudo,
@@ -135,3 +135,15 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   gameplay. Informe `reports/f8-menu-validation.log`. Sin validación visual.
 - F9 preparación independiente: iniciada instalación de templates oficiales
   4.7.2 con SHA256 publicado; proceso debe consultarse hasta su resultado.
+
+- F8d: feedback provisional de salud, escudos, herramientas/libro por rol,
+  golpes/flashes/cruces de curación, cadáveres y loot, hogueras, alertas y
+  sonido sintético, nubes/lluvia. Bandas de color 0–10 en tarjetas; los
+  materiales de herramientas/unidades no se tiñen por nivel.
+- F8d verificada técnicamente: scripts/importación/inicialización sin errores,
+  pruebas de datos/reglas/guardado actuales correctas;
+  `reports/f8-feedback-validation.log`. Sin capturas ni playtest automático.
+  `MANUAL_QA.md` enumera todas las revisiones aún pendientes.
+- F9 templates: descarga oficial 4.7.2 validada con SHA256
+  `f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011`;
+  instalados Linux/Windows x86_64 y web, sin binarios añadidos a Git.
