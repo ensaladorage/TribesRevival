@@ -5,9 +5,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 ## Continuidad
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
-- Fase actual: F6 (combate/clima) implementada en lógica; F7 comienza con compras.
-- Próxima tarea ejecutable: F7, conectar compras/equipo/transformaciones y
-  sus interacciones; F2/F5/F6 conservan pendientes de revisión manual.
+- Fase actual: F7 implementada; F8 (guardado/menús/feedback) siguiente.
+- Próxima tarea ejecutable: F8, persistencia local de tres slots, menús,
+  reinicio y feedback; F2/F5/F6/F7 conservan pendientes manuales.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -18,12 +18,12 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 |---|---|
 | F0 auditoría | Completada: 42 archivos con hashes/imports; originales verificados |
 | F1 base | Completada: editor importa, 1 script y 1 escena válidos; arranque sin ticks |
-| F2 controles | Cámara/arrastre/zoom/pausa/velocidad/debug implementados; flecha, ajustes y revisión manual pendientes |
+| F2 controles | Cámara/arrastre/flecha/zoom/pausa/velocidad/debug y ajustes implementados; revisión manual pendiente |
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
 | F5 IA/recolección | Implementada base, seguimiento/idle/navegación/trabajo; pendiente revisión manual e integración de conflicto F6 |
 | F6 combate/clima | Lógica integrada; efectos/vida/alertas/nubes/sonido y playtest pendientes |
-| F7 compras/equipo | Pendiente |
+| F7 compras/equipo | Comandos/drag-to-equip/HUD básico implementados; validación manual pendiente |
 | F8 UI/guardado | Pendiente |
 | F9 integración/exportación | Pendiente |
 
@@ -52,8 +52,8 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   límites 2–158 m, scroll de borde a 32 m/s y recentrado a 4.5; cola de acciones,
   driver 20 Hz/máximo 4 ticks, pausa/1–3/debug y cancelación al perder foco.
   Importación y arranque estructural correctos: 4 scripts/1 escena, sin ticks.
-  Informe `reports/f2-validation.log`. Sin playtest. Falta flecha de arrastre,
-  sliders de zoom y revisión manual; F2 no se declara completada.
+  Informe `reports/f2-validation.log`. Sin playtest. Flecha y sliders de zoom se incorporan en F7;
+  revisión manual pendiente, F2 no se declara completada.
 - F5 incorpora formación y libera la orden de marcha al llegar las unidades.
   F6 conecta combate, fauna móvil, clima y curación; falta presentar su feedback.
 
@@ -103,3 +103,15 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   ni gameplay automatizado; F6 no se declara completa.
 - F6 pendiente: barras de vida, alertas, animaciones/sonido, cadáveres,
   hogueras y nubes visibles; probar manualmente daño/retirada/respawn/lluvia.
+
+- F7: comandos atómicos separados, población máxima 8, especializaciones,
+  protección de proveedor de comida, 1 Mago exterior por 2 Brillo, Escudo,
+  mejoras, tecnologías y debug. Interfaz nativa lateral y paneles excluyentes
+  cerrados por defecto; arrastrar/comprar/equipar con tolerancia de 24 px.
+  Preview libre; solo el spawn se proyecta a 15 m. No se dibuja anillo de
+  reclutamiento. Arrastre del tótem sin retraso visual, flecha y ajustes zoom.
+- F7 verificación: 23 scripts/1 escena importados/inicializados sin errores;
+  12.670 comparaciones de paridad/reglas puras, incluidas cinco transacciones
+  económicas contra TS (cap 8, 1 Mago, último proveedor, Escudo, coste mixto
+  fallido). No se avanzó el loop de gameplay ni se automatizó UI.
+  Informe `reports/f7-validation.log`. F7 no cerrada por playtest pendiente.

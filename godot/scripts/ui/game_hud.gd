@@ -1,0 +1,158 @@
+extends CanvasLayer
+## Native, provisional HUD. All availability and prices derive from shared rules.
+
+signal placement_requested(item: String)
+signal action_requested(action: Dictionary)
+
+const Economy = preload("res://scripts/simulation/economy.gd")
+const Rules = preload("res://scripts/simulation/survival_rules.gd")
+const Progression = preload("res://scripts/simulation/progression.gd")
+const ITEM_NAMES := {"gatherer": "Recolector", "axe": "Leñador", "bow": "Cazador", "sword": "Guardián", "hammer": "Artesana", "mage": "Mago", "campfire": "Hoguera", "shield": "Escudo"}
+const RESOURCE_NAMES := {"food": "Comida", "wood": "Madera", "stone": "Piedra", "spark": "Brillo", "gold": "Oro"}
+var _items := {}
+var _upgrades := {}
+var _technologies := {}
+var _management: PanelContainer
+var _tech_page: VBoxContainer
+var _upgrade_page: HFlowContainer
+var _tree_rows := {}
+var _open_panel := ""
+var _selected_tree := ""
+
+func _ready() -> void:
+	var root := Control.new()
+	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(root)
+	var sidebar := VBoxContainer.new()
+	sidebar.position = Vector2(16, 155)
+	sidebar.custom_minimum_size.x = 145
+	root.add_child(sidebar)
+	for item in ["gatherer", "axe", "bow", "sword", "hammer", "mage", "campfire", "shield"]:
+		var button := Button.new()
+		button.text = ITEM_NAMES[item]
+		button.custom_minimum_size.y = 38
+		button.button_down.connect(func(): placement_requested.emit(item))
+		sidebar.add_child(button)
+		_items[item] = button
+	var dock := HBoxContainer.new()
+	dock.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	dock.position = Vector2(16, -54)
+	root.add_child(dock)
+	for panel in ["Tecnologías", "Mejoras"]:
+		var button := Button.new()
+		button.text = panel
+		button.custom_minimum_size = Vector2(125, 38)
+		button.pressed.connect(func(): _toggle_panel(panel))
+		dock.add_child(button)
+	_management = PanelContainer.new()
+	_management.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	_management.position = Vector2(16, -260)
+	_management.custom_minimum_size = Vector2(560, 190)
+	_management.visible = false
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("233037")
+	style.set_content_margin_all(12)
+	style.set_corner_radius_all(6)
+	_management.add_theme_stylebox_override("panel", style)
+	root.add_child(_management)
+	var content := VBoxContainer.new()
+	_management.add_child(content)
+	_tech_page = VBoxContainer.new()
+	content.add_child(_tech_page)
+	var trees := HFlowContainer.new()
+	_tech_page.add_child(trees)
+	for tree in ["survival", "exploration", "combat"]:
+		var button := Button.new()
+		button.text = {"survival": "Supervivencia", "exploration": "Exploración", "combat": "Combate"}[tree]
+		button.pressed.connect(func():
+			_selected_tree = "" if _selected_tree == tree else tree
+			_refresh_panels())
+		trees.add_child(button)
+		var row := HFlowContainer.new()
+		_tech_page.add_child(row)
+		_tree_rows[tree] = row
+	for technology in Progression.TECHNOLOGIES:
+		var button := Button.new()
+		button.text = "%s · %s punto" % [technology.name, technology.cost]
+		button.pressed.connect(func(): action_requested.emit({"type": "unlock-technology", "technology": technology.id}))
+		_tree_rows[technology.tree].add_child(button)
+		_technologies[technology.id] = button
+	_upgrade_page = HFlowContainer.new()
+	content.add_child(_upgrade_page)
+	for tool in ["axe", "hammer", "sword"]:
+		var button := Button.new()
+		button.custom_minimum_size = Vector2(160, 70)
+		button.pressed.connect(func(): action_requested.emit({"type": "upgrade-tool", "tool": tool}))
+		_upgrade_page.add_child(button)
+		_upgrades[tool] = button
+	_refresh_panels()
+
+func _toggle_panel(panel: String) -> void:
+	_open_panel = "" if _open_panel == panel else panel
+	_refresh_panels()
+
+func _refresh_panels() -> void:
+	_management.visible = not _open_panel.is_empty()
+	_tech_page.visible = _open_panel == "Tecnologías"
+	_upgrade_page.visible = _open_panel == "Mejoras"
+	for tree in _tree_rows:
+		_tree_rows[tree].visible = tree == _selected_tree
+
+static func _cost_text(cost: Dictionary) -> String:
+	var entries: PackedStringArray = []
+	for resource in Economy.RESOURCE_TYPES:
+		if cost.has(resource):
+			entries.append("%s %s" % [cost[resource], RESOURCE_NAMES[resource]])
+	return " + ".join(entries)
+
+func update_state(state: Dictionary) -> void:
+	var amounts: Dictionary = state.inventory.amounts
+	var gatherers := Rules.count_role(state.units, "gatherer")
+	for item in _items:
+		var cost: Dictionary
+		var available: bool = state.phase == "playing"
+		if item == "gatherer":
+			cost = Economy.recruitment_cost(state.units.size())
+			available = available and state.units.size() < 8
+		elif item == "campfire":
+			cost = {"wood": 2}
+			available = available and state.campfires.size() < 2
+		elif item == "shield":
+			var shielded: int = state.units.filter(func(unit): return unit.role == "guardian" and unit.hasShield).size()
+			cost = Economy.shield_cost(shielded)
+			available = available and "shield" in state.progression.unlockedTechnologies and Rules.count_role(state.units, "guardian") > shielded
+		else:
+			var definition: Dictionary = Economy.SPECIALIZATIONS[item]
+			var count := Rules.count_role(state.units, definition.role)
+			cost = Economy.specialization_cost(item, count)
+			available = available and gatherers > 0 and count < definition.limit
+			if item in ["axe", "hammer"]:
+				available = available and Rules.can_convert_last_gatherer(state.units)
+			if item in ["hammer", "mage"]:
+				var technology := "artisan" if item == "hammer" else "mage"
+				_items[item].visible = technology in state.progression.unlockedTechnologies
+				available = available and _items[item].visible
+		_items[item].text = ITEM_NAMES[item] + "\n" + _cost_text(cost)
+		_items[item].disabled = not available or not Economy.can_afford(amounts, cost)
+		_items[item].tooltip_text = "Arrastra al terreno" if item in ["gatherer", "campfire"] else "Arrastra sobre un Guardián" if item == "shield" else "Arrastra sobre un Recolector"
+	for technology in Progression.TECHNOLOGIES:
+		var unlocked: bool = technology.id in state.progression.unlockedTechnologies
+		_technologies[technology.id].disabled = state.phase != "playing" or not Progression.can_unlock(state.progression, technology.id)
+		_technologies[technology.id].tooltip_text = "%s\n%s\n%s" % [technology.name, technology.description, "Desbloqueado" if unlocked else "Nivel requerido: %s" % technology.minimumLevel]
+	for tool in _upgrades:
+		var level: int = state.toolLevels[tool]
+		var name: String = {"axe": "Hacha", "hammer": "Martillo", "sword": "Espada"}[tool]
+		_upgrades[tool].text = "%s   %s" % [name, "Max" if level == 10 else "+%s" % level]
+		var upgrade: Variant = Economy.tool_upgrade(tool, level + 1)
+		_upgrades[tool].disabled = state.phase != "playing" or upgrade == null or not Economy.can_afford(amounts, upgrade.cost)
+		if upgrade == null:
+			_upgrades[tool].tooltip_text = name + " · Max"
+		else:
+			_upgrades[tool].tooltip_text = "%s\nActual: %s\nSiguiente: %s\nCoste: %s\nFalta: %s" % [name, _effect_text(tool, level), _effect_text(tool, level + 1), _cost_text(upgrade.cost), _cost_text(Economy.missing_resources(amounts, upgrade.cost))]
+
+static func _effect_text(tool: String, level: int) -> String:
+	var effect := Economy.tool_effect(tool, level)
+	if tool == "sword":
+		return "+%.2f daño" % effect.guardianDamageBonus
+	return "+%s%% velocidad · %s%% de +1 recurso" % [effect.gatherSpeedPercent, effect.bonusResourceChance]

@@ -8,6 +8,7 @@ const Work = preload("res://scripts/simulation/work_system.gd")
 const Conflict = preload("res://scripts/simulation/conflict_system.gd")
 const Survival = preload("res://scripts/simulation/survival_system.gd")
 const Weather = preload("res://scripts/simulation/weather_system.gd")
+const Commands = preload("res://scripts/simulation/commands.gd")
 const FIXED_DT := 1.0 / 20.0
 const MAX_STEPS_PER_FRAME := 4
 
@@ -56,30 +57,4 @@ func advance(frame_seconds: float) -> void:
 		steps += 1
 
 func _apply_action(action: Dictionary) -> void:
-	if action.type == "toggle-pause":
-		if state.phase == "playing":
-			state.phase = "paused"
-		elif state.phase == "paused":
-			state.phase = "playing"
-		return
-	if state.phase != "playing":
-		return
-	var totem: Dictionary = state.totem
-	match action.type:
-		"pick-up-totem":
-			if totem.isCarried:
-				return
-			totem.isCarried = true
-			totem.moving = false
-			totem.destination = null
-			totem.dragTarget = totem.position.duplicate()
-		"drag-totem":
-			if totem.isCarried:
-				totem.position = State.clamp_position(action.position)
-				totem.dragTarget = totem.position.duplicate()
-		"drop-totem":
-			if totem.isCarried:
-				totem.isCarried = false
-				totem.moving = true
-				totem.destination = null
-				totem.dragTarget = null
+	Commands.apply(state, action)

@@ -69,6 +69,23 @@ try {
     const entities=[{id:'enemy',kind:'combat',position:{x:82,y:80},isAlive:true},{id:'rabbit',kind:'hunt',position:{x:81,y:80},isAlive:true}];
     return {units,entities,result:Object.fromEntries(chooseEntityCalls(units,entities,18,18))};
   });
+  const purchaseCases = [
+    {name:'population cap',setup:{},actions:Array.from({length:7},()=>({type:'recruit-gatherer',position:{x:140,y:140}}))},
+    {name:'one exterior mage',setup:{technologies:['mage']},actions:[{type:'recruit-gatherer',position:{x:85,y:80}},{type:'transform-unit',item:'mage',unitId:'unit-gatherer-01'},{type:'transform-unit',item:'mage',unitId:'unit-gatherer-02'}]},
+    {name:'last food provider',setup:{secondRole:'lumberjack'},actions:[{type:'transform-unit',item:'axe',unitId:'unit-gatherer-01'}]},
+    {name:'shield single purchase',setup:{secondRole:'guardian',secondHealth:2,technologies:['shield']},actions:[{type:'equip-shield',unitId:'unit-initial-specialist-02'},{type:'equip-shield',unitId:'unit-initial-specialist-02'}]},
+    {name:'failed mixed upgrade',setup:{axeLevel:9,amounts:{food:0,wood:0,stone:9,spark:2,gold:2}},actions:[{type:'upgrade-tool',tool:'axe'}]},
+  ].map(sample=>{
+    const state=createInitialState('totem-tribes-hito-2a');
+    state.inventory.amounts=sample.setup.amounts ?? {food:100,wood:100,stone:100,spark:100,gold:100};
+    state.progression.unlockedTechnologies=sample.setup.technologies ?? [];
+    if(sample.setup.secondRole) state.units[1].role=sample.setup.secondRole;
+    if(sample.setup.secondHealth) state.units[1].health=sample.setup.secondHealth;
+    if(sample.setup.axeLevel) state.toolLevels.axe=sample.setup.axeLevel;
+    projection.applyInputActions(state,sample.actions); // Atomic transactions only, no simulation frames.
+    const result=Object.fromEntries(['units','inventory','purchaseCounts','toolLevels','progression'].map(key=>[key,state[key]]));
+    return {...sample,result};
+  });
   const reference = {
     description: 'Read-only TypeScript data reference. No gameplay loop executed.',
     random: seeds.map(seed => {
@@ -76,6 +93,7 @@ try {
       return { seed, uints: Array.from({ length: 12 }, () => random.nextUint()) };
     }),
     initialStates: seeds.map(seed => createInitialState(seed)),
+    purchases:purchaseCases,
     combat: {
       attacks:['explorer','gatherer','lumberjack','hunter','guardian','artisan','mage'].flatMap(role=>[0,5,10].map(level=>({role,level,result:combat.getMinionAttackStats(role,level) ?? null}))),
       damage:['minion','barbarian','animal'].flatMap(source=>['minion','barbarian','animal'].flatMap(target=>[-1,0,1,8].map(amount=>({source,target,amount,result:combat.dealDamage(source,target,{health:4,maxHealth:4},amount)})))),

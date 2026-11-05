@@ -86,6 +86,41 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
 	var previous: Dictionary = _previous_positions.get(actor.id, actor.position)
 	_views[actor.id].position = Vector3(lerpf(previous.x, actor.position.x, _alpha), 0, lerpf(previous.y, actor.position.y, _alpha))
 
+func pick_unit(camera: Camera3D, screen_point: Vector2, units: Array) -> String:
+	var selected := ""
+	var nearest := INF
+	var origin := camera.project_ray_origin(screen_point)
+	var direction := camera.project_ray_normal(screen_point)
+	for unit in units:
+		if not _views.has(unit.id):
+			continue
+		for child in _views[unit.id].get_children():
+			if not child is MeshInstance3D:
+				continue
+			var local_origin: Vector3 = child.to_local(origin)
+			var local_direction: Vector3 = child.global_basis.inverse() * direction
+			var hit: Variant = child.get_aabb().intersects_ray(local_origin, local_direction)
+			if hit is Vector3:
+				var distance: float = origin.distance_squared_to(child.to_global(hit))
+				if distance < nearest:
+					nearest = distance
+					selected = unit.id
+	if not selected.is_empty():
+		return selected
+	# Same screen-space tolerance as the original drag-to-equip interaction.
+	for unit in units:
+		if not _views.has(unit.id):
+			continue
+		var center: Vector3 = _views[unit.id].position + Vector3(0, 0.65, 0)
+		var screen_center := camera.unproject_position(center)
+		var screen_edge := camera.unproject_position(center + Vector3(1.25, 0, 0))
+		var radius := maxf(absf(screen_edge.x - screen_center.x), 24.0)
+		var distance := screen_point.distance_to(screen_center)
+		if distance <= radius and distance < nearest:
+			nearest = distance
+			selected = unit.id
+	return selected
+
 func _create_resource(resource: Dictionary) -> Node3D:
 	var node := Node3D.new()
 	node.position = Vector3(resource.position.x, 0, resource.position.y)

@@ -12,6 +12,7 @@ const Awareness = preload("res://scripts/simulation/minion_awareness.gd")
 const Rules = preload("res://scripts/simulation/survival_rules.gd")
 const Movement = preload("res://scripts/simulation/minion_movement.gd")
 const Combat = preload("res://scripts/simulation/combat_rules.gd")
+const Commands = preload("res://scripts/simulation/commands.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -31,6 +32,7 @@ func _initialize() -> void:
 	_test_economy(reference.economy)
 	_test_transactions()
 	_test_support(reference.support)
+	_test_purchases(reference.purchases)
 	for sample in reference.combat.attacks:
 		_equal(Combat.minion_attack(sample.role, sample.level), sample.result, "attack statistics")
 	for sample in reference.combat.damage:
@@ -45,6 +47,22 @@ func _initialize() -> void:
 			push_error(failure)
 		print("FAIL data parity: %d mismatches" % failures.size())
 		quit(1)
+
+func _test_purchases(samples: Array) -> void:
+	for sample in samples:
+		var state := State.create_initial()
+		state.inventory.amounts = sample.setup.get("amounts", {"food": 100, "wood": 100, "stone": 100, "spark": 100, "gold": 100}).duplicate()
+		state.progression.unlockedTechnologies = sample.setup.get("technologies", []).duplicate()
+		if sample.setup.has("secondRole"):
+			state.units[1].role = sample.setup.secondRole
+		if sample.setup.has("secondHealth"):
+			state.units[1].health = sample.setup.secondHealth
+		if sample.setup.has("axeLevel"):
+			state.toolLevels.axe = sample.setup.axeLevel
+		for action in sample.actions:
+			Commands.apply(state, action)
+		for key in sample.result:
+			_equal(state[key], sample.result[key], sample.name + ": " + key)
 
 func _allowed(point: Dictionary) -> bool:
 	return point.x >= 2 and point.x <= 158 and point.y >= 2 and point.y <= 158

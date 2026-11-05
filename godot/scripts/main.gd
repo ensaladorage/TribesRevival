@@ -3,8 +3,15 @@ extends Node3D
 
 const Session = preload("res://scripts/simulation/game_session.gd")
 const WorldView = preload("res://scripts/view/world_view.gd")
+const HUD = preload("res://scripts/ui/game_hud.gd")
 var session := Session.new()
 var world_view := WorldView.new()
+var hud := HUD.new()
+var held_item := ""
+var held_preview: MeshInstance3D
+var drag_position: Variant = null
+var drag_direction := Vector2(0, 1)
+var direction_arrow: MeshInstance3D
 var dragging := false
 var debug_visible := false
 var debug_label: Label
@@ -25,15 +32,31 @@ func _ready() -> void:
 	add_child(world_environment)
 	add_child(world_view)
 	world_view.setup(session.state)
+	_create_direction_arrow()
 	_create_overlay()
+	add_child(hud)
+	hud.placement_requested.connect(_begin_placement)
+	hud.action_requested.connect(func(action): session.enqueue(action))
 	_sync_view()
 
 func _process(delta: float) -> void:
 	camera.advance(delta, dragging, session.state.totem.position)
 	if dragging:
 		_queue_drag(get_viewport().get_mouse_position())
+	if not held_item.is_empty():
+		_update_held_preview()
 	session.advance(delta)
 	_sync_view()
+
+func _input(event: InputEvent) -> void:
+	# Receive release even over a Control, matching pointer capture in Babylon.
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+		if not held_item.is_empty():
+			_finish_placement()
+			get_viewport().set_input_as_handled()
+		elif dragging:
+			_end_drag()
+			get_viewport().set_input_as_handled()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -44,6 +67,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed and session.state.phase == "playing" and not dragging and _hits_totem(event.position):
 				dragging = true
+				drag_position = session.state.totem.position.duplicate()
+				drag_direction = Vector2(0, 1)
 				camera.recentering = false
 				session.enqueue({"type": "pick-up-totem"})
 				_queue_drag(event.position)
@@ -52,6 +77,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_ESCAPE:
+				_cancel_placement()
 				_end_drag()
 				session.enqueue({"type": "toggle-pause"})
 			KEY_1, KEY_2, KEY_3:
@@ -68,6 +94,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and is_node_ready():
 		_end_drag()
+		_cancel_placement()
 
 func _hits_totem(screen_point: Vector2) -> bool:
 	var origin := totem_view.to_local(camera.project_ray_origin(screen_point))
@@ -77,7 +104,16 @@ func _hits_totem(screen_point: Vector2) -> bool:
 func _queue_drag(screen_point: Vector2) -> void:
 	var point: Variant = camera.ground_point(screen_point)
 	if point is Vector3:
-		session.enqueue({"type": "drag-totem", "position": {"x": point.x, "y": point.z}})
+		var position: Dictionary = Session.State.clamp_position({"x": point.x, "y": point.z})
+		if drag_position != null:
+			var dx: float = position.x - drag_position.x
+			var dy: float = position.y - drag_position.y
+			var distance := sqrt(dx * dx + dy * dy)
+			if distance <= 0.001:
+				return
+			drag_direction = Vector2(dx / distance, dy / distance)
+		drag_position = position
+		session.enqueue({"type": "drag-totem", "position": position})
 
 func _end_drag() -> void:
 	if not dragging:
@@ -88,13 +124,75 @@ func _end_drag() -> void:
 	camera.recentering = true
 
 func _sync_view() -> void:
+	hud.update_state(session.state)
 	world_view.sync(session.state, session.previous_positions, session.accumulator / Session.FIXED_DT)
 	var totem: Dictionary = session.state.totem
-	totem_view.position = Vector3(float(totem.position.x), 1.6 + (0.7 if totem.isCarried else 0.0), float(totem.position.y))
+	var visual: Dictionary = drag_position if (dragging or totem.isCarried) and drag_position != null else totem.position
+	totem_view.position = Vector3(float(visual.x), 1.6 + (0.7 if dragging or totem.isCarried else 0.0), float(visual.y))
+	direction_arrow.position = Vector3(visual.x, 3.1, visual.y)
+	direction_arrow.rotation.y = atan2(drag_direction.x, drag_direction.y)
+	direction_arrow.visible = dragging or totem.isCarried
 	pause_overlay.visible = session.state.phase == "paused"
 	debug_label.text = "Tick %s · %s · velocidad ×%s\nTótem %.2f, %.2f" % [session.state.tick, session.state.phase, session.speed_multiplier, totem.position.x, totem.position.y]
 	var amounts: Dictionary = session.state.inventory.amounts
 	inventory_label.text = "Comida %s   Madera %s   Piedra %s   Brillo %s   Oro %s\nNivel %s · XP %s / %s" % [amounts.food, amounts.wood, amounts.stone, amounts.spark, amounts.gold, session.state.progression.level, session.state.progression.experience, session.state.progression.experienceToNextLevel]
+	Input.set_default_cursor_shape(Input.CURSOR_DRAG if dragging or not held_item.is_empty() else Input.CURSOR_ARROW)
+
+func _create_direction_arrow() -> void:
+	direction_arrow = MeshInstance3D.new()
+	var shape := ImmediateMesh.new()
+	shape.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
+	for point in [Vector3(0, 0, 2.8), Vector3(-0.65, 0, 1.9), Vector3(-0.2, 0, 2.05), Vector3(-0.2, 0, 0), Vector3(0.2, 0, 0), Vector3(0.2, 0, 2.05), Vector3(0.65, 0, 1.9), Vector3(0, 0, 2.8)]:
+		shape.surface_add_vertex(point)
+	shape.surface_end()
+	direction_arrow.mesh = shape
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color("f1d27a")
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	direction_arrow.material_override = material
+	direction_arrow.visible = false
+	add_child(direction_arrow)
+
+func _begin_placement(item: String) -> void:
+	if session.state.phase != "playing":
+		return
+	_end_drag()
+	_cancel_placement()
+	held_item = item
+	held_preview = MeshInstance3D.new()
+	var shape := BoxMesh.new()
+	shape.size = Vector3(0.8, 1.0, 0.8) * 1.25
+	held_preview.mesh = shape
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color("f2cb72")
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	held_preview.material_override = material
+	add_child(held_preview)
+	_update_held_preview()
+
+func _update_held_preview() -> void:
+	var point: Variant = camera.ground_point(get_viewport().get_mouse_position())
+	if point is Vector3:
+		# Preview follows the raw cursor. Recruitment projection happens on release.
+		held_preview.position = point + Vector3(0, 1.2, 0)
+
+func _finish_placement() -> void:
+	if get_viewport().gui_get_hovered_control() == null and session.state.phase == "playing":
+		var screen_point := get_viewport().get_mouse_position()
+		var point: Variant = camera.ground_point(screen_point)
+		if held_item in ["gatherer", "campfire"] and point is Vector3:
+			session.enqueue({"type": "recruit-gatherer" if held_item == "gatherer" else "place-campfire", "position": {"x": point.x, "y": point.z}})
+		else:
+			var unit_id: String = world_view.pick_unit(camera, screen_point, session.state.units)
+			if not unit_id.is_empty():
+				session.enqueue({"type": "equip-shield", "unitId": unit_id} if held_item == "shield" else {"type": "transform-unit", "item": held_item, "unitId": unit_id})
+	_cancel_placement()
+
+func _cancel_placement() -> void:
+	held_item = ""
+	if is_instance_valid(held_preview):
+		held_preview.free()
+	held_preview = null
 
 func _create_overlay() -> void:
 	var overlay := CanvasLayer.new()
@@ -121,7 +219,8 @@ func _create_overlay() -> void:
 	pause_overlay.add_child(paused_text)
 	var panel := VBoxContainer.new()
 	panel.name = "Debug"
-	panel.position = Vector2(20, 135)
+	panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	panel.position = Vector2(-260, 120)
 	panel.visible = false
 	overlay.add_child(panel)
 	debug_label = Label.new()
@@ -137,3 +236,24 @@ func _create_overlay() -> void:
 		button.text = "Velocidad ×%s" % multiplier
 		button.pressed.connect(func(): session.speed_multiplier = multiplier)
 		panel.add_child(button)
+	for entry in [["Dañar un minion", "debug-damage-one-minion"], ["Subir nivel", "debug-level-up"], ["Añadir recursos", "debug-add-all-resources"]]:
+		var button := Button.new()
+		button.text = entry[0]
+		button.pressed.connect(func(): session.enqueue({"type": entry[1]}))
+		panel.add_child(button)
+	for bound in ["min", "max"]:
+		var label := Label.new()
+		label.text = "Zoom " + bound
+		panel.add_child(label)
+		var slider := HSlider.new()
+		slider.min_value = 0.5
+		slider.max_value = 2.0
+		slider.step = 0.05
+		slider.value = camera.zoom_min if bound == "min" else camera.zoom_max
+		slider.value_changed.connect(func(value):
+			if bound == "min":
+				camera.zoom_min = clampf(value, 0.5, camera.zoom_max - 0.05)
+			else:
+				camera.zoom_max = clampf(value, camera.zoom_min + 0.05, 2.0)
+			camera.adjust_zoom(0))
+		panel.add_child(slider)
