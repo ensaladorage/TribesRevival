@@ -30,6 +30,19 @@ func _capture_positions() -> void:
 func enqueue(action: Dictionary) -> void:
 	_actions.append(action.duplicate(true))
 
+func flush_actions() -> void:
+	for action in _actions:
+		_apply_action(action)
+	_actions.clear()
+	_capture_positions()
+
+func replace_state(next_state: Dictionary) -> void:
+	state = next_state.duplicate(true)
+	_actions.clear()
+	accumulator = 0.0
+	speed_multiplier = 1
+	_capture_positions()
+
 func advance(frame_seconds: float) -> void:
 	accumulator = minf(accumulator + minf(frame_seconds, 0.25) * speed_multiplier, FIXED_DT * MAX_STEPS_PER_FRAME)
 	var steps := 0

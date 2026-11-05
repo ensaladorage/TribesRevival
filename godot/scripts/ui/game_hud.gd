@@ -18,12 +18,40 @@ var _upgrade_page: HFlowContainer
 var _tree_rows := {}
 var _open_panel := ""
 var _selected_tree := ""
+var _resource_counts := {}
+const ICONS := {"gatherer": "icon-minion", "axe": "icon-axe", "bow": "icon-bow", "sword": "icon-sword", "hammer": "icon-hammer", "mage": "icon-mage", "campfire": "icon-fireplace", "shield": "icon-shield"}
 
 func _ready() -> void:
 	var root := Control.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
+	var counters := HFlowContainer.new()
+	counters.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	counters.offset_left = 220
+	counters.offset_right = -20
+	counters.offset_top = 16
+	counters.alignment = FlowContainer.ALIGNMENT_CENTER
+	counters.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(counters)
+	for resource in Economy.RESOURCE_TYPES:
+		var group := HBoxContainer.new()
+		group.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var icon := TextureRect.new()
+		icon.texture = load("res://assets/ui/resource-%s.png" % resource)
+		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.custom_minimum_size = Vector2(28, 28)
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		group.add_child(icon)
+		var count := Label.new()
+		count.custom_minimum_size.x = 48
+		count.tooltip_text = RESOURCE_NAMES[resource]
+		count.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		group.add_child(count)
+		counters.add_child(group)
+		_resource_counts[resource] = count
 	var sidebar := VBoxContainer.new()
 	sidebar.position = Vector2(16, 155)
 	sidebar.custom_minimum_size.x = 145
@@ -31,6 +59,10 @@ func _ready() -> void:
 	for item in ["gatherer", "axe", "bow", "sword", "hammer", "mage", "campfire", "shield"]:
 		var button := Button.new()
 		button.text = ITEM_NAMES[item]
+		button.icon = load("res://assets/ui/%s.png" % ICONS[item])
+		button.expand_icon = true
+		button.add_theme_constant_override("icon_max_width", 32)
+		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		button.custom_minimum_size.y = 38
 		button.button_down.connect(func(): placement_requested.emit(item))
 		sidebar.add_child(button)
@@ -75,6 +107,10 @@ func _ready() -> void:
 	for technology in Progression.TECHNOLOGIES:
 		var button := Button.new()
 		button.text = "%s · %s punto" % [technology.name, technology.cost]
+		button.icon = load("res://assets/ui/%s.png" % ICONS["hammer" if technology.id == "artisan" else technology.id])
+		button.expand_icon = true
+		button.add_theme_constant_override("icon_max_width", 32)
+		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		button.pressed.connect(func(): action_requested.emit({"type": "unlock-technology", "technology": technology.id}))
 		_tree_rows[technology.tree].add_child(button)
 		_technologies[technology.id] = button
@@ -83,6 +119,10 @@ func _ready() -> void:
 	for tool in ["axe", "hammer", "sword"]:
 		var button := Button.new()
 		button.custom_minimum_size = Vector2(160, 70)
+		button.icon = load("res://assets/ui/%s.png" % ICONS[tool])
+		button.expand_icon = true
+		button.add_theme_constant_override("icon_max_width", 40)
+		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		button.pressed.connect(func(): action_requested.emit({"type": "upgrade-tool", "tool": tool}))
 		_upgrade_page.add_child(button)
 		_upgrades[tool] = button
@@ -90,6 +130,11 @@ func _ready() -> void:
 
 func _toggle_panel(panel: String) -> void:
 	_open_panel = "" if _open_panel == panel else panel
+	_refresh_panels()
+
+func reset_panels() -> void:
+	_open_panel = ""
+	_selected_tree = ""
 	_refresh_panels()
 
 func _refresh_panels() -> void:
@@ -108,6 +153,8 @@ static func _cost_text(cost: Dictionary) -> String:
 
 func update_state(state: Dictionary) -> void:
 	var amounts: Dictionary = state.inventory.amounts
+	for resource in _resource_counts:
+		_resource_counts[resource].text = str(amounts[resource])
 	var gatherers := Rules.count_role(state.units, "gatherer")
 	for item in _items:
 		var cost: Dictionary

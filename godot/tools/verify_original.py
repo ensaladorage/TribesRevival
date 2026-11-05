@@ -14,3 +14,12 @@ for entry in inventory["files"]:
 if failures:
     raise SystemExit("Original files changed or missing: " + ", ".join(failures))
 print(f"PASS original: {len(inventory['files'])} files unchanged")
+asset_receipt = project / "audit/ui_assets.json"
+if asset_receipt.exists():
+    receipt = json.loads(asset_receipt.read_text())
+    for entry in receipt["files"]:
+        for key in ("source", "destination"):
+            data = (root / entry[key]).read_bytes()
+            if hashlib.sha256(data).hexdigest() != entry["sha256"]:
+                raise SystemExit("UI asset changed: " + entry[key])
+    print(f"PASS UI assets: {len(receipt['files'])} copies match their original bytes")

@@ -5,9 +5,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 ## Continuidad
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
-- Fase actual: F7 implementada; F8 (guardado/menús/feedback) siguiente.
-- Próxima tarea ejecutable: F8, persistencia local de tres slots, menús,
-  reinicio y feedback; F2/F5/F6/F7 conservan pendientes manuales.
+- Fase actual: F8 (guardado/menús implementados; feedback en curso).
+- Próxima tarea ejecutable: completar feedback visible (vida/alertas/efectos/
+  nubes/hogueras) y preparar exports; revisar manualmente F2/F5/F6/F7/F8.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -24,7 +24,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F5 IA/recolección | Implementada base, seguimiento/idle/navegación/trabajo; pendiente revisión manual e integración de conflicto F6 |
 | F6 combate/clima | Lógica integrada; efectos/vida/alertas/nubes/sonido y playtest pendientes |
 | F7 compras/equipo | Comandos/drag-to-equip/HUD básico implementados; validación manual pendiente |
-| F8 UI/guardado | Pendiente |
+| F8 UI/guardado | Menús/tutorial/slots/confirmación/reinicio implementados; feedback/revisión manual pendientes |
 | F9 integración/exportación | Pendiente |
 
 ## Pruebas y límites
@@ -115,3 +115,23 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   económicas contra TS (cap 8, 1 Mago, último proveedor, Escudo, coste mixto
   fallido). No se avanzó el loop de gameplay ni se automatizó UI.
   Informe `reports/f7-validation.log`. F7 no cerrada por playtest pendiente.
+
+- F8a: repositorio nativo de tres slots JSON v17 bajo `user://saves`,
+  escritura con temporal/backup, errores de I/O, metadatos, fase normalizada
+  y borrado de un slot con confirmación desde UI. Prueba de ida/vuelta actual
+  en directorio aislado; no se amplía la matriz histórica ni se importan
+  automáticamente guardados del navegador.
+- F8b: menú principal/tutorial/carga principal opacos; pausa/carga desde
+  pausa translúcidas. Pausa congela simulación y bloquea controles del mapa.
+  Carga enfoca inmediatamente el tótem; reinicio restaura nueva partida.
+  Confirmaciones de borrar/reemplazar y pérdida de cambios sin guardar.
+- F8c: reutilizados 13 iconos propios existentes sin alterar sus bytes,
+  recibo `audit/ui_assets.json`. Contadores en el orden actual del juego.
+  Auditoría ampliada a los 838 archivos versionados originales (incluidos
+  arte, documentación y configuración), todos intactos.
+- La importación detectó un uso incorrecto de `icon_max_width` como propiedad;
+  corregido a constante de tema. Nueva validación completa posterior correcta:
+  25 scripts/1 escena, 15.304 comparaciones y guardado actual, sin ticks de
+  gameplay. Informe `reports/f8-menu-validation.log`. Sin validación visual.
+- F9 preparación independiente: iniciada instalación de templates oficiales
+  4.7.2 con SHA256 publicado; proceso debe consultarse hasta su resultado.

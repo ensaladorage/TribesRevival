@@ -1,0 +1,70 @@
+{
+  "description": "Existing project UI icons copied byte-for-byte; original files preserved. No new provider assets.",
+  "files": [
+    {
+      "source": "sprites/ui/icon-axe.png",
+      "destination": "godot/assets/ui/icon-axe.png",
+      "sha256": "5a8a023ac2304b430847639747e9d5e5cc561a02954e885851c2042743f78170"
+    },
+    {
+      "source": "sprites/ui/icon-bow.png",
+      "destination": "godot/assets/ui/icon-bow.png",
+      "sha256": "2ba00bd230522759836433de256bf3039e87029e82346e0f18b57b2a3e1282b7"
+    },
+    {
+      "source": "sprites/ui/icon-fireplace.png",
+      "destination": "godot/assets/ui/icon-fireplace.png",
+      "sha256": "aeed0803117006e50cfa94222034c124d6e0633fde43f66b786418a60487a6e6"
+    },
+    {
+      "source": "sprites/ui/icon-hammer.png",
+      "destination": "godot/assets/ui/icon-hammer.png",
+      "sha256": "fb26f35de58bc796c53bad09ac5ddc9849fd654272dd0cbf16600e487e1de048"
+    },
+    {
+      "source": "sprites/ui/icon-mage.png",
+      "destination": "godot/assets/ui/icon-mage.png",
+      "sha256": "351d08fcb533e43394578952ef9efac3083537b5e4e6900eed74cf6fd279b327"
+    },
+    {
+      "source": "sprites/ui/icon-minion.png",
+      "destination": "godot/assets/ui/icon-minion.png",
+      "sha256": "0209e1cf7ebfabb5a05aaad535af4aff335cb72a296f79b8e60c48944a9ecd6e"
+    },
+    {
+      "source": "sprites/ui/icon-shield.png",
+      "destination": "godot/assets/ui/icon-shield.png",
+      "sha256": "e31f240e25c1eb99708d748aef0e21c852e7e9556b35b1bd16e4c2fac0523cad"
+    },
+    {
+      "source": "sprites/ui/icon-sword.png",
+      "destination": "godot/assets/ui/icon-sword.png",
+      "sha256": "9f4912fec54a66e2c18ffe2172372d1d8b5fb15f708fbd58524766b822051d08"
+    },
+    {
+      "source": "sprites/ui/resource-food.png",
+      "destination": "godot/assets/ui/resource-food.png",
+      "sha256": "a60b08a137732b299180facf5c139c67d58b059a61c43a6c324c3152d6378e00"
+    },
+    {
+      "source": "sprites/ui/resource-gold.png",
+      "destination": "godot/assets/ui/resource-gold.png",
+      "sha256": "bda9e94bec952e78eb74f6a2269fdc1b97589d14defc4c52bce2408daa0fa9f6"
+    },
+    {
+      "source": "sprites/ui/resource-spark.png",
+      "destination": "godot/assets/ui/resource-spark.png",
+      "sha256": "4f9b2df4a0711991945b5d0f108bb8a79b437776596ee2c87b9259e1b54268f1"
+    },
+    {
+      "source": "sprites/ui/resource-stone.png",
+      "destination": "godot/assets/ui/resource-stone.png",
+      "sha256": "7a4f0129c3db1f126da6244c41f6bc7758dfbda6c5a2d460d243721553679918"
+    },
+    {
+      "source": "sprites/ui/resource-wood.png",
+      "destination": "godot/assets/ui/resource-wood.png",
+      "sha256": "845c04d49cd15b35d6c5bf2cd73a7231c64d7d33970309a7b640cbeb5330533c"
+    }
+  ]
+}

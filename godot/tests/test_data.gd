@@ -13,6 +13,7 @@ const Rules = preload("res://scripts/simulation/survival_rules.gd")
 const Movement = preload("res://scripts/simulation/minion_movement.gd")
 const Combat = preload("res://scripts/simulation/combat_rules.gd")
 const Commands = preload("res://scripts/simulation/commands.gd")
+const Saves = preload("res://scripts/persistence/save_repository.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -33,6 +34,7 @@ func _initialize() -> void:
 	_test_transactions()
 	_test_support(reference.support)
 	_test_purchases(reference.purchases)
+	_test_current_save()
 	for sample in reference.combat.attacks:
 		_equal(Combat.minion_attack(sample.role, sample.level), sample.result, "attack statistics")
 	for sample in reference.combat.damage:
@@ -47,6 +49,26 @@ func _initialize() -> void:
 			push_error(failure)
 		print("FAIL data parity: %d mismatches" % failures.size())
 		quit(1)
+
+func _test_current_save() -> void:
+	# Isolated files only; never read or overwrite the player's actual slots.
+	var directory := "user://migration-save-check-%s-%s" % [OS.get_process_id(), Time.get_ticks_usec()]
+	var repository := Saves.new(directory)
+	var state := State.create_initial()
+	state.phase = "paused"
+	state.inventory.amounts.gold = 12
+	_equal(repository.save_slot(1, state, "2026-11-05T00:00:00Z").ok, true, "save current slot")
+	var loaded := repository.read_slot(1)
+	_equal(loaded.status, "valid", "read current slot")
+	if loaded.status == "valid":
+		_equal(loaded.save.gameState, Saves.normalized_state(state), "current save round trip")
+	_equal(state.phase, "paused", "saving does not mutate live phase")
+	_equal(repository.save_slot(2, state, "2026-11-05T00:00:00Z").ok, true, "save second slot")
+	_equal(repository.delete_slot(1), OK, "delete selected slot")
+	_equal(repository.read_slot(1).status, "empty", "selected slot deleted")
+	_equal(repository.read_slot(2).status, "valid", "other slot preserved")
+	_equal(repository.delete_slot(2), OK, "cleanup isolated second slot")
+	_equal(DirAccess.remove_absolute(directory), OK, "cleanup isolated test directory")
 
 func _test_purchases(samples: Array) -> void:
 	for sample in samples:

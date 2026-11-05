@@ -2,8 +2,68 @@
   "base_commit": "56125b20d74102f94f30d87b7c90e5b62257e4cd",
   "files": [
     {
+      "path": ".github/workflows/deploy-pages.yml",
+      "sha256": "1159eed7b07fc8a361d68fb678ceec10504fdd623787666c04820852326a3186",
+      "imports": []
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "d15f232be465c9c8646f8af762131180e79f266aaac444919a5493efcaa4cb38",
+      "imports": []
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "fb4c99bfab0c52afb344e9c902581d3368e16d007dbcf15c0bccc8a22585a55b",
+      "imports": []
+    },
+    {
+      "path": "documents/ECONOMY_AND_PROGRESSION.md",
+      "sha256": "ffc7452ee303ab55f4d9799024817e8887a1a1e7546dc436fd6bf0970b8f490e",
+      "imports": []
+    },
+    {
+      "path": "documents/GDD_Tribes_Revival_v0.6.0.md",
+      "sha256": "c4ec69dfe52cd324d0e3ea622a27a486edb35b2cf873e6f03b04888d316959eb",
+      "imports": []
+    },
+    {
+      "path": "documents/IMPLEMENTATION_STATUS.md",
+      "sha256": "65d8d308294d4f6fe07b04ae18b56a01a3d4d8f16db841cb75293a7f4343ef44",
+      "imports": []
+    },
+    {
+      "path": "documents/QA_TEST_PLAN.md",
+      "sha256": "79bdf45ce591b5df7f46d6315896ba8d6084a5960d8d2f39c3909224ad81e17e",
+      "imports": []
+    },
+    {
+      "path": "documents/README_DOCUMENTACION.md",
+      "sha256": "dcc53877abb311f90c9b1066879597023176868c394697edb820243361cd9f46",
+      "imports": []
+    },
+    {
+      "path": "documents/RESEARCH_Wanderers_io.md",
+      "sha256": "f55c9ef07d5d0e20a91bc5c9e9f5ad8888d9414fcb6659f7237a18bd9557e096",
+      "imports": []
+    },
+    {
+      "path": "documents/ROADMAP.md",
+      "sha256": "3db3647a48d06806e96078878f2dac8cd11a8ab74763bac0c2a5d9760c1f6b63",
+      "imports": []
+    },
+    {
+      "path": "documents/TECHNICAL_DESIGN.md",
+      "sha256": "e9c6c90d9da233e0a87db09dd87e0ca69a7174373525879b34e001de735af92b",
+      "imports": []
+    },
+    {
       "path": "index.html",
       "sha256": "5356a71e6dc635cc6b0465e3e50fb4400c41ac6f5e06f7a74f2f8308c583f4c9",
+      "imports": []
+    },
+    {
+      "path": "outputs/GDD_Tribu_del_Totem_v0.1.md",
+      "sha256": "fa4940777c19cc8c9b43733e0b20c4b6ca6026158bec2078f952cd27394f8e71",
       "imports": []
     },
     {
@@ -14,6 +74,3921 @@
     {
       "path": "package.json",
       "sha256": "e5c8c6aa6422fe1cdf551abb730a6b6c53e879476b8752ea5d4aa2448e583efc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Base Minion.png",
+      "sha256": "13fb83eb9425bc8d9c5e153fa293e6a39907b5605ebf24cb1abc59b1a67f0978",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Equipment/Bag.png",
+      "sha256": "bfa629a6c8ad9f5a25418c692a8965896999035c820882ecea76913ce7451c2a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Equipment/Belt.png",
+      "sha256": "581e74d6ab4c1819c18511afba2597c7f761c0925939da2486f8d7112dc5849e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Equipment/Helm.png",
+      "sha256": "0b05b8524ab1d070d181a65c2ef9bb5b1b071450dddf90243d3e5ff8daba0722",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Equipment/Iron Armor.png",
+      "sha256": "bd690b5acd060add841397fec54696f612e371999753d257796280b35425ea40",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Equipment/Iron Boot.png",
+      "sha256": "734072ea123ddbbcbe27567730b3c79f179f9b187635b1fe29264b8f188eae7b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Equipment/Iron Helmet.png",
+      "sha256": "47e41f15a88d690522ad9fb25f5f75d538a91abae124f15ddad26521b63f69ce",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Equipment/Leather Armor.png",
+      "sha256": "9cbca04410324aa1b27c9ca51120fef1f2cd961c7cd96774673efb398045b32e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Equipment/Leather Boot.png",
+      "sha256": "58c74d504ab3790b13af9afaca7de76e31f6f9eb2474eec989ca8ea968ec7882",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Equipment/Leather Helmet.png",
+      "sha256": "f90f24471d450ef110a479f46839878daf11294a302b74d217de30d3b38f86c9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Equipment/Wizard Hat.png",
+      "sha256": "1091d54cbabacc19b80bac688514971b6fd23ee40fb4603b2b4efe67185f467b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Equipment/Wooden Armor.png",
+      "sha256": "c17e804abd2d492c15679196f4a852698aca77fc94867dde8e7f3a43400b5232",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Food/Apple.png",
+      "sha256": "52e98b42c81d0c26af7ecc695c59c356df6bc9493092beaa64c2736d42509df1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Food/Beer.png",
+      "sha256": "cd8ee3e7d56351baf0b13ea8dd67695f1f9814910e071f702a777df346a4d7fb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Food/Bread.png",
+      "sha256": "db3ba0d64c1c42e694885405bf24812930e290607f18216628b27652cd278d92",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Food/Cheese.png",
+      "sha256": "5742c6eb5d150d3ddc4d420f6726f6dd37d23729876bcbb5187560d684102e98",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Food/Fish Steak.png",
+      "sha256": "daf1cef14ae7856844c2db033ef2cee9063c2bf6ce81eb7bc46d96f5b2920d90",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Food/Green Apple.png",
+      "sha256": "2033ccec4d55a6b3e443eba9655f2cb7e7b253fff5e9bfdb974bae035f779411",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Food/Ham.png",
+      "sha256": "79faf496fc8f9f6c1516ef900370259df4db50ab8d283f4a5c36afeb2445b301",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Food/Meat.png",
+      "sha256": "94de672393d198a9d87fa772da070c41f32835b3c07a499375221f7c57ef7b3b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Food/Mushroom.png",
+      "sha256": "3cecb3ca56c793bffa4cf6fd16626a3eb8e9a7e6ac40f3db40786b4d12c0d3ca",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Food/Wine 2.png",
+      "sha256": "7e0cb61413137cb55102c5a47d60218d8104d89f06490936c6bb1edf19bce53e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Food/Wine.png",
+      "sha256": "6e86cccc0bb2891acc38043775fbd2f54c2360544c894096f6823c47b44801f4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Material/Fabric.png",
+      "sha256": "1672285ad29ab552eb58499b5cbeb108359425b87733a01772cae6f02f473085",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Material/Leather.png",
+      "sha256": "c3eeda868a25490794d2eb39dc607744056d809779c3593468dde909db063296",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Material/Paper.png",
+      "sha256": "b0691eab20254a29841e893d2cdad926941f10f85393805afd638d4377a628d7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Material/Rope.png",
+      "sha256": "f5e0d4b2d979cffec04adf31a8ff5b3b3cfc4e3c44fbe36d641c215647c1f6f3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Material/String.png",
+      "sha256": "5704fc9bb1dfb87414303f76ba9d84887b66b90b6f0ed27a71d1c0ace79c5a1c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Material/Wood Log.png",
+      "sha256": "bb78709795f7e0d4ac6a275929be934a14332b0c7efbb140b177920103d01cd1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Material/Wooden Plank.png",
+      "sha256": "3002cca2e71b05a627ddd6e4be4912245b6294ebe8e223d8e6098786e57aae24",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Material/Wool.png",
+      "sha256": "9d499f443ab40e24a0b301d0f8947bb952623030de18f258068c42c03494cf4c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Book 2.png",
+      "sha256": "25a10544416828e82ae928c51b6d909dc981df0ccc54b3b0eddeac6bc15e6926",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Book 3.png",
+      "sha256": "ae002604d8922cf0d21ba17868f45c428f403d3267e8bc518302bd5fc6e4657b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Book.png",
+      "sha256": "b0b18f54ea1b0163ca51878f680b8ad2849410306eaccacdc417341aba1a7220",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Candle.png",
+      "sha256": "9e33f0f7abe212ed276880791bfb642a9cd3fdbead2bfe7c73233679df0373f0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Chest.png",
+      "sha256": "21922fb1de4c344ab35d8556819f01a6ca70c29a0b676568c0ed012aecb5b57a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Copper Coin.png",
+      "sha256": "8d940188c0a7034e71537f3a225a51ececf26c15abbbc300a521babb5e13b895",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Crate.png",
+      "sha256": "768d4814ec3c5128dbae7d0cbe743c800c909d567f0056d6ed9718194c29728f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Envolop.png",
+      "sha256": "98823bcf00fc03c3b34fc78ee57d1f3df6a9d65603d0df67a506c504cc1b57c0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Gear.png",
+      "sha256": "b0027f60f9bc2b4de792daff7a7af7d0ee20778a45c94bf2db8db65e2ed66e81",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Golden Coin.png",
+      "sha256": "b896a7698e66f169648d185f99ca426264759c5261a8a88b11c9bb4c4a80859b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Golden Key.png",
+      "sha256": "d07c475374db70c9d17ab5c71c597a75e0b94e79ffdd31e1dbe5ac1b6a7373c1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Heart.png",
+      "sha256": "b8896e667437b7c1e6127c77c1dc8f4dc05f58089e8a7cfc92b26b18540ec817",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Iron Key.png",
+      "sha256": "af6733abc131143d0fe7d70725176f461728d2914b3dd2711061aa7701085782",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Lantern.png",
+      "sha256": "836e73dd35120b7cfea5cec710a05dbb0e0ed34d48b43f451e853b7369209557",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Map.png",
+      "sha256": "6f5cfab2d32548d68d791b8cfac5209a68f70d653dac5b8052b71d8af8b509a8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Rune Stone.png",
+      "sha256": "875d82e5a53dc58800d647404df53c7919b68082ac321df5ed3c04b1f51e1598",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Scroll.png",
+      "sha256": "2832dfce89c0f9fa2763a2159c1a150e082e3560cb66c9ccd134c4f4a6c47153",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Silver Coin.png",
+      "sha256": "c52345bd698e7b6bcf2b20508faa276c8eadba68679a305a80082ad42ea3f8b4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Misc/Silver Key.png",
+      "sha256": "9bdec6dbcbc46861250bc5ff3b3444e42cd5f1f33dcc86053998840959e00471",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Monster Part/Bone.png",
+      "sha256": "45412437f651fb8f3c92c2949bfac0dfdb17a0d03e6cd70a4aa1ac02509509c8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Monster Part/Egg.png",
+      "sha256": "d714b5e1b8fcd046ac5408d92def04a408d9c7bbbc96a7fcab168da9fb975f53",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Monster Part/Feather.png",
+      "sha256": "92fa70cfb943db5bb8e2d9549698706933dd3f21d6968f16409d1c5c75098ba7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Monster Part/Monster Egg.png",
+      "sha256": "0ad88298c4df8bce1f7bd0c74e73ab913ad3cf7cdb9bba7c7af0a87344eb7106",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Monster Part/Monster Eye.png",
+      "sha256": "3ecca3026f510cc9f65adf2ec9ba8f2b57fcd85756589669d08fae388648f071",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Monster Part/Monster Meat.png",
+      "sha256": "31f8a2959ce954767ecfd49439a7116ffe089d5be364e5d82cfebe93c1295862",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Monster Part/Skull.png",
+      "sha256": "7bfc03cc0b3b9264df23f198ec0362b15315192454bd43cebf5d730ed27c62bf",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Monster Part/Slime Gel.png",
+      "sha256": "5f9402a42c730104e9dcec50228300a71eda0286b307da09947753155a0a6e60",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Coal.png",
+      "sha256": "9dc373b812099664c8dcf83f7306f4c6a6cd9312e950ba0c24e27cb90335caef",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Copper Ingot.png",
+      "sha256": "2b706337d54e8ee7c360e911ec1ed857b21a49846484e786800b8e0fc26af542",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Copper Nugget.png",
+      "sha256": "61febb578298c55bb22b7f0e3e897ccc5d2cabbf1f91b12f155b52834434a35b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Crystal.png",
+      "sha256": "ca75e3c2a43cedadc52c8c25a110995ab0e6f7299c6ac0fe9da902805a9ff4b4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Cut Emerald.png",
+      "sha256": "7e04ef648a4a4b5cc9815afb973de735f5c14d23e05b64d38c91f33365ad51ba",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Cut Ruby.png",
+      "sha256": "e6f07c4dfb6079379fd8e51b6ac68fe719746391aaef0b10a2dd782b2d887274",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Cut Sapphire.png",
+      "sha256": "669ce20030a9a334a9610383989aecf0f56f5d87da54d5f46e8932647f496f4c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Cut Topaz.png",
+      "sha256": "4a85798bf0e8cb45fa7bf4e038eec40e0573aa2a6f3fd1e0fdc5d2d6b6f7d1aa",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Diamond.png",
+      "sha256": "5002f86764f93e9197889f0ef0e5d10cac8750f11ef7688f6a5b7c47adf3d1d3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Emerald.png",
+      "sha256": "d923454a87bca86fa44615ec1021f58e388b20f168bc9bc6ac18086a54480bd0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Gold Nugget.png",
+      "sha256": "3e80999fc8a204f83626839418177efac086c3b806445c677e12820c92fe9dc6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Golden Ingot.png",
+      "sha256": "06c3cbc0eef55016585f3cf47ecc1e3fae9b71f75896e138f4e5306b769ad582",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Obsidian.png",
+      "sha256": "d8a80e74824ef31c0eb9d057cc8a3a8ebf1ff2616cb2563892d6faf4c319d954",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Pearl.png",
+      "sha256": "65bbdb7f7974dfd642c2d6e7e5b7d9b7b683a7b0177663761acb12dc26ce7bfc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Ruby.png",
+      "sha256": "407ee8a8045ce0aca90975566a3d013cf9b952e1ce3f0dd5077e8941bb7ba94c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Sapphire.png",
+      "sha256": "7d6bac248b199f6745b0da68e19a0017c2d364d910447d8801cb45d6b57b1133",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Silver Ingot.png",
+      "sha256": "953bc5ddbd3eebe8ff88e75682fabf47b86c3c652c668318edaca9eaffe79a44",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Silver Nugget.png",
+      "sha256": "ee6f97a4a2a695ec2bd2f15968645bdd282ba3bfc0f2a4dd7a3fde01481443ca",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Ore & Gem/Topaz.png",
+      "sha256": "241390d21d95b71abb25ca224af21340badababb5368e4534bc7fb537e6c747b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Potion/Blue Potion 2.png",
+      "sha256": "b32844ff9b7e5b55651ee77664fe88a62c0636ce0c2090ff07aeb4540e881155",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Potion/Blue Potion 3.png",
+      "sha256": "40cd03a71e5a0cabc3c1b0f955887f23f4f9baca8f32790dc6fffcde973ccf20",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Potion/Blue Potion.png",
+      "sha256": "909cc5ee60f00c36742140bda2ea7272073a54f6fb85512e5c1027963d06e01a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Potion/Empty Bottle.png",
+      "sha256": "e4ad9e1b1f83ff5ef2fd88abff5d7ef4868599a95a94f279d0fc117f54e4caf9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Potion/Green Potion 2.png",
+      "sha256": "55f6918f2b0588e9352912e319058eeda43ae590180cf7f51a68d1cbd9181d92",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Potion/Green Potion 3.png",
+      "sha256": "92e03233c7b803995a979d656da117e61ed5748886208f3eaa0675be719ca314",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Potion/Green Potion.png",
+      "sha256": "3af503d3887830281d4773d7530bca6f839ca99ddaeeba7ab53e0901ec1cac97",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Potion/Red Potion 2.png",
+      "sha256": "a67d517a444eab7f59c284bef0d67da1f82ff2c086a49870bf50396041d4f0ea",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Potion/Red Potion 3.png",
+      "sha256": "b7c7482cee7b273e46ac186e67c84d23dfc84b010a2c6d8a8d4b2b69c1ea5dd6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Potion/Red Potion.png",
+      "sha256": "9d92528e7e7cf3393b330f50fb0db9fb57f50d134836d8fc09aae48f870ff5a0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Potion/Water Bottle.png",
+      "sha256": "a2d5f40addbfffdc9215ddd52dbd9b9df6610946ee062e4283cbbd0d7e51e019",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Arrow.png",
+      "sha256": "373a439637bb123c8c41f300b8f865cf164d2b142418625931955377e6862ff2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Axe.png",
+      "sha256": "5578efa3ae44b4ec1543fe1d37e6ecc5298ac5f3dc92b8c4fd4cd9bda8673cc2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Bow.png",
+      "sha256": "073219f7a884366309660a0c7316da152149356b0d6e95bd2d1dcb605fec6a3a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Emerald Staff.png",
+      "sha256": "adfde4f8cd6912fbb58b3897f9977e37595b18fd126f664a42ed8b3e5999a67e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Golden Sword.png",
+      "sha256": "a1111981f2d22979b7e1cd8abca4174d0d1095747ce60ec588ca24948f0c10fd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Hammer.png",
+      "sha256": "a7f0e5c9662b43c3d32eedfbd02e06419ed44c733fd369335471ecb0dd24c804",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Iron Shield.png",
+      "sha256": "a9cd601fb1966169e3e52db7ba4055786900826dc8acfb9a0b1e766bd8c934c6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Iron Sword.png",
+      "sha256": "bd1dfbf77a21db97283172b2c7a9d586854895e0236a0c2fb3ec52397814c65a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Knife.png",
+      "sha256": "961af76e1027d6b0de71275d254f7e1d56bbb50f664174837542f302498c96d5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Magic Wand.png",
+      "sha256": "e09102892d304bf01b448aa7648e4024282846c87ed4987300a4f409b9ec745b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Pickaxe.png",
+      "sha256": "4cbd948c2e6aadea9131dfc5f601ba244fb744c76909857dc3e48bf7a05aaa70",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Ruby Staff.png",
+      "sha256": "9d0d8bd3d8375ebcbb882cc6428b0f8140cc7a2866684964c5ee9454f9991b43",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Sapphire Staff.png",
+      "sha256": "68d6881f4ef05720962c66518a3bac72b7a40d877adc9748f88353dd63d77ed2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Shovel.png",
+      "sha256": "93d3b1f0f8cfa5580a589e365c559e4700dc51846aa79123eabfe82dc3c27feb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Silver Sword.png",
+      "sha256": "8361e406213c07f600b66c818797d81bd1fa2c34691a4dcf76a98754d7e5ffdc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Topaz Staff.png",
+      "sha256": "d05ccadff5fa96f8356f1cadc599e953c468d6b46e1ca1bf3f771f0c4fffb461",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Torch.png",
+      "sha256": "71edf792efaebe8f8641bb7b443e00adb12f4c501d37f36ca6380158e7e7e3b5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Wooden Shield.png",
+      "sha256": "87d25f7638cbe52204ead2a321799a92c3d2c65033a315ec8ab0ee4bf32b937f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Wooden Staff.png",
+      "sha256": "f305e379f9f57fdef326b1b6d3f990525bad92499196e27947d123585c9aa465",
+      "imports": []
+    },
+    {
+      "path": "sprites/Pixel Art Icon Pack - RPG/Weapon & Tool/Wooden Sword.png",
+      "sha256": "60ec7b81a8cc0caea41b71e6494aeebff5be638385f5ecf64920498fd4d960c2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Black Buildings/Archery.png",
+      "sha256": "29644d4f9fb553b66315070b304c08b5fa6a8a53f9eb0acb541a3be483b0f66e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Black Buildings/Barracks.png",
+      "sha256": "491d6b8c6a0c1303a5f51f316bb89e3e65241ec990fad0bf40badceee48a22ff",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Black Buildings/Castle.png",
+      "sha256": "6d5f01f6043b591a9ea8adba619739a08d65b6a7ee69d5d002d8003ccad79e5c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Black Buildings/House1.png",
+      "sha256": "44a633b8b3f5f56b80ae8d35af86e002f1833b23a155d93f491aeb62ea22ac5f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Black Buildings/House2.png",
+      "sha256": "69642d136c151a9e80507b8674709f25c193bf5e9263e3cc3a14c8d776c66a15",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Black Buildings/House3.png",
+      "sha256": "aa03a42cf2137e584e630e079421da65e434bde38447a96bcd529842d3662fb7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Black Buildings/Monastery.png",
+      "sha256": "0f718eceb95aaa3382257340fa9c19bb876e91b9eb4eda1e79da0a43828ecf9b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Black Buildings/Tower.png",
+      "sha256": "53ac8b0faca703ade06a45a95e5a81a9b8fe5971052c774f3617438d4ae546b9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Blue Buildings/Archery.png",
+      "sha256": "04880ff5af0965f66777e87d4229782f2090233da79f08170cf9240eda3881d9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Blue Buildings/Barracks.png",
+      "sha256": "8d4658300cbab598ad9a18855c48305935a95870259bbcf8d25bf2ab00f613b4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Blue Buildings/Castle.png",
+      "sha256": "a4ec9de93fbe416359043cc6b58a32119b08c7623ef2e09b3aef9d3adf439c1b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Blue Buildings/House1.png",
+      "sha256": "f68fbce236ca663e2c1d86484f4617586bc99f4f9b634c493e62fa7eeece5c63",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Blue Buildings/House2.png",
+      "sha256": "21e35d4d47e778c996cc56d95170908f663ca8858f08a6f8637fa15c1236448f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Blue Buildings/House3.png",
+      "sha256": "e2be60c4202ceffb55a6d06851ab6b08ffb530867e64da19ae578b09d18097fd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Blue Buildings/Monastery.png",
+      "sha256": "19ceee020215c572f9365f27ee5bd35cd52e17f796d81b082f16206e0ea7da5c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Blue Buildings/Tower.png",
+      "sha256": "ac0f01128d951c9da4cfe811af175a35868b6d91cdda04fabbe9dcf909caf868",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Purple Buildings/Archery.png",
+      "sha256": "e2c4e95d15ef4aa98ba3b681d68d62df97d8ec98b60127b8b0bd7449ea8e977a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Purple Buildings/Barracks.png",
+      "sha256": "abb52113385947ecf6f238bc53019a921e63f32cc326883a1d0b5cc4b2dc7187",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Purple Buildings/Castle.png",
+      "sha256": "d143c1dcb1f7c1abaa53d9a4d7f931ba17e253758a4043bfaf78793c3bf70aa5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Purple Buildings/House1.png",
+      "sha256": "b03a588837c9afda4e896a46cb512687a3419cb3a275fae3cd28d05967b16e02",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Purple Buildings/House2.png",
+      "sha256": "ee88b3ec9887926c7effcad0d76b94a99d2c5260a6d8a78e55b9b6a6ac94c2bd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Purple Buildings/House3.png",
+      "sha256": "f3467d894ae0ec7dab10d31c62d2b9c98bc4ca34ea05af7cc36d84397feaada1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Purple Buildings/Monastery.png",
+      "sha256": "0ce919a31c410391639b79747c4dbaf4dccf400f69353349caefe429895e0226",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Purple Buildings/Tower.png",
+      "sha256": "b846b348b992c0716e4926c506e31a03d375ba0250e7c0eae0f340fca0e81687",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Red Buildings/Archery.png",
+      "sha256": "d53be15534b39d339399c1339142f7776354a7d331faf76ec6bbccb677ca1d5e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Red Buildings/Barracks.png",
+      "sha256": "a67c62165be8447e5684a972eec6f299b378fd048b2cca1175eed311a455e8c9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Red Buildings/Castle.png",
+      "sha256": "8a78ece6e3fd7939b259aa8431b20993a096a769878757a76cd24005d245a78f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Red Buildings/House1.png",
+      "sha256": "c72282dfe66f511e485b433ca4dc92cd5579cbf52809abd2a3a594833b91e8b6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Red Buildings/House2.png",
+      "sha256": "963e5767b79ef4f933a121d68257ac967679ada87973d8eac62ea413c00289c2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Red Buildings/House3.png",
+      "sha256": "b60e2b9fbfd8b42d4215d88347ed136a3b508b81c39c136c32b16b612938a6b5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Red Buildings/Monastery.png",
+      "sha256": "7ebe8c5e85054b4cdde8dccea811a2f9691afab36a5ff651818d96bb882ab26a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Red Buildings/Tower.png",
+      "sha256": "58bcd35d471bbbf2e219036234a9d1837c0240e1dcfcb4b78876819cb5134233",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Yellow Buildings/Archery.png",
+      "sha256": "d2b4eb93366b245b806c9cc88c5aabe0b3de49a26baf03df5cdf80ae09085de7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Yellow Buildings/Barracks.png",
+      "sha256": "d09e0b68ca5d1a9334e3f05c2c6beef44c4eb6f1535a3ce8a14797178ec53ef3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Yellow Buildings/Castle.png",
+      "sha256": "fda392c6e87fc0482ee59fe4118675bea12a636fcac319c9f8305da2ef355377",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Yellow Buildings/House1.png",
+      "sha256": "4ec1c191a640370df8b08833de6af6b1d6c9397fae7b7f9319e31281a58779e4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Yellow Buildings/House2.png",
+      "sha256": "5bf904d334bf4e50fac0d1676df3228a27685e0551b975ce4f4e210a6195c624",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Yellow Buildings/House3.png",
+      "sha256": "608f9eea28db2935fe850aac2f9070d707c64eb2490641aac8e6a6c95b518db8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Yellow Buildings/Monastery.png",
+      "sha256": "3510bf6f86a8d6c1da7f07b93f991ed6daf901c75d10c4d6b5aa6423afc4c5de",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Buildings/Yellow Buildings/Tower.png",
+      "sha256": "5c63dc9dccdb4bd1f70019fc32f488685ea4019f9ddfd08b5e7715d6b8f95da9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/01.png",
+      "sha256": "aae1d14745a5886b3217498f3ad1f8c0a82f3f1dc644ac2efd25c3f36f90eae7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/02.png",
+      "sha256": "7adc58201b1db819ff18957eeacf044f4551beb5be09725587d8293cc2876d5a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/03.png",
+      "sha256": "5afe95e862aaa047064a1b189f19d97cf10363db4d4953218d4c4e8a44ee3838",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/04.png",
+      "sha256": "e4a6132577721eb8837cc23fe5e25644c4d866da24c5e663fce58d86f4638f53",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/05.png",
+      "sha256": "f51cf8d4647febc196a4b5e7afc80badaf50c76bf6309e548e11ffb1898ecb79",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/06.png",
+      "sha256": "edc4335ad52060a562b21fef868c64576d33b96a6a97ac5ba1448b6fb0a939c1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/07.png",
+      "sha256": "fae1719e2b2de9bd708598cdd2a0d0a5ca09aa88630dc6b52a80957f6a465d31",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/08.png",
+      "sha256": "f94b5fa5aac1b62b58d9389c5524bebd0d99a4193749e41a505642bde965a6a8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/09.png",
+      "sha256": "fa07501a73b22ae6d96297dfc5d8dad81791afe8751b8a40fb6ced4dfe45c3d5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/10.png",
+      "sha256": "68f57683bc1f512d34fc0107c6b4fb33904a3298295df09f3a2d4a05e977821b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/11.png",
+      "sha256": "26a7592cbc3ac76b63a871cd40261c45728eca9c520a39000f1f2cdc5bfda7fd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/12.png",
+      "sha256": "54d6fce705950699ae4752df20e9a0019571c155ad13f4f7bee2eb558f0eb233",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/13.png",
+      "sha256": "9a7ef9a9695aba24dd43d3bbf97e7f0c67b10f61e3bba8ebf69ba2aefe5628d5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/14.png",
+      "sha256": "4515949922edc5533e07e60cf6b7212028e96aba3f5dcff89f2db9ea24a720c1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/15.png",
+      "sha256": "d09c7ef588b00cdbdc9e6d5239a6cb45804828410f4c50019f92a11f6472f376",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/16.png",
+      "sha256": "bbf9170c41a2bd10f4e10942407f9c90c3a4f338f5fe454a4cc7fa0b287fafef",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/17.png",
+      "sha256": "c3da63203ae56798b0188fc09c376bdb7ea6de74a8c1930c4ec6f7d02b5881ac",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Deco/18.png",
+      "sha256": "8ef2e9479438091df9622dd4aa4f943b2454916fadc7975cfa1f39d30231eb68",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Effects/Explosion/Explosions.aseprite",
+      "sha256": "b98ac25dd33266db34baceb18e522d3edfc09ce10c2e7106267e1b1333225a91",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Effects/Explosion/Explosions.png",
+      "sha256": "fa3bcfbf05c3c1cef0e5f06976e2431c24c4ad05cdd71d7242e0b436f4e5ec8e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Effects/Fire/Fire.aseprite",
+      "sha256": "d556643c76e0cb7d04cca7cd65944f53f43adbfdac6b597b7552b018a92e7d37",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Effects/Fire/Fire.png",
+      "sha256": "0ed74320a434cbe7503a03f51b8dce87ae1757c41020f2c98a74c21a0e96458c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_House/Goblin_House.png",
+      "sha256": "5e25c872df37f63e4432230e9c5d762b4de2f34956799d1127cce1963f60e1a9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_House/Goblin_House_Destroyed.png",
+      "sha256": "75998fbb9dff099c55410bf1cd3a7e0eeb61b0d309942beccdf56a5a756b7c62",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_Tower/Wood_Tower_Blue.aseprite",
+      "sha256": "543bbe14ee0d536fceba834b83964bd0e2e8a1433175f4880d4a21afead52205",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_Tower/Wood_Tower_Blue.png",
+      "sha256": "c22c288b5bb4f43eeb3054389642dda0d5a7c7bde0f79f15b0ea94282b3818a8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_Tower/Wood_Tower_Destroyed.png",
+      "sha256": "beca37f966313c58310cb4475688494ac2f54dfd056051a6dc74e607c01359d7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_Tower/Wood_Tower_InConstruction.png",
+      "sha256": "349a2b5a33226d59c2408263f94e29bb341065ef916d972fc4ea314f4b6b1c15",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_Tower/Wood_Tower_Purple.aseprite",
+      "sha256": "4dcddb89a4e7e938b67d915fd4593496d35bc18dcb4e2ac69e23bdb870582deb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_Tower/Wood_Tower_Purple.png",
+      "sha256": "6100ea7a48c46f232db8ae988177832e4d565d08c8b254fd98b6055f80a2ea4a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_Tower/Wood_Tower_Red.aseprite",
+      "sha256": "ff6c07969049aa3b63d5c7cbe33e1bcb9e67932d581378ac9ade8958d99dbdb2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_Tower/Wood_Tower_Red.png",
+      "sha256": "4e422cfd3a0975ef16763839810ff5c14c38d10aedf84e0a035e7a7e139e59cc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_Tower/Wood_Tower_Yellow.aseprite",
+      "sha256": "d2038b6b417280cb4e09e609d3dd5c664d5a183d6619f0c231490920051419ad",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Buildings/Wood_Tower/Wood_Tower_Yellow.png",
+      "sha256": "6d502fd489fa3c98148fc20a2e80269ae764e6c8a3a32015a7f14acdf0c07c16",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Barrel/Blue/Barrel_Blue.aseprite",
+      "sha256": "f9142bdbd7f765011b7709576ba41e802d450a6159c2ed37003799c3dcaf05af",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Barrel/Blue/Barrel_Blue.png",
+      "sha256": "3b3cfe424d8189c4f998874c5e9f016aa93ffc849cd7adb76ccd60a4867b8c4a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Barrel/Purple/Barrel_Purple.aseprite",
+      "sha256": "90384941481843de07b0125be30027999dcf6e9a78621c7e7202032831e9c9ae",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Barrel/Purple/Barrel_Purple.png",
+      "sha256": "d3a2bb8ae239951f7d72c403cbfbadc59a1ab90b90b4f5f42c036e88c2230ce0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Barrel/Red/Barrel_Red.aseprite",
+      "sha256": "fb71bc19e3347b0eef8e12983742c13c20107ebb61ae6c56cb7c6295c3648510",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Barrel/Red/Barrel_Red.png",
+      "sha256": "cca36684f2c8f81afc4d3f58bca01f0993f1297d737caafdad486d3de579e4d4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Barrel/Yellow/Barrel_Yellow.aseprite",
+      "sha256": "d0bd9980faa46d82aacaf0f821ca60f7f4e23a87bbc546f8c38a7636736ca011",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Barrel/Yellow/Barrel_Yellow.png",
+      "sha256": "b87b22a7a39b582b989ea526c8174d5a46fd6eca902307011d3dca5b1866c6f3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/TNT/Blue/TNT_Blue.aseprite",
+      "sha256": "f147df731a9e3796444a35ac4a09da5b17498f62a90dba8a8a4f1199e99364a3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/TNT/Blue/TNT_Blue.png",
+      "sha256": "0a36ee5235a45fc305136a65ea836637fe93209655b9d154a7dacbebc412574c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/TNT/Dynamite/Dynamite.png",
+      "sha256": "5cfc3d6fa12655cd05a2562065993eb5c7ce85c685589490eab92faee189a5b5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/TNT/Purple/TNT_Purple.aseprite",
+      "sha256": "e37a6a4428aade29102b3740e87cddd321d20d2716de3b8ebf375bf59b8a95c8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/TNT/Purple/TNT_Purple.png",
+      "sha256": "e42efc0ca6aa4907ccf36b320ff70ce4d31dabe1a2fee472fc5558766adfe46a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/TNT/Red/TNT_Red.aseprite",
+      "sha256": "41400797d52db672445f43421cae2dc8be959c9d80598dbc59958d6c38bdd676",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/TNT/Red/TNT_Red.png",
+      "sha256": "fcf80953138170e9ea3ea9b93e6007869c7f1dd05ee51034429d92c54e0b0f66",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/TNT/Yellow/TNT_Yellow.aseprite",
+      "sha256": "abdd67856daf10bfe1f658a6f26b08141549ef3eca9d85c0fe0ec60803ffc7cb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/TNT/Yellow/TNT_Yellow.png",
+      "sha256": "59741345199a16d20a04fc06f643cea0ef253f1041c6fef9b70d6376515f98e3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Torch/Blue/Torch_Blue.aseprite",
+      "sha256": "f3455a9162b6204e5335619a563b73af06e78e8b70983aa8733434c80c09d4cb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Torch/Blue/Torch_Blue.png",
+      "sha256": "8be105dfb696767a447402258eeb1d8a95ee89b444fce83a003e7b654933f448",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Torch/Purple/Torch_Purple.aseprite",
+      "sha256": "bba645f99643cc7f0e75628e0c17f416412c677d1ddc04c6e51a618959f8a539",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Torch/Purple/Torch_Purple.png",
+      "sha256": "9f19a5a789ad5df29b37ef60e6c3111b0c4118e89515e337ffb44052e6a2691a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Torch/Red/Torch_Red.aseprite",
+      "sha256": "f316b67f59becae1aaba3cb1adfa02bb0bbf8b534cd422932b857d673759268b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Torch/Red/Torch_Red.png",
+      "sha256": "0612b50e25f5b5fe97600693ceca88be5244a54049cce9eb5f7a8ded437f00a6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Torch/Yellow/Torch_Yellow.aseprite",
+      "sha256": "0943b69b7015f20fb523ffc9f6ed02ae0ffe824bba080f5230c116c203eeb5ae",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Goblins/Troops/Torch/Yellow/Torch_Yellow.png",
+      "sha256": "5d57fa095feb61270cf84bfbd5d3fb3bc6493be9bef7dda4a7ea233803d33768",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Castle/Castle_Blue.png",
+      "sha256": "616cfeec6287ede0b368a14332afc9ac34462dee5bb3f5a8f7595464c8b2ca53",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Castle/Castle_Construction.png",
+      "sha256": "3850894fa86cfd08fe94834d9da764c7ff426ae6e17ccf2c6295224225d76def",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Castle/Castle_Destroyed.png",
+      "sha256": "bdfb6452c3e16bd22ad4d36d8808063f124dadb8c00c84376e425d6f62f0027e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Castle/Castle_Purple.png",
+      "sha256": "254d88e095d1173ce18c01a6aed304101013adbd49d7276a9234114f6759389c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Castle/Castle_Red.png",
+      "sha256": "b64221f532aa3f6ec1074a5e0f36e9c3337a370f62ce366d6872535d7940b771",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Castle/Castle_Yellow.png",
+      "sha256": "f9bdf2a7a396ac3ff55241302405ed3c67f5ffbf2ef542e770dfb9e86f5113d6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/House/House_Blue.png",
+      "sha256": "9020e35116ffde6d22a8c854d7117d94e99e19bd582c3c3855ece449d7d2af6d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/House/House_Construction.png",
+      "sha256": "0718972905f8fdb47e1db7b80ccc6be4cc73f4d62e273cebafce09ff46990c69",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/House/House_Destroyed.png",
+      "sha256": "f7a1baca074726848449ca78d437e236ea989121c61aac413b74e6f3896e7441",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/House/House_Purple.png",
+      "sha256": "73fa8a851020814151b6d037cb0673adfcc0b1a515af74c78f79a8bd8e3ecb64",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/House/House_Red.png",
+      "sha256": "27f027830c1b5499d99075e87c1ea5f5c26bf49ecfd6ada758ceb5da2d7b058e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/House/House_Yellow.png",
+      "sha256": "2aa6fd3259755fdc2cb2cf856920dab098aa6d8493e9277b11685f4689aec4b8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Tower/Tower_Blue.png",
+      "sha256": "2d39450c366fc1ebc0e5a290a860dcf21ebd7d4a22d16eb5cca23e6d4de94ca9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Tower/Tower_Construction.png",
+      "sha256": "e4975c74fcf9874b5298ced752f79dca4c116c4f8a2a22784e0b8985ee81c905",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Tower/Tower_Destroyed.png",
+      "sha256": "e92d9ac401698e22171fd054ddcd9ce2f2b41cb5ad171e2a18c92ab511245a70",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Tower/Tower_Purple.png",
+      "sha256": "e90a2c082dfa5300d977513d89f6200196e722b07233d01af401aa0e69ceae3b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Tower/Tower_Red.png",
+      "sha256": "bec8cffab0b56b42345c754132b9ab911ae02b9f59d5413b91a1cdf41296083a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Buildings/Tower/Tower_Yellow.png",
+      "sha256": "5b216a1cb209482bbcfd8793669f283621147ae96e6ff45532629ffc27b25fff",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Archer + Bow.zip",
+      "sha256": "9108c53df1e60baa0ea7c4c56eb0f9a1d6183ff59cfa7ec53bb2b99c54f97558",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Archer + Bow/Archer_Blue_(NoArms).png",
+      "sha256": "99ee660549ea043351bf8cbccdd12e7da730c801589318fd282566c6d5a8653a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Archer + Bow/Archer_Bow_Blue.png",
+      "sha256": "091de185738fa511205be619022b8e1d650f4d97494358b6d128a91ef2faa9e0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Archer + Bow/Archer_Bow_Purple.png",
+      "sha256": "47df4424f536ed4583b4b7204628afbd0f690edf069cf0e8dc8c84c8548a976c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Archer + Bow/Archer_Bow_Red.png",
+      "sha256": "e5213e02abb811355f37d03728a4a411c6c3853e6f29e036d1a0427a3dd1e3a8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Archer + Bow/Archer_Bow_Yellow.png",
+      "sha256": "3b24b34f1f7c4e8cb3a340970bd17290313c24b4bc8375ad5a75b0ed2020990c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Archer + Bow/Archer_Purple_(NoArms).png",
+      "sha256": "b7dffa7c1cbe67eb012133c470e29b1acdd6bafa14d1a9cfa265f261912e0afc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Archer + Bow/Archer_Red_(NoArms).png",
+      "sha256": "c790a72574a879950e9bd5580cc13f4f1f211c42ef6dab1584722fc722a5b4b6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Archer + Bow/Archer_Yellow_(NoArms).png",
+      "sha256": "cb83330fb84352791c302308cf3b56ac17f04de7976df245ae0e3e502bf67155",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Arrow/Arrow.png",
+      "sha256": "ba35a379a56693fe997a30d7ed6a49add03f10876d98abf5a89889f08ba9af74",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Blue/Archer_Blue.aseprite",
+      "sha256": "2804eda87a262e5f1ffa238135858ccb5b8f6f63597ae90ff71f0654adbaf84c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Blue/Archer_Blue.png",
+      "sha256": "0a2e1efff6d653d32777b99ca01f9018fbf27080f2aff645f0fafde175e8b7ec",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Purple/Archer_Purlple.aseprite",
+      "sha256": "333b3d8688e455c84145fc53a64090c3a354e6885651cea1b05d88b078b5878f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Purple/Archer_Purlple.png",
+      "sha256": "f956a4c6d834b21a74e04a9f0a8d0e432f6e64441836f97cfca498f10854c3f7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Red/Archer_Red.aseprite",
+      "sha256": "13b386575911b8b1a73f014de3cc0bff51144fd1c2fde84555028203e5136493",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Red/Archer_Red.png",
+      "sha256": "daa79d0f957dea7355b6ff5c6210e833779bd7ef40c32c1943f03b9aaa12a26d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Yellow/Archer_Yellow.aseprite",
+      "sha256": "c3e2ad7cf552b1aec0473f91c66199dd5d43fd7084714a2a4d072033c96f0542",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Archer/Yellow/Archer_Yellow.png",
+      "sha256": "104159e53f3ee28903b3b0b91ea31229f101fbe6842a28a0fdd6eaa2e5afcc4f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Dead/Dead.aseprite",
+      "sha256": "b1a8665b322a7457202ccb1685a7262d777c3ed4353f681d3609a6f22743dfb0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Dead/Dead.png",
+      "sha256": "2b621f86ef18fd92e4c4cc1718cc091fe62e2334d8ea54632eed7cb2995ef1fe",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Pawn/Blue/Pawn_Blue.aseprite",
+      "sha256": "07a56ea6d6c29f7e8e7a1944c6a88a762b1deaaef6ecc991a438d4163960a2c7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Pawn/Blue/Pawn_Blue.png",
+      "sha256": "38c47fc4766fa1fad73c188e5c6a1f2d2257aebc9dfdd5b37f1c8dad913e8cfe",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Pawn/Purple/Pawn_Purple.aseprite",
+      "sha256": "117331c79692252083e7c4872202a72c4163576d4548dbacd5b175ed3cd33533",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Pawn/Purple/Pawn_Purple.png",
+      "sha256": "c88b5db861d94d342b0420b8cefacb4865e49ae104af4fb934f46556d9274c12",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Pawn/Red/Pawn_Red.aseprite",
+      "sha256": "103c0b67faf0443b5eae2d005cdd0e90b56f7d9d306078507248cfe7136d8173",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Pawn/Red/Pawn_Red.png",
+      "sha256": "0d207ad590425917b71d3dc538b88d6765e76c90aa24ed5ff80c0ad842738705",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Pawn/Yellow/Pawn_Yellow.aseprite",
+      "sha256": "abd20aa350e0725c84c65a46e4dde8114223f1ca7b1cb9d470c130aa55eb78bc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Pawn/Yellow/Pawn_Yellow.png",
+      "sha256": "22cbf2126c68f61a3a359d0d19d45f8fdaa24700d2b9492c9b17f03977405d1f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Warrior/Blue/Warrior_Blue.aseprite",
+      "sha256": "9aa02da61d5f6ee64c29b6c595eed927ba413a5a28a187008f26962f7f337f76",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Warrior/Blue/Warrior_Blue.png",
+      "sha256": "593a40da14b136374d55044fd3ba3ac11e621d645be9c75a2a6032741ab24c80",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Warrior/Purple/Warrior_Purple.aseprite",
+      "sha256": "721655fcf57c05ecd6fc7db58634dc1bdca8983a7666a913c7487388816c8662",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Warrior/Purple/Warrior_Purple.png",
+      "sha256": "779f5fa986fe15736d5b1deec5958a07340644a163ab208714f5a43792fd662d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Warrior/Red/Warrior_Red.aseprite",
+      "sha256": "e936321226d244bc26cfe801a300a6ccd9f732b62ee8ac9c24b8f9b67ad4a01a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Warrior/Red/Warrior_Red.png",
+      "sha256": "a1f67ed61134a20df6211e1e9fff1c33e9964512fddf4ccdb3c1673752b9bc14",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.aseprite",
+      "sha256": "b264ce320ee0cbea9dc2ff7b08be2426dcc3614be7414d34bed4a125ece2f6f4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Factions/Knights/Troops/Warrior/Yellow/Warrior_Yellow.png",
+      "sha256": "85902914cb921cc7c6eb728eb9c1d34a710ce8e4a66ae8d537e5fcc64ca54e64",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Particle FX/Dust_01.png",
+      "sha256": "32715925b71d3a43ab5495de47725849a3dab8fca57f0993e139e2278db9f856",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Particle FX/Dust_02.png",
+      "sha256": "d65da2c97e6b1413c35deecb7f7d91c7b791efde6948171a56fd560e9e2af798",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Particle FX/Explosion_01.png",
+      "sha256": "2753ea93daf727590df7c8a0e7c5759ada6ed185b63dee037de317ace9530509",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Particle FX/Explosion_02.png",
+      "sha256": "b82e686e3c8025ebb868c75686fee62605dea7e899d7a5078b0af084a46cd5b8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Particle FX/Fire_01.png",
+      "sha256": "0856990d6216260df7f6c9b422b9128bd242e35baaebb1ae2f2955fc336696b5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Particle FX/Fire_02.png",
+      "sha256": "46396ab9c5e52c2120e725e9bae8f8f9628c23c766432098a699f5f6cbd4f0fc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Particle FX/Fire_03.png",
+      "sha256": "5b9f567381882bd4082f5a5ebae65d91e63f2d33417ea55ea7cf67e528ed1cce",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Particle FX/Particle FX.aseprite",
+      "sha256": "07427787ca935c68013e4f47be48f379dd89878b04cdb19d1919a3724e18f23b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Particle FX/Water Splash.png",
+      "sha256": "06743825027d551231a6de5aa700708eab5dc61dbd785314c80785ad595d7680",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Gold Mine/GoldMine_Active.png",
+      "sha256": "c5205d8181d488adce612f8cf5b1546d4bd793d0ab1dd2956aa86d22c861d37f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Gold Mine/GoldMine_Destroyed.png",
+      "sha256": "b567b295530bf75e984bdcbfc8cf89320d3cb324b55efe15fa458af17ed652ee",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Gold Mine/GoldMine_Inactive.png",
+      "sha256": "83b6d5d74b84c565950f01b325bd93b0517ac6c19e719921095b71628065270a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Resources/G_Idle.png",
+      "sha256": "ee9a2018e179b95839105d0b6d39725f22ae57e28d73532421fb1994c4b4de78",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Resources/G_Idle_(NoShadow).png",
+      "sha256": "e0815b6545ad3cc557d69f55f980b4728902be4cc6c73dfffa9bd098bff63237",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Resources/G_Spawn.png",
+      "sha256": "c631caee640977312839cf533c5c48b20011ae826b2b64f8c1c1cd39a5e7d277",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Resources/M_Idle.png",
+      "sha256": "5c7b717272597e383fa05eb2010f5a7fe8e42a5f8643543c56640a3d42bd6b33",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Resources/M_Idle_(NoShadow).png",
+      "sha256": "a03dd515684c58bb1ca8a2836049e9b4ad67bc04a53ccb20121d127ba3fb2e81",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Resources/M_Spawn.png",
+      "sha256": "1d86e71839a4c688bc1be59537fbe05c6fdb7dfe6bc868e5f0c4b3a32ca003d5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Resources/Resources.aseprite",
+      "sha256": "a1bef0c02ada8c6f8081b5ea175034a596fa29adfb7bab9a94ff34a6bba3a5db",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Resources/W_Idle.png",
+      "sha256": "23738d5fe80f20eb8320fa00925193d747067b537106289ac024d09c73b71999",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Resources/W_Idle_(NoShadow).png",
+      "sha256": "2e9347257ca2846adfd6349c471d208b341be695645417c0e6ad7a59d45d0015",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Resources/W_Spawn.png",
+      "sha256": "36b0b90b92784e6eff41a54f88fb45829eb923e3a5f60c8e1fd479354dabbf8a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Sheep/HappySheep_All.png",
+      "sha256": "1bc76e575da5b3071329087586bb7bf83cea6b6fd6c22963437a8f8319b21371",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Sheep/HappySheep_Bouncing.png",
+      "sha256": "45af7995c505f9e2ff32456bbf90b6ec69ac9e51d4e6a80f31e2f41618d93ff0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Sheep/HappySheep_Idle.png",
+      "sha256": "ed5ead99086725adf5268e950a24cced9ed14530d641dba6326933986bfd869e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Sheep/Happy_Sheep.aseprite",
+      "sha256": "01907a3a97fdcc6fd819a406b41b1d50860c8f7204ba70fc28440a91ed8e8656",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Trees/Tree.aseprite",
+      "sha256": "9e7f0a735783acbf27710c48c847582b6ac271f2b4df783455bf867b8823d294",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Resources/Trees/Tree.png",
+      "sha256": "63a1ae03991621528eab44d0840a75a923583a7bbb999311de27799ab21b4d3e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Bridge/Bridge_All.png",
+      "sha256": "816de342b39f03eeb97bc5d8837ece9d9fcc1936110207158b3ba01a1db3c95f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Bushes/Bushe1.png",
+      "sha256": "38ea6583e856d4670ce43b843aaa3ef3e675b351b02353118f04b01ba3daa4eb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Bushes/Bushe2.png",
+      "sha256": "34b4312fe94ec9e8783e8782cfda26c172878155f5002727c53bc77f9a3a4ad6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Bushes/Bushe3.png",
+      "sha256": "273a528e5400257fabfa5146eee4ecdca526f2fa7ef0803382439c785886d3df",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Bushes/Bushe4.png",
+      "sha256": "b5334fb3d9cc49e46b9553a8d6c197618d88ebefa025e849f31b05503684b5e5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Bushes/Bushes.aseprite",
+      "sha256": "7e2fc49d0ee550d95cb7badc8c9d4801fb060f1511324760f38c72253849d00f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Clouds/Clouds.aseprite",
+      "sha256": "5d41464c532aedec64cd4245bdf5d8a8d0081e68354f301bbadfb0ae652bd63b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Clouds/Clouds_01.png",
+      "sha256": "b198c32e1223899edd87df10eb3366dc445380cfd96a7625a41ee5306a7a3c65",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Clouds/Clouds_02.png",
+      "sha256": "f299337f233a3a045363063b17a33d8f12ac44ad16830ce272bc1cf16dadb1fd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Clouds/Clouds_03.png",
+      "sha256": "bb15d1f1750e06799f7aa6f7506c7c37c7903e88c60719843b19170820b25372",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Clouds/Clouds_04.png",
+      "sha256": "01d0b801efcc31230f3fd29b9110e2b7591b04ee1bdbd014c0d6ad5c993e8b0d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Clouds/Clouds_05.png",
+      "sha256": "e94d7bf25ed9c2ad8507315cba1dcff220282feb9e0418aaaeb34c4ae46cecfe",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Clouds/Clouds_06.png",
+      "sha256": "933e7a69f6275bf67952f291dfe9768cea061ad2bc52ba74215c6d9de9c29411",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Clouds/Clouds_07.png",
+      "sha256": "6add8ef5eb3658478c1e28860a9c4acb30a97ae6199f38185629422f82ba700f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Clouds/Clouds_08.png",
+      "sha256": "862c30c9737184ae581f4a213403efacfecddeb9a714732d4ae6b9e758da9e5f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks in the Water/Water Rocks_01.aseprite",
+      "sha256": "5bd749d70db2c08c0c938702f689e148a613387a4e918cb0383657ef35188c1c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks in the Water/Water Rocks_01.png",
+      "sha256": "83d1a8925a9294c42bc421710d263718d958570006f43e6c7c65f4c7f5e115b4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks in the Water/Water Rocks_02.aseprite",
+      "sha256": "e87af8dba6bb82a1d6d542ca7cec338658ce6f54099e3494048f9f0e790c79db",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks in the Water/Water Rocks_02.png",
+      "sha256": "46514c0759f84490cb517c53236f54e7306cc57a348df3c96fb32313d2001934",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks in the Water/Water Rocks_03.aseprite",
+      "sha256": "698a2f81da54b881a54c4f0db00b60c29200e392ceb630491897c2ed3ce6eaeb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks in the Water/Water Rocks_03.png",
+      "sha256": "ad0fbdbceec0ee8ea37e545f88280fe697486e86efcdf3c4bedcf0c0cd6aeceb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks in the Water/Water Rocks_04.aseprite",
+      "sha256": "ddedf93eb52da01a014ddb3f4f62ea4164ab563cdafb978397a8427b461ad2b9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks in the Water/Water Rocks_04.png",
+      "sha256": "592bb0f38cfe92092dc4f579cda64b066da580923a17c5f3c79662f59d199a93",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks/Rock1.png",
+      "sha256": "de9f1d954577003e278bae7ee71338c76b4799c9aabf34a002219ca2c67c7c00",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks/Rock2.png",
+      "sha256": "a121425512ad1cf3a10b5731f507beed83507d2e7b5d180aa32f0d967e81299c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks/Rock3.png",
+      "sha256": "75afe7539d9fb2bff0e1eca6870e48dd0d592bcf2cc89eb929ab3a3287e7a8ef",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rocks/Rock4.png",
+      "sha256": "a1830f25a6189e5043697004dbf1bb25f0998cf4c7346278764fb1e10a5fdb01",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rubber Duck/Rubber Duck.aseprite",
+      "sha256": "93075573cc49e17201bb3e1857eb444cd4ad2225d8dda1a791d138d1edf95508",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Decorations/Rubber Duck/Rubber duck.png",
+      "sha256": "455e27d03bad4e98e4e62be1ec67c55789ee62f1af71b232eea86a64321dac46",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Ground/Shadows.png",
+      "sha256": "e6b60e7445c67f3d42f50113353e3065e790168550dd07e7e0b54b9f2a4d9eb8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Ground/Tilemap_Elevation.png",
+      "sha256": "dab562d922d81e4de500dc9e2cb480e35825e6202728b2a0825714b8885daee1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Ground/Tilemap_Flat.png",
+      "sha256": "683b4ebc6dff10d2bf6e2bd34c24d732defdc65abcb0f5b9f509655aff8bec56",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Resource/Gold Resource.aseprite",
+      "sha256": "4dc61cd9a123c6aff24d55e9d8ef6845dfa36b5acf35a89c72384addcf6cdbea",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Resource/Gold_Resource.png",
+      "sha256": "98c843763dcb7cf5832d20e1e0b77c2652027487ffd819c309cc51e60f2ad50f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Resource/Gold_Resource_Highlight.png",
+      "sha256": "8e56c1e90be22068c3b11bd1c80a6e1a1b701a31f1f7eab0fb88b7b3f05a50e5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 1.png",
+      "sha256": "df483cb036e04f1fcae32b269e2a33bdca2e4da0a5c067c4f0d44aa70140a658",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 1_Highlight.png",
+      "sha256": "865a202136357df699d7e638680aa32af43ac839e385c9a3e7beac4621c5c465",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 2.png",
+      "sha256": "e17e27f15c7d1b648d4c04b2c1a7da099d78b74430252382cdb2bfde141c9109",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 2_Highlight.png",
+      "sha256": "6d0906b9523550fab3a4b4ec38f4bee2eced649fe09d1f1e48b0447ab87bf890",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 3.png",
+      "sha256": "ce5b6ee38addde26d5c221dab63d3a1c7c827bacfc6c05f193563bddd18e183c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 3_Highlight.png",
+      "sha256": "cdab5e19aa52770f7ca0fd848c015de235d601a659efb6047a666b23b5948a29",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 4.png",
+      "sha256": "aad7535494c7d35becdb192c4e65cb7b617a9289641e5ad2782aa47bdf5b8c8e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 4_Highlight.png",
+      "sha256": "1cf96d6269e7d7caaad98c2a9910961337326c1f1d17e12b7fedb581f1b0222b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 5.png",
+      "sha256": "fd4fa60362b732d974d3ad34db8cf35ff5da5ec5807ce56292f6ae9cd1acda99",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 5_Highlight.png",
+      "sha256": "9c581c0f8bcff916568d9ca237760a573ada2726a04166ef8f472009f1a30926",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 6.png",
+      "sha256": "12553ffdcadb884d4e927f5205c1f6b681b1e1e1d91fa8761ba9b8451be88150",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stone 6_Highlight.png",
+      "sha256": "79c0385090913af9ba5b55808794e33b3d9a818ab69a5c2b665a495664781baa",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Gold/Gold Stones/Gold Stones.aseprite",
+      "sha256": "c2cd8fff9a3661155400d0739ee696c4d9df708fb839661b3a43823741045a9e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Meat/Meat Resource/Meat Resource.png",
+      "sha256": "24fd5ac60edbeeb05606f5451f1e8e84de230a2663849abb39a1b846ad212a9d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Meat/Sheep/Sheep.aseprite",
+      "sha256": "cd422ec7701ce40cf87f0fe052091246c76b872c99fb623b6b09b3ee34fa1ec4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Meat/Sheep/Sheep_Grass.png",
+      "sha256": "1a4a579eeb8d460e37a5c4188d3a428670597e89dc22aa961eb5329741b8bf22",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Meat/Sheep/Sheep_Idle.png",
+      "sha256": "ba3b743bdd5d851c0ebf195bc4e168729601d5598c0f4d9a1e39d5e0c778e14e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Meat/Sheep/Sheep_Move.png",
+      "sha256": "1cce49d0ec1ca86d8bf68f86b30f8c7462026bb2f3070acbb723779540b04cd7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Tools/Tool_01.png",
+      "sha256": "b869900566be865d8895907fbc7f33981cab2e1d6646a5158f5343bdbb637c96",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Tools/Tool_02.png",
+      "sha256": "e704a765f62abeb177ef8d4c4832505beb1702d655a846d2666a6553d2efc308",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Tools/Tool_03.png",
+      "sha256": "5c90929cc59273b98a8528e12d43700c0930bbe64aba2c88378ce028c79964b6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Tools/Tool_04.png",
+      "sha256": "e238e9c85d037dfd2fc0dd80a6bb3818546828bc9a4badd8dd5800775232e873",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Wood/Trees/Stump 1.png",
+      "sha256": "7fc1ca1a45489c5dbc9a5d47f3b6a5cd7eb2d5e0a1a9d4497a7d19379fa59ca4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Wood/Trees/Stump 2.png",
+      "sha256": "3b870fd5e164d2b7a9c9b5dd9c15936eef386c6c2adaa04c122e095d936ba0e9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Wood/Trees/Stump 3.png",
+      "sha256": "2621197d2e69e2493119a428ef5ba818fd421996c4337156699852426fbd70f6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Wood/Trees/Stump 4.png",
+      "sha256": "d7ce36460157a3879decc25ba9d3a6613b400dafd35c604d1d6075418b8c9556",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Wood/Trees/Tree1.png",
+      "sha256": "ee3f285f992842987df5aae0e07a364a7a535e78d605f6d469115559e87df7e5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Wood/Trees/Tree2.png",
+      "sha256": "62de877a4732bee98e170c1a4aac44c3bd39929205923176a4acbec812d2630a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Wood/Trees/Tree3.png",
+      "sha256": "e2317a54bb801e52f4c2fbfd4d9d91611036d7b001fe623a92b55539feddaae2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Wood/Trees/Tree4.png",
+      "sha256": "ac9094dba8939210726cbcfffec250790081e1eed998edb5e4772ed6bd31d5cc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Wood/Trees/Trees.aseprite",
+      "sha256": "efd1fe2fafc3fdf61c4586d110cb8c5b2713b2ca7ee9fc88a4bb25a34f34bea4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Resources/Wood/Wood Resource/Wood Resource.png",
+      "sha256": "f5016c0f87e75ff258973d1a65cd2ffb5983eb681ae0df0ed76ccbaf22154537",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Tileset/Shadow.png",
+      "sha256": "20094ec53d6929b18f01ea163a34955767335e4113b1c5dd33c5114a0302a27a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Tileset/Tilemap_color1.png",
+      "sha256": "3ae8f00b92b4ecd46b63b14ad4117fdda42afcf485f340724db033f0e229be8e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Tileset/Tilemap_color2.png",
+      "sha256": "b20650ee20c77dce8eb29c2ecb9822ce144367ddfbc6f9f69b18945596424a36",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Tileset/Tilemap_color3.png",
+      "sha256": "558588391e6dd91c444e6a0ce4b2f8ee0ee13e50baeb8289837a42e58b2c8f1a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Tileset/Tilemap_color4.png",
+      "sha256": "944f8fe48d87f60234a7eac9648e444bbecdabaabd0b478758ea45c882603503",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Tileset/Tilemap_color5.png",
+      "sha256": "327ac5a34d6210fbebe71db19b1be91e41950ea2ad370c4e19bb243d57e3c80b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Tileset/Water Background color.png",
+      "sha256": "5ef30a00bbff22590eabb5acabb8aca6cc415557e7ab5f60db07714f01a4dba1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Tileset/Water Foam.aseprite",
+      "sha256": "fe8e3d556a0049440457b11d6c4d0d1d44250d61a5983eed7a4a562144bb557b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Tileset/Water Foam.png",
+      "sha256": "aba91e12e08d108ce43446a269c9fb7e05b55580872152d675f8c78f72835e37",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Water/Foam/Foam.aseprite",
+      "sha256": "dcd3d1686a47753a35b39fdb67b8399d87c74923f8c00702d22de5fe88391ca7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Water/Foam/Foam.png",
+      "sha256": "eaeaab4c2211ce5babac0da55d3da096eb68ead4137a1fa060cbd93aece995c9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Water/Rocks/Rocks.aseprite",
+      "sha256": "1c4f7a1732d2124a2e9e4aa1a785f60b6d6e38fe822c65444d1cfc0235565d4a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Water/Rocks/Rocks_01.png",
+      "sha256": "56a85a84754200c9db1b20ff7f56ac20b9a65076ebdb4b60c468e38babaf66a5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Water/Rocks/Rocks_02.png",
+      "sha256": "02b5dea7d26c1b9ad5e4dcbfb952888255b466f201f38402f33075c5292a3445",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Water/Rocks/Rocks_03.png",
+      "sha256": "cb407bf96983b55356074d3de9164e1e1e8d0803bcf7f8536eaf505c0852fef0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Water/Rocks/Rocks_04.png",
+      "sha256": "7c3d7f8db1d18fe516081174b0043156d43d06e2d5c1e209218ec86949ee9216",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Terrain/Water/Water.png",
+      "sha256": "5ef30a00bbff22590eabb5acabb8aca6cc415557e7ab5f60db07714f01a4dba1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Banners from the store page/Banner/Banner.png",
+      "sha256": "7863c3839fab94623371111282e554dc2f7a921b1eb75aab26fc7100f21ec3ce",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Banners from the store page/Banner/Slots.png",
+      "sha256": "0c59e4d39ed3bdbb2096017b264f4157a45b81928df4cc76a9a6478eea3758b6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Banners from the store page/Ribbons/Ribbon_Black.png",
+      "sha256": "9210ef666050b764cd4d45aa888116d7b47a0e1b3c0c08e3242e16d98899e758",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Banners from the store page/Ribbons/Ribbon_Blue.png",
+      "sha256": "23706cfd88b47fa7200a751e76bb1bbaf1dd4edcaafead37dc067db2724ec99c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Banners from the store page/Ribbons/Ribbon_Purple.png",
+      "sha256": "344f975108e2784109bb3f453d13c72a6f3e5be47828c727c2c65f2079ec70c0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Banners from the store page/Ribbons/Ribbon_Red.png",
+      "sha256": "842cd5225a2347b996ab62adaa5a7e7ebfc46c56b865603c8add2b0b2ea0b13a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Banners from the store page/Ribbons/Ribbon_Yellow.png",
+      "sha256": "684e8ea23466d111ec883008b0f9021a8e4b76d52b60fdb96bf041bb810ca1fe",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Banners/Banner.png",
+      "sha256": "6870540fe516ebff26c7f7b123cffa5329ed0b3d8fa0ad323f7459707157a249",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Banners/Banner_Slots.png",
+      "sha256": "bf585619c1ab7bf3ad42eba012aecf89d9cf90ba03cbf70e82a0971e0514df77",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Bars/BigBar_Base.png",
+      "sha256": "a1053c7b5176b80df5240d504a5d948337c3fe0ba6f4af0bb0dda0776071c0ac",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Bars/BigBar_Fill.png",
+      "sha256": "1eee58410178874f54d2a66ab77b7c66ea1670823720f9cbf115e761af8c8cf2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Bars/SmallBar_Base.png",
+      "sha256": "d5191f8a82b98e7049e379ae26f8be84cb56d1077d6ecfe36de4df0eb5e7eeb8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Bars/SmallBar_Fill.png",
+      "sha256": "06cb099925aaf847b63c068b3e002cd9b0deb324bc11afbfb80258a7d0818f3d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/BigBlueButton_Pressed.png",
+      "sha256": "6d4108619670a1e10bb3a684a15e65834724d3b96907ea72ce8cdf1909a1ca8d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/BigBlueButton_Regular.png",
+      "sha256": "70d504ccd5f414b9d894f067883d3ab4f575a143504b87d3583e60922bc563c8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/BigRedButton_Pressed.png",
+      "sha256": "33b6d42455aa10d66efc02fbb855ce96a558263601b3ba3c74ce6c61844a857d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/BigRedButton_Regular.png",
+      "sha256": "f68a753c9cb974b9b8a4af83804a7952a8ef1532ef5441449102660119209b81",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/SmallBlueRoundButton_Pressed.png",
+      "sha256": "fab1e2cab80c2a181898633f99a386e78d3292aa834132a6192509b7e4a6ca22",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/SmallBlueRoundButton_Regular.png",
+      "sha256": "c0bedd29f8babbd04effa8093b57b6bbf304528a496fc22a862290ce3bb60189",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/SmallBlueSquareButton_Pressed.png",
+      "sha256": "8493bad77adad5eaa0c4cfbb9d986e9e174e27563d563ceaa0d410ba7e4105fe",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/SmallBlueSquareButton_Regular.png",
+      "sha256": "d0c41e7710bc76ea927f462d483eea3f51ac8288bb532513040347818a7e6f86",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/SmallRedRoundButton_Pressed.png",
+      "sha256": "7a63dc9e5718f60e0ed338cfe771ab98bf250a280d063f0d60ea27a1b092ba78",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/SmallRedRoundButton_Regular.png",
+      "sha256": "d5b53a9a685e3029924d1bf842d240506f82911b742f7258706304c81d5074f2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/SmallRedSquareButton_Pressed.png",
+      "sha256": "0eed55cfa50657d5bf42057bac01f07af62203834aa6333bfdfb01ec1003baf8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/SmallRedSquareButton_Regular.png",
+      "sha256": "3e8a0133294309bd3d1139b718cb68844e8dd99912b0799e134c5e29fc3e2ae5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/TinyRoundBlueButton.png",
+      "sha256": "c2522c3017925fe6a7d1e0aa3988fb7f3e1a6991430572d872904c2964e89186",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/TinyRoundRedButton.png",
+      "sha256": "a9029eb0045d75742677ed7f4316d37b3a5359ccdd17d0e124cd98ed9517b7e9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/TinySquareBlueButton.png",
+      "sha256": "1e852617ccb4d36b37ee59607d4891a915e29c3fa8139bbe830bbe9365bb0ee2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Buttons/TinySquareRedButton.png",
+      "sha256": "f1412a77b3071afc6b78c2f6adf79b22690e57831de7e9f29c6af56496e8fa78",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Cursors/Cursor_01.png",
+      "sha256": "835ceb9d7c564be3cde604f04733e9e08981b15bd2a6aa8eac759c22223921bd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Cursors/Cursor_02.png",
+      "sha256": "b388466e7edf3c07dae8267ca3e9cb160abe33aa0dc387bd549d0fcf893f5407",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Cursors/Cursor_03.png",
+      "sha256": "cbd9cfd8b32645aad83af82c60abcb73a73e02c55612923d38d125c4a4026041",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Cursors/Cursor_04.png",
+      "sha256": "a87d50da08983b801743c07151f3f5b1a1d7a76440f02223b8ca3e4daa03cbba",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_01.png",
+      "sha256": "769f2dee05475ae63814aae65de53d5cb8a35a45246260b0225da8fbb412d18e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_02.png",
+      "sha256": "32d81381a92147a2752a2d0789630a83fa9969df51f3cb00f3df4311bbee2960",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_03.png",
+      "sha256": "f4ba27233b626f0093b10a608b6967ce8e563237b54c73187692b6b32d012439",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_04.png",
+      "sha256": "f9b800f3c91e959bf4d895d91c767788bded3e14f48bf7dcaa50e170ce83c6bc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_05.png",
+      "sha256": "b23702cfa512959c0af26936b295618bdef138370c5057713c19599b9b82ccbd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_06.png",
+      "sha256": "50333624e63b40fed888c1ccf0d11ab96a936bb46d65d79786b061ad9c84eab3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_07.png",
+      "sha256": "1891cc62fc37b589eb3db290f5e3aac49bbbbf39cc1372b407ff0bbad43857c1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_08.png",
+      "sha256": "53371746424cbdaa982bb1cf89f29e4f0eca6a5fdcf9fe09c3e8e1dfbe2acb4d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_09.png",
+      "sha256": "1a01a75759a5c53a172f7b457e747dd522642d5323c4eda0daa3d39f8d35569d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_10.png",
+      "sha256": "621e3114961c70cfc1d595869b86662ccfa6a335def9ea568e5c228ae5a804a2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_11.png",
+      "sha256": "6800a8fe5cf23de09ad9fbcf50714c55415d246dacb25bea03ce749766913fbc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_12.png",
+      "sha256": "0a85edae087c075102610b164018d8c185586749bc7ec36f9c9218ec4959eea4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_13.png",
+      "sha256": "2191a5da85bea43801c1c9ac2e0b7bf617daa92ab63112d6a4027721ee6a09e6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_14.png",
+      "sha256": "1fbae8c15d04c35a13921d1e28e632c8bc430ac4a80cffa50c9eafed62829f08",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_15.png",
+      "sha256": "02630fbcac59d9a0ce1d2177cb476d8ad4f395ae18bcb4ff86f4372ca9597ddc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_16.png",
+      "sha256": "0e97ab56ca2e4e650f0afaf761732412e3e0b2abd0ad23db20d6b5a4216bae77",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_17.png",
+      "sha256": "1466fc675853c18891c046b4170415a3fe6e4322aaea791d30cb45164d0d7d4b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_18.png",
+      "sha256": "1dfb8ecf1ffc57df82d24bca529a5759d50de21eefcfda0c61567e76c22ac77b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_19.png",
+      "sha256": "9ca5df600e8a7538a3465392fceff3aadbd0f0569ef3ac94e4e7c1f4fb74037a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_20.png",
+      "sha256": "d2e4d3ab3961f0c756127da61b60fe10e0d7e475b92a15431dc36ffae1f3a194",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_21.png",
+      "sha256": "0ba2170e7a7b1d7a889ea346a1f31457f9458315eb8f01e2ddc45f5a456aebbc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_22.png",
+      "sha256": "600f2cfe41961d2ac63262631b1e6b6a4567972cfa1a18334d10ff17c7c18c0a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_23.png",
+      "sha256": "90b999feb6750611adf9963ed25a35d0cacf8ac913bb28c3a38f7d9744a763e2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_24.png",
+      "sha256": "685106f827f114bef1049026dfe225c1e885e4fa5c33b42b340b84772bbb8690",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Human Avatars/Avatars_25.png",
+      "sha256": "149eca7a538385fd18f43c752a84f0dba8cbdfcf36f0552fdcb482be47f580e3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_01.png",
+      "sha256": "2e3556418f59f7063806badc53e59a50e042f6a07b8b4c2893484c5cc06a7fce",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_02.png",
+      "sha256": "4814bfde7c85b1257b211483c73d1d66c50aa8ef23ca322ab175b1896198a9e1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_03.png",
+      "sha256": "87e913c8cac52427dadba7c1688da6b105eaf63437f8d1bccc3c9f33edd0658b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_04.png",
+      "sha256": "6e388d4d9d46750d21adae8718b561cfdafd47bf26d572fc6b6de11d73049da4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_05.png",
+      "sha256": "60386728a8a367f6660c25443b3df64149762dc882fc8dae881a49cde0933866",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_06.png",
+      "sha256": "e8caabed224049145d642ffae2d11924b5c06dfcd4e12196881904ebe8655fd5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_07.png",
+      "sha256": "584f63430281a4192cbad3a11a1fd4d0e945554fd618ef23c473e6ec089e77c4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_08.png",
+      "sha256": "14260cf2df3ca76c9be66529e7a436a0ec52f109de31150e260b8a662c282ddf",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_09.png",
+      "sha256": "10cb5e7f8bcafd9950e1bfdeeeeda8a577d1bbc82b422b70f165a35064918ec0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_10.png",
+      "sha256": "299e8f79fc2c82455277dddd2c6e709eb68723370414d3488e3227347f5f6cea",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_11.png",
+      "sha256": "8345f5423f2e2109f6655bae8b6f6b1f3f84961d7f1619aed5260546e2bd23b5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Icons/Icon_12.png",
+      "sha256": "be3dde4e4a689f2fcdadf120d6eebffc69680d8cb9aa46794cf1ae92de313b49",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Papers/RegularPaper.png",
+      "sha256": "4a91bbde509af741580e514961ed25dd309695536046536b600ab63bec080a1e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Papers/SpecialPaper.png",
+      "sha256": "26c0ad30c7858e3b0f09454e74bc63104d43ac25328a3dba48b42779096c023d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Ribbons/BigRibbons.png",
+      "sha256": "d5463691b52e90ce8b6dfdb340aa563b1b7bfd9d697977d2cc38a2a661db0053",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Ribbons/SmallRibbons.png",
+      "sha256": "da0eb7c5f1b15ca42c3a53906854c9de9c885166e16dc11a0a2832c6dea9a930",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Swords/Swords.png",
+      "sha256": "8535a01acec241f8c026f0e7576edf893a318039ddc2919b66788de388709301",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Wood Table/WoodTable.png",
+      "sha256": "d2abdb31e7fdc3cc2bcad7988c03aaab28aa73a2cb5f869b615c157595034a79",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI Elements/UI Elements/Wood Table/WoodTable_Slots.png",
+      "sha256": "26d48d6c831a73334095363e61a9950a80067e69f6a747d25dbbe8095d13ced7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Banners/Banner_Connection_Down.png",
+      "sha256": "08304c0fa07c5bcab11cbb3fad36782ba571d4975a441098915b0fdb5657481c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Banners/Banner_Connection_Left.png",
+      "sha256": "d2a801b3e7c3bd4114a4eee245d5979430bf6d374ac035eb0a5e71dc62a8655c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Banners/Banner_Connection_Right.png",
+      "sha256": "e2e544c5891e587603d388d75bd735144a6e8d18c439e8a12c2a3af6cdcea80f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Banners/Banner_Connection_Up.png",
+      "sha256": "8f4d70e811ec23f662b415df69b52c2ef82b19fa16692d69019dc8445b05aa61",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Banners/Banner_Horizontal.png",
+      "sha256": "426d431ca15f5885a8aec7b64f99c42e6950e0608a64d9aa0e64b9a9ac0a17e9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Banners/Banner_Vertical.png",
+      "sha256": "0d6bcf94a72cba6f055b60f5f05d3cda50ddf447f432eb1c5276be2a01d1c9d2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Banners/Carved_3Slides.png",
+      "sha256": "8e303439a59ac5fa739f8a27049d737a4b1308c87f7892d9f5297c9532f340f1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Banners/Carved_9Slides.png",
+      "sha256": "4792041b526cbf8824959b56ff2b820dafbfb7fc6423415b1d035599608f8e3d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Banners/Carved_Regular.png",
+      "sha256": "93a7a5247c018e6b034f6d1f2d6d1da00ea50729f9ceee28f81b223ffe686168",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Blue.png",
+      "sha256": "a51065cd306e908bb8db04d9f7e28be82fed3b9a18fff7e6d103189102c1e87e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Blue_3Slides.png",
+      "sha256": "e49daebb8844d601850e8290e413aa150b09272435eee20f0b98f7cd14f67268",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Blue_3Slides_Pressed.png",
+      "sha256": "245dd607087b9972488c466994dc5d4beb627f713b5debe760c051b3f140ef53",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Blue_9Slides.png",
+      "sha256": "59ef888dc5094f206615916ba4ff15a42dc43fc2d1d50cc9c820fc6390e72ecc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Blue_9Slides_Pressed.png",
+      "sha256": "f9f08dc6e0900c80c6096291224a375ed6246e5b4f615e9d404cba9eebe3e38c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Blue_Pressed.png",
+      "sha256": "2497d1bce401e5a441bc6bf6b30d903dfdedbce98971ba16ec062193502a1050",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Disable.png",
+      "sha256": "a742cd415477345b8d74b8d094e8f937753c526c6124f4148732729bcd839f8a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Disable_3Slides.png",
+      "sha256": "115bf5fdf0faaff6b2d4aac4e943ef2727af1ef9250897678549568333ed5809",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Disable_9Slides.png",
+      "sha256": "8060425562fde2d68062191712b811896f86e91087e12e9d083cf08ea39f2cb8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Hover.png",
+      "sha256": "2039d15e85a3edd3cd7cf03eb8eafb1a64b078573d4168fa3858f1bdf9985e16",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Hover_3Slides.png",
+      "sha256": "d5c177db0519f3c39e5f8ceadfcfa9e17fb097ae28ef1a5e676a36eee7cb6141",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Hover_9Slides.png",
+      "sha256": "07a704762d6aba5675f1d9e6a313bec61040ac15182c17fbc56ad7137c0d5fd8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Red.png",
+      "sha256": "a13d01711bef82705bb37af82c16ac220163d7cba35f00a2833ab05efa1461e1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Red_3Slides.png",
+      "sha256": "801a7834d4860d3b28d36849dae3b0b2d507b305e99afb929fd8944c954d6597",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Red_3Slides_Pressed.png",
+      "sha256": "30f688c5a7e2c22c7c3657887ca998b46ca83608d7397cba21f7231a4bd96084",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Red_9Slides.png",
+      "sha256": "ca73dcb672fb10a461c2f466722fcccb9f5fa8e937be39ac8527d4402ff8dfef",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Red_9Slides_Pressed.png",
+      "sha256": "762f7fbd255ce3e40eacae8856c881075482a00f963a88d531f012756066340a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Buttons/Button_Red_Pressed.png",
+      "sha256": "0a5b809f4b43146669f9cea566d9937641e3802be960689c13886fbb6d087263",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Disable_01.png",
+      "sha256": "83310f0b0857620387a2e6c142d3f7d8d6013e3425c7ff35fa8bcb80a022888b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Disable_02.png",
+      "sha256": "024cbc545b9b9889b702657800958334c44eb3af08e241b9774f864c44b3f6e1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Disable_03.png",
+      "sha256": "2f200c33d0cfdf7ef716f6a151ab8971cebdad0d481a558f24df52d9d0d46bf0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Disable_04.png",
+      "sha256": "0af9c8174872e272844121aba0fddc78034fd943a720ef696a22b58e00ab6e7c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Disable_05.png",
+      "sha256": "15ae57931406f385fc61f472865465db769224ab427a3a65df4d0100d5652efe",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Disable_06.png",
+      "sha256": "adf26124a5d1ea2844d719ed1077d6efcf1fbe6dcd51c9197bc289d1f471705f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Disable_07.png",
+      "sha256": "3add017394d137fa55d78aea28679c76cc2fdc136a3c673892277266ffd9c693",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Disable_08.png",
+      "sha256": "70807b492c3f106b61d71aac947a9accb311a380797b1253ad9873248e5fe86a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Disable_09.png",
+      "sha256": "5584a5e43ac6e2008990f7025e2b1d0dc3e28d6457d49e68ace982582311486a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Disable_10.png",
+      "sha256": "41fedae0ee56a391f9c605a3a428101c558980bb1d57cc5d12bf505f6779e143",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Pressed_01.png",
+      "sha256": "5a06426a237c04ce6c323138516c4dfd84b1d3314897a51976326405b104afd7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Pressed_02.png",
+      "sha256": "dfa1abd4cc535fe3c3628c7db943d9a2f5fc4747214f4e88ef4a8c113de9757a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Pressed_03.png",
+      "sha256": "46d5abfb4544675e6d9687028144d5b9ef3ee2488f8f607c5f67eaede66c94ff",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Pressed_04.png",
+      "sha256": "ca5832cdb9e844d1d67b6db95a27436dafe59548a43c77a449a9ae75c262ee3c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Pressed_05.png",
+      "sha256": "770d92a0ff7d46d99dbf1915e56cc9c9105a766c630e4a3f723d6f89a60244fe",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Pressed_06.png",
+      "sha256": "cd7de50e904d65d2de52d170f3195d1de8ad4e35e2dffba3712accb40f43d688",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Pressed_07.png",
+      "sha256": "e2e1f2810e4bd561194bf1a962be363f40aa928826ad7257d10077b78976c058",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Pressed_08.png",
+      "sha256": "f4fbfe4b3ca319b5b33e4bbc4778d347ebc4a18605787672d680f714771c9d66",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Pressed_09.png",
+      "sha256": "44cb23aee1e1fc6d2392e3fdcc8f43efc625fd592046d096a003a9cee52b9061",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Pressed_10.png",
+      "sha256": "1c475e89db39ba36fc30bb8d3485c71f45c27b87f69959331a3f585f59e16a5e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Regular_01.png",
+      "sha256": "669838a491605df137c854d88554bf4f55a5f25ecdac85637906594732bbf959",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Regular_02.png",
+      "sha256": "d137e50a9d5a498e6c39dd803e874a5bbc37faf788d5e7560459ac20dee383b5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Regular_03.png",
+      "sha256": "ed72caa1a095ef5d8bbfe287e0e96ce04aec1c8f5065b7f323fa5b2bf45607a0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Regular_04.png",
+      "sha256": "6476cb039d40eb84b03000891ef34f5822db4d6af1392a3837fb932770e18bb2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Regular_05.png",
+      "sha256": "ecd318ddcc1094142478bc7887d165ec02b33bf1fc026eaf1aacd04fd63fc8f5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Regular_06.png",
+      "sha256": "1e15b325de40677ea8bd7cdf8223dec062f39cecc9029ca92406c4f209835738",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Regular_07.png",
+      "sha256": "d348b24d85a2911bf6c948448862194dd92827d92352cdfc315fa185bb92f304",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Regular_08.png",
+      "sha256": "cfd9ddc8d9c7f71feffa9d1de8a6e4d2b69d3d80e0cc7425c8beae6e70ebdf87",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Regular_09.png",
+      "sha256": "f15712c1e28bfefca16a9a8c2df7b39821c86c5f6d34c201ae39e68836e62fb7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Icons/Regular_10.png",
+      "sha256": "be37b2775da5537d01371a0e38d12934716be7dba34d0f1f4f3836c5084e59a0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Pointers/01.png",
+      "sha256": "50935fc696b3924a3af642c5a368bb6b8e9bd31f166a44ddb0b9e61e082148bf",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Pointers/02.png",
+      "sha256": "77568d226a8c7dfea81f6d23a810491cd65754334ea9367e08da59ca4d606d24",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Pointers/03.png",
+      "sha256": "c61a526373b25c4dd3e0f6367672c48dd56eba4df99ab0cd9de3cd0ca54e8b53",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Pointers/04.png",
+      "sha256": "b308b71da5ff97d0be24ecdc06e95ea61ca7895a62564bd5ecf094c143249b24",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Pointers/05.png",
+      "sha256": "f856f9cbbee65630db63d17540a1a6ec4b126099623993b70ad477bf8757827c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Pointers/06.png",
+      "sha256": "b5cbdde1ebcc50b7c9894027619bbff1d4a1a010c6bc2716d2b18d5fce326281",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Blue_3Slides.png",
+      "sha256": "92cf22843a9e156b6c46f58a4d7e66ee819143012e672d1e9bcefe11879c0c12",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Blue_Connection_Down.png",
+      "sha256": "c25f939422ef456d6af8581b2d2b540a843193c9fd1834ce23ec825d83219afb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Blue_Connection_Down_Pressed.png",
+      "sha256": "f47f428bd0f5e38e8eadc7883ec2f3e085fe764f69ed1d391703b5375df1fa83",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Blue_Connection_Left.png",
+      "sha256": "d2fca3c11415dd2b7522d75d9b99e66f7b2633ea8b4fe20dbd8960211361196b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Blue_Connection_Left_Pressed.png",
+      "sha256": "8dfd390401999fc1d2272dd9fdab9f084ccd0ed36c053fc24f3e465e45665ae2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Blue_Connection_Right.png",
+      "sha256": "4cd396d5de6fe01d0421ff1880642fec8d56446fb55f8152b57883ef6dcbfe19",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Blue_Connection_Right_Pressed.png",
+      "sha256": "e8e1b92a2a0620a7391efab04f959d089030851c0e5ada210cc92c0b9cde0d63",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Blue_Connection_Up.png",
+      "sha256": "f0bb9f5226a0fde18d3ce8e52e0d348a8a6c05abe1d182813711340d1eb0da90",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Blue_Connection_Up_Pressed.png",
+      "sha256": "00e059a8f2e1a430c02fe916a7de68bc878912e09e50df772cbb12628378806c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Red_3Slides.png",
+      "sha256": "35c36a44bcdfaa6ebc1d12178775e28f2db4c54a5414d4d131b8fa4dbed98f0a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Red_Connection_Down.png",
+      "sha256": "ef7a5a8921ef9289c626108f952883ccf4bd499d1949347cc414c130636e196f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Red_Connection_Down_Pressed.png",
+      "sha256": "cdb12b48934e1ec4dd451bbf39aa82206683954b47c6cfb5a5785f9bda1f68c7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Red_Connection_Left.png",
+      "sha256": "53b091a3a987035abfa460a04c0cd4cf07d9838fdfef2d9162016d25f99fad10",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Red_Connection_Left_Pressed.png",
+      "sha256": "4f1669c25a0f24021bdc1fee0ceea1612fb87c99b793ccdf0554efa7bdc6cdb9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Red_Connection_Right.png",
+      "sha256": "ed76c77a15d5e5626edb733978ee311ae1ff95ba12e7f52c50f1f630e7396b94",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Red_Connection_Right_Pressed.png",
+      "sha256": "ceaa87781349fcf96e9d60ea6aa0f137c2a6229a069e9c1c05798eba9c2ee379",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Red_Connection_Up.png",
+      "sha256": "ac2cbac2480efff973ff4cc8faef115ec0d43fd9f17dc9bf32394596b46d3536",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Red_Connection_Up_Pressed.png",
+      "sha256": "38bf73636e99f55405d2a74f00ae14dab701447d22472b3feb19865638aeea6f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Yellow_3Slides.png",
+      "sha256": "2c3d4256f8b29a66fef15c5d805d2635288a7fcb81a0100dbb83a9db0bed63e4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Yellow_Connection_Down.png",
+      "sha256": "e7650eeb4a9457ed4cedc95b7d38b5de6175a2fe39befd27d8edcf33725df03d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Yellow_Connection_Down_Pressed.png",
+      "sha256": "ba03369adaf661753cdbcbc5212d68037689600dafca86d8d4a353d17ea74e74",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Yellow_Connection_Left.png",
+      "sha256": "1e03c391d7902c457d2658e2a31c3acf9be6c70278aaf1c8f8f9639981341830",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Yellow_Connection_Left_Pressed.png",
+      "sha256": "f876aa7478abb8d144e10b6ba78444e12e9a1a6561922bc459d4c54564c1aa04",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Yellow_Connection_Right.png",
+      "sha256": "a0298677f9aa43d38f433a8d48754418064eaab14d7b60ba4236665c3c932e72",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Yellow_Connection_Right_Pressed.png",
+      "sha256": "b45cde2ee0333051d1c8058b9825cc8ea40195e5f74bf48afe2bf31cb554c6b6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Yellow_Connection_Up.png",
+      "sha256": "2b9f82d88603e19d708e12bed5f8a6cbbbd2ab5b1968ff0a9bca4e1e4068e27c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/UI/Ribbons/Ribbon_Yellow_Connection_Up_Pressed.png",
+      "sha256": "8de97cb5bc2ccebb4f13f285b5d5c82a95a8aed5332a1f1f21c97b2b0356a800",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Archer/Archer_Idle.png",
+      "sha256": "39c1e9e822a39e75f60c3d0bfc26552aed9bab3e78c0d9b1993a4f63722fc019",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Archer/Archer_Run.png",
+      "sha256": "d6c92beaedbf2370f5971a4d2fe8901b60b676185e882c9d4fd137c29895dec3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Archer/Archer_Shoot.png",
+      "sha256": "694fa3c26df598a384da5ab98e946bdc48f38861222ad9f2720a1758b1ae6dba",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Archer/Arrow.png",
+      "sha256": "937678d6349172779b5541164a36a49d9ae7c08a741831aaae45ffe3d86fc769",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_DownRight_Attack.png",
+      "sha256": "d6c801cbecf827fd6a3035733b5866bb0219789796128278a02573f459dce691",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_DownRight_Defence.png",
+      "sha256": "38eb15276bcfb892a8a7683ad93efe4516bd386f6ab1bf922e44339a2ad1f5c1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_Down_Attack.png",
+      "sha256": "9d0bc04689d148e04378159e3a3a40c247d14b2ed274784d169501fdb4915d7f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_Down_Defence.png",
+      "sha256": "715219aa737eb811b3df17a4cdc39fd3e2489a778dd5d0153bc49b43c9ce71b8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_Idle.png",
+      "sha256": "ae5a7ae8bc31b72691b58dbe8c2f18da6968007e5c3d4dab72d0f590e72187e0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_Right_Attack.png",
+      "sha256": "0dfdf61a2cb55a17a7ac6d5e8404da718c11a367c5bfe1cd92eb37978cb678c4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_Right_Defence.png",
+      "sha256": "ee24b9dcac28f49c2abb642c34def3a7b6d4ad30c4b0db41ebc5c22bcc544b13",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_Run.png",
+      "sha256": "b1160695dc8f9e0c9e1db5ccca7fa011121c09aa5037d500b302aabfc2d67fdd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_UpRight_Attack.png",
+      "sha256": "b643a1a3a28d3e578efabb86b1da6c963a8a9ebdb284d817ee19399e9f443c0e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_UpRight_Defence.png",
+      "sha256": "0a3eae6143160392894f51f73e4efcc70f583f33baa322a9447356b204f3126f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_Up_Attack.png",
+      "sha256": "583b97f871e959012fc7c7ed138a414d757958f57fa549902ea4028339be97fd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Lancer/Lancer_Up_Defence.png",
+      "sha256": "7dfaf5453cfedb72e0e05cf307825cfdc39c724003be087bb5d94f781979bb48",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Monk/Heal.png",
+      "sha256": "d49cdb581fc4b79343ff0aa56b90a1a8a01e0f9e372a59e52e7e3dc388e9fd65",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Monk/Heal_Effect.png",
+      "sha256": "2635dd7445d573e878b578ecce858484b4d2889268819ec35657cf416f8aaf33",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Monk/Idle.png",
+      "sha256": "c680fde6c1e2dfed9fa80a05b3abb74346acefedc15e52f07299a882b67799dc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Monk/Run.png",
+      "sha256": "4b75155c0f718233a0865e123b6f81585e80708186e004532fe6266d9cf648b4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Idle Axe.png",
+      "sha256": "925b9a92f7d5d4bb8f5d95e70a4c4a8cf28b8425f1a781a7cbd2a0722556c6b4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Idle Gold.png",
+      "sha256": "0b7e892722ed0943062a3769541a9476a9934623865773059445b186fa2ea788",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Idle Hammer.png",
+      "sha256": "ed171cb9acff69b262bd44e1d5641afc90190f7af3ec72444a476d7bbd9fb71f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Idle Knife.png",
+      "sha256": "cd250f1df0d40f3b1402c22742f247855ab49d6214216d35a76798cffdaa5b61",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Idle Meat.png",
+      "sha256": "6bc1dc0c96db1056b5c53aef56df4470a2820bfad91ea96f007d3a49ecb349ff",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Idle Pickaxe.png",
+      "sha256": "a3f7f6e2d3276663a2b08483bdfeed0834d4677919881e6a807c58cbe9ea6459",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Idle Wood.png",
+      "sha256": "1e5be229ae5fff6bc42ecb49b1818c339a81a74298a18bdc6406ea953f4cf90d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Idle.png",
+      "sha256": "14fc39548b1047ccbbe4c724c56abd38eb67dfb99d6080cbf7e6759905cc90ff",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Interact Axe.png",
+      "sha256": "cf97f0082c44697905a2110acc3a49e6f6f9d1c984cecf61b39f7f783d8bbf98",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Interact Hammer.png",
+      "sha256": "898ac6331744cfb2ecb4b40c38696ebe659141468dcdf498b5e51b6cef9ee4dd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Interact Knife.png",
+      "sha256": "172a10185a0dbf4174d359d351b5693ab55eb7d0094ac2695eb2a231ceb102c7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Interact Pickaxe.png",
+      "sha256": "aa92c5e3d5b939e3c4f4a354ac0ff173212239fffba5166467a399f397432287",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Run Axe.png",
+      "sha256": "729d42b12a60ce696182556b6f430fc68b38d487a020837ae899f63b59ec6952",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Run Gold.png",
+      "sha256": "bc94e9dbd0c12ad0b776e20a93bba1a3509122e06e2325350094b3b5387b56ac",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Run Hammer.png",
+      "sha256": "13d58badd74a6dead57076a822041c90e726f8d932c574eca0347604a35e090d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Run Knife.png",
+      "sha256": "e1be8addb0c09973f86cc0205ffa9968e666f026628e21e4f2e7d7daa5e993e8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Run Meat.png",
+      "sha256": "fbd3938b8220d725156b43e83a6f417f15fd0855739b4af24aa15769159e5277",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Run Pickaxe.png",
+      "sha256": "754a126e7e5e5eae8314405c61167a48c103a45097169a48828a301bb44daf41",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Run Wood.png",
+      "sha256": "300295222cfafe5c46e42234e52511b92c15b666aa250350982b99fed5124095",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Pawn/Pawn_Run.png",
+      "sha256": "d23756d0ade1216c4f88bd2bcdca49a3936d17ab1ed94bbe9343593c47fce98e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Warrior/Warrior_Attack1.png",
+      "sha256": "4b7250c8442ac67054814b31e251923aca85fb1df047428d3777650bf0fa277f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Warrior/Warrior_Attack2.png",
+      "sha256": "ecc1fd720ec84ea0ab586f17dab775a0882a132a91a51630d6f60ba7627e7f89",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Warrior/Warrior_Guard.png",
+      "sha256": "eeb66eb21dd8dd4a7e90b2f85e19926f02a7ca331c5be9675fd1c85737dc0d7c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Warrior/Warrior_Idle.png",
+      "sha256": "eddcb6067e793a2da13fe9b5f71afc767ba676c684253528e4d508b9f501f10a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Black Units/Warrior/Warrior_Run.png",
+      "sha256": "06f1912d32230c8913fd29091a3332c1642eb7916f205023a9cb064f0604df8a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Archer/Archer_Idle.png",
+      "sha256": "a82eaa45223c26c4c0c70f131e2ce9252f0ff774e5ceaa3c64e2e3def32e31a3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Archer/Archer_Run.png",
+      "sha256": "4a61556f5dda00a9bb571e61d5070b9f213704ba68ea724906d24bd0b5ef056c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Archer/Archer_Shoot.png",
+      "sha256": "fcaf0fb2992baa1709de88069444000ea2f7967517a42e0e7afd84da52926249",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Archer/Arrow.png",
+      "sha256": "937678d6349172779b5541164a36a49d9ae7c08a741831aaae45ffe3d86fc769",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_DownRight_Attack.png",
+      "sha256": "ce18ae6d641082ada1db14e1d67bdeee24f35300fb97ac27ece6aa6c19a857ca",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_DownRight_Defence.png",
+      "sha256": "a5f93aa8f521d095d6673961cb6360e819dc774c628fa3829145754255876fea",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_Down_Attack.png",
+      "sha256": "b5353565d1dbf65d1d10a1225fa3f78ab4c7201ab04bf5b2cdf19b217a86001b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_Down_Defence.png",
+      "sha256": "6a2e7885d5376afab6c67bbd5e8c69ce7ecce5ac776cb74e0126d3be83e43084",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_Idle.png",
+      "sha256": "f873fb90f3d1d83cb970fda0c141125ae30dd49742240f578907f739dd951739",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_Right_Attack.png",
+      "sha256": "b19bd5c1fcfbd89e033ebca9acf8d27d1f2e06f20e8365c95faf52787f5f2dda",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_Right_Defence.png",
+      "sha256": "6572226b6b57c95905caff1fcb167b3181c69225156f46268d421b9f4fb2f6e4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_Run.png",
+      "sha256": "3ac7f617f06499e55d456c1943f2727e1c39e24a4121b4f66f4510988d450a41",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_UpRight_Attack.png",
+      "sha256": "fbc1bdb4724703cfd7deb4bee24d9637e40f15e8be6c4bdaa435972c8a504f7f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_UpRight_Defence.png",
+      "sha256": "b6d95180f1b8c03d20339fd1766e94f269b764db18ab5654b60c138b69b377e3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_Up_Attack.png",
+      "sha256": "2f6d3e10a5e629d897aabc0954440a9848aed08b64f16aa1a80d42ee16df6f07",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Lancer/Lancer_Up_Defence.png",
+      "sha256": "da017a6692f7010751cf483b8c9b1916c6428752cb43d6dcc679aad1572e0e67",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Monk/Heal.png",
+      "sha256": "6620f483dcde826628e1754b57445b2fa4c36c077bac3fa1c6b3d828e55fbde5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Monk/Heal_Effect.png",
+      "sha256": "2635dd7445d573e878b578ecce858484b4d2889268819ec35657cf416f8aaf33",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Monk/Idle.png",
+      "sha256": "a72cc63be3151c3af61e8f8c86129b8a0c563c8731e04ae89a27e616bb6cb962",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Monk/Run.png",
+      "sha256": "f7cdcef69ad17e9677bbf0b288b416cfd86ae0231f625a16c10000ec8ea375e6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Idle Axe.png",
+      "sha256": "7387bb0a1c52eda9ffd268ad3b51fdd313282157d3d9abd1763f3e085cb46a27",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Idle Gold.png",
+      "sha256": "c1c70c9160c8bae0727e4435f8dc455e48d8320d1aa5e56da6a31a21fb07c4f7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Idle Hammer.png",
+      "sha256": "da78be28921999740c3bead474f764587f64ab488b3173d52fc81b37b5e6376a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Idle Knife.png",
+      "sha256": "5acab5292019320aa5f9ffc364b6321d533b6b5a7168eee5924ec494cd19af21",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Idle Meat.png",
+      "sha256": "4d658607b049f22433bd5da3cc9bde7d4396d0a5b9d85c290728b7cae2495493",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Idle Pickaxe.png",
+      "sha256": "4bdf3b229b690dcb98decedf9b08b6ce679fef4f8e2a635808368fed17df8d33",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Idle Wood.png",
+      "sha256": "dea0cd42da6bf20535a412321416b97180a6561ef272d04014feeb0aeaec876a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Idle.png",
+      "sha256": "175027379188ef41c59301ac2d0dadf90d3a04d25eb1af8f65c1212b2fb934d6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Interact Axe.png",
+      "sha256": "b09914c904f397fdddd717b76bf739489303d48acc98204b38b699095b1b82b3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Interact Hammer.png",
+      "sha256": "8d7b68325f597e47de41f03d9ebac45d600c404a7ca71c852f3a8e4cd39ed9cb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Interact Knife.png",
+      "sha256": "ee00ec89628d2c33534d8077d2e6da0b74246f238f84ce2378faae07da035790",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Interact Pickaxe.png",
+      "sha256": "e1ccaf5dbc94b657c5c1c3d63e73b7913b4030c967f1462ce54bb06a108852c9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Run Axe.png",
+      "sha256": "362a85a7f22c2690feed0a68d7a4dfc5561b44b270b23fabe91e6d6b47e01e35",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Run Gold.png",
+      "sha256": "21555ac7a375c6c0864b993d91b732828a658c755eb40bb129dabb5445497b84",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Run Hammer.png",
+      "sha256": "3b57abb6a2d6c0e12535a73ab1182a9e9323850f82a801ea71048eac7e3139bf",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Run Knife.png",
+      "sha256": "7be470e4bd6c85a9d7ca96f6c3586c3c18fa228592feec7edba96f026ad48a52",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Run Meat.png",
+      "sha256": "f394de9b68a1e73e9601b6969160bc37ca009083a5a8e869e51f209561fe2292",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Run Pickaxe.png",
+      "sha256": "8183f0de43855731a2f5daab9ef19d5be389f973294f7d3a1c8c465342918e36",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Run Wood.png",
+      "sha256": "b2fef719dbe457e45e24eca919874e74dae65939e7bc357d304ab2791d50a973",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Pawn/Pawn_Run.png",
+      "sha256": "ad825172a8bf25076f4a817e7dbf8ded33ceb297377ee76e4f2c989a684af3a5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Warrior/Warrior_Attack1.png",
+      "sha256": "da150db2442454bd661bd8e2512dab2c7def4d9202334a06dd9d6a8edfb20fec",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Warrior/Warrior_Attack2.png",
+      "sha256": "2f6c33015f6d6425b169b729beb2163fcd28170305a31db2252dd986ddb1d058",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Warrior/Warrior_Guard.png",
+      "sha256": "6372798f44d14a89d3dc0a4f0e4e360d08cf01a7a3ac0f4e6e1a768b164ef688",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Warrior/Warrior_Idle.png",
+      "sha256": "e612b408908c938999025fa05c45d81b23a31d8b68a6934072adfccf1d5d716c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Blue Units/Warrior/Warrior_Run.png",
+      "sha256": "01e2d075c7c45a2f9567676b0bb0808a7caf0744b927179ffe212a740e609ea1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Archer/Archer_Idle.png",
+      "sha256": "c1ac7139e2062f5ab7fdad2db5c12e9a8c4a5951e5ef2aabd42d3f76bde93951",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Archer/Archer_Run.png",
+      "sha256": "49f512007b6d98d852363279b13c8994a1edcd81ac494260748de316a4b79eba",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Archer/Archer_Shoot.png",
+      "sha256": "ffbbde8ed1a47664d29895f1a7fa967f78fbe98df662a06f419c2633d0055443",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Archer/Arrow.png",
+      "sha256": "937678d6349172779b5541164a36a49d9ae7c08a741831aaae45ffe3d86fc769",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_DownRight_Attack.png",
+      "sha256": "90675f106c1f0e04dcfe40f286a29c9009b1ae05e6ca3e1ea201ce18eff8e111",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_DownRight_Defence.png",
+      "sha256": "60abe7a90305242bb81eb1a2bef4135ddb513601917fb53b7c367b68000c0f41",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_Down_Attack.png",
+      "sha256": "1155402b75613ddc63642079b0266b1313630b48e754ac5bd7eeb20449d6237f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_Down_Defence.png",
+      "sha256": "af8537885a3b33fbda5b470c9bf536dbff3ce4142568c429ac837f95a630f4c7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_Idle.png",
+      "sha256": "be7b35fe6d5482bdc9e91474f935acf813957f074cda68147e7ead7910d7be97",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_Right_Attack.png",
+      "sha256": "c04b80e99c089c4fcb8476e7db950a7e377d91e3213fc438f32f2103c83d9d46",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_Right_Defence.png",
+      "sha256": "5a1b72a6c965273c8b62329f9121b24aee9e5a486258c6b7d0fa263aa0eefbe7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_Run.png",
+      "sha256": "f5b9ebefc63837adab772d011ccad538d20033984709ec3894b738699811862a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_UpRight_Attack.png",
+      "sha256": "d5b94b5dce04bf5e4a3c2f3a8405584b6788df954e3863d0b96cc7c6ba31f43b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_UpRight_Defence.png",
+      "sha256": "0898d3839fcf0f0ce4814b548b7dd1feed0a18641d53f5f249871816fd6fa6de",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_Up_Attack.png",
+      "sha256": "3b90475979cd5680f91763c4e507a5124ce78cc3562684023f849667b9fec8ba",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Lancer/Lancer_Up_Defence.png",
+      "sha256": "0ff31b1bd0302fd67f5107cf47b5a618c8c43817d59f75390f54a1627c67056b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Monk/Heal.png",
+      "sha256": "03eea16ba53098429eeb4ead36dbbf30d641a351bec359325be437ebc7204c69",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Monk/Heal_Effect.png",
+      "sha256": "2635dd7445d573e878b578ecce858484b4d2889268819ec35657cf416f8aaf33",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Monk/Idle.png",
+      "sha256": "ee8b2fc546f93c573f303a17936a651f182556400460b9addb68b3effffd18ec",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Monk/Run.png",
+      "sha256": "bb0463538790fe2e00399d79801710cd036be7125dc2554af42ad8081d150ecd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Idle Axe.png",
+      "sha256": "71a31e4a5baebfd030c3842bb3ac6ce600c22d484d0317b141bf5cf58b00ccca",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Idle Gold.png",
+      "sha256": "91ce6de5cc68d987dc68d62accc09d40a74f869252919e247857c40c47c81dea",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Idle Hammer.png",
+      "sha256": "a0fdb3065986bbfc3ed0a9d9b3b3088130c1934763b99e82baba3813070627c1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Idle Knife.png",
+      "sha256": "8a5a88f0cf48edc12e89052ffca0eeebec32ba1af6c68e9db94126c24eb05663",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Idle Meat.png",
+      "sha256": "2a1a0abe60d7ec9fee46adeafd8301452290bdd9a97b181db91b62cd50e703ac",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Idle Pickaxe.png",
+      "sha256": "7f95e48e63cb6bbe1104a0598e1775a404f79640b87cc34bfdf9f338755d3da4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Idle Wood.png",
+      "sha256": "10c1275482597820abbae55aa987c8f9985fd4697b47bdcb7bc6e8ac68d26508",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Idle.png",
+      "sha256": "e21513b2421889e87a98f44886b964fd06c6147cd1cc55b913e39b3c6002cd39",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Interact Axe.png",
+      "sha256": "674423bc2bbca6e9bea6f040dcd26df366d6a08fac82c7fb35f524482bca1866",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Interact Hammer.png",
+      "sha256": "783f4b9047506d65c7d985be40def0f88ae3b987a85b476bebdfec2dc2ac618e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Interact Knife.png",
+      "sha256": "ca881ae2326db79f6236643491033a514c9c806e41c969033f422610c43bf2a4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Interact Pickaxe.png",
+      "sha256": "e6a23f8b81dc2b120e55175fdb07fa9c6412fd5c871959b1640008e5846b8f16",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Run Axe.png",
+      "sha256": "5c62690a1a72e425cb61a6020f96d49698cb42a5e978137d8130309c59bc5cfd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Run Gold.png",
+      "sha256": "b5a277aa2b32adc53f947a807951df6a62960f86efdcae7a6a987b37b9b2ae7a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Run Hammer.png",
+      "sha256": "87c054453e76b3b118bc197d3ba0044947a898a071d3f339aab44bfb58a36a73",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Run Knife.png",
+      "sha256": "cf667545ed9dc2e4cda694387b8da0b1887abd8983cf7fe60233d6f329657ac8",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Run Meat.png",
+      "sha256": "de9a6f747c032662100e4661e342f12a303bab2836e7961945763118b9b36d27",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Run Pickaxe.png",
+      "sha256": "b8d351611f22143bc041e0e03a03bb8517f776ce5eb90a3125bc1bd5403e054a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Run Wood.png",
+      "sha256": "938d44d04c55e20879f0fc1b2b58c0df31f0b964c96e9de460295df1bdc9c54b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Pawn/Pawn_Run.png",
+      "sha256": "a50812947798b438b32cdeb3fb2d6afea788df7071135a74599dc363245af8ba",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Warrior/Warrior_Attack1.png",
+      "sha256": "5160ca4a64a641f49376e24d8f80ddbab2e5e442f86bdfc94632ef39e7db3e51",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Warrior/Warrior_Attack2.png",
+      "sha256": "3b7c1e6e2a070431a382c95e55ee916031f052880d90c0b995dbe0d551e7b02b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Warrior/Warrior_Guard.png",
+      "sha256": "2081b4e9671f31ba87262e81b26d1f1f6956f6d8e73c513b86092b1ba0c4903c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Warrior/Warrior_Idle.png",
+      "sha256": "ad9c14433f9b41e78ccdfd109c48c03eb0e8ff4f0e73ff952faaf1f0c3ca7a11",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Purple Units/Warrior/Warrior_Run.png",
+      "sha256": "5a2cde8294955febfb5a0da03032356cdec6db5d51523063f6d2ed941d529c75",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Archer/Archer_Idle.png",
+      "sha256": "7b2cdec47a0e20a10578f8417026e7beec4fe1a6ec792f51965c73864b6c2552",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Archer/Archer_Run.png",
+      "sha256": "0368a29b0f3c1692a3336e5fa3bc089ce3f7f9f2fa889cf50eb1a3b559a66982",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Archer/Archer_Shoot.png",
+      "sha256": "e46cd1650d0d31605b478b0cc4206cf8dbf0519351bc518f49518f7ae259dfdd",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Archer/Arrow.png",
+      "sha256": "937678d6349172779b5541164a36a49d9ae7c08a741831aaae45ffe3d86fc769",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_DownRight_Attack.png",
+      "sha256": "6dfdef30459f86ac2b79e5b489fa5f40e54006735933c8755ab17a12a4345021",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_DownRight_Defence.png",
+      "sha256": "63f4b34a8344280bbc5383c15b530f64cb404711ce43baffb10bd52a64c61684",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_Down_Attack.png",
+      "sha256": "e817cba7ef8871da0e5147728b172e8353d3b9526a2d7d82b78d7fc6c1b302e0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_Down_Defence.png",
+      "sha256": "9e4b1e6ba0bd0b621594e7d24e45ce5c6ab32a0644bab5e2c4bf83661cb3f2e7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_Idle.png",
+      "sha256": "876c0677400b5a25dd583a2fd2b6d88e7c1b0e33c777999152c2b50f10189e26",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_Right_Attack.png",
+      "sha256": "e85228865ea3031249e2679ed146761e4f9f55531204ea7707b61d760de04deb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_Right_Defence.png",
+      "sha256": "a2c9d8a69bce6f843b705aff856202ef7b5810eacd05b05393e82137def03d27",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_Run.png",
+      "sha256": "029655f919593197bb3f4ab1c541cb2809614f86350dc47bfbc58abdade99655",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_UpRight_Attack.png",
+      "sha256": "cc97736c716f5e796c50cc133d3f3c06e1f3fdaa0f3a778cffa992ac962c7250",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_UpRight_Defence.png",
+      "sha256": "63758d90051c05b4305a12699b8fedab35f5e0a624af923d66383daad5d1b987",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_Up_Attack.png",
+      "sha256": "6a0d5e086ea2218fcc53c86874b2d54e7465feef6f0f976a0377ba0b5954efa4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Lancer/Lancer_Up_Defence.png",
+      "sha256": "4b6e2e9e326105b5d63449e0ac27c419c4b5416bedd246d7fbfad31c0cee9745",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Monk/Heal.png",
+      "sha256": "c0a999a0150e2c67f83e559b589c589bccc4ece719d32f2069228a2e76be9c18",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Monk/Heal_Effect.png",
+      "sha256": "2635dd7445d573e878b578ecce858484b4d2889268819ec35657cf416f8aaf33",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Monk/Idle.png",
+      "sha256": "32889de82aeed07f332b1a58ebb20044bb38a5c566ab22c1708d05068a5208c6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Monk/Run.png",
+      "sha256": "34347c0bdd2b932f4999e712d8e557220dec446f93d60a7e2606737bbfebcef0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Idle Axe.png",
+      "sha256": "c4e07a082ba29d9c5faf12d0539759dcdd168c975b64e53b205e026d40ea61e4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Idle Gold.png",
+      "sha256": "09c71d8aab9b3b32ee20892601f5d2346f897f7100a9f600f63f5e8b6c5a3c8a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Idle Hammer.png",
+      "sha256": "f368bf656cd24fe386b244659d157a2eddaba3e5599b539a6e848ca207e7d719",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Idle Knife.png",
+      "sha256": "584635207530548db5eda295d9a387bbf8b8939ace636af0ae13292629c314b6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Idle Meat.png",
+      "sha256": "3eb041f43e912567d393c2cac8dd548aa3c6ad0037ce1766a826a5109481bc0f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Idle Pickaxe.png",
+      "sha256": "d1de11c358064223bc9a48d631aa8aa36bf6e8731bdd1f29f9b7705469d92ba9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Idle Wood.png",
+      "sha256": "160bbac9152b09f1b959b59418404dc62271c967505d3c93930dbe53cd0fe0e3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Idle.png",
+      "sha256": "253e171158c6a399060684d43d41d498d21004164c6f5bd674aca9190d626d47",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Interact Axe.png",
+      "sha256": "2cd1d4f1a6f4871b84764b8ddc1883f745f76e42dde5f7e80637fc03b8bc376c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Interact Hammer.png",
+      "sha256": "40efb85cdfa9a4a5d8dd80361a677ce6cbe642c0b0e0703f90289e0d6c7c7e5a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Interact Knife.png",
+      "sha256": "7456cfb07b2abb78232221182f7cea0af1a261931f4b2613d0afa8a2eed70628",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Interact Pickaxe.png",
+      "sha256": "be3c850be73e38218be3d70e1b589f4f9f21a8aa9a45f8defdcfe51db1ff5cb5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Run Axe.png",
+      "sha256": "dfdbd7e2b9482e69143fdc6fe8e5ce69db416f04145ccd07174a28c05bb1ba4e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Run Gold.png",
+      "sha256": "0f9e1f7cfde51a51aa86f704b23bf691e3f20af76c8385f7b7268e3eb7d207d5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Run Hammer.png",
+      "sha256": "2db25c245060e69ec2b3e81825250a88a7b376aedad598ca1539e4b5a38d4716",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Run Knife.png",
+      "sha256": "5d83532716c71d8842b081f5b500b4168556a7725280337bb34f33b28e00aa6f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Run Meat.png",
+      "sha256": "b8b9e5145015f6227c47b7da91adde34ad0f621b48c8233c5e64ab9dfa726be6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Run Pickaxe.png",
+      "sha256": "74de3a1062e163071cf0efd709792f19f8ce7a63442bab85b1f355384b4c3b36",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Run Wood.png",
+      "sha256": "d1a86d587a7e704be3765f18a1fc11e0d75b0da1de3ef799e89b7205d26e0021",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Pawn/Pawn_Run.png",
+      "sha256": "a7cb9e061acc6d4a99bf0b66509c96a97be59159176add2cb45ed103b88b9aab",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Warrior/Warrior_Attack1.png",
+      "sha256": "05df9fa665b8c216b3852b00250a84e55d2bdffdb39349ae152f2c8766d73bb1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Warrior/Warrior_Attack2.png",
+      "sha256": "12c065b1c82d808e11105efa38f1d6026c6927243a4fa8b12254745097c1549c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Warrior/Warrior_Guard.png",
+      "sha256": "5d19f204d3a799eda85da02e65542b2ac406e87cf486664d60860453e5e74163",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Warrior/Warrior_Idle.png",
+      "sha256": "104bb0c113efa967b306047d29166ca7d4925366d613dd46e5b33ac44fbb1ac4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Red Units/Warrior/Warrior_Run.png",
+      "sha256": "74b9d13a4b57f75a048cb42af35ef5c0a20791f67a9b03f9e93c72790dbe2948",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Units (aseprite in Blue only)/Archer.aseprite",
+      "sha256": "14b4a69a6d7524216898e4f9c260d645525edaef005bb3c873b7dfb8c6860a6b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Units (aseprite in Blue only)/Lancer.aseprite",
+      "sha256": "fbff8e35b0772a42b1ec0ff6ba9155bf2c9f0a460275ca14b8ed63e750500aab",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Units (aseprite in Blue only)/Monk.aseprite",
+      "sha256": "a719d8597eb67e2e8956687d76bdc0511b80778228c0416ed776c7dc545b2751",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Units (aseprite in Blue only)/Pawn.aseprite",
+      "sha256": "ce0aee6083187303e9cc0c3ee8b74ba0131e01014c5fc40d15a5b0b749095bf4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Units (aseprite in Blue only)/Warrior.aseprite",
+      "sha256": "0bbaf7f955bfe82ce06552d7e09eb5ae21e6cbd8b2e5924dda7f51e37c6f05a5",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Archer/Archer_Idle.png",
+      "sha256": "7df70d30f39a5457d1408738561121fa411774d71b18b9ba220b37d8466c0d79",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Archer/Archer_Run.png",
+      "sha256": "25356ec4e39ad7849fce4500fe1fcf2f425522c57d666dec094df680b85770f1",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Archer/Archer_Shoot.png",
+      "sha256": "16c01feec46958ade1fb1e94879b46cb44fce8f7936437a60981fac0b0aa70c2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Archer/Arrow.png",
+      "sha256": "937678d6349172779b5541164a36a49d9ae7c08a741831aaae45ffe3d86fc769",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_DownRight_Attack.png",
+      "sha256": "d3cc5c23a91e811f91e037003c9526c3738ac30217cf90590956d5b3bddf0c78",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_DownRight_Defence.png",
+      "sha256": "a27de8bba977650b35030cbde96402aaa4c55fe1263b910c866edacf9e553af9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_Down_Attack.png",
+      "sha256": "c11ad4325c3ec3e1bc96c7b1fe8af070c1fb4939e5c796798fdccff231b31e8a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_Down_Defence.png",
+      "sha256": "3c034bcde13fc8f8af3777a1eb22897bef77d2f70f52e150b689ba8587f1e7d3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_Idle.png",
+      "sha256": "2e393388a6c9f7b5ed30f5e5be7e65a89c5950cc7494a14c39157d567099367a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_Right_Attack.png",
+      "sha256": "3df553f94884cf03844bf70ddfc91999850c12ba6785e2ae5753ee31b0ad4f81",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_Right_Defence.png",
+      "sha256": "552135064820ac4b1d3991aab5f5201a86cd7654882c50acf6ca91820f4eb75d",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_Run.png",
+      "sha256": "0d2812a189bf059003e520686b7ba57371bf9be844fcc3ab24c6a4a9e27b9247",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_UpRight_Attack.png",
+      "sha256": "95b1259e47cccd388f79bf34b176366a27e851af5e4cfc95c18fa5b0d2620bb4",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_UpRight_Defence.png",
+      "sha256": "2ed59046b4841a7c8f00b59d6f4655ea595269a5d6224bea010fc177f8ebd84b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_Up_Attack.png",
+      "sha256": "ad73e4a9563c409db72d4a022ec8f3040fc0e3097befd073b62616ca5873cbc6",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Lancer/Lancer_Up_Defence.png",
+      "sha256": "5ca6a09874b76ddbf41c090aa69653fd1ef13f680e76573a603d581d7174ea67",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Monk/Heal.png",
+      "sha256": "04112e05cbeb94d3f885afc61d7605ab8bff85b40d9b9a8a9e82b8778581b3d7",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Monk/Heal_Effect.png",
+      "sha256": "2635dd7445d573e878b578ecce858484b4d2889268819ec35657cf416f8aaf33",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Monk/Idle.png",
+      "sha256": "c822f827bdd90660f4ca0f6eb9f1df58d74c64f8ed27f4adedaf73fc844bc22c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Monk/Run.png",
+      "sha256": "69461ac8476965007cf998627eb069f64700db2dc93870a80763e57f99c9f28a",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Idle Axe.png",
+      "sha256": "202a91ccece89166ac875bdd1ee64e7fd5f62e76949f8e52fe01a3279ae0b13e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Idle Gold.png",
+      "sha256": "6ca1ae49f50d39f6b403685dd10281ccb087463f03b8112448a435dc80618937",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Idle Hammer.png",
+      "sha256": "8d9b1a0b887172ce0dc2bd3af96ce5ab66d335346208bb4f35d4854e897b5c47",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Idle Knife.png",
+      "sha256": "8c61b7bdb7df84defdcde8c9ad8cad03d1024751cf1b1c947a74fe418374e9c3",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Idle Meat.png",
+      "sha256": "d112940ace383abfa6742692dedd31c1f6d92ed2e7ba1b8c7e82320214bac88b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Idle Pickaxe.png",
+      "sha256": "c2bbe1caf42402a9f3e1e2b80fc705e67f9fa2fdd082aa1d87833141cc5162a9",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Idle Wood.png",
+      "sha256": "3840bacfb2ba2dc765ef5c96a327616dc3f169c2470159e87d59f517604484eb",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Idle.png",
+      "sha256": "d4841c9c05bae44724dcb093b1741a602cc25a9b33a665a1d90046a4bd9eb55e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Interact Axe.png",
+      "sha256": "67b1f6b7993ab6534d535ad4a82a867bf7ded6ca4e79db467b7693b890b28131",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Interact Hammer.png",
+      "sha256": "eb347dbe32e956ed968465e3b1c9f7f204fc66028a3f6281fcb301a0926cd6b2",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Interact Knife.png",
+      "sha256": "98a0acd1c94876d950e62dfd2c00cdbb6387fa41bf92dae40dc1ab025259d20f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Interact Pickaxe.png",
+      "sha256": "d3020436545fb5891f401226f41fddae23af26151b8bae23b776693ae121a42c",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Run Axe.png",
+      "sha256": "cafa2c9145f5c375f28ae7e2c3a693005d64986861ecc1c01d122b7321a7395e",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Run Gold.png",
+      "sha256": "0d8ec7b1430eb91ec3586cc3e251632008e102302885357fb44e9e66ad50b9bc",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Run Hammer.png",
+      "sha256": "6c2c2e90850b2f2d4e53ad0bcd279002741275b86caacdabad6171e227940293",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Run Knife.png",
+      "sha256": "94b61a5134e3514d65290f559b885816d154d62ecfe9fc7a27634d76b25cf274",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Run Meat.png",
+      "sha256": "4770f3a79e0b918c1b0e8ca524ab01c9b8c7c7aa6f2194ad3d78491f0ee38950",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Run Pickaxe.png",
+      "sha256": "3c2f46449f06b1ebcf7d1d5e7506f8da8b42e76123bc7c4226dcdb03b34944a0",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Run Wood.png",
+      "sha256": "a8eab0bcf077b3b00338683c86e6cebd95ff1bbe76d9973cd9f6b8a96770d88b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Run.png",
+      "sha256": "346ed8754cbb011df0dfb1dd8f580513e8123c56fe8251c890410dc648ad0992",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Warrior/Warrior_Attack1.png",
+      "sha256": "870fbfb05971a708211e4227abcdbff7ea7473f40fdf42b876abd6f5592f4051",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Warrior/Warrior_Attack2.png",
+      "sha256": "469f8dc24e54c05191fda89da0a0eb2c39f32aef103ca495a378d0805e47095b",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Warrior/Warrior_Guard.png",
+      "sha256": "45112ee90061b94f9c85dc1d362807a2046bf9d6e30761b4b57b1c76fe09e08f",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Warrior/Warrior_Idle.png",
+      "sha256": "58095294e3a4e14d0962db6a1dfa1256855b3cd6efaa8b2b5d692eb0b4100618",
+      "imports": []
+    },
+    {
+      "path": "sprites/Tiny Swords/Units/Yellow Units/Warrior/Warrior_Run.png",
+      "sha256": "49de1b5ef610b0d362ca005772510a17bc0c97316d11bf2e37a3ee6073e354e7",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/icon-axe.png",
+      "sha256": "5a8a023ac2304b430847639747e9d5e5cc561a02954e885851c2042743f78170",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/icon-bow.png",
+      "sha256": "2ba00bd230522759836433de256bf3039e87029e82346e0f18b57b2a3e1282b7",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/icon-fireplace.png",
+      "sha256": "aeed0803117006e50cfa94222034c124d6e0633fde43f66b786418a60487a6e6",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/icon-hammer.png",
+      "sha256": "fb26f35de58bc796c53bad09ac5ddc9849fd654272dd0cbf16600e487e1de048",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/icon-mage.png",
+      "sha256": "351d08fcb533e43394578952ef9efac3083537b5e4e6900eed74cf6fd279b327",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/icon-minion.png",
+      "sha256": "0209e1cf7ebfabb5a05aaad535af4aff335cb72a296f79b8e60c48944a9ecd6e",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/icon-shield.png",
+      "sha256": "e31f240e25c1eb99708d748aef0e21c852e7e9556b35b1bd16e4c2fac0523cad",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/icon-sword.png",
+      "sha256": "9f4912fec54a66e2c18ffe2172372d1d8b5fb15f708fbd58524766b822051d08",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/resource-food.png",
+      "sha256": "a60b08a137732b299180facf5c139c67d58b059a61c43a6c324c3152d6378e00",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/resource-gold.png",
+      "sha256": "bda9e94bec952e78eb74f6a2269fdc1b97589d14defc4c52bce2408daa0fa9f6",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/resource-spark.png",
+      "sha256": "4f9b2df4a0711991945b5d0f108bb8a79b437776596ee2c87b9259e1b54268f1",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/resource-stone.png",
+      "sha256": "7a4f0129c3db1f126da6244c41f6bc7758dfbda6c5a2d460d243721553679918",
+      "imports": []
+    },
+    {
+      "path": "sprites/ui/resource-wood.png",
+      "sha256": "845c04d49cd15b35d6c5bf2cd73a7231c64d7d33970309a7b640cbeb5330533c",
       "imports": []
     },
     {
@@ -358,6 +4333,11 @@
     {
       "path": "tsconfig.json",
       "sha256": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808",
+      "imports": []
+    },
+    {
+      "path": "tsconfig.node.json",
+      "sha256": "2fba2f25e1859f193b54edef5d2d2cd08cae2a37fab64c08699f6f8672bea2cc",
       "imports": []
     },
     {
