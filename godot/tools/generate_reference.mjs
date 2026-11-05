@@ -27,7 +27,47 @@ try {
   const economy = await moduleAt('economyConfig');
   const { TECHNOLOGIES } = await moduleAt('technologyConfig');
   const { PROGRESSION_BALANCE } = await moduleAt('progression');
+  const navigation = await moduleAt('minionNavigation');
+  const idle = await moduleAt('minionIdle');
+  const { chooseEntityCalls } = await moduleAt('minionAwareness');
+  const { assignCombatPositions } = await moduleAt('minionCombatPositions');
+  const rules = await moduleAt('survivalRules');
+  const projection = await moduleAt('stepSimulation'); // Exported pure geometry only.
   const seeds = ['', 'totem-tribes-hito-2a', 'migration-parity-42', 'España 🌲 tótem'];
+  const allowed = p => p.x >= 2 && p.x <= 158 && p.y >= 2 && p.y <= 158;
+  const agent = (id, x, y, vx, vy, fixed = false) => ({id, position:{x,y}, velocity:{x:vx,y:vy}, tickVelocity:{x:0,y:0}, stopAfterSeconds:1, fixed, priority:fixed ? 3 : 1});
+  const navCases = [];
+  for (let index = 0; index < 16; index++) {
+    const input = {agent:agent('b',80,80,3,0), destination:{x:84,y:80}, speed:3, deltaSeconds:0.05,
+      neighbors:index === 0 ? [] : [agent('a',80.5+index*0.1,80+(index%3-1)*0.6,-3,0,index%2===0)],
+      preferredSide:index%3-1, previousVelocity:{x:3,y:0}};
+    navCases.push({input, result:navigation.chooseNavigationStep({...input,isAllowed:allowed}),
+      yieldTarget:navigation.idleYieldTarget(input.agent,input.neighbors)});
+  }
+  const routes = [[],[{id:'worker',position:{x:82,y:80}}],
+    [{id:'worker-1',position:{x:82,y:80}},{id:'worker-2',position:{x:83.3,y:80.3}}]]
+    .map(obstacles => ({start:{x:80,y:80},goal:{x:85,y:80},obstacles,
+      result:navigation.planMinionRoute({x:80,y:80},{x:85,y:80},obstacles,allowed)}));
+  const idleCases = seeds.flatMap(seed => [0,1,8].flatMap(step => [
+    {center:{x:80,y:80},commandRadius:10,minimumCoordinate:2,maximumCoordinate:158},
+    {center:{x:3,y:3},commandRadius:10,minimumCoordinate:2,maximumCoordinate:158}]
+    .map(area => { const position={x:area.center.x+4,y:area.center.y};
+      const neighbors=[{position:{x:area.center.x+5,y:area.center.y+2}}];
+      return {seed,step,id:'unit-a',position,area,neighbors,
+        destination:idle.chooseIdleDestination(seed,'unit-a',step,position,area,neighbors),
+        wait:idle.idleWaitSeconds(seed,'unit-a',step),entry:idle.totemRangeEntry(position,area)}; })));
+  const combatSlots = [1,2,6,8].map(count => {
+    const target={x:80,y:80};
+    const attackers=Array.from({length:count},(_,index)=>({id:`u${index}`,position:{x:84,y:80+index},range:index%3===0?5:1,ranged:index%3===0,offset:index===1?{x:0.98,y:0}:null}));
+    const occupied=[{x:79,y:80}];
+    return {target,attackers,occupied,result:Object.fromEntries(assignCombatPositions(target,attackers,occupied,(_,point)=>allowed(point)))};
+  });
+  const awareness = [true,false].map(available => {
+    const units=[{id:'detector',position:{x:80,y:80},available:false,canFight:false,canHunt:false,currentKind:'idle'},
+      {id:'responder',position:{x:120,y:80},available,canFight:true,canHunt:true,currentKind:'idle'}];
+    const entities=[{id:'enemy',kind:'combat',position:{x:82,y:80},isAlive:true},{id:'rabbit',kind:'hunt',position:{x:81,y:80},isAlive:true}];
+    return {units,entities,result:Object.fromEntries(chooseEntityCalls(units,entities,18,18))};
+  });
   const reference = {
     description: 'Read-only TypeScript data reference. No gameplay loop executed.',
     random: seeds.map(seed => {
@@ -35,6 +75,15 @@ try {
       return { seed, uints: Array.from({ length: 12 }, () => random.nextUint()) };
     }),
     initialStates: seeds.map(seed => createInitialState(seed)),
+    support: {navigation:navCases,routes,idle:idleCases,combatSlots,awareness,
+      projection:[{x:80,y:80},{x:80.001,y:80},{x:-5,y:170},{x:100,y:120}].map(position=>({position,
+        clearance:projection.projectOutsideTotemClearance(position,{x:80,y:80},'unit-a'),
+        recruitment:projection.projectRecruitmentPosition(position,{x:80,y:80})})),
+      gathering:seeds.map(seed=>{
+        const state=createInitialState(seed);
+        const input={role:'gatherer',unitPosition:{x:80,y:80},totemPosition:state.totem.position,commandRadius:10,cargo:state.units[0].cargo,resources:state.resources,toolLevels:state.toolLevels};
+        return {input,result:rules.chooseGatherTask(input)};
+      })},
     economy: {
       recruitment: Array.from({ length: 10 }, (_, population) => economy.getGathererRecruitmentCost(population)),
       specializations: Object.fromEntries(['axe', 'bow', 'hammer', 'sword', 'mage'].map(item => [item, {

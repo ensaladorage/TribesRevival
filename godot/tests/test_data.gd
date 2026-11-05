@@ -5,6 +5,12 @@ const Random = preload("res://scripts/simulation/seeded_random.gd")
 const State = preload("res://scripts/simulation/game_state.gd")
 const Economy = preload("res://scripts/simulation/economy.gd")
 const Progression = preload("res://scripts/simulation/progression.gd")
+const Navigation = preload("res://scripts/simulation/navigation.gd")
+const Idle = preload("res://scripts/simulation/minion_idle.gd")
+const CombatPositions = preload("res://scripts/simulation/combat_positions.gd")
+const Awareness = preload("res://scripts/simulation/minion_awareness.gd")
+const Rules = preload("res://scripts/simulation/survival_rules.gd")
+const Movement = preload("res://scripts/simulation/minion_movement.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -23,6 +29,7 @@ func _initialize() -> void:
 		_equal(actual, expected, "initial: " + expected.seed)
 	_test_economy(reference.economy)
 	_test_transactions()
+	_test_support(reference.support)
 	if failures.is_empty():
 		print("PASS data parity: %d comparisons against TypeScript; 4 complete initial worlds; no gameplay ticks" % checks)
 		quit(0)
@@ -31,6 +38,29 @@ func _initialize() -> void:
 			push_error(failure)
 		print("FAIL data parity: %d mismatches" % failures.size())
 		quit(1)
+
+func _allowed(point: Dictionary) -> bool:
+	return point.x >= 2 and point.x <= 158 and point.y >= 2 and point.y <= 158
+
+func _test_support(reference: Dictionary) -> void:
+	for sample in reference.projection:
+		_equal(Movement.outside_totem(sample.position, {"x": 80, "y": 80}, "unit-a"), sample.clearance, "totem clearance")
+		_equal(Movement.project_within(sample.position, {"x": 80, "y": 80}, 15), sample.recruitment, "recruitment projection")
+	for sample in reference.navigation:
+		_equal(Navigation.choose_step(sample.input, _allowed), sample.result, "navigation step")
+		_equal(Navigation.idle_yield_target(sample.input.agent, sample.input.neighbors), sample.yieldTarget, "yield")
+	for sample in reference.routes:
+		_equal(Navigation.plan_route(sample.start, sample.goal, sample.obstacles, _allowed), sample.result, "visibility route")
+	for sample in reference.idle:
+		_equal(Idle.choose_destination(sample.seed, sample.id, sample.step, sample.position, sample.area, sample.neighbors), sample.destination, "idle destination")
+		_equal(Idle.wait_seconds(sample.seed, sample.id, sample.step), sample.wait, "idle wait")
+		_equal(Idle.range_entry(sample.position, sample.area), sample.entry, "range entry")
+	for sample in reference.combatSlots:
+		_equal(CombatPositions.assign(sample.target, sample.attackers, sample.occupied, func(_attacker, point): return _allowed(point)), sample.result, "combat positions")
+	for sample in reference.awareness:
+		_equal(Awareness.choose_calls(sample.units, sample.entities, 18, 18), sample.result, "entity calls")
+	for sample in reference.gathering:
+		_equal(Rules.choose_gather_task(sample.input), sample.result, "gather selection")
 
 func _test_economy(reference: Dictionary) -> void:
 	for population in reference.recruitment.size():

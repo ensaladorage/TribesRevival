@@ -19,6 +19,9 @@ func _init(seed_text: String) -> void:
 func _hash_code(code: int) -> void:
 	_state = ((_state ^ code) * 16777619) & MASK
 
+func seed_hash() -> int:
+	return _state
+
 static func _imul(first: int, second: int) -> int:
 	# Split into 16-bit limbs to avoid signed 64-bit overflow.
 	var low := (first & 0xffff) * (second & 0xffff)

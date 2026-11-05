@@ -3,16 +3,25 @@ extends RefCounted
 ## Fixed-step driver. No scene, mesh, Input, camera, or UI dependencies.
 
 const State = preload("res://scripts/simulation/game_state.gd")
+const Movement = preload("res://scripts/simulation/minion_movement.gd")
+const Work = preload("res://scripts/simulation/work_system.gd")
 const FIXED_DT := 1.0 / 20.0
 const MAX_STEPS_PER_FRAME := 4
 
 var state: Dictionary
 var speed_multiplier := 1
 var accumulator := 0.0
+var previous_positions := {}
 var _actions: Array[Dictionary] = []
 
 func _init(seed_text: String = State.DEFAULT_SEED) -> void:
 	state = State.create_initial(seed_text)
+	_capture_positions()
+
+func _capture_positions() -> void:
+	previous_positions.clear()
+	for actor in state.units + state.barbarians + state.animals:
+		previous_positions[actor.id] = actor.position.duplicate()
 
 func enqueue(action: Dictionary) -> void:
 	_actions.append(action.duplicate(true))
@@ -21,11 +30,15 @@ func advance(frame_seconds: float) -> void:
 	accumulator = minf(accumulator + minf(frame_seconds, 0.25) * speed_multiplier, FIXED_DT * MAX_STEPS_PER_FRAME)
 	var steps := 0
 	while accumulator >= FIXED_DT and steps < MAX_STEPS_PER_FRAME:
+		_capture_positions()
 		for action in _actions:
 			_apply_action(action)
 		_actions.clear()
 		if state.phase == "playing":
 			state.tick += 1
+			var frame := Movement.create_frame(state, FIXED_DT)
+			Work.update_tribe(state, FIXED_DT, frame)
+			Movement.resolve_spacing(state)
 		accumulator -= FIXED_DT
 		steps += 1
 

@@ -2,11 +2,14 @@ extends Node3D
 ## Godot entry point. Input produces semantic actions; nodes only read state.
 
 const Session = preload("res://scripts/simulation/game_session.gd")
+const WorldView = preload("res://scripts/view/world_view.gd")
 var session := Session.new()
+var world_view := WorldView.new()
 var dragging := false
 var debug_visible := false
 var debug_label: Label
 var pause_overlay: ColorRect
+var inventory_label: Label
 @onready var camera: Camera3D = $Camera3D
 @onready var totem_view: MeshInstance3D = $Totem
 
@@ -20,6 +23,8 @@ func _ready() -> void:
 	var world_environment := WorldEnvironment.new()
 	world_environment.environment = environment
 	add_child(world_environment)
+	add_child(world_view)
+	world_view.setup(session.state)
 	_create_overlay()
 	_sync_view()
 
@@ -83,10 +88,13 @@ func _end_drag() -> void:
 	camera.recentering = true
 
 func _sync_view() -> void:
+	world_view.sync(session.state, session.previous_positions, session.accumulator / Session.FIXED_DT)
 	var totem: Dictionary = session.state.totem
 	totem_view.position = Vector3(float(totem.position.x), 1.6 + (0.7 if totem.isCarried else 0.0), float(totem.position.y))
 	pause_overlay.visible = session.state.phase == "paused"
 	debug_label.text = "Tick %s · %s · velocidad ×%s\nTótem %.2f, %.2f" % [session.state.tick, session.state.phase, session.speed_multiplier, totem.position.x, totem.position.y]
+	var amounts: Dictionary = session.state.inventory.amounts
+	inventory_label.text = "Comida %s   Madera %s   Piedra %s   Brillo %s   Oro %s\nNivel %s · XP %s / %s" % [amounts.food, amounts.wood, amounts.stone, amounts.spark, amounts.gold, session.state.progression.level, session.state.progression.experience, session.state.progression.experienceToNextLevel]
 
 func _create_overlay() -> void:
 	var overlay := CanvasLayer.new()
@@ -97,6 +105,10 @@ func _create_overlay() -> void:
 	hints.text = "TRIBES REVIVAL\nArrastra el tótem · Rueda: zoom · Esc: pausa · 1/2/3: velocidad · Insert: debug"
 	hints.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	overlay.add_child(hints)
+	inventory_label = Label.new()
+	inventory_label.position = Vector2(20, 65)
+	inventory_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.add_child(inventory_label)
 	pause_overlay = ColorRect.new()
 	pause_overlay.color = Color(0.05, 0.08, 0.12, 0.6)
 	pause_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -109,7 +121,7 @@ func _create_overlay() -> void:
 	pause_overlay.add_child(paused_text)
 	var panel := VBoxContainer.new()
 	panel.name = "Debug"
-	panel.position = Vector2(20, 90)
+	panel.position = Vector2(20, 135)
 	panel.visible = false
 	overlay.add_child(panel)
 	debug_label = Label.new()

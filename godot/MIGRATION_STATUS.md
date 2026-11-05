@@ -6,8 +6,8 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
 - Fase actual: F5 (IA/recolección); F2 sigue abierta por pendientes manuales.
-- Próxima tarea ejecutable: portar geometría/navegación/idle/reglas de tareas,
-  integrar seguimiento y representar el mundo generado.
+- Próxima tarea ejecutable: F6, portar conflicto/combate/fauna, clima y
+  hogueras; F5 queda pendiente de playtest y feedback visual.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -21,7 +21,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F2 controles | Cámara/arrastre/zoom/pausa/velocidad/debug implementados; flecha, ajustes y revisión manual pendientes |
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
-| F5 IA/recolección | Pendiente |
+| F5 IA/recolección | Implementada base, seguimiento/idle/navegación/trabajo; pendiente revisión manual e integración de conflicto F6 |
 | F6 combate/clima | Pendiente |
 | F7 compras/equipo | Pendiente |
 | F8 UI/guardado | Pendiente |
@@ -53,8 +53,8 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   Importación y arranque estructural correctos: 4 scripts/1 escena, sin ticks.
   Informe `reports/f2-validation.log`. Sin playtest. Falta flecha de arrastre,
   sliders de zoom y revisión manual; F2 no se declara completada.
-- Mientras no se migre formación (F5), `totem.moving` conserva la orden de
-  marcha después de soltar; hay unidades en el estado, todavía sin vista ni comportamiento autónomo.
+- F5 incorpora formación y libera la orden de marcha al llegar las unidades.
+  Combate, fauna móvil, clima y hogueras todavía no están conectados.
 
 - F3: portados FNV-1a UTF-16/Mulberry32 bit a bit, 23 biomas por mundo Hito 3,
   nodos y rendimientos, ramitas, decoración, cinco bárbaros, seis conejos,
@@ -73,3 +73,20 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   fallidas/exitosas y límites de nivel/recompra/requisito tecnológico.
   `npm test -- src/simulation/economyConfig.test.ts`: 4/4 pruebas puras.
   Informe `reports/f4-validation.log`; originales intactos; Vite HTTP 200.
+
+- F5a: portadas reglas puras de tareas/afinidad, navegación continua, grafo
+  de visibilidad, continuidad de evasión, idle, llamadas de entidades y
+  posiciones de combate. Ordenación estable explícita donde TS la garantiza.
+- F5b: seguimiento 10 m/s, retorno al rango 8 m/s, trabajo 6 m/s e idle
+  3 m/s; tickets y llamadas de recursos, acciones transaccionales, drops
+  físicos unitarios, recolección al inventario y XP. Cancelación y separación
+  residual respetan tótem/trabajadores. Vista provisional del mundo y actores
+  con interpolación entre ticks; contadores provisionales de inventario/XP.
+- F5 verificación técnica: editor e inicialización estructural de 18 scripts
+  y 1 escena sin errores, 11.766 comparaciones de datos/reglas/geométría
+  contra TS, incluyendo cruces, rutas con obstáculos, idle/bordes, llamadas,
+  reservas de combate y proyección de reclutamiento/despeje del tótem.
+  Informe `reports/f5-work-validation.log`. Cero ticks de gameplay automatizados.
+- F5 NO completada: revisión manual de navegación/recolección con 2/8
+  minions pendiente; llamadas de combate y saqueo esperan integración F6;
+  herramientas/vida/efectos aún no tienen su representación final.
