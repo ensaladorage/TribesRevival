@@ -9,6 +9,7 @@ const Rules = preload("res://scripts/simulation/survival_rules.gd")
 const Progression = preload("res://scripts/simulation/progression.gd")
 const ITEM_NAMES := {"gatherer": "Recolector", "axe": "Leñador", "bow": "Cazador", "sword": "Guardián", "hammer": "Artesana", "mage": "Mago", "campfire": "Hoguera", "shield": "Escudo"}
 const RESOURCE_NAMES := {"food": "Comida", "wood": "Madera", "stone": "Piedra", "spark": "Brillo", "gold": "Oro"}
+const ITEM_HINTS := {"gatherer": "Recluta un minion básico. Arrastra al terreno.", "axe": "Convertir en Leñador. Arrastra sobre un Recolector.", "bow": "Convertir en Cazador. Arrastra sobre un Recolector.", "sword": "Convertir en Guardián. Arrastra sobre un Recolector.", "hammer": "Convertir en Artesana para reunir Piedra y Brillo. Arrastra sobre un Recolector.", "mage": "Convertir en Mago. Arrastra sobre un Recolector.", "campfire": "Cura a los minions cercanos consumiendo comida. Arrastra al terreno.", "shield": "Escudo +1 HP. Arrastra sobre un Guardián sin escudo."}
 var _items := {}
 var _upgrades := {}
 var _technologies := {}
@@ -195,25 +196,40 @@ func update_state(state: Dictionary) -> void:
 	var gatherers := Rules.count_role(state.units, "gatherer")
 	for item in _items:
 		var cost: Dictionary
+		var reason := ""
 		var available: bool = state.phase == "playing"
 		if item == "gatherer":
 			cost = Economy.recruitment_cost(state.units.size())
 			available = available and state.units.size() < 8
+			if state.units.size() >= 8:
+				reason = "Límite de tribu alcanzado"
 		elif item == "campfire":
 			cost = {"wood": 2}
 			available = available and state.campfires.size() < 2
+			if state.campfires.size() >= 2:
+				reason = "Límite de hogueras alcanzado"
 		elif item == "shield":
 			var shielded: int = state.units.filter(func(unit): return unit.role == "guardian" and unit.hasShield).size()
 			cost = Economy.shield_cost(shielded)
 			_items[item].visible = "shield" in state.progression.unlockedTechnologies
 			available = available and "shield" in state.progression.unlockedTechnologies and Rules.count_role(state.units, "guardian") > shielded
+			if Rules.count_role(state.units, "guardian") == 0:
+				reason = "Necesitas un guardián"
+			elif Rules.count_role(state.units, "guardian") <= shielded:
+				reason = "Todos los guardianes ya tienen escudo"
 		else:
 			var definition: Dictionary = Economy.SPECIALIZATIONS[item]
 			var count := Rules.count_role(state.units, definition.role)
 			cost = Economy.specialization_cost(item, count)
 			available = available and gatherers > 0 and count < definition.limit
+			if gatherers == 0:
+				reason = "Necesitas un recolector"
+			elif count >= definition.limit:
+				reason = "Máximo alcanzado"
 			if item in ["axe", "hammer"]:
 				available = available and Rules.can_convert_last_gatherer(state.units)
+				if reason.is_empty() and not Rules.can_convert_last_gatherer(state.units):
+					reason = "No puedes convertir a tu último recolector"
 			if item in ["hammer", "mage"]:
 				var technology := "artisan" if item == "hammer" else "mage"
 				_items[item].visible = technology in state.progression.unlockedTechnologies
@@ -223,7 +239,13 @@ func update_state(state: Dictionary) -> void:
 			_items[item].text = "%s +%s\n%s" % [ITEM_NAMES[item], state.toolLevels[item], _cost_text(cost)]
 			_apply_level_color(_items[item], state.toolLevels[item])
 		_items[item].disabled = not available or not Economy.can_afford(amounts, cost)
-		_items[item].tooltip_text = "Arrastra al terreno" if item in ["gatherer", "campfire"] else "Arrastra sobre un Guardián" if item == "shield" else "Arrastra sobre un Recolector"
+		var tooltip := "%s\n%s\nCoste: %s" % [ITEM_NAMES[item], ITEM_HINTS[item], _cost_text(cost)]
+		if not reason.is_empty():
+			tooltip += "\n" + reason
+		var missing := Economy.missing_resources(amounts, cost)
+		if not missing.is_empty():
+			tooltip += "\nFalta: " + _cost_text(missing)
+		_items[item].tooltip_text = tooltip
 	for technology in Progression.TECHNOLOGIES:
 		var unlocked: bool = technology.id in state.progression.unlockedTechnologies
 		_technologies[technology.id].text = "%s · %s" % [technology.name, "Desbloqueada" if unlocked else "%s punto" % technology.cost]

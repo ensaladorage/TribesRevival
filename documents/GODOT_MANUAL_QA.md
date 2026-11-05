@@ -33,8 +33,14 @@ que la segunda pulsación de reclutar se perdía y que el resto funcionaba.
 Se registra éxito básico de equipo, mejora/tecnología y combate con daño y
 botín; no se acredita aún alcanzar ocho unidades ni una plataforma concreta.
 La pérdida de pulsaciones se reprodujo en el despacho nativo de input y se
-corrigió dejando llegar la suelta al botón del HUD. Pendiente repetir manualmente
-reclutamientos seguidos, tanto soltando sobre el mapa como cancelando sobre el HUD.
+corrigió dejando llegar la suelta al botón del HUD. El usuario confirmó después
+«Ya funciona» y especificó que las pruebas reportadas se hicieron en el
+**ejecutable Linux**. Quedan validados esos recorridos en Linux, incluido
+reclutamiento consecutivo. No se da por probado el límite de ocho ni cancelar
+sobre el HUD sin una comprobación específica.
+
+Los tooltips ahora incluyen motivos de bloqueo y recursos faltantes derivados
+de las reglas existentes. Su revisión visual queda pendiente junto al HUD.
 
 | Área | Comprobación y resultado esperado |
 |---|---|

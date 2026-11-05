@@ -6,9 +6,12 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
 - Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
-- Próxima tarea ejecutable: repetir reclutamiento consecutivo tras corregir
-  la suelta del botón; ejecutar builds nativos y completar QA restante antes
-  de cerrar F2/F5/F6/F7/F8/F9. Plataforma de pruebas manuales aún sin identificar.
+- Próxima tarea ejecutable: completar controles/casos avanzados de QA y
+  comprobar Windows. Usuario confirma reclutamiento consecutivo corregido;
+  las pruebas manuales reportadas corresponden al ejecutable Linux.
+- Incidencia activa: al arrastrar el tótem por el borde de la pantalla en
+  Linux, el usuario reporta lag intenso. F2 sigue abierta. Investigar antes
+  de cerrar controles; no alterar velocidades ni reglas para ocultarlo.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -24,9 +27,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
 | F5 IA/recolección | Usuario confirma seguimiento y recolección con aumento de inventario; casos de 8 unidades/obstáculos/interrupciones pendientes |
 | F6 combate/clima | Usuario confirma combate con daño/botín; clima/respawn/hogueras/derrota pendientes |
-| F7 compras/equipo | Usuario confirma equipo/mejora/tecnología; fallo al repetir reclutamiento corregido técnicamente, repetición manual pendiente |
+| F7 compras/equipo | Usuario confirma equipo/mejora/tecnología y reclutamiento consecutivo en Linux; límites/todas las clases pendientes |
 | F8 UI/guardado | Usuario confirma Tutorial, Guardar/Cargar y retorno al principal; HUD/slots exhaustivos y Esc pendientes |
-| F9 integración/exportación | Linux/Windows/web exportados y empaquetados; menú Linux inicia headless; validación gráfica/manual pendiente |
+| F9 integración/exportación | Tres builds exportados; usuario confirma arranque y recorridos básicos en ejecutable Linux; Windows/web y QA restante pendientes |
 
 ## Pruebas y límites
 
@@ -261,3 +264,25 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   estructura, 101 comprobaciones de menú, input consecutivo, 15.325 de datos,
   tres exports y arranque headless Linux. Informe
   `reports/placement-release-export-all.log`.
+
+## Confirmación manual de reclutamiento y plataforma
+
+- El usuario responde «Ya funciona» al repetir el reclutamiento tras el
+  arreglo. El defecto reportado queda corregido también por evidencia manual.
+- Confirma «Ejecutable Linux» como versión usada para las pruebas reportadas:
+  menús/guardado básico, inicio, arrastre, seguimiento, recolección, compras/
+  equipo/mejora/tecnología, combate con daño/botín y repetición de reclutamiento.
+- Linux acredita arranque gráfico y esos recorridos. No se extrapola a
+  Windows/web, todos los slots o los casos extremos de QA aún pendientes.
+
+## Feedback de disponibilidad del HUD
+
+- Se cotejan los tooltips de `BabylonGame.ts` y el GDD: faltaban los motivos
+  de bloqueo del último recolector, ausencia de objetivos y límites de
+  tribu/clase/hogueras/escudos. Se presentan junto con coste y recursos
+  faltantes calculados por la economía existente, sin cambiar disponibilidad
+  ni transacciones. Se conservan las instrucciones de arrastre.
+- Aspecto y tooltips manuales pendientes; no se automatiza validación visual.
+- `tools/export.sh` completo correcto: importación, estructura, regresiones
+  de menús/input, 15.325 comparaciones de datos, Linux/Windows/web y arranque
+  headless Linux. Informe `reports/hud-reasons-export-all.log`.
