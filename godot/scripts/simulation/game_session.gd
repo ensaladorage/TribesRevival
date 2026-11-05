@@ -5,6 +5,9 @@ extends RefCounted
 const State = preload("res://scripts/simulation/game_state.gd")
 const Movement = preload("res://scripts/simulation/minion_movement.gd")
 const Work = preload("res://scripts/simulation/work_system.gd")
+const Conflict = preload("res://scripts/simulation/conflict_system.gd")
+const Survival = preload("res://scripts/simulation/survival_system.gd")
+const Weather = preload("res://scripts/simulation/weather_system.gd")
 const FIXED_DT := 1.0 / 20.0
 const MAX_STEPS_PER_FRAME := 4
 
@@ -34,11 +37,21 @@ func advance(frame_seconds: float) -> void:
 		for action in _actions:
 			_apply_action(action)
 		_actions.clear()
-		if state.phase == "playing":
+		if state.units.is_empty() and state.phase != "victory":
+			state.phase = "defeat"
+		if state.phase not in ["paused", "victory"]:
 			state.tick += 1
-			var frame := Movement.create_frame(state, FIXED_DT)
-			Work.update_tribe(state, FIXED_DT, frame)
-			Movement.resolve_spacing(state)
+			if state.phase == "defeat":
+				Survival.age_effects(state, FIXED_DT)
+			else:
+				Weather.update(state, FIXED_DT)
+				Survival.update_cooldowns(state, FIXED_DT)
+				var frame := Movement.create_frame(state, FIXED_DT)
+				Conflict.update(state, FIXED_DT, frame)
+				Work.update_tribe(state, FIXED_DT, frame)
+				Movement.resolve_spacing(state)
+				Survival.update_campfires(state, FIXED_DT)
+				Survival.age_effects(state, FIXED_DT)
 		accumulator -= FIXED_DT
 		steps += 1
 

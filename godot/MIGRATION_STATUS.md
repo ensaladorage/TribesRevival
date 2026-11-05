@@ -5,9 +5,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 ## Continuidad
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
-- Fase actual: F5 (IA/recolección); F2 sigue abierta por pendientes manuales.
-- Próxima tarea ejecutable: F6, portar conflicto/combate/fauna, clima y
-  hogueras; F5 queda pendiente de playtest y feedback visual.
+- Fase actual: F6 (combate/clima) implementada en lógica; F7 comienza con compras.
+- Próxima tarea ejecutable: F7, conectar compras/equipo/transformaciones y
+  sus interacciones; F2/F5/F6 conservan pendientes de revisión manual.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -22,7 +22,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
 | F5 IA/recolección | Implementada base, seguimiento/idle/navegación/trabajo; pendiente revisión manual e integración de conflicto F6 |
-| F6 combate/clima | Pendiente |
+| F6 combate/clima | Lógica integrada; efectos/vida/alertas/nubes/sonido y playtest pendientes |
 | F7 compras/equipo | Pendiente |
 | F8 UI/guardado | Pendiente |
 | F9 integración/exportación | Pendiente |
@@ -37,7 +37,8 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   inicialización de escena sin frames de gameplay; 42 originales intactos).
   `git diff --check` correcto. Informes locales: `reports/f1-validation.log`.
 - Sin validación manual ni prueba de gameplay; no se afirma paridad todavía.
-- Export templates, builds Windows/Linux y web todavía no comprobados.
+- Export templates: carpeta local vacía verificada; faltan templates 4.7.2.
+  Builds Windows/Linux/web todavía pendientes.
 - Pendientes de diseño heredados: cuevas/jefes/regiones y costes de Pícaro/
   Paladín. No bloquean la migración de los sistemas que sí existen.
 - El original mantiene guardados del navegador; portarlos a `user://` no
@@ -54,7 +55,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   Informe `reports/f2-validation.log`. Sin playtest. Falta flecha de arrastre,
   sliders de zoom y revisión manual; F2 no se declara completada.
 - F5 incorpora formación y libera la orden de marcha al llegar las unidades.
-  Combate, fauna móvil, clima y hogueras todavía no están conectados.
+  F6 conecta combate, fauna móvil, clima y curación; falta presentar su feedback.
 
 - F3: portados FNV-1a UTF-16/Mulberry32 bit a bit, 23 biomas por mundo Hito 3,
   nodos y rendimientos, ramitas, decoración, cinco bárbaros, seis conejos,
@@ -90,3 +91,15 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - F5 NO completada: revisión manual de navegación/recolección con 2/8
   minions pendiente; llamadas de combate y saqueo esperan integración F6;
   herramientas/vida/efectos aún no tienen su representación final.
+
+- F6a: lógica de combate/caza/fuga, plazas, reservas de movimiento enemigo,
+  patrullas, reaparición 60/30 s, botín/saqueo, alertas/efectos temporales,
+  curación por hoguera, derrota y clima con reposición de madera/comida.
+  Orden 20 Hz: clima → cooldowns → conflicto → trabajo → separación →
+  hogueras → efectos. Los valores provienen del código vigente.
+- F6 verificación técnica: importación/21 scripts/1 escena sin errores;
+  paridad de estadísticas, daño y curación contra TS añadida a las reglas
+  puras. Informe `reports/f6-validation.log`. No se ejecutó combate, clima
+  ni gameplay automatizado; F6 no se declara completa.
+- F6 pendiente: barras de vida, alertas, animaciones/sonido, cadáveres,
+  hogueras y nubes visibles; probar manualmente daño/retirada/respawn/lluvia.

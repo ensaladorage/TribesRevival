@@ -11,6 +11,7 @@ const CombatPositions = preload("res://scripts/simulation/combat_positions.gd")
 const Awareness = preload("res://scripts/simulation/minion_awareness.gd")
 const Rules = preload("res://scripts/simulation/survival_rules.gd")
 const Movement = preload("res://scripts/simulation/minion_movement.gd")
+const Combat = preload("res://scripts/simulation/combat_rules.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -30,6 +31,12 @@ func _initialize() -> void:
 	_test_economy(reference.economy)
 	_test_transactions()
 	_test_support(reference.support)
+	for sample in reference.combat.attacks:
+		_equal(Combat.minion_attack(sample.role, sample.level), sample.result, "attack statistics")
+	for sample in reference.combat.damage:
+		_equal(Combat.deal_damage(sample.source, sample.target, {"health": 4, "maxHealth": 4}, sample.amount), sample.result, "damage rule")
+	for sample in reference.combat.heal:
+		_equal(Combat.heal({"health": 2, "maxHealth": 4}, sample.amount), sample.result, "healing rule")
 	if failures.is_empty():
 		print("PASS data parity: %d comparisons against TypeScript; 4 complete initial worlds; no gameplay ticks" % checks)
 		quit(0)

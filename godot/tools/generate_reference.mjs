@@ -33,6 +33,7 @@ try {
   const { assignCombatPositions } = await moduleAt('minionCombatPositions');
   const rules = await moduleAt('survivalRules');
   const projection = await moduleAt('stepSimulation'); // Exported pure geometry only.
+  const combat = await moduleAt('survivalCombat');
   const seeds = ['', 'totem-tribes-hito-2a', 'migration-parity-42', 'España 🌲 tótem'];
   const allowed = p => p.x >= 2 && p.x <= 158 && p.y >= 2 && p.y <= 158;
   const agent = (id, x, y, vx, vy, fixed = false) => ({id, position:{x,y}, velocity:{x:vx,y:vy}, tickVelocity:{x:0,y:0}, stopAfterSeconds:1, fixed, priority:fixed ? 3 : 1});
@@ -75,6 +76,11 @@ try {
       return { seed, uints: Array.from({ length: 12 }, () => random.nextUint()) };
     }),
     initialStates: seeds.map(seed => createInitialState(seed)),
+    combat: {
+      attacks:['explorer','gatherer','lumberjack','hunter','guardian','artisan','mage'].flatMap(role=>[0,5,10].map(level=>({role,level,result:combat.getMinionAttackStats(role,level) ?? null}))),
+      damage:['minion','barbarian','animal'].flatMap(source=>['minion','barbarian','animal'].flatMap(target=>[-1,0,1,8].map(amount=>({source,target,amount,result:combat.dealDamage(source,target,{health:4,maxHealth:4},amount)})))),
+      heal:[-1,0,1,8].map(amount=>({amount,result:combat.healCombatant({health:2,maxHealth:4},amount)})),
+    },
     support: {navigation:navCases,routes,idle:idleCases,combatSlots,awareness,
       projection:[{x:80,y:80},{x:80.001,y:80},{x:-5,y:170},{x:100,y:120}].map(position=>({position,
         clearance:projection.projectOutsideTotemClearance(position,{x:80,y:80},'unit-a'),
