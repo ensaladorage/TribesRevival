@@ -6,9 +6,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
 - Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
-- Próxima tarea ejecutable: recoger la comprobación manual de hoguera,
-  lluvia y derrota/reinicio y la disponibilidad de Windows, solicitadas en
-  el chat; continuar los casos pendientes de controles/slots/preview.
+- Próxima tarea ejecutable: repetir legibilidad de HP al acercar/alejar en
+  el build Linux actualizado; continuar controles/slots/preview. Por decisión
+  del usuario, prueba manual de Windows aplazada; centrar QA en Linux.
 - Incidencias reportadas resueltas por confirmación manual en Linux:
   menús, segunda pulsación de reclutamiento y lag en los límites con 8 unidades.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
@@ -25,10 +25,10 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
 | F5 IA/recolección | Usuario confirma seguimiento/recolección y bordes con 8 unidades; cruces/llamadas/interrupciones pendientes |
-| F6 combate/clima | Usuario confirma combate con daño/botín; clima/respawn/hogueras/derrota pendientes |
+| F6 combate/clima | Usuario confirma combate, daño/botín, hoguera, lluvia y derrota/reinicio en Linux; huida/respawn pendientes |
 | F7 compras/equipo | Usuario confirma equipo/mejora/tecnología, reclutamiento consecutivo y uso de 8 unidades en Linux; preview/cancelación/clases pendientes |
-| F8 UI/guardado | Usuario confirma Tutorial, Guardar/Cargar y retorno al principal; HUD/slots exhaustivos y Esc pendientes |
-| F9 integración/exportación | Tres builds exportados; usuario confirma arranque y recorridos básicos en ejecutable Linux; Windows/web y QA restante pendientes |
+| F8 UI/guardado | Usuario confirma menús y guardado básico; HP ampliados tras su aviso, revisión manual pendiente; slots/Esc restantes pendientes |
+| F9 integración/exportación | Tres builds exportados; recorridos Linux confirmados; Windows manual aplazado por usuario, QA Linux restante pendiente |
 
 ## Pruebas y límites
 
@@ -314,3 +314,25 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - El usuario responde «Ahora esta perfecto» a repetir el recorrido cerca
   del límite con 8 unidades en Linux. La incidencia de lag queda cerrada por
   evidencia manual. Esto no acredita por extensión cada control de F2.
+
+## Supervivencia y legibilidad de HP
+
+- Al comprobar hoguera/curación, lluvia y derrota → Reiniciar en Linux,
+  el usuario confirma que funciona todo bien. Se registra ese recorrido de F6.
+- Reporta que la vida de los minions es demasiado pequeña. El indicador
+  provisional `Label3D` tenía 30 px de fuente a 0,006 m/px: aproximadamente
+  3,6 px en el zoom inicial a 720p, y menos al alejarse.
+- Presentación actualizada a fuente de 20 px con escala compensada según
+  altura ortográfica/viewport, manteniendo tamaño de pantalla al cambiar zoom.
+  Contorno oscuro, verde aliado/rojo enemigo y margen sobre el cuerpo que se
+  conserva al alejar la cámara. Sigue leyendo health/maxHealth del estado;
+  no cambian reglas de vida/daño/curación ni guardados.
+- No se ejecutan pruebas visuales automatizadas. Importación/inicialización
+  estructural y revisión manual posterior son evidencias distintas.
+- `tools/export.sh` correcto: 25 scripts/1 escena, 101 comprobaciones de
+  menú, input de cuatro pulsaciones, 15.342 comparaciones de datos, integridad
+  de 838 originales/13 iconos, tres exports y menú Linux headless. Informe
+  `reports/health-legibility-export-all.log`. Revisión visual de HP pendiente.
+- El usuario no dispone de Windows y pide centrarse en Linux por ahora.
+  Prueba Windows aplazada expresamente; el export sigue disponible y no se
+  declara probado en ese sistema. No reabrir esta petición durante QA Linux.

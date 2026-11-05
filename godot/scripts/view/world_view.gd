@@ -18,6 +18,8 @@ var _alert_player: AudioStreamPlayer
 var _alert_sound: AudioStreamWAV
 var _command_radius := 10.0
 var _totem_position := {"x": 80.0, "y": 80.0}
+var _health_pixel_size := 0.05
+var _health_screen_offset := Vector3(0, 0.9, 0)
 
 func setup(state: Dictionary) -> void:
 	for child in get_children():
@@ -49,6 +51,13 @@ func setup(state: Dictionary) -> void:
 func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float = 1.0) -> void:
 	_previous_positions = previous_positions
 	_alpha = alpha
+	var viewport := get_viewport()
+	var camera := viewport.get_camera_3d()
+	if camera != null and camera.projection == Camera3D.PROJECTION_ORTHOGONAL:
+		# KEEP_HEIGHT camera: one label pixel spans this many world metres.
+		# Compensate zoom so HP keeps a readable screen size like the original HUD.
+		_health_pixel_size = camera.size / maxf(viewport.get_visible_rect().size.y, 1.0)
+		_health_screen_offset = camera.global_basis.y * (18.0 * _health_pixel_size)
 	_command_radius = state.totem.commandRadius
 	_totem_position = state.totem.position
 	var active := {}
@@ -102,8 +111,12 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
 			health.name = "Health"
 			health.position.y = 2.1
 			health.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-			health.font_size = 30
-			health.pixel_size = 0.006
+			health.font_size = 20
+			health.outline_size = 4
+			health.outline_modulate = Color("10110f")
+			health.modulate = Color("e45c4f") if kind == "barbarian" else Color("83ed79")
+			health.no_depth_test = true
+			health.pixel_size = _health_pixel_size
 			node.add_child(health)
 		_create_role_tool(node, kind)
 		if kind not in ["barbarian", "rabbit"]:
@@ -125,7 +138,11 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
 		var radius := maxf(_command_radius, 0) * 1.05
 		node.get_node("DetectionRange").scale = Vector3(radius, 1, radius)
 	if node.has_node("Health"):
-		node.get_node("Health").text = "%s / %s" % [actor.health, actor.maxHealth]
+		var health: Label3D = node.get_node("Health")
+		health.text = "%s / %s" % [actor.health, actor.maxHealth]
+		health.position = Vector3(0, 1.5, 0) + _health_screen_offset
+		if not is_equal_approx(health.pixel_size, _health_pixel_size):
+			health.pixel_size = _health_pixel_size
 	if actor.get("hasShield", false) and not node.has_node("Shield"):
 		var shield := CylinderMesh.new()
 		shield.top_radius = 0.3

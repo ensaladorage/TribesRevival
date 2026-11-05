@@ -56,8 +56,18 @@ Tras reabrir el build actualizado para repetir el recorrido cerca del límite,
 también con 8 unidades, el usuario respondió «Ahora esta perfecto». La incidencia
 de lag queda resuelta manualmente en Linux; se acredita uso de ocho unidades
 y fluidez en ese recorrido. No se extrapola a todos los controles ni casos
-de navegación. La comprobación de hoguera/lluvia/derrota y disponibilidad de
-Windows se solicitó a continuación y sigue pendiente.
+de navegación.
+
+## Supervivencia y HP — Linux
+
+El usuario confirma curación con hoguera, lluvia y derrota → Reiniciar.
+Reporta que los indicadores de vida de los minions apenas se ven. Se amplía
+su presentación y se compensa el zoom para mantener el tamaño en pantalla,
+con contorno oscuro y colores aliados/enemigos. Pendiente su revisión manual:
+comprobar vida completa/dañada/curada, con escudo y en ambos extremos del zoom.
+
+El usuario no dispone de Windows y pide centrar las pruebas en Linux por
+ahora. Se aplaza esa prueba manual; el build Windows se conserva disponible.
 
 | Área | Comprobación y resultado esperado |
 |---|---|

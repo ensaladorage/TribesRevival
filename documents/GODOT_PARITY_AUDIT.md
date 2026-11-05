@@ -8,7 +8,9 @@ equivalencia funcional. La revisión manual está en `GODOT_MANUAL_QA.md`: el
 usuario confirma menús, arrastre/seguimiento/recolección y equipo/mejoras/
 tecnología/combate básicos y reclutamiento consecutivo corregido tras su aviso.
 Especifica que usó el ejecutable Linux y confirma corregido el lag en los
-bordes del mundo con 8 unidades. Los demás casos siguen pendientes.
+bordes del mundo con 8 unidades, así como hoguera, lluvia y derrota/reinicio.
+Windows manual aplazado por petición del usuario; QA se centra en Linux.
+Los demás casos siguen pendientes.
 La migración completa todavía no está acreditada.
 
 | Requisito | Evidencia actual | Falta para acreditarlo completamente |
@@ -19,13 +21,13 @@ La migración completa todavía no está acreditada.
 | Estado y mundo deterministas | PRNG bit exacto UTF-16/Mulberry32 y estados iniciales completos comparados con TS en 4 semillas, incluida Unicode/emoji | Vista/generación percibida en partida |
 | Tótem/minions/IA/navegación | `minion_movement.gd`, `navigation.gd`, `minion_idle.gd`, `work_system.gd`; funciones puras comparadas con TS; usuario confirma arrastre/seguimiento y bordes con 8 unidades | Cruces, llamadas, obstáculos e interrupciones de F5 |
 | Recolección/economía | Afinidades, tickets, llamadas, tiempos, drops unitarios, inventario y tablas portados; transacciones/reglas puras verificadas; usuario confirma recolección y aumento del inventario | Interrupción y continuidad en los casos restantes de QA |
-| Combate/salud/fauna/loot | `conflict_system.gd`, `combat_rules.gd`, `survival_system.gd`; estadísticas/daño/curación comparados con TS; usuario confirma combate básico con daño y botín | Huida, respawn, derrota y casos restantes de QA |
+| Combate/salud/fauna/loot | `conflict_system.gd`, `combat_rules.gd`, `survival_system.gd`; estadísticas/daño/curación comparados con TS; usuario confirma combate, daño/botín y derrota/reinicio | Huida, respawn y casos restantes de QA; HP ampliados pendientes de revisión visual |
 | Compras/equipo/legendarias | `commands.gd`, UI nativa y picking; cap 8, Mago único, proveedor de comida, Escudo y costes mixtos comparados con TS sin ticks; usuario confirma equipo, reclutamiento consecutivo y uso de 8 unidades en Linux | Resto de clases/escudo/preview/cancelación/feedback |
 | Herramientas/XP/tecnologías | Tablas 0–10, bonus, XP y tres tecnologías vigentes con requisitos/costes compartidos; usuario confirma mejora/tecnología básica; HUD de puntos y paneles alineado al original | Resto de niveles/requisitos y revisión manual del HUD actualizado |
-| Clima/hogueras | Sistemas lógicos portados en el orden original, vistas provisionales y audio | Lluvia/reposición, expiración/distancia/curación manuales |
+| Clima/hogueras | Sistemas portados en el orden original; usuario confirma lluvia y curación con hoguera en Linux | Casos específicos de reposición/expiración/distancia y restante QA |
 | HUD/menús/tutorial | Controles nativos, 13 iconos originales verificados; usuario confirma Tutorial, Guardar/Cargar y retorno al principal tras arreglo de callbacks; regresión aislada de señales y Esc | Resto del HUD, foco/teclado (incluido Esc corregido), tooltips, opacidad y legibilidad manuales |
 | Guardado local actual | Tres slots, JSON v17, metadatos, ida/vuelta aislada, compra tras carga, borrado individual; usuario confirma Guardar/Cargar básico en Linux | Tres slots, borrado/cancelación y persistencia tras reabrir manuales |
-| Exportación Windows/Linux | Presets x86_64, templates oficiales 4.7.2 verificados por SHA256; formatos PE/ELF confirmados; Linux inicia headless y usuario confirma recorridos funcionales en su ejecutable | Abrir gráficamente Windows y completar QA restante |
+| Exportación Windows/Linux | Presets x86_64, templates oficiales 4.7.2 verificados por SHA256; formatos PE/ELF confirmados; Linux inicia headless y usuario confirma recorridos funcionales | QA Linux restante; prueba Windows aplazada expresamente por el usuario |
 | Exportación web secundaria | Exportación actualizada HTML/JS/PCK/WASM sin threads, servida localmente (HTTP 200) | Revisar en navegador manualmente |
 | Pruebas permitidas | Importación/carga/inicialización, paridad/reglas puras, guardado actual; arranque del menú Linux sin entrar en partida | No sustituir el playtest del usuario por automatización de gameplay o imágenes |
 | Continuidad y commits | Plan/status en esta carpeta, commits locales por subhito técnico; sin push | Actualizar con evidencia manual y builds definitivos de la migración |

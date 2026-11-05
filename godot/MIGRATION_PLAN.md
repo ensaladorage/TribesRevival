@@ -66,6 +66,12 @@ permite continuar con módulos independientes según la autorización del usuari
 | F8 | HUD/menús/tutorial/sonido/debug y guardado local; depende F2–F7 | Tres slots con ida/vuelta actual, borrar solo tras confirmar; main/tutorial/load opacos, pausa translúcida, carga enfoca tótem; revisión manual UI |
 | F9 | Integración y exportación Windows/Linux; secundaria web | Exportaciones reales generadas con templates compatibles; Linux abre; Windows probado manualmente o limitación explícita que impide cierre; paridad completa y validación manual resuelta |
 
+Decisión del usuario (2026-11-05): centrar la validación manual en Linux;
+no dispone de Windows y su prueba no es importante por ahora. Se aplaza esa
+comprobación sin retirar el export descargable de Windows del objetivo ni
+atribuirle una validación funcional inexistente. Continuar con los pendientes
+de Linux; no volver a solicitar la prueba de Windows durante esta etapa.
+
 En F3 se adelanta generación porque la IA necesita el mundo real. F4 puede
 avanzar mientras F2 espera revisión manual. Los subhitos implementados no
 equivalen al cierre de una fase mayor.
