@@ -24,28 +24,28 @@ var screen := "main"
 var origin := "main"
 var slot_mode := "load"
 var has_unsaved_changes := false
-var _root: Control
-var _background: ColorRect
-var _content: VBoxContainer
+@export_group("Scene references")
+@export var layout_root: Control
+@export var background: ColorRect
+@export var page_host: Control
+var _content: Control
 var _slots: Array = []
 var _confirmation_return_screen := "pause"
 
 func _ready() -> void:
-	_root = $Layout
-	_background = $Layout/Background
 	show_main()
 
 func _clear(title: String, opaque: bool) -> void:
-	_root.show()
-	_background.color = opaque_background if opaque else overlay_background
+	layout_root.show()
+	background.color = opaque_background if opaque else overlay_background
 	if is_instance_valid(_content):
 		# An emitting button may belong to this page; detach, then free deferred.
 		_content.get_parent().remove_child(_content)
 		_content.queue_free()
 	_content = page_scenes[screen].instantiate()
-	$Layout/Center/Panel.add_child(_content)
+	page_host.add_child(_content)
 	_content.find_child("Title", true, false).text = title
-	$Layout/Center/Panel.theme_type_variation = StringName(_content.get_meta("panel_style", "MenuPanel"))
+	page_host.theme_type_variation = StringName(_content.get_meta("panel_style", "MenuPanel"))
 
 func _connect_button(node_name: String, callback: Callable) -> void:
 	_content.find_child(node_name, true, false).pressed.connect(callback)
@@ -91,7 +91,7 @@ func _confirm_main() -> void:
 
 func show_game() -> void:
 	screen = "game"
-	_root.hide()
+	layout_root.hide()
 
 func show_defeat() -> void:
 	screen = "defeat"

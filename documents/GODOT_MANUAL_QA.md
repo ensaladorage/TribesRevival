@@ -132,3 +132,21 @@ terminar la migración. Mantener Windows manual aplazado y centrarse en Linux.
   diferencias pendientes; no confundir importación válida con revisión visual.
 - Cargar copia/slot 1 con el atasco comunicado: comprobar que el idle se aparta,
   el trabajador recoge y no se degrada el combate con ocho unidades.
+
+## Resultado final y pendientes aceptados — 2026-11-05
+
+El usuario confirma que Linux abre y que los colores/aspecto general parecen
+iguales y correctos. Confirma también que en Godot todo está preparado para
+editar lo que necesite. Esto acredita la aceptación general de F10/F11, sin
+convertirlo en una revisión individual de cada propiedad del inspector.
+
+Después confirma: «Ya no hay lag y los minions no se quedan bloqueados».
+El bloqueo del slot 1 y la incidencia de combate reportados quedan cerrados
+por evidencia manual. Informa de otros problemas de IA y de HUD/UI y decide
+arreglarlos más adelante. Su seguimiento pasa al trabajo posterior del usuario;
+no se declara que esos defectos estén corregidos ni se inventan detalles no
+reportados. Los casos de la tabla no ensayados siguen siendo QA recomendada,
+no una cobertura automática ni una confirmación manual implícita.
+
+Windows manual continúa aplazado por decisión explícita; la exportación técnica
+se conserva como entrega. No repetir esas solicitudes para cerrar esta etapa.

@@ -69,10 +69,16 @@ no se ha generado el sprite definitivo pendiente del usuario.
   y SVG de gradientes derivados del CSS; se pueden sustituir desde el recurso. La fuente monoespaciada Liberation Mono se incluye en assets/fonts para
   mantener el aspecto en web/Windows/Linux; su licencia OFL acompaña los ZIP.
 
-Conservar los nombres de los paneles raíz y los controles referenciados, y la
-metadata `item`, `item_row`, `cost_for`, `resource`, `tree`, `tree_options`,
+En la raíz de HUD.tscn y Menus.tscn, el grupo `Scene references` del inspector
+contiene las referencias de nodos. Se guardan dentro de la escena, en lugar de
+rutas escritas en GDScript: se pueden mover/renombrar paneles y contenedores
+conservando esas referencias. Si se sustituye un control por otro, reasignarlo
+en ese grupo del inspector. Las páginas de menú conservan nombres semánticos
+como Title, Play, Back, Message y Rows para conectar su contenido dinámico.
+
+Conservar la metadata `item`, `item_row`, `cost_for`, `resource`, `tree`, `tree_options`,
 `technology` y `tool`: conectan la presentación con acciones semánticas. Se
-pueden reorganizar sus hijos conservando esa metadata. Los únicos controles
+pueden reorganizar los controles conservando esa metadata y las referencias. Los únicos controles
 instanciados como datos variables son filas de slots, cuadrados de coste y
 bolitas de HP; sus plantillas también son escenas editables.
 

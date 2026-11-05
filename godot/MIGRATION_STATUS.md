@@ -1,27 +1,27 @@
 # Estado de migración a Godot
 
-Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
+Actualizado: 2026-11-05. Rama: `migration/godot`. Estado: cierre técnico y aceptación del alcance migrado verificados; pendientes aceptados registrados.
 
 ## Continuidad
 
-- Última fase cerrada: F7 (compras/equipo, confirmación final de colores Linux).
-  F0, F1, F2, F3, F4 y F7 completadas antes del refactor visual.
-- Fase actual: F11 arquitectura visual editable; F10 paridad visual obligatoria.
-- Próxima tarea ejecutable: revisión manual final Linux y edición desde Godot,
-  según GODOT_MANUAL_QA.md/EDITING_VISUALS.md. Implementación y exportaciones del
-  bloque listas; no se declara completado el objetivo sin esa evidencia. F11 implementada a nivel estructural; revisión en editor y
-  funcionamiento percibido pendientes de la etapa manual final.
-- Decisión vigente: testeo manual al terminar la migración; no solicitar más
-  recorridos intermedios ni centrarse en bugs menores. Windows manual aplazado.
-- F5/F6: atasco diagnosticado con copia de solo lectura del slot 1 y corregido
-  a nivel de navegación pura; repetición en partida y lag de combate pendientes
-  de la etapa manual final. No se ha avanzado automáticamente ese guardado.
-- Incidencias reportadas resueltas por confirmación manual en Linux:
-  menús, segunda pulsación de reclutamiento, lag en los límites con 8 unidades
-  y legibilidad de HP al cambiar zoom.
-- Ejecución local: abrir `godot/project.godot` con el ejecutable local
-  `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
-- Comparación original: `npm run dev`, ruta `/TribesRevival/`.
+- Última fase implementada y aceptada: F11, arquitectura visual editable.
+- Fase actual: cierre de la migración; F0–F11 implementadas, con las excepciones
+  de validación y los pendientes aceptados descritos abajo.
+- Confirmación final Linux: el juego abre, los colores y aspecto general
+  parecen iguales/correctos; en el editor «está todo genial» para modificarlo.
+- Confirmación del bloqueo anterior: «Ya no hay lag y los minions no se quedan
+  bloqueados». Cierra el atasco del slot 1 y el lag de combate reportados.
+- El usuario informa de problemas restantes de HUD/UI e IA y decide
+  solucionarlos más adelante. Son pendientes aceptados, no trabajo activo
+  de esta migración; no se afirma ausencia de bugs ni QA exhaustiva.
+- Windows manual sigue aplazado por el usuario. Conservar los ZIP de ambas
+  plataformas y web; no pedir de nuevo esa prueba ni hacer push.
+- Ajuste final: referencias de nodos HUD/menús expuestas en inspector y
+  serializadas para poder reorganizar la jerarquía sin editar scripts.
+- Proyecto: godot/project.godot, Godot 4.7.2, Compatibility. Comparación
+  original: http://localhost:5173/TribesRevival/; web Godot: localhost:8078.
+- Próximo trabajo fuera de esta migración: el usuario retomará IA y HUD/UI.
+  No hay bloqueos graves conocidos pendientes ni se autoriza push por este cierre.
 
 ## Tabla de progreso
 
@@ -32,13 +32,13 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F2 controles | Completada: contratos cotejados, validación técnica y controles/cámara/bordes/Esc/velocidades confirmados en Linux |
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
-| F5 IA/recolección | Usuario confirma seguimiento/recolección y bordes con 8 unidades; movimiento e interrupciones confirmados; bloqueo/lag reportado, retest final pendiente |
-| F6 combate/clima | Usuario confirma combate, daño/botín, hoguera, lluvia y derrota/reinicio en Linux; huida/respawn pendientes |
+| F5 IA/recolección | Completada para el alcance aceptado; movimiento/interrupción/recolección y desaparición de atasco/lag confirmados en Linux; otros problemas de IA aplazados por el usuario |
+| F6 combate/clima | Completada para el alcance aceptado; combate/daño/botín/hoguera/lluvia/derrota y ausencia de lag confirmados; casos exhaustivos de IA/fauna quedan en QA posterior |
 | F7 compras/equipo | Compras/equipo, preview, Mago único y Escudo +1 HP sin repetición confirmados en Linux; distinción visual del Mago confirmada («si, colores correctos»); cierre F7 previo al refactor |
-| F8 UI/guardado | Menús/HP y persistencia de los tres slots tras reabrir validados en Linux; borrado/cancelación correctos; resto de revisión UI pendiente |
-| F9 integración/exportación | Linux/Windows/web regenerados para la arquitectura nueva; arranque del menú Linux sin errores; testeo final Linux pendiente, Windows manual aplazado |
-| F10 paridad visual | Cotejo por fuentes de HUD, materiales, cámara, menús y efectos; menú inicial inspeccionado en capturas; diferencias artísticas y revisión en movimiento pendientes |
-| F11 escenas editables | Implementación estructural completa: escenas/Theme/variantes y sustituciones de apariencia; revisión manual del editor y funcionalidades tras refactor pendiente |
+| F8 UI/guardado | Completada para el alcance aceptado; slots/menús funcionales confirmados; problemas restantes HUD/UI aplazados por el usuario |
+| F9 integración/exportación | Completada: Linux/Windows/web y ZIP generados, Linux abre y usuario confirma uso; Windows manual aplazado explícitamente |
+| F10 paridad visual | Completada la revisión posible: seis áreas cotejadas, capturas de menú y revisión general Linux; diferencias y HUD/UI restantes documentados/aplazados |
+| F11 escenas editables | Completada y aceptada por el usuario en el editor; escenas/Theme/variantes, overrides y referencias serializadas; validación estructural correcta |
 
 ## Pruebas y límites
 
@@ -553,3 +553,44 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - Implementación preparada para la etapa manual final solicitada por el usuario.
   F10/F11 y el objetivo completo siguen abiertos: falta revisión del editor,
   nueva presentación durante gameplay, slot 1 y lag de combate en Linux.
+
+## Confirmación final y referencias de edición
+
+- El usuario confirma apertura/aspecto general Linux y capacidad de edición
+  satisfactoria en Godot. A continuación confirma desaparición de lag y bloqueo
+  de minions. No se extrapola esa respuesta a una prueba de cada caso límite.
+- Problemas de IA y HUD/UI aplazados expresamente por el usuario, para tratarlos
+  después. No se usan como motivo para continuar corrigiendo bugs menores.
+- game_hud.gd y game_menus.gd dejan de resolver sus paneles por rutas fijas.
+  Nueve referencias se asignan en HUD.tscn/Menus.tscn desde el inspector;
+  búsqueda de metadata admite otras jerarquías y tipos de contenedor Control.
+- Importación/estructura y pruebas existentes correctas: 33 scripts/72 escenas,
+  101 callbacks de menús, cuatro pulsaciones, 15.669 comparaciones puras.
+  reports/editable-ui-references-validation.log.
+- Comprobación estructural de copias en memoria: mover/renombrar contenedores,
+  serializar como PackedScene e inicializar conserva las nueve referencias,
+  ocho acciones de equipo, cinco contadores y tres tecnologías. Sin input,
+  render ni gameplay. reports/authoring-references.log. No se añade un test
+  visual ni se modifica el proyecto para esa comprobación diagnóstica.
+- Se conservan fuera de este commit los cambios concurrentes del editor en
+  MainMenu.tscn/TribesTheme.tres, seis metadatos de importación y sprites/enemies/.
+  Los paquetes registrarán hashes de los inputs presentes, incluidos esos
+  ajustes de presentación si permanecen en el checkout al exportar.
+
+## Cierre técnico y alcance aceptado
+
+- tools/export.sh correcto tras las referencias de nodos: importación, 33
+  scripts/72 escenas, 101 callbacks, cuatro pulsaciones, 15.669 comparaciones
+  puras, Linux/Windows/web y arranque headless del menú Linux. Informe
+  reports/final-authoring-export-all.log. Formatos ELF/PE x86_64 verificados.
+- Auditoría requisito por requisito en documents/GODOT_PARITY_AUDIT.md:
+  implementación, evidencia y límites separados; aceptación del editor y de
+  los bloqueos graves aportada por el usuario durante este cierre.
+- Los casos no ensayados de GODOT_MANUAL_QA.md siguen siendo recomendaciones
+  de QA posterior, no afirmaciones de éxito. No se ha automatizado gameplay ni
+  aspecto visual. No se declara paridad pixel a pixel ni ausencia de defectos.
+- README/manifest de los ZIP registran confirmación manual Linux, pendientes
+  IA/HUD/UI aceptados y Windows no probado manualmente. Se añaden hashes de
+  todos los inputs y flag de cambios locales para distinguir los ajustes del
+  editor del commit del agente. Los archivos concurrentes del usuario no se
+  revierten ni se añaden a este commit.

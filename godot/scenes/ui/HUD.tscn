@@ -8,9 +8,15 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/TechnologiesPanel.tscn" id="TechnologiesPanel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/UpgradesPanel.tscn" id="UpgradesPanel"]
 
-[node name="HUD" type="CanvasLayer"]
+[node name="HUD" type="CanvasLayer" node_paths=PackedStringArray("management_panel", "technologies_panel", "upgrades_panel", "technology_toggle", "upgrades_toggle", "technology_points")]
 layer = 2
 script = ExtResource("script")
+management_panel = NodePath("Layout/Management")
+technologies_panel = NodePath("Layout/Management/Pages/TechnologiesPanel")
+upgrades_panel = NodePath("Layout/Management/Pages/UpgradesPanel")
+technology_toggle = NodePath("Layout/Dock/TechnologyToggle")
+upgrades_toggle = NodePath("Layout/Dock/UpgradeToggle")
+technology_points = NodePath("Layout/Management/Pages/TechnologiesPanel/Points")
 
 [node name="Layout" type="Control" parent="."]
 layout_mode = 3

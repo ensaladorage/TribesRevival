@@ -1,68 +1,85 @@
-# Auditoría de paridad — 2026-11-05
+# Auditoría de migración y aceptación — 2026-11-05
 
-Las rutas de scripts e informes de esta tabla son relativas a `godot/`.
+Las rutas de implementación y de informes son relativas a `godot/`, salvo
+las referencias a `src/`, `index.html` y `documents/` del original.
 
-Esta tabla compara el objetivo completo con el estado del proyecto. La
-presencia de código y una exportación correcta no demuestran por sí solas
-equivalencia funcional. La revisión manual está en `GODOT_MANUAL_QA.md`: el
-usuario confirma menús, arrastre/seguimiento/recolección y equipo/mejoras/
-tecnología/combate básicos y reclutamiento consecutivo corregido tras su aviso.
-Especifica que usó el ejecutable Linux y confirma corregido el lag en los
-bordes del mundo con 8 unidades, así como hoguera, lluvia y derrota/reinicio.
-Windows manual aplazado por petición del usuario; QA se centra en Linux.
-Los demás casos siguen pendientes.
-La migración completa todavía no está acreditada.
+Esta auditoría distingue código equivalente, comprobaciones técnicas,
+confirmaciones manuales y pendientes aceptados. Una exportación o un número de
+comparaciones no demuestra por sí solo cada recorrido de una partida.
 
-| Requisito | Evidencia actual | Falta para acreditarlo completamente |
+## Decisiones y aceptación actuales
+
+El usuario confirma en Linux apertura, colores/aspecto general correctos y
+capacidad de edición satisfactoria en Godot. Confirma además que ya no hay
+lag ni minions bloqueados en el caso reportado del slot 1/combate. Los problemas
+restantes de HUD/UI y de IA los solucionará más adelante, por decisión explícita.
+No son trabajo pendiente autorizado para continuar corrigiendo en esta etapa.
+No se afirma que esos defectos estén resueltos ni que no existan otros bugs.
+
+Windows manual está aplazado expresamente: no dispone de Windows y pide
+centrarse en Linux. El objetivo mantiene el ejecutable/ZIP de Windows y la
+verificación técnica, sin atribuir una ejecución real en ese sistema.
+
+## Requisitos del objetivo y fuentes de evidencia
+
+| Requisito | Implementación y evidencia que lo respalda | Límite de la evidencia |
 |---|---|---|
-| Rama exclusiva, original intacto | `migration/godot`; 838 hashes de archivos originales en `audit/source_inventory.json`, verificados por `tools/verify_original.py` | Mantener la comprobación en cada cambio |
-| Godot 4/GDScript/Compatibility | `project.godot`, 33 scripts/72 escenas, escena principal importada e inicializada headless; arranque gráfico Linux confirmado por usuario | Mantener estos contratos y terminar QA restante |
-| Escena 3D y cámara | Contratos cotejados, validación técnica; usuario confirma cámara/zoom/arrastre/bordes con 8 unidades y Esc/velocidades; F2 cerrada en Linux | Mantener contratos y resolver los otros bloques de QA |
-| Estado y mundo deterministas | PRNG bit exacto UTF-16/Mulberry32 y estados iniciales completos comparados con TS en 4 semillas, incluida Unicode/emoji | Vista/generación percibida en partida |
-| Tótem/minions/IA/navegación | `minion_movement.gd`, `navigation.gd`, `minion_idle.gd`, `work_system.gd`; funciones puras comparadas con TS; usuario confirma arrastre/seguimiento y bordes con 8 unidades | Cruces, llamadas, obstáculos e interrupciones de F5 |
-| Recolección/economía | Afinidades, tickets, llamadas, tiempos, drops unitarios, inventario y tablas portados; transacciones/reglas puras verificadas; usuario confirma recolección y aumento del inventario | Interrupción y continuidad en los casos restantes de QA |
-| Combate/salud/fauna/loot | `conflict_system.gd`, `combat_rules.gd`, `survival_system.gd`; estadísticas/daño/curación comparados con TS; usuario confirma combate, daño/botín, derrota/reinicio y HP legibles con zoom/daño/curación | Huida, respawn y casos restantes de QA |
-| Compras/equipo/legendarias | Reglas comparadas con TS; usuario confirma equipo/reclutamiento, 8 unidades, preview/cancelación, Mago único y Escudo +1 HP sin repetición en Linux | Distinción visual confirmada por usuario; tras refactor AnimatedSprite3D, repetición final pendiente |
-| Herramientas/XP/tecnologías | Tablas 0–10, bonus, XP y tres tecnologías vigentes con requisitos/costes compartidos; usuario confirma mejora/tecnología básica; HUD de puntos y paneles alineado al original | Resto de niveles/requisitos y revisión manual del HUD actualizado |
-| Clima/hogueras | Sistemas portados en el orden original; usuario confirma lluvia y curación con hoguera en Linux | Casos específicos de reposición/expiración/distancia y restante QA |
-| HUD/menús/tutorial | Controles nativos, 13 iconos originales verificados; usuario confirma Tutorial, Guardar/Cargar y retorno al principal tras arreglo de callbacks; regresión aislada de señales y Esc | Resto del HUD, foco/teclado (incluido Esc corregido), tooltips, opacidad y legibilidad manuales |
-| Guardado local actual | Tres slots/JSON v17 e ida/vuelta aislada; usuario confirma tres slots tras cerrar/reabrir, cargar desde principal/pausa, cancelar borrado y eliminar solo el elegido en Linux | Mantener el flujo; migraciones antiguas diferidas |
-| Exportación Windows/Linux | Presets x86_64, templates oficiales 4.7.2 verificados por SHA256; formatos PE/ELF confirmados; Linux inicia headless y usuario confirma recorridos funcionales | QA Linux restante; prueba Windows aplazada expresamente por el usuario |
-| Exportación web secundaria | Exportación actualizada HTML/JS/PCK/WASM sin threads, servida localmente (HTTP 200) | Revisar en navegador manualmente |
-| Pruebas permitidas | Importación/carga/inicialización, paridad/reglas puras, guardado actual; arranque del menú Linux sin entrar en partida | No sustituir el playtest del usuario por automatización de gameplay o imágenes |
-| Continuidad y commits | Plan/status en esta carpeta, commits locales por subhito técnico; sin push | Actualizar con evidencia manual y builds definitivos de la migración |
+| Rama exclusiva y original intacto | `migration/godot`; `audit/source_inventory.json` y `tools/verify_original.py` comprueban 838 archivos originales y 13 iconos reutilizados | Archivos nuevos/ediciones concurrentes del usuario se conservan fuera de los commits del agente |
+| Godot 4, GDScript, Compatibility | `project.godot`, motor local 4.7.2, carga de los 33 scripts y 72 escenas con el editor headless | No presupone soporte gráfico idéntico en cada equipo |
+| Análisis del código/GDD y dependencias | Inventario de módulos en MIGRATION_PLAN.md, índice documental/GDD v0.6.0 y contratos de TECHNICAL_DESIGN.md consultados | Migrar el original implementado no implica añadir su diseño futuro |
+| Arquitectura/escena principal y separación | `scenes/main.tscn`; `game_session.gd`/simulación son RefCounted y datos, vistas/UI instancian escenas y emiten acciones; 20 Hz/máximo cuatro ticks e interpolación | No se ejecuta el loop automáticamente para verificarlo |
+| Estado, semilla, mundo, regiones/biomas existentes | `game_state.gd`, `seeded_random.gd`, `world_catalog.gd`; comparación del estado inicial completo en cuatro semillas (Unicode incluido), PRNG y datos | No hay regiones bloqueadas/cuevas/jefes en el original; no se inventan |
+| Cámara/control/tótem/seguimiento | `isometric_camera.gd`, `main.gd`, `minion_movement.gd`; contratos ortográficos/zoom/velocidades cotejados, proyección/geometría pura; cámara, bordes con ocho unidades, Esc y 1/2/3 confirmados en Linux | La revisión no cubre cada periférico/resolución |
+| Roles, IA, navegación, trabajo y recolección | `minion_idle.gd`, `navigation.gd`, `minion_awareness.gd`, `work_system.gd`, `combat_positions.gd`; fixtures de reglas/selección/cesión/rutas; seguimiento/recolección/interrupción y corrección del atasco confirmados | Otros problemas de IA comunicados quedan aplazados por el usuario; no se promete comportamiento perfecto |
+| Economía, reclutamiento, transformaciones y equipo | `economy.gd`, `commands.gd`; costes/límites/afinidades y compras atómicas cotejadas; cap 8, preview/cancelación, Mago único y Escudo +1 HP/sin repetición confirmados | No se ha recorrido manualmente cada composición posible |
+| Herramientas/XP/tecnologías | `progression.gd`, `economy.gd`; tablas 0–10, bonus determinista, requisitos/XP/tres tecnologías comparados con TS; compra/mejora/tecnología confirmadas | QA exhaustiva de todos los niveles sigue recomendada |
+| Combate, salud, enemigos, fauna, botín | `conflict_system.gd`, `combat_rules.gd`, `survival_system.gd`; estadísticas/daño/curación puros cotejados y revisión del port de respawns/patrullas/loot; combate/daño/botín/derrota y desaparición del lag confirmados | No se afirma haber jugado automáticamente huida/respawn; seguimiento de IA aplazado |
+| Hogueras y clima | `weather_system.gd`/`survival_system.gd` portan orden, intervalos/fases/reposición y curación del original; usuario confirma lluvia/hoguera/curación | Casos extremos de expiración/distancia no se dan por ensayados manualmente |
+| HUD, menús, tutorial, debug y sonido | Escenas UI, adaptadores de señales, iconos originales; 101 comprobaciones aisladas de callbacks/Esc y cuatro de despacho de pulsar/soltar, sin mundo; rutas funcionales confirmadas | Defectos HUD/UI restantes aplazados por el usuario |
+| Guardado actual y compatibilidad | JSON v17 en `user://`, tres slots; ida/vuelta en archivos aislados; tres slots tras reabrir, principal/pausa y borrado/cancelación confirmados | No se importan automáticamente datos de localStorage; matriz de versiones antiguas aplazada |
+| Integración y ejecutables descargables | `export_presets.cfg`, templates oficiales 4.7.2 y recibo; `tools/export.sh` produce Linux ELF x86_64 y Windows PE x86_64, ZIP con licencias y manifiesto SHA256; menú Linux inicializa sin errores | Windows no se ha ejecutado manualmente; los ZIP son de desarrollo |
+| Web secundaria | HTML/JS/PCK/WASM sin threads, servidor HTTP y capturas reales del menú | No acredita gameplay web completo |
+| Pruebas, errores de scripts/escenas/referencias | `tools/validate.sh` verifica hashes, importación, inicialización y logs, callbacks/input aislados y 15.669 comparaciones de datos/reglas/guardado | El total incluye muchos campos de estado inicial: no equivale a 15.669 escenarios jugados |
+| Continuidad y commits por subhitos | MIGRATION_PLAN.md, MIGRATION_STATUS.md, commits locales; sin push; ambos servidores se mantienen disponibles | Los ajustes concurrentes del usuario no se incorporan automáticamente a los commits |
+| Sin dependencias/arte definitivo innecesarios | Godot/GDScript; iconos existentes como sprites provisionales; Liberation Mono incluida con OFL; sin proveedores de pago ni servicios de juego remotos | Las animaciones de personaje son de un frame provisional, sustituibles en editor |
 
-## Límites preservados
+## Paridad visual obligatoria: seis áreas
+
+| Área | Comprobación posible realizada | Diferencias/validación pendiente |
+|---|---|---|
+| Paleta: terreno, biomas, recursos, actores y enemigos | Colores cotejados con BabylonGame; materiales/variantes en escenas; usuario confirma colores y aspecto general Linux | Sprites provisionales tintados representan personajes 2D según la nueva dirección artística; no son los antiguos cuerpos geométricos |
+| Materiales/luz/sombras/exposición/tonemapping | Entorno en main.tscn, materiales mates sin especular; fondo original, exposición 1/lineal; aproximación hemisférica mediante ambiente/luz superior; sombra plana del tótem | Modelos de iluminación distintos; no hay equivalencia fotométrica medida |
+| Cámara ortográfica, ángulos, zoom y escala | Código original y isometric_camera.gd cotejados; 45°/35°, altura 72×zoom/distancia 120 y controles confirmados | No se compararon todos los tamaños de ventana mediante capturas |
+| HUD: posición, tamaño, fuente, colores, iconos y distribución | CSS/index originales cotejados; tarjetas 56×56, recursos, costes, tipografía/Theme y escenas | El usuario acepta posponer los defectos restantes de HUD/UI |
+| Menús/botones/barras/indicadores | Capturas reales comparables 1280×720 del menú sin pulsar Jugar: reports/f10-babylon-main.jpg y f10-godot-main-final.jpg; fuente, gradiente/espaciado ajustados | Salir nativo añade altura; sombra SVG aproximada y tipografía dependiente de plataforma; no se atribuye esa captura a todo el HUD |
+| Efectos, transparencias y animaciones | Nubes/lluvia, curación, alertas, lunge, HP y previews cotejados por código; escenas/scripts de presentación usan edad/duración del estado | Sin playtest automático de efectos; animaciones/sprites definitivos y pulido posterior quedan al editor |
+
+## Arquitectura visual editable: criterios de aceptación
+
+| Requisito explícito | Fuente actual/evidencia |
+|---|---|
+| Abrir Minion.tscn y sustituir sprite sin GDScript | Body/Sprite es AnimatedSprite3D con SpriteFrames; inspector permite cambiar imágenes/frames/escala; seis clases y enemigos heredan la base; usuario confirma capacidad de edición |
+| IA/navegación/combate/estadísticas independientes de assets | Scripts de simulación solo poseen datos; actor_view presenta estado y selección, sin gobernar reglas; guardado no incorpora nodos |
+| Variantes sin duplicar lógica | Gatherer/Lumberjack/Hunter/Guardian/Artisan/Mage/Barbarian/Rabbit instancian Minion.tscn y comparten el adaptador |
+| Conservar selección/colisiones/navegación | Selection/Shape y fallback de 24 px; radios lógicos conservados y pruebas geométricas puras; no confundir escala visual con radios del estado |
+| Árbol, roca, arbusto, drop e interactivos editables | Tree/Rock/Bush/Twigs/Spark/Drop/Campfire/cuerpos, biomas/decoración/nube son escenas; Drop es base compartida de sus cinco variantes |
+| Generación procedural instancia PackedScene | world_catalog produce datos; WorldView.tscn expone catálogos y world_view._spawn instancia escenas |
+| Sprite3D, AnimatedSprite3D o modelos intercambiables | world_element @export appearance_override/visual_scale/visual_offset y @tool; la geometría Default se oculta sin borrarla; usuario confirma edición satisfactoria |
+| HUD.tscn y paneles/menús Control independientes | Recursos/reclutamiento/equipo/tecnologías/mejoras y páginas/fila de slot/overlay tienen sus escenas; no se construyen controles estáticos en scripts |
+| Theme central para colores/fuentes/estilos | TribesTheme.tres con variantes de panel/botón/nivel/coste/vida y fondos; controles dinámicos se instancian desde plantillas editables |
+| Reorganizar jerarquías desde el editor | Referencias de nodos serializadas/asignables en HUD/Menus; metadata semántica recursiva; copia reparentada/renombrada y serializada conserva nueve referencias y bindings (reports/authoring-references.log), sin input/render/gameplay |
+| Interfaces y sistemas existentes conservados | Señales semánticas originales conservadas, consumidores adaptados; callbacks/input/datos/guardado pasan; usuario confirma que no persisten los bloqueos graves |
+| No eliminar un sistema sin sustituto validado | Subhitos con importación/referencias antes de commit; sustitutos ahora aceptados en editor por el usuario; historial Git conserva implementaciones anteriores |
+
+## Alcance preservado y seguimiento
 
 - No se añaden multijugador, servicios remotos de juego ni una victoria.
-- Regiones/barreras, campamentos/jefes/llaves y cuevas no están implementados
-  en el original: siguen pendientes, sin inventar encuentros ni balance.
-- No se crean Pícaro/Paladín ni costes no aprobados. El Mago conserva el
-  comportamiento vigente del código (transformación por 2 Brillo, máximo 1).
-- La matriz de guardados antiguos sigue diferida. El original conserva sus
-  datos del navegador; Godot usa almacenamiento local nativo y el estado v17.
-- Los modelos/efectos nativos son provisionales; no se afirma equivalencia
-  artística ni se han tomado capturas o ejecutado un playtest automatizado.
-
-## Ampliación del objetivo: edición visual y paridad artística
-
-F11 implementa escenas de HUD/menús, Theme, actores AnimatedSprite3D con variantes
-heredadas, recursos/drops/interactivos PackedScene y overrides de apariencia.
-`godot/EDITING_VISUALS.md` documenta los contratos editables. F10 coteja CSS,
-materiales, dimensiones y configuración contra las fuentes; no se declara
-paridad de píxeles ni validación manual de esta nueva arquitectura.
-
-Por instrucción actual del usuario, concentrar el testeo manual al final y
-atender durante implementación solo bloqueos graves. El atasco del slot 1 se
-analizó con copia de solo lectura y helpers geométricos aislados; hay corrección
-de cesión/rutas, pendiente de comprobar en partida. No se ejecutó ese guardado
-automáticamente. El informe de lag de combate sigue pendiente de evidencia
-manual final; un ahorro en rutas no demuestra FPS de una batalla.
-
-El menú inicial sí se ha inspeccionado mediante capturas estáticas comparables
-1280×720 (sin entrar en partida). Se corrigió el fallback proporcional de web
-incluyendo Liberation Mono y licencia OFL. Gradiente y espaciado se ajustaron después con StyleBoxTexture y fuentes
-embebidas; la captura final lo acredita. Persisten sombra aproximada y altura
-adicional de Salir, acción nativa de Godot. Materiales/cámara,
-cuadrícula/tótem, HUD, nubes/lluvia, curación y alertas se cotejaron por fuentes,
-pero la vista en movimiento sigue sin acreditación manual tras el refactor.
+- Cuevas/campamentos/jefes/llaves/regiones bloqueadas y Pícaro/Paladín no se
+  implementan inventando requisitos: no existen en la base original migrada.
+- Compatibilidad de guardados antiguos y ejecución manual Windows permanecen
+  aplazadas por las decisiones ya registradas.
+- No se genera el sprite definitivo de cadáver pendiente del usuario.
+- La lista de QA no ensayada se conserva en GODOT_MANUAL_QA.md; no se convierte
+  en una afirmación de éxito. Las pruebas visuales o del loop no se automatizan.
+- Los pendientes aceptados de IA y HUD/UI pasan a trabajo posterior del usuario.
+  El cierre de la migración no es una declaración de ausencia de defectos.

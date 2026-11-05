@@ -9,6 +9,14 @@ import zipfile
 project = Path(__file__).resolve().parents[1]
 builds = project / "builds"
 revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=project, text=True).strip()
+source_paths = ["project.godot", "export_presets.cfg", "scripts", "scenes", "assets", "themes", "distribution"]
+source_dirty = (
+    subprocess.run(["git", "diff", "--quiet", "HEAD", "--", *source_paths], cwd=project).returncode != 0
+    or bool(subprocess.check_output(
+        ["git", "ls-files", "--others", "--exclude-standard", "--", *source_paths],
+        cwd=project, text=True,
+    ).strip())
+)
 records = []
 for platform in ("linux", "windows", "web"):
     folder = builds / platform
@@ -23,7 +31,8 @@ for platform in ("linux", "windows", "web"):
         "TRIBES REVIVAL - VERSION DE DESARROLLO\n\n" + instructions[platform]
         + "\n\nJuego local para un jugador. Arrastra el tótem para guiar la tribu.\n"
         + "Rueda/+/-: zoom. Esc: pausa. 1/2/3: velocidad. Insert: debug.\n"
-        + "La revisión visual y del gameplay sigue pendiente.\n"
+        + "Validación manual general en Linux confirmada. Quedan problemas de IA y HUD/UI aplazados por el usuario.\n"
+        + "Windows: exportado; su prueba manual está aplazada. No se declara una QA exhaustiva.\n"
         + "Licencias: GODOT_LICENSE.txt y LIBERATION_FONTS_LICENSE.txt.\n"
     )
     files = sorted(path for path in folder.rglob("*") if path.is_file())
@@ -42,7 +51,14 @@ for platform in ("linux", "windows", "web"):
 (builds / "manifest.json").write_text(json.dumps({
     "source_commit": revision,
     "development_build": True,
-    "validation": "Export only; manual visual/gameplay and Windows launch pending",
+    "validation": "Import/scene/reference checks, isolated menu/input contracts, pure data parity, current saves and Linux menu initialization passed; not exhaustive gameplay QA",
+    "manual_validation": {
+        "linux": "User confirmed startup, general appearance, editable scenes and absence of reported lag/stuck minions; latest reference-only adjustment initialized headless",
+        "windows": "Manual launch deferred by user; export verified only",
+        "web": "Initial menu inspected; full gameplay not verified",
+        "deferred_by_user": ["HUD/UI issues", "AI issues"],
+    },
+    "source_inputs_include_local_changes": source_dirty,
     "packages": records,
     "source_inputs": [
         {"path": str(path.relative_to(project)), "sha256": hashlib.file_digest(path.open("rb"), "sha256").hexdigest()}

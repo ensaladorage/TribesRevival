@@ -15,40 +15,36 @@ var _item_rows := {}
 var _item_costs := {}
 var _upgrades := {}
 var _technologies := {}
-var _management: PanelContainer
-var _tech_page: VBoxContainer
-var _upgrade_page: HFlowContainer
 var _tree_rows := {}
 var _open_panel := ""
 var _selected_tree := ""
 var _resource_counts := {}
-var _technology_toggle: Button
-var _technology_points: Label
 var _last_observed_level := -1
 var _pending_technology := ""
-const ICONS := {"gatherer": "icon-minion", "axe": "icon-axe", "bow": "icon-bow", "sword": "icon-sword", "hammer": "icon-hammer", "mage": "icon-mage", "campfire": "icon-fireplace", "shield": "icon-shield"}
+@export_group("Scene references")
+@export var management_panel: Control
+@export var technologies_panel: Control
+@export var upgrades_panel: Control
+@export var technology_toggle: Button
+@export var upgrades_toggle: Button
+@export var technology_points: Label
 
 func _ready() -> void:
 	# Scenes own layout, icons and styles; metadata binds semantic actions.
-	_management = $Layout/Management
-	_tech_page = $Layout/Management/Pages/TechnologiesPanel
-	_upgrade_page = $Layout/Management/Pages/UpgradesPanel
-	_technology_points = _tech_page.find_child("Points", true, false)
-	_technology_toggle = $Layout/Dock/TechnologyToggle
-	_technology_toggle.pressed.connect(func(): _toggle_panel("Tecnologías"))
-	$Layout/Dock/UpgradeToggle.pressed.connect(func(): _toggle_panel("Mejoras"))
-	for row in $Layout.find_children("*", "HBoxContainer", true, false):
+	technology_toggle.pressed.connect(func(): _toggle_panel("Tecnologías"))
+	upgrades_toggle.pressed.connect(func(): _toggle_panel("Mejoras"))
+	for row in find_children("*", "Control", true, false):
 		if row.has_meta("item_row"):
 			_item_rows[row.get_meta("item_row")] = row
 		elif row.has_meta("cost_for"):
 			_item_costs[row.get_meta("cost_for")] = row
-	for label in $Layout.find_children("*", "Label", true, false):
+	for label in find_children("*", "Label", true, false):
 		if label.has_meta("resource"):
 			_resource_counts[label.get_meta("resource")] = label
-	for row in _tech_page.find_children("*", "HFlowContainer", true, false):
+	for row in find_children("*", "Control", true, false):
 		if row.has_meta("tree_options"):
 			_tree_rows[row.get_meta("tree_options")] = row
-	for button in $Layout.find_children("*", "Button", true, false):
+	for button in find_children("*", "Button", true, false):
 		if button.has_meta("item"):
 			var item: String = button.get_meta("item")
 			_items[item] = button
@@ -84,9 +80,9 @@ func reset_panels() -> void:
 	_refresh_panels()
 
 func _refresh_panels() -> void:
-	_management.visible = not _open_panel.is_empty()
-	_tech_page.visible = _open_panel == "Tecnologías"
-	_upgrade_page.visible = _open_panel == "Mejoras"
+	management_panel.visible = not _open_panel.is_empty()
+	technologies_panel.visible = _open_panel == "Tecnologías"
+	upgrades_panel.visible = _open_panel == "Mejoras"
 	for tree in _tree_rows:
 		_tree_rows[tree].visible = tree == _selected_tree
 
@@ -109,8 +105,8 @@ func update_state(state: Dictionary) -> void:
 		if progression.technologyPoints == 0:
 			_open_panel = ""
 		_pending_technology = ""
-	_technology_toggle.text = "Tecnologías · %s" % progression.technologyPoints
-	_technology_points.text = "Puntos disponibles: %s" % progression.technologyPoints
+	technology_toggle.text = "Tecnologías · %s" % progression.technologyPoints
+	technology_points.text = "Puntos disponibles: %s" % progression.technologyPoints
 	_refresh_panels()
 	var amounts: Dictionary = state.inventory.amounts
 	for resource in _resource_counts:

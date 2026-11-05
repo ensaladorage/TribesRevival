@@ -1,6 +1,7 @@
 # Tribes Revival — Godot
 
-Migración en curso del juego local para un jugador. Proyecto separado del
+Migración del juego local para un jugador implementada y aceptada en Linux,
+con incidencias de IA y HUD/UI aplazadas por decisión del usuario. Proyecto separado del
 original Babylon.js, que permanece disponible desde la raíz del repositorio.
 Motor verificado: Godot 4.7.2, GDScript, renderer Compatibility.
 
@@ -49,13 +50,15 @@ Informes locales regenerables en `reports/`, fuera de Git.
 ## Continuidad y pendientes
 
 Consultar `MIGRATION_PLAN.md` y `MIGRATION_STATUS.md` antes de continuar.
-Las comprobaciones de scripts/datos no acreditan la calidad visual ni el
-playtest. Las fases con revisión manual pendiente permanecen abiertas.
+Las comprobaciones de scripts/datos no sustituyen el playtest. El usuario
+confirma apertura/aspecto general Linux, edición desde Godot y desaparición de
+los bloqueos graves reportados. Los problemas restantes de IA y HUD/UI se
+tratarán después; no se declara ausencia de bugs ni cobertura exhaustiva.
 La presentación combina sprites de personajes provisionales y modelos del mundo
 editables; reutiliza iconos del proyecto sin generar arte definitivo.
 Consultar [EDITING_VISUALS.md](EDITING_VISUALS.md) para sustituir sprites,
-modelos, paneles y estilos desde el inspector. El testeo manual se concentra
-al final de la migración por decisión del usuario.
+modelos, paneles y estilos desde el inspector. La revisión general final se ha realizado
+en Linux; los casos de QA no ensayados se conservan como seguimiento.
 La lista de comprobaciones manuales está en
 [`GODOT_MANUAL_QA.md`](../documents/GODOT_MANUAL_QA.md).
 
@@ -73,5 +76,7 @@ bash godot/tools/export.sh
 Los ZIP de desarrollo y `manifest.json` quedan en `godot/builds/`, fuera de
 Git. El script valida primero el proyecto, exporta las tres plataformas y
 comprueba únicamente la inicialización headless del menú Linux, sin entrar
-en una partida. Los ZIP incluyen la licencia del motor. Windows y la web
-requieren comprobación manual de arranque y gameplay en sus plataformas.
+en una partida. Los ZIP incluyen la licencia del motor. Windows manual sigue
+aplazado por el usuario. La web tiene inspección del menú inicial; su gameplay
+completo no se ha acreditado. El manifiesto incluye hashes de inputs y señala
+si incorpora cambios locales del editor aún sin commit.

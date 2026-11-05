@@ -66,7 +66,7 @@ permite continuar con módulos independientes según la autorización del usuari
 | F6 | Combate, fauna, respawn, cuerpos/loot, hogueras, curación, clima; depende F5 | Constantes y reglas conservadas; playtest manual de enfrentamientos, huida, lluvia, derrota/reinicio |
 | F7 | Reclutamiento, transformaciones, escudo, mejoras; depende F4/F5/F6 | Límites/afinidad/costes vigentes, compra atómica; interacción y preview libres comprobados manualmente |
 | F8 | HUD/menús/tutorial/sonido/debug y guardado local; depende F2–F7 | Tres slots con ida/vuelta actual, borrar solo tras confirmar; main/tutorial/load opacos, pausa translúcida, carga enfoca tótem; revisión manual UI |
-| F9 | Integración y exportación Windows/Linux; secundaria web | Exportaciones reales generadas con templates compatibles; Linux abre; Windows probado manualmente o limitación explícita que impide cierre; paridad completa y validación manual resuelta |
+| F9 | Integración y exportación Windows/Linux; secundaria web | Exportaciones reales con templates compatibles y ZIP verificables; Linux abre; Windows manual aplazado por decisión del usuario, sin atribuirle una prueba inexistente; diferencias y QA pendiente explícitas |
 | F10 | Paridad visual obligatoria, empezando HUD/materiales globales | Referencias CSS/código/assets cotejadas: paleta, luz/sombras/exposición, cámara, UI y efectos; registrar diferencias y límites de inspección; no atribuir validación visual inexistente |
 | F11 (prioritaria actual) | Arquitectura visual editable, incremental y sin cambiar reglas | Minion/enemigos con AnimatedSprite3D y variantes; árbol/roca/arbusto/drop/interactivos como PackedScene intercambiables; HUD y paneles/menús Control en escenas, Theme central; referencias y señales válidas, sin dependencia lógica de assets |
 
@@ -121,3 +121,12 @@ F11 ya tiene implementación estructural y exportable en escenas/Theme;
 F10 tiene cotejo de fuentes y capturas estáticas del menú. La siguiente etapa
 es la revisión manual final Linux y del editor indicada en la guía, manteniendo
 las fases abiertas mientras falte evidencia funcional tras el refactor.
+
+## Aceptación final del usuario
+
+El usuario confirma Linux/aspecto general, edición desde Godot y desaparición
+del atasco/lag. Decide posponer los problemas restantes de HUD/UI y de IA para
+solucionarlos después. Esa exclusión explícita prima sobre los recorridos de QA
+pendientes del plan: no continuar corrigiendo esos bugs ni exigir pruebas de
+Windows como condición adicional. La auditoría de cierre conserva los casos no
+ensayados como límites de cobertura y no los presenta como superados.
