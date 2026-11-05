@@ -1,5 +1,5 @@
 extends CanvasLayer
-## Native, provisional HUD. All availability and prices derive from shared rules.
+## Scene-backed HUD. Availability and prices derive from shared rules.
 
 signal placement_requested(item: String)
 signal action_requested(action: Dictionary)
@@ -27,125 +27,40 @@ var _pending_technology := ""
 const ICONS := {"gatherer": "icon-minion", "axe": "icon-axe", "bow": "icon-bow", "sword": "icon-sword", "hammer": "icon-hammer", "mage": "icon-mage", "campfire": "icon-fireplace", "shield": "icon-shield"}
 
 func _ready() -> void:
-	var root := Control.new()
-	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(root)
-	var counters := HFlowContainer.new()
-	counters.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	counters.offset_left = 220
-	counters.offset_right = -20
-	counters.offset_top = 16
-	counters.alignment = FlowContainer.ALIGNMENT_CENTER
-	counters.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(counters)
-	for resource in Economy.RESOURCE_TYPES:
-		var group := HBoxContainer.new()
-		group.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var icon := TextureRect.new()
-		icon.texture = load("res://assets/ui/resource-%s.png" % resource)
-		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.custom_minimum_size = Vector2(28, 28)
-		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		group.add_child(icon)
-		var count := Label.new()
-		count.custom_minimum_size.x = 48
-		count.tooltip_text = RESOURCE_NAMES[resource]
-		count.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		group.add_child(count)
-		counters.add_child(group)
-		_resource_counts[resource] = count
-	var sidebar := VBoxContainer.new()
-	sidebar.position = Vector2(16, 155)
-	sidebar.custom_minimum_size.x = 145
-	root.add_child(sidebar)
-	var shield_dock := VBoxContainer.new()
-	shield_dock.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	shield_dock.offset_left = -161
-	shield_dock.offset_right = -16
-	shield_dock.offset_top = 155
-	root.add_child(shield_dock)
-	for item in ["gatherer", "axe", "bow", "sword", "hammer", "mage", "campfire", "shield"]:
-		var button := Button.new()
-		button.text = ITEM_NAMES[item]
-		button.icon = load("res://assets/ui/%s.png" % ICONS[item])
-		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 32)
-		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		button.custom_minimum_size.y = 38
-		button.button_down.connect(func(): placement_requested.emit(item))
-		if item == "shield":
-			shield_dock.add_child(button)
-		else:
-			sidebar.add_child(button)
-		_items[item] = button
-	var dock := HBoxContainer.new()
-	dock.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	dock.position = Vector2(16, -54)
-	root.add_child(dock)
-	for panel in ["Tecnologías", "Mejoras"]:
-		var button := Button.new()
-		button.text = panel
-		button.custom_minimum_size = Vector2(125, 38)
-		button.pressed.connect(func(): _toggle_panel(panel))
-		dock.add_child(button)
-		if panel == "Tecnologías":
-			_technology_toggle = button
-	_management = PanelContainer.new()
-	_management.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	_management.position = Vector2(16, -260)
-	_management.custom_minimum_size = Vector2(560, 190)
-	_management.visible = false
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color("233037")
-	style.set_content_margin_all(12)
-	style.set_corner_radius_all(6)
-	_management.add_theme_stylebox_override("panel", style)
-	root.add_child(_management)
-	var content := VBoxContainer.new()
-	_management.add_child(content)
-	_tech_page = VBoxContainer.new()
-	content.add_child(_tech_page)
-	_technology_points = Label.new()
-	_tech_page.add_child(_technology_points)
-	var trees := HFlowContainer.new()
-	_tech_page.add_child(trees)
-	for tree in ["survival", "exploration", "combat"]:
-		var button := Button.new()
-		button.text = {"survival": "Supervivencia", "exploration": "Exploración", "combat": "Combate"}[tree]
-		button.pressed.connect(func():
-			_selected_tree = "" if _selected_tree == tree else tree
-			_refresh_panels())
-		trees.add_child(button)
-		var row := HFlowContainer.new()
-		_tech_page.add_child(row)
-		_tree_rows[tree] = row
-	for technology in Progression.TECHNOLOGIES:
-		var button := Button.new()
-		button.text = "%s · %s punto" % [technology.name, technology.cost]
-		button.icon = load("res://assets/ui/%s.png" % ICONS["hammer" if technology.id == "artisan" else technology.id])
-		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 32)
-		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		button.pressed.connect(func():
-			_pending_technology = technology.id
-			action_requested.emit({"type": "unlock-technology", "technology": technology.id}))
-		_tree_rows[technology.tree].add_child(button)
-		_technologies[technology.id] = button
-	_upgrade_page = HFlowContainer.new()
-	content.add_child(_upgrade_page)
-	for tool in ["axe", "hammer", "sword"]:
-		var button := Button.new()
-		button.custom_minimum_size = Vector2(160, 70)
-		button.icon = load("res://assets/ui/%s.png" % ICONS[tool])
-		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 40)
-		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		button.pressed.connect(func(): action_requested.emit({"type": "upgrade-tool", "tool": tool}))
-		_upgrade_page.add_child(button)
-		_upgrades[tool] = button
+	# Scenes own layout, icons and styles; metadata binds semantic actions.
+	_management = $Layout/Management
+	_tech_page = $Layout/Management/Pages/TechnologiesPanel
+	_upgrade_page = $Layout/Management/Pages/UpgradesPanel
+	_technology_points = _tech_page.find_child("Points", true, false)
+	_technology_toggle = $Layout/Dock/TechnologyToggle
+	_technology_toggle.pressed.connect(func(): _toggle_panel("Tecnologías"))
+	$Layout/Dock/UpgradeToggle.pressed.connect(func(): _toggle_panel("Mejoras"))
+	for label in $Layout.find_children("*", "Label", true, false):
+		if label.has_meta("resource"):
+			_resource_counts[label.get_meta("resource")] = label
+	for row in _tech_page.find_children("*", "HFlowContainer", true, false):
+		if row.has_meta("tree_options"):
+			_tree_rows[row.get_meta("tree_options")] = row
+	for button in $Layout.find_children("*", "Button", true, false):
+		if button.has_meta("item"):
+			var item: String = button.get_meta("item")
+			_items[item] = button
+			button.button_down.connect(func(): placement_requested.emit(item))
+		elif button.has_meta("tree"):
+			var tree: String = button.get_meta("tree")
+			button.pressed.connect(func():
+				_selected_tree = "" if _selected_tree == tree else tree
+				_refresh_panels())
+		elif button.has_meta("technology"):
+			var technology: String = button.get_meta("technology")
+			_technologies[technology] = button
+			button.pressed.connect(func():
+				_pending_technology = technology
+				action_requested.emit({"type": "unlock-technology", "technology": technology}))
+		elif button.has_meta("tool"):
+			var tool: String = button.get_meta("tool")
+			_upgrades[tool] = button
+			button.pressed.connect(func(): action_requested.emit({"type": "upgrade-tool", "tool": tool}))
 	_refresh_panels()
 
 func _toggle_panel(panel: String) -> void:
@@ -270,23 +185,5 @@ static func _effect_text(tool: String, level: int) -> String:
 	return "+%s%% velocidad · %s%% de +1 recurso" % [effect.gatherSpeedPercent, effect.bonusResourceChance]
 
 func _apply_level_color(button: Button, level: int) -> void:
-	if button.get_meta("tool_level", -1) == level:
-		return
-	button.set_meta("tool_level", level)
-	var color := Color("39464a")
-	if level == 10:
-		color = Color("b77d35")
-	elif level >= 7:
-		color = Color("80508f")
-	elif level >= 5:
-		color = Color("168397")
-	elif level >= 3:
-		color = Color("3f8f54")
-	elif level >= 1:
-		color = Color("a7a7a7")
-	for state in ["normal", "hover", "pressed", "disabled"]:
-		var style := StyleBoxFlat.new()
-		style.bg_color = color.lightened(0.12) if state == "hover" else color
-		style.set_content_margin_all(8)
-		style.set_corner_radius_all(5)
-		button.add_theme_stylebox_override(state, style)
+	# All eleven variants are editable in TribesTheme.tres.
+	button.theme_type_variation = StringName("ToolLevel%s" % level)

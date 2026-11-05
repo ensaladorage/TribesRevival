@@ -1,7 +1,7 @@
 extends SceneTree
 ## Signal/lifetime regression only: no rendered frames, game scene or simulation.
 
-const Menus = preload("res://scripts/ui/game_menus.gd")
+const Menus = preload("res://scenes/ui/Menus.tscn")
 var menus: CanvasLayer
 var failures: Array[String] = []
 var events: Array[String] = []
@@ -11,7 +11,7 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 func _run() -> void:
-	menus = Menus.new()
+	menus = Menus.instantiate()
 	menus.process_mode = Node.PROCESS_MODE_DISABLED
 	root.add_child(menus)
 	menus.main_requested.connect(menus.show_main)
@@ -116,7 +116,7 @@ func _slots() -> Array:
 	return [{"slot": 1, "status": "empty"}, {"slot": 2, "status": "valid", "save": {"metadata": {"level": 0, "minionCount": 2, "savedAt": "test"}}}, {"slot": 3, "status": "invalid", "reason": "test"}]
 
 func _button(prefix: String) -> Button:
-	for child in menus._content.get_children():
+	for child in menus._content.find_children("*", "Button", true, false):
 		if child is Button and child.text.begins_with(prefix):
 			return child
 	return null
@@ -129,7 +129,7 @@ func _press(prefix: String, expected_screen: String, rebuild: bool = true) -> vo
 	button.pressed.emit()
 	_check(menus.screen == expected_screen, "Destination: " + prefix)
 	if rebuild:
-		_check(is_instance_valid(button) and button.is_queued_for_deletion() and button.get_parent() == null, "Emitting button detached and deferred: " + prefix)
+		_check(is_instance_valid(button) and not button.is_inside_tree(), "Emitting page detached safely: " + prefix)
 
 func _check(condition: bool, message: String) -> void:
 	checks += 1

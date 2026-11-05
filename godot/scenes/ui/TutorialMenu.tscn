@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[node name="TutorialMenu" type="VBoxContainer"]
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 2
+text = "Cómo jugar"
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+
+[node name="Paragraph0" type="Label" parent="."]
+layout_mode = 2
+text = "Sobrevive y progresa guiando a tu tribu con el tótem.\n\nArrástralo para explorar y reagrupar a los minions. Haz una parada junto a los recursos para que trabajen solos. El terreno vacío no mueve el tótem."
+custom_minimum_size = Vector2(400, 0)
+autowrap_mode = 3
+
+[node name="Paragraph1" type="Label" parent="."]
+layout_mode = 2
+text = "Recolector: comida. Leñador: madera y combate. Cazador: conejos y combate a distancia. Guardián: cuerpo a cuerpo. Artesana: piedra y Brillo. Mago: clase legendaria."
+custom_minimum_size = Vector2(400, 0)
+autowrap_mode = 3
+
+[node name="Paragraph2" type="Label" parent="."]
+layout_mode = 2
+text = "Arrastra los botones laterales al mapa o el equipo sobre un Recolector. Investiga tecnologías y mejora herramientas. Las hogueras consumen comida para curar. Si muere toda la tribu, la partida termina."
+custom_minimum_size = Vector2(400, 0)
+autowrap_mode = 3
+
+[node name="Paragraph3" type="Label" parent="."]
+layout_mode = 2
+text = "Rueda / + / −: zoom · Esc: pausa · 1/2/3: velocidad · Insert: debug"
+custom_minimum_size = Vector2(400, 0)
+autowrap_mode = 3
+
+[node name="Play" type="Button" parent="."]
+layout_mode = 2
+text = "Jugar"
+custom_minimum_size = Vector2(0, 40)
+
+[node name="Back" type="Button" parent="."]
+layout_mode = 2
+text = "Volver"
+custom_minimum_size = Vector2(0, 40)
+

@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[node name="FeedbackMenu" type="VBoxContainer"]
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 2
+text = "Tribes Revival"
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+
+[node name="Message" type="Label" parent="."]
+layout_mode = 2
+text = "Mensaje"
+custom_minimum_size = Vector2(400, 0)
+autowrap_mode = 3
+
+[node name="Back" type="Button" parent="."]
+layout_mode = 2
+text = "Volver"
+custom_minimum_size = Vector2(0, 40)
+

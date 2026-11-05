@@ -1,0 +1,81 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/game_hud.gd" id="script"]
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ResourcesPanel.tscn" id="ResourcesPanel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/RecruitmentPanel.tscn" id="RecruitmentPanel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/EquipmentPanel.tscn" id="EquipmentPanel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/TechnologiesPanel.tscn" id="TechnologiesPanel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/UpgradesPanel.tscn" id="UpgradesPanel"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("script")
+
+[node name="Layout" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("theme")
+
+[node name="ResourcesPanel" parent="Layout" instance=ExtResource("ResourcesPanel")]
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 220.0
+offset_right = -20.0
+offset_top = 16.0
+
+[node name="RecruitmentPanel" parent="Layout" instance=ExtResource("RecruitmentPanel")]
+offset_left = 16.0
+offset_top = 155.0
+offset_right = 161.0
+
+[node name="EquipmentPanel" parent="Layout" instance=ExtResource("EquipmentPanel")]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -161.0
+offset_right = -16.0
+offset_top = 155.0
+grow_horizontal = 0
+
+[node name="Dock" type="HBoxContainer" parent="Layout"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -54.0
+grow_vertical = 0
+
+[node name="TechnologyToggle" type="Button" parent="Layout/Dock"]
+layout_mode = 2
+text = "Tecnologías"
+custom_minimum_size = Vector2(125, 38)
+
+[node name="UpgradeToggle" type="Button" parent="Layout/Dock"]
+layout_mode = 2
+text = "Mejoras"
+custom_minimum_size = Vector2(125, 38)
+
+[node name="Management" type="PanelContainer" parent="Layout"]
+visible = false
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -260.0
+custom_minimum_size = Vector2(560, 190)
+grow_vertical = 0
+
+[node name="Pages" type="VBoxContainer" parent="Layout/Management"]
+layout_mode = 2
+
+[node name="TechnologiesPanel" parent="Layout/Management/Pages" instance=ExtResource("TechnologiesPanel")]
+layout_mode = 2
+
+[node name="UpgradesPanel" parent="Layout/Management/Pages" instance=ExtResource("UpgradesPanel")]
+layout_mode = 2
+

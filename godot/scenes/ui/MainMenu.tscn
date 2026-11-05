@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[node name="MainMenu" type="VBoxContainer"]
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 2
+text = "Tribes Revival"
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+
+[node name="Play" type="Button" parent="."]
+layout_mode = 2
+text = "Jugar"
+custom_minimum_size = Vector2(0, 40)
+
+[node name="Tutorial" type="Button" parent="."]
+layout_mode = 2
+text = "Tutorial"
+custom_minimum_size = Vector2(0, 40)
+
+[node name="Load" type="Button" parent="."]
+layout_mode = 2
+text = "Cargar"
+custom_minimum_size = Vector2(0, 40)
+
+[node name="Quit" type="Button" parent="."]
+layout_mode = 2
+text = "Salir"
+custom_minimum_size = Vector2(0, 40)
+

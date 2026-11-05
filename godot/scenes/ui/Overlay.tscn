@@ -1,0 +1,110 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
+
+[node name="Overlay" type="CanvasLayer"]
+
+[node name="Title" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 20.0
+text = "TRIBES REVIVAL"
+mouse_filter = 2
+theme = ExtResource("theme")
+
+[node name="Progression" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 65.0
+text = "Nivel 0 · XP 0 / 12 · Puntos 0"
+mouse_filter = 2
+theme = ExtResource("theme")
+
+[node name="Pause" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.05, 0.08, 0.12, 0.6)
+visible = false
+
+[node name="Message" type="Label" parent="Pause"]
+offset_left = 500.0
+offset_top = 320.0
+text = "Pausa · Esc para continuar"
+mouse_filter = 2
+theme = ExtResource("theme")
+
+[node name="Debug" type="VBoxContainer" parent="."]
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -260.0
+offset_top = 120.0
+grow_horizontal = 0
+theme = ExtResource("theme")
+
+[node name="Status" type="Label" parent="Debug"]
+layout_mode = 2
+text = "Debug"
+
+[node name="PauseButton" type="Button" parent="Debug"]
+layout_mode = 2
+text = "Pausa / Continuar"
+
+[node name="Speed1" type="Button" parent="Debug"]
+layout_mode = 2
+text = "Velocidad ×1"
+metadata/multiplier = 1
+
+[node name="Speed2" type="Button" parent="Debug"]
+layout_mode = 2
+text = "Velocidad ×2"
+metadata/multiplier = 2
+
+[node name="Speed3" type="Button" parent="Debug"]
+layout_mode = 2
+text = "Velocidad ×3"
+metadata/multiplier = 3
+
+[node name="Damage" type="Button" parent="Debug"]
+layout_mode = 2
+text = "Dañar un minion"
+metadata/action = "debug-damage-one-minion"
+
+[node name="Level" type="Button" parent="Debug"]
+layout_mode = 2
+text = "Subir nivel"
+metadata/action = "debug-level-up"
+
+[node name="Resources" type="Button" parent="Debug"]
+layout_mode = 2
+text = "Añadir recursos"
+metadata/action = "debug-add-all-resources"
+
+[node name="Labelmin" type="Label" parent="Debug"]
+layout_mode = 2
+text = "Zoom min"
+
+[node name="Zoommin" type="HSlider" parent="Debug"]
+layout_mode = 2
+min_value = 0.5
+max_value = 2.0
+step = 0.05
+value = 0.5
+metadata/bound = "min"
+
+[node name="Labelmax" type="Label" parent="Debug"]
+layout_mode = 2
+text = "Zoom max"
+
+[node name="Zoommax" type="HSlider" parent="Debug"]
+layout_mode = 2
+min_value = 0.5
+max_value = 2.0
+step = 0.05
+value = 1.0
+metadata/bound = "max"
+

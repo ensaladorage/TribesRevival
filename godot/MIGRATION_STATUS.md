@@ -414,3 +414,23 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   reports/blocked-yield-validation.log. Fixture mínima de geometría incluida;
   no se guardan datos completos del jugador ni se ejecuta el loop.
 - Efecto en la partida del slot y lag de combate aún no validados manualmente.
+
+## F11a — HUD y menús editables
+
+- HUD.tscn instancia paneles independientes de recursos, reclutamiento,
+  equipo, tecnologías y mejoras. Los controles estáticos ya no se construyen
+  en GDScript. Metadata semántica conecta señales; disponibilidad y precios
+  siguen consultando los mismos módulos de reglas.
+- MainMenu/PauseMenu/TutorialMenu/DefeatMenu/ConfirmationMenu/SlotsMenu/
+  FeedbackMenu y SlotRow son escenas Control editables. Filas de slots se
+  instancian como contenido dinámico. Navegación libera la página diferida
+  tras separarla del árbol, preservando callbacks seguros.
+- Overlay.tscn contiene progreso y debug; main solo conecta acciones/sliders.
+  TribesTheme.tres centraliza fuente monoespaciada, paleta y estilos/variantes
+  de nivel. Primer cotejo F10 con src/styles.css: fondos #2b2538/#231e2d,
+  bordes #b2b2a0, texto #f4e8c1 y estados hover/pressed/disabled.
+- validate.sh correcto: 25 scripts/17 escenas, 101 comprobaciones aisladas
+  de navegación de menús, cuatro pulsaciones y 15.669 comparaciones de datos;
+  fuentes/iconos originales intactos. reports/editable-ui-validation.log.
+  Sin frames de gameplay ni pruebas visuales automáticas. Aspecto/interacción
+  completa del nuevo HUD pendiente de la etapa final; F11 global continúa.

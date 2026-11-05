@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/icon-axe.png" id="axe"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon-hammer.png" id="hammer"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon-sword.png" id="sword"]
+
+[node name="UpgradesPanel" type="HFlowContainer"]
+
+[node name="axe" type="Button" parent="."]
+layout_mode = 2
+custom_minimum_size = Vector2(160, 70)
+text = "axe"
+icon = ExtResource("axe")
+expand_icon = true
+theme_override_constants/icon_max_width = 40
+texture_filter = 1
+metadata/tool = "axe"
+
+[node name="hammer" type="Button" parent="."]
+layout_mode = 2
+custom_minimum_size = Vector2(160, 70)
+text = "hammer"
+icon = ExtResource("hammer")
+expand_icon = true
+theme_override_constants/icon_max_width = 40
+texture_filter = 1
+metadata/tool = "hammer"
+
+[node name="sword" type="Button" parent="."]
+layout_mode = 2
+custom_minimum_size = Vector2(160, 70)
+text = "sword"
+icon = ExtResource("sword")
+expand_icon = true
+theme_override_constants/icon_max_width = 40
+texture_filter = 1
+metadata/tool = "sword"
+

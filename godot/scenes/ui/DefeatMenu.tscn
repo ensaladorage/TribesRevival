@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[node name="DefeatMenu" type="VBoxContainer"]
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 2
+text = "Tu tribu ha muerto"
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+
+[node name="Restart" type="Button" parent="."]
+layout_mode = 2
+text = "Reiniciar"
+custom_minimum_size = Vector2(0, 40)
+
+[node name="Main" type="Button" parent="."]
+layout_mode = 2
+text = "Menú principal"
+custom_minimum_size = Vector2(0, 40)
+

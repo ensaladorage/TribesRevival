@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/icon-shield.png" id="shield"]
+
+[node name="EquipmentPanel" type="VBoxContainer"]
+custom_minimum_size = Vector2(145, 0)
+
+[node name="shield" type="Button" parent="."]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 38)
+text = "Escudo"
+icon = ExtResource("shield")
+expand_icon = true
+theme_override_constants/icon_max_width = 32
+texture_filter = 1
+metadata/item = "shield"
+

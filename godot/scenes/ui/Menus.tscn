@@ -1,0 +1,43 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/game_menus.gd" id="script"]
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
+
+[node name="Menus" type="CanvasLayer"]
+layer = 10
+script = ExtResource("script")
+
+[node name="Layout" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme = ExtResource("theme")
+
+[node name="Background" type="ColorRect" parent="Layout"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.06, 0.09, 0.12, 1)
+
+[node name="Center" type="CenterContainer" parent="Layout"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Layout/Center"]
+layout_mode = 2
+custom_minimum_size = Vector2(420, 0)
+theme_type_variation = &"MenuPanel"
+

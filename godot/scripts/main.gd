@@ -3,13 +3,14 @@ extends Node3D
 
 const Session = preload("res://scripts/simulation/game_session.gd")
 const WorldView = preload("res://scripts/view/world_view.gd")
-const HUD = preload("res://scripts/ui/game_hud.gd")
-const Menus = preload("res://scripts/ui/game_menus.gd")
+const HUD = preload("res://scenes/ui/HUD.tscn")
+const Menus = preload("res://scenes/ui/Menus.tscn")
+const Overlay = preload("res://scenes/ui/Overlay.tscn")
 const Saves = preload("res://scripts/persistence/save_repository.gd")
 var session := Session.new()
 var world_view := WorldView.new()
-var hud := HUD.new()
-var menus := Menus.new()
+var hud = HUD.instantiate()
+var menus = Menus.instantiate()
 var saves := Saves.new()
 var saved_fingerprint := ""
 var held_item := ""
@@ -292,58 +293,21 @@ func _delete_slot(slot: int) -> void:
 		menus.show_message("No se pudo eliminar la partida.")
 
 func _create_overlay() -> void:
-	var overlay := CanvasLayer.new()
-	overlay.name = "Overlay"
+	var overlay := Overlay.instantiate()
 	add_child(overlay)
-	var hints := Label.new()
-	hints.position = Vector2(20, 20)
-	hints.text = "TRIBES REVIVAL"
-	hints.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	overlay.add_child(hints)
-	inventory_label = Label.new()
-	inventory_label.position = Vector2(20, 65)
-	inventory_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	overlay.add_child(inventory_label)
-	pause_overlay = ColorRect.new()
-	pause_overlay.color = Color(0.05, 0.08, 0.12, 0.6)
-	pause_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	pause_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	overlay.add_child(pause_overlay)
-	var paused_text := Label.new()
-	paused_text.text = "Pausa · Esc para continuar"
-	paused_text.position = Vector2(500, 320)
-	paused_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pause_overlay.add_child(paused_text)
-	var panel := VBoxContainer.new()
-	panel.name = "Debug"
-	panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	panel.position = Vector2(-260, 120)
-	panel.visible = false
-	overlay.add_child(panel)
-	debug_label = Label.new()
-	panel.add_child(debug_label)
-	var pause_button := Button.new()
-	pause_button.text = "Pausa / Continuar"
-	pause_button.pressed.connect(_open_pause)
-	panel.add_child(pause_button)
-	for multiplier in [1, 2, 3]:
-		var button := Button.new()
-		button.text = "Velocidad ×%s" % multiplier
-		button.pressed.connect(func(): session.speed_multiplier = multiplier)
-		panel.add_child(button)
-	for entry in [["Dañar un minion", "debug-damage-one-minion"], ["Subir nivel", "debug-level-up"], ["Añadir recursos", "debug-add-all-resources"]]:
-		var button := Button.new()
-		button.text = entry[0]
-		button.pressed.connect(func(): session.enqueue({"type": entry[1]}))
-		panel.add_child(button)
-	for bound in ["min", "max"]:
-		var label := Label.new()
-		label.text = "Zoom " + bound
-		panel.add_child(label)
-		var slider := HSlider.new()
-		slider.min_value = 0.5
-		slider.max_value = 2.0
-		slider.step = 0.05
+	inventory_label = overlay.get_node("Progression")
+	pause_overlay = overlay.get_node("Pause")
+	debug_label = overlay.get_node("Debug/Status")
+	overlay.get_node("Debug/PauseButton").pressed.connect(_open_pause)
+	for button in overlay.get_node("Debug").find_children("*", "Button", true, false):
+		if button.has_meta("multiplier"):
+			var multiplier: int = button.get_meta("multiplier")
+			button.pressed.connect(func(): session.speed_multiplier = multiplier)
+		elif button.has_meta("action"):
+			var action: String = button.get_meta("action")
+			button.pressed.connect(func(): session.enqueue({"type": action}))
+	for slider in overlay.get_node("Debug").find_children("*", "HSlider", true, false):
+		var bound: String = slider.get_meta("bound")
 		slider.value = camera.zoom_min if bound == "min" else camera.zoom_max
 		slider.value_changed.connect(func(value):
 			if bound == "min":
@@ -351,4 +315,3 @@ func _create_overlay() -> void:
 			else:
 				camera.zoom_max = clampf(value, camera.zoom_min + 0.05, 2.0)
 			camera.adjust_zoom(0))
-		panel.add_child(slider)

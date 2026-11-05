@@ -1,0 +1,69 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/icon-hammer.png" id="artisan"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon-shield.png" id="shield"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon-mage.png" id="mage"]
+
+[node name="TechnologiesPanel" type="VBoxContainer"]
+
+[node name="Points" type="Label" parent="."]
+layout_mode = 2
+text = "Puntos disponibles: 0"
+
+[node name="Trees" type="HFlowContainer" parent="."]
+layout_mode = 2
+
+[node name="survival" type="Button" parent="Trees"]
+layout_mode = 2
+text = "Supervivencia"
+metadata/tree = "survival"
+
+[node name="exploration" type="Button" parent="Trees"]
+layout_mode = 2
+text = "Exploración"
+metadata/tree = "exploration"
+
+[node name="combat" type="Button" parent="Trees"]
+layout_mode = 2
+text = "Combate"
+metadata/tree = "combat"
+
+[node name="survivalOptions" type="HFlowContainer" parent="."]
+layout_mode = 2
+metadata/tree_options = "survival"
+
+[node name="explorationOptions" type="HFlowContainer" parent="."]
+layout_mode = 2
+metadata/tree_options = "exploration"
+
+[node name="combatOptions" type="HFlowContainer" parent="."]
+layout_mode = 2
+metadata/tree_options = "combat"
+
+[node name="artisan" type="Button" parent="survivalOptions"]
+layout_mode = 2
+text = "artisan"
+icon = ExtResource("artisan")
+expand_icon = true
+theme_override_constants/icon_max_width = 32
+texture_filter = 1
+metadata/technology = "artisan"
+
+[node name="shield" type="Button" parent="combatOptions"]
+layout_mode = 2
+text = "shield"
+icon = ExtResource("shield")
+expand_icon = true
+theme_override_constants/icon_max_width = 32
+texture_filter = 1
+metadata/technology = "shield"
+
+[node name="mage" type="Button" parent="explorationOptions"]
+layout_mode = 2
+text = "mage"
+icon = ExtResource("mage")
+expand_icon = true
+theme_override_constants/icon_max_width = 32
+texture_filter = 1
+metadata/technology = "mage"
+
