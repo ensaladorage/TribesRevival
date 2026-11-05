@@ -116,3 +116,8 @@ referencias/contratos; pruebas de datos/estructura, sin playtest automatizado.
 Finalmente regenerar F9 y reunir pendientes para una única etapa manual Linux.
 No introducir arte definitivo: reutilizar iconos originales como sprites
 provisionales reemplazables desde inspector, sin generar sprites.
+
+F11 ya tiene implementación estructural y exportable en escenas/Theme;
+F10 tiene cotejo de fuentes y capturas estáticas del menú. La siguiente etapa
+es la revisión manual final Linux y del editor indicada en la guía, manteniendo
+las fases abiertas mientras falte evidencia funcional tras el refactor.

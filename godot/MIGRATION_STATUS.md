@@ -7,9 +7,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - Última fase cerrada: F7 (compras/equipo, confirmación final de colores Linux).
   F0, F1, F2, F3, F4 y F7 completadas antes del refactor visual.
 - Fase actual: F11 arquitectura visual editable; F10 paridad visual obligatoria.
-- Próxima tarea ejecutable: completar diferencias pendientes de F10 (gradiente
-  y espaciado del menú) y preparar revisión manual final Linux. Exportaciones
-  regeneradas y arranque headless Linux correcto. F11 implementada a nivel estructural; revisión en editor y
+- Próxima tarea ejecutable: revisión manual final Linux y edición desde Godot,
+  según GODOT_MANUAL_QA.md/EDITING_VISUALS.md. Implementación y exportaciones del
+  bloque listas; no se declara completado el objetivo sin esa evidencia. F11 implementada a nivel estructural; revisión en editor y
   funcionamiento percibido pendientes de la etapa manual final.
 - Decisión vigente: testeo manual al terminar la migración; no solicitar más
   recorridos intermedios ni centrarse en bugs menores. Windows manual aplazado.
@@ -529,3 +529,27 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   del menú Linux, sin errores. reports/f11-f10-export-all.log. Ningún test visual o de loop añadido.
 - F10/F11 siguen pendientes de la revisión manual final. No se extrapola la
   captura del menú a materiales/efectos/HUD en una partida ni al editor nativo.
+
+## F10c — Gradientes e inspección final de menú
+
+- Gradientes de panel general y principal trasladados desde CSS a fondos SVG
+  de UI y StyleBoxTexture, editables desde Theme. Borde redondeado y sombra
+  aproximada; no se crean sprites de personajes ni assets de arte definitivos.
+  Procedencia/hashes en audit/menu_panel_styles.json.
+- Menú principal usa el espaciado de acciones y de glifos de la referencia,
+  título desplazado y márgenes verticales del CSS a 720p. La captura real
+  reports/f10-godot-main-final.jpg confirma gradiente y tipografía; sustituye
+  la diferencia de fondo plano detectada en la comparación inicial.
+- Diferencias restantes inspeccionadas: acción Salir adicional del ejecutable,
+  con su altura adicional, pequeñas diferencias tipográficas y sombra vectorial
+  aproximada. La referencia depende de la fuente monoespaciada del navegador;
+  Godot empaqueta Liberation Mono para mantener el resultado entre plataformas.
+- Export final correcto: reports/menu-gradient-export-all.log, 33 scripts,
+  72 escenas, 101 callbacks, cuatro pulsaciones y 15.669 comparaciones puras;
+  Linux/Windows/web generados, menú Linux headless sin errores. Paquetes
+  comprobados por SHA256/CRC e incluyen licencias del motor y de fuentes.
+- Servidores Babylon 5173/TribesRevival y Godot 8078 responden HTTP 200.
+  Commits locales en migration/godot; no se ha hecho push.
+- Implementación preparada para la etapa manual final solicitada por el usuario.
+  F10/F11 y el objetivo completo siguen abiertos: falta revisión del editor,
+  nueva presentación durante gameplay, slot 1 y lag de combate en Linux.

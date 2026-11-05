@@ -1,0 +1,14 @@
+[
+  {
+    "source": "src/styles.css: .menu-panel/.main-menu-panel",
+    "destination": "godot/assets/ui/menu-panel.svg",
+    "sha256": "2f86f6de8bdf56f10ebd8dfc72108f0d55f636ec6378b4a63cfc23026aa976d1",
+    "notes": "CSS gradient and rounded border mapped to vector UI; layered shadow is approximate."
+  },
+  {
+    "source": "src/styles.css: .menu-panel/.main-menu-panel",
+    "destination": "godot/assets/ui/main-panel.svg",
+    "sha256": "0aee9bc64b75581c67e14da174252dfdbe02bc6aaceb26d108427963b2d9378b",
+    "notes": "CSS gradient and rounded border mapped to vector UI; layered shadow is approximate."
+  }
+]

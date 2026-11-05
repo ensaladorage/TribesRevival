@@ -65,7 +65,8 @@ no se ha generado el sprite definitivo pendiente del usuario.
 - `Overlay.tscn` contiene progreso y debug; `scenes/placement/` las
   previsualizaciones de arrastre.
 - Abrir `themes/TribesTheme.tres`: fuente, texto, botones, paneles, foco y
-  variantes de nivel/costes/vida. La fuente monoespaciada Liberation Mono se incluye en assets/fonts para
+  variantes de nivel/costes/vida. Los fondos de panel usan StyleBoxTexture
+  y SVG de gradientes derivados del CSS; se pueden sustituir desde el recurso. La fuente monoespaciada Liberation Mono se incluye en assets/fonts para
   mantener el aspecto en web/Windows/Linux; su licencia OFL acompaña los ZIP.
 
 Conservar los nombres de los paneles raíz y los controles referenciados, y la

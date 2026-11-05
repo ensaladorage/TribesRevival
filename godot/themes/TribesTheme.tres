@@ -3,6 +3,17 @@
 [ext_resource type="FontFile" path="res://assets/fonts/LiberationMono-Regular.ttf" id="mono"]
 [ext_resource type="FontFile" path="res://assets/fonts/LiberationMono-Bold.ttf" id="bold"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/menu-panel.svg" id="menu_texture"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-panel.svg" id="main_texture"]
+
+[sub_resource type="FontVariation" id="main_title_font"]
+base_font = ExtResource("bold")
+spacing_glyph = 1
+
+[sub_resource type="FontVariation" id="kicker_font"]
+base_font = ExtResource("mono")
+spacing_glyph = 1
+
 [sub_resource type="StyleBoxFlat" id="normal"]
 bg_color = Color(0.169, 0.145, 0.22, 0.92)
 border_width_left = 1
@@ -83,20 +94,19 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 
-[sub_resource type="StyleBoxFlat" id="menu"]
-bg_color = Color(0.137, 0.118, 0.176, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.698, 0.698, 0.627, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_left = 5
-corner_radius_bottom_right = 5
+[sub_resource type="StyleBoxTexture" id="menu"]
+texture = ExtResource("menu_texture")
+texture_margin_left = 32.0
+expand_margin_left = 24.0
 content_margin_left = 38.0
+texture_margin_top = 32.0
+expand_margin_top = 24.0
 content_margin_top = 38.0
+texture_margin_right = 32.0
+expand_margin_right = 24.0
 content_margin_right = 38.0
+texture_margin_bottom = 32.0
+expand_margin_bottom = 24.0
 content_margin_bottom = 38.0
 
 [sub_resource type="StyleBoxFlat" id="level0"]
@@ -363,43 +373,35 @@ corner_radius_top_right = 5
 corner_radius_bottom_left = 5
 corner_radius_bottom_right = 5
 
-[sub_resource type="StyleBoxFlat" id="MainPanel"]
-bg_color = Color(0.17, 0.15, 0.19, 0.98)
-border_width_left = 1
+[sub_resource type="StyleBoxTexture" id="MainPanel"]
+texture = ExtResource("main_texture")
+texture_margin_left = 32.0
+expand_margin_left = 24.0
 content_margin_left = 38.0
-border_width_top = 1
-content_margin_top = 38.0
-border_width_right = 1
+texture_margin_top = 32.0
+expand_margin_top = 24.0
+content_margin_top = 50.4
+texture_margin_right = 32.0
+expand_margin_right = 24.0
 content_margin_right = 38.0
-border_width_bottom = 1
-content_margin_bottom = 38.0
-border_color = Color(0.698, 0.698, 0.627, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_left = 5
-corner_radius_bottom_right = 5
-shadow_color = Color(0, 0, 0, 0.6)
-shadow_size = 12
-shadow_offset = Vector2(0, 8)
+texture_margin_bottom = 32.0
+expand_margin_bottom = 24.0
+content_margin_bottom = 50.4
 
-[sub_resource type="StyleBoxFlat" id="TutorialPanel"]
-bg_color = Color(0.145, 0.122, 0.176, 0.98)
-border_width_left = 1
+[sub_resource type="StyleBoxTexture" id="TutorialPanel"]
+texture = ExtResource("menu_texture")
+texture_margin_left = 32.0
+expand_margin_left = 24.0
 content_margin_left = 24.0
-border_width_top = 1
+texture_margin_top = 32.0
+expand_margin_top = 24.0
 content_margin_top = 24.0
-border_width_right = 1
+texture_margin_right = 32.0
+expand_margin_right = 24.0
 content_margin_right = 24.0
-border_width_bottom = 1
+texture_margin_bottom = 32.0
+expand_margin_bottom = 24.0
 content_margin_bottom = 24.0
-border_color = Color(0.698, 0.698, 0.627, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_left = 5
-corner_radius_bottom_right = 5
-shadow_color = Color(0, 0, 0, 0.6)
-shadow_size = 12
-shadow_offset = Vector2(0, 8)
 
 [sub_resource type="StyleBoxFlat" id="TutorialCard"]
 bg_color = Color(0.09, 0.075, 0.12, 0.45)
@@ -576,3 +578,7 @@ MenuTitle/base_type = &"Label"
 MenuTitle/fonts/font = ExtResource("bold")
 AlertBadge/base_type = &"PanelContainer"
 AlertBadge/styles/panel = SubResource("alert")
+MainTitle/base_type = &"Label"
+MainTitle/fonts/font = SubResource("main_title_font")
+MenuKicker/base_type = &"Label"
+MenuKicker/fonts/font = SubResource("kicker_font")

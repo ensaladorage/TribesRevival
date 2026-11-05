@@ -61,7 +61,8 @@ manual final; un ahorro en rutas no demuestra FPS de una batalla.
 
 El menú inicial sí se ha inspeccionado mediante capturas estáticas comparables
 1280×720 (sin entrar en partida). Se corrigió el fallback proporcional de web
-incluyendo Liberation Mono y licencia OFL. Persisten fondo plano/gradiente y
-espaciado del menú; Salir es una acción nativa de Godot. Materiales/cámara,
+incluyendo Liberation Mono y licencia OFL. Gradiente y espaciado se ajustaron después con StyleBoxTexture y fuentes
+embebidas; la captura final lo acredita. Persisten sombra aproximada y altura
+adicional de Salir, acción nativa de Godot. Materiales/cámara,
 cuadrícula/tótem, HUD, nubes/lluvia, curación y alertas se cotejaron por fuentes,
 pero la vista en movimiento sigue sin acreditación manual tras el refactor.

@@ -117,7 +117,7 @@ func _slots() -> Array:
 
 func _button(prefix: String) -> Button:
 	for child in menus._content.find_children("*", "Button", true, false):
-		if child is Button and child.text.begins_with(prefix):
+		if child is Button and (child.text.begins_with(prefix) or child.tooltip_text.begins_with(prefix)):
 			return child
 	return null
 
