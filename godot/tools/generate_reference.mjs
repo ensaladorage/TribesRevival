@@ -45,6 +45,10 @@ try {
       upgrades: economy.TOOL_UPGRADES,
       technologies: TECHNOLOGIES,
       progression: PROGRESSION_BALANCE,
+      bonuses: seeds.flatMap(seed => ['axe', 'hammer'].flatMap(tool => [0, 2, 6, 10].flatMap(level => [0, 1, 42, 200].map(tick => {
+        const input = {seed, tick, unitId: 'unit-gatherer-01', nodeId: 'resource-001', tool, level};
+        return {...input, result: economy.rollsToolBonusResource(input)};
+      })))),
     },
   };
   await mkdir(path.join(project, 'tests', 'fixtures'), { recursive: true });

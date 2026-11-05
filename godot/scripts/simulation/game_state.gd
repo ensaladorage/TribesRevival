@@ -7,6 +7,7 @@ const EDGE_PADDING := 2.0
 const DEFAULT_SEED := "totem-tribes-hito-2a"
 const Random = preload("res://scripts/simulation/seeded_random.gd")
 const Catalog = preload("res://scripts/simulation/world_catalog.gd")
+const Progression = preload("res://scripts/simulation/progression.gd")
 
 static func empty_amounts() -> Dictionary:
 	return {"food": 0, "wood": 0, "stone": 0, "spark": 0, "gold": 0}
@@ -38,7 +39,7 @@ static func create_initial(seed_text: String = DEFAULT_SEED) -> Dictionary:
 		"animals": Catalog.create_rabbits(seed_text, blueprint.biomes), "barbarianCorpses": [],
 		"purchaseCounts": {"gatherer": 0, "lumberjack": 0, "hunter": 0, "guardian": 0, "artisan": 0, "mage": 0},
 		"toolLevels": {"axe": 0, "hammer": 0, "sword": 0},
-		"progression": {"level": 0, "experience": 0, "experienceToNextLevel": 12, "technologyPoints": 0, "unlockedTechnologies": []},
+		"progression": Progression.create_initial(),
 		"biomes": blueprint.biomes, "resources": blueprint.resources, "decorations": blueprint.decorations,
 		"drops": [], "nextDropId": 1, "campfires": [], "nextCampfireId": 1,
 		"inventory": {"amounts": empty_amounts()}, "effects": [], "nextEffectId": 1,

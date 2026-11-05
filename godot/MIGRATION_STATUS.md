@@ -4,10 +4,10 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 ## Continuidad
 
-- Última fase completada: F3 (datos deterministas/mundo). F0 y F1 completadas.
-- Fase actual: F4 (economía/progresión); F2 sigue abierta por pendientes manuales.
-- Próxima tarea ejecutable: portar economía y progresión con paridad de tablas
-  y reglas atómicas; después navegación/seguimiento/IA.
+- Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
+- Fase actual: F5 (IA/recolección); F2 sigue abierta por pendientes manuales.
+- Próxima tarea ejecutable: portar geometría/navegación/idle/reglas de tareas,
+  integrar seguimiento y representar el mundo generado.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -20,7 +20,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F1 base | Completada: editor importa, 1 script y 1 escena válidos; arranque sin ticks |
 | F2 controles | Cámara/arrastre/zoom/pausa/velocidad/debug implementados; flecha, ajustes y revisión manual pendientes |
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
-| F4 economía/progresión | Pendiente |
+| F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
 | F5 IA/recolección | Pendiente |
 | F6 combate/clima | Pendiente |
 | F7 compras/equipo | Pendiente |
@@ -64,3 +64,12 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   10.764 comparaciones de paridad sobre 4 semillas (incluye Unicode/emoji),
   tolerancia numérica 1e-9, 42 originales intactos.
   Informe `reports/f3-validation.log`. Esto valida datos, no gameplay ni píxeles.
+
+- F4: economía y progresión puras portadas, incluidas curvas por composición
+  viva, escudo, costes mixtos, efectos 0–10, bonus determinista, requisito de
+  martillo +5, XP y las tres tecnologías vigentes. Sin cambios de balance.
+- F4 verificada: editor/8 scripts/1 escena correctos; 11.302 comparaciones
+  de paridad e invariantes (incluyen 128 tiradas de bonus), compras atómicas
+  fallidas/exitosas y límites de nivel/recompra/requisito tecnológico.
+  `npm test -- src/simulation/economyConfig.test.ts`: 4/4 pruebas puras.
+  Informe `reports/f4-validation.log`; originales intactos; Vite HTTP 200.
