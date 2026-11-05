@@ -73,7 +73,8 @@ equivalen al cierre de una fase mayor.
 ## Validación y commits
 
 `bash godot/tools/validate.sh` importa con el editor headless, carga scripts y
-escenas sin frames, comprueba callbacks/lifetimes de menús en un árbol aislado
+escenas sin frames, comprueba callbacks/lifetimes de menús y despacho de
+pulsar/soltar en árboles aislados sin mundo ni simulación,
 y ejecuta tests de datos/reglas puras disponibles.
 No ejecutar automatización visual, capturas, simulaciones largas ni tests del
 loop de gameplay. Las comprobaciones manuales corresponden al usuario.

@@ -75,7 +75,8 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 		if not held_item.is_empty():
 			_finish_placement()
-			get_viewport().set_input_as_handled()
+			# The source Button must also receive release to clear button_down.
+			# These HUD buttons have no release action; placement finishes above.
 		elif dragging:
 			_end_drag()
 			get_viewport().set_input_as_handled()

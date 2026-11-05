@@ -6,9 +6,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
 - Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
-- Próxima tarea ejecutable: validar manualmente compras/equipo/combate y
-  ejecutar los builds nativos; completar los casos restantes de QA antes
-  de cerrar F2/F5/F6/F7/F8/F9. Menús y loop básico confirmados por el usuario.
+- Próxima tarea ejecutable: repetir reclutamiento consecutivo tras corregir
+  la suelta del botón; ejecutar builds nativos y completar QA restante antes
+  de cerrar F2/F5/F6/F7/F8/F9. Plataforma de pruebas manuales aún sin identificar.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -23,8 +23,8 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
 | F5 IA/recolección | Usuario confirma seguimiento y recolección con aumento de inventario; casos de 8 unidades/obstáculos/interrupciones pendientes |
-| F6 combate/clima | Lógica y feedback provisional integrados; playtest pendiente |
-| F7 compras/equipo | Comandos/drag-to-equip/HUD básico implementados; validación manual pendiente |
+| F6 combate/clima | Usuario confirma combate con daño/botín; clima/respawn/hogueras/derrota pendientes |
+| F7 compras/equipo | Usuario confirma equipo/mejora/tecnología; fallo al repetir reclutamiento corregido técnicamente, repetición manual pendiente |
 | F8 UI/guardado | Usuario confirma Tutorial, Guardar/Cargar y retorno al principal; HUD/slots exhaustivos y Esc pendientes |
 | F9 integración/exportación | Linux/Windows/web exportados y empaquetados; menú Linux inicia headless; validación gráfica/manual pendiente |
 
@@ -238,3 +238,26 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   web regenerados; menú Linux inicia headless sin errores. Informe
   `reports/hud-progression-export-all.log`. Servidores originales y Godot
   confirmados activos (HTTP 200).
+
+## Reclutamiento consecutivo: segunda pulsación ignorada
+
+- Revisión manual del bloque reclutar/equipar/mejora/tecnología/combate:
+  el usuario informa que la segunda pulsación de reclutar necesita varios
+  intentos, y que «el resto funciona». Se acredita equipo/mejora/tecnología
+  y combate con daño/botín con ese alcance; no se acredita llegar a 8 unidades
+  ni una plataforma específica.
+- Reproducido sin escena de juego, gráficos ni ticks: el callback de
+  `main._input` consumía la suelta antes de llegar a `BaseButton`. Su estado
+  interno seguía pulsado y omitía el siguiente `button_down`.
+- Corregido dejando pasar la suelta tras terminar la colocación. El arrastre
+  del tótem conserva su consumo de input; los botones de colocación solo
+  tienen acción al pulsar, por lo que la suelta no repite una compra.
+- `tests/test_placement_input.gd` hereda el `_input` real con colocación
+  sustituida por un contador, sin mundo ni acceso a guardados. Despacha cuatro
+  pares pulsar/soltar a un botón nativo: falla antes (solo dos comienzos) y
+  pasa después (cuatro comienzos, cuatro finales, botón liberado siempre).
+- Repetición manual pendiente para confirmar la experiencia completa.
+- `tools/export.sh` correcto: originales/iconos intactos, importación,
+  estructura, 101 comprobaciones de menú, input consecutivo, 15.325 de datos,
+  tres exports y arranque headless Linux. Informe
+  `reports/placement-release-export-all.log`.

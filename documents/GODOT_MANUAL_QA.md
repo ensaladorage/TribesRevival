@@ -28,6 +28,14 @@ El usuario confirmó además el recorrido iniciar → arrastrar/soltar tótem
 cerca de recursos → seguimiento → recolección → aumento de inventario.
 No especificó plataforma ni casos extremos; los demás criterios siguen pendientes.
 
+En el bloque reclutamiento/equipo/mejora/tecnología/combate, el usuario informó
+que la segunda pulsación de reclutar se perdía y que el resto funcionaba.
+Se registra éxito básico de equipo, mejora/tecnología y combate con daño y
+botín; no se acredita aún alcanzar ocho unidades ni una plataforma concreta.
+La pérdida de pulsaciones se reprodujo en el despacho nativo de input y se
+corrigió dejando llegar la suelta al botón del HUD. Pendiente repetir manualmente
+reclutamientos seguidos, tanto soltando sobre el mapa como cancelando sobre el HUD.
+
 | Área | Comprobación y resultado esperado |
 |---|---|
 | Inicio | Menú principal y tutorial opacos; «Jugar» inicia 2 minions, inventario vacío y nivel 0 |

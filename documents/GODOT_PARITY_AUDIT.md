@@ -5,8 +5,9 @@ Las rutas de scripts e informes de esta tabla son relativas a `godot/`.
 Esta tabla compara el objetivo completo con el estado del proyecto. La
 presencia de código y una exportación correcta no demuestran por sí solas
 equivalencia funcional. La revisión manual está en `GODOT_MANUAL_QA.md`: el
-usuario confirma las rutas de menús reportadas y el loop básico de arrastre,
-seguimiento y recolección. Los demás casos siguen pendientes.
+usuario confirma menús, arrastre/seguimiento/recolección y equipo/mejoras/
+tecnología/combate básicos. Reclutamiento consecutivo corregido tras su aviso;
+repetición manual y demás casos siguen pendientes.
 La migración completa todavía no está acreditada.
 
 | Requisito | Evidencia actual | Falta para acreditarlo completamente |
@@ -17,9 +18,9 @@ La migración completa todavía no está acreditada.
 | Estado y mundo deterministas | PRNG bit exacto UTF-16/Mulberry32 y estados iniciales completos comparados con TS en 4 semillas, incluida Unicode/emoji | Vista/generación percibida en partida |
 | Tótem/minions/IA/navegación | `minion_movement.gd`, `navigation.gd`, `minion_idle.gd`, `work_system.gd`; funciones puras comparadas con TS; usuario confirma arrastre y seguimiento básicos | F5 con 8 unidades, obstáculos e interrupciones en partida |
 | Recolección/economía | Afinidades, tickets, llamadas, tiempos, drops unitarios, inventario y tablas portados; transacciones/reglas puras verificadas; usuario confirma recolección y aumento del inventario | Interrupción y continuidad en los casos restantes de QA |
-| Combate/salud/fauna/loot | `conflict_system.gd`, `combat_rules.gd`, `survival_system.gd`; estadísticas/daño/curación comparados con TS | Batallas, huida, respawn y saqueo manuales |
-| Compras/equipo/legendarias | `commands.gd`, UI nativa y picking; cap 8, Mago único, proveedor de comida, Escudo y costes mixtos comparados con TS sin ticks | Drag-to-equip, preview y feedback manuales |
-| Herramientas/XP/tecnologías | Tablas 0–10, bonus, XP y tres tecnologías vigentes con requisitos/costes compartidos | Uso en partida y revisión del HUD |
+| Combate/salud/fauna/loot | `conflict_system.gd`, `combat_rules.gd`, `survival_system.gd`; estadísticas/daño/curación comparados con TS; usuario confirma combate básico con daño y botín | Huida, respawn, derrota y casos restantes de QA |
+| Compras/equipo/legendarias | `commands.gd`, UI nativa y picking; cap 8, Mago único, proveedor de comida, Escudo y costes mixtos comparados con TS sin ticks; usuario confirma equipamiento básico; arreglada pérdida de segunda pulsación | Repetir reclutamiento consecutivo y llegar a 8; resto de clases/escudo/preview/feedback |
+| Herramientas/XP/tecnologías | Tablas 0–10, bonus, XP y tres tecnologías vigentes con requisitos/costes compartidos; usuario confirma mejora/tecnología básica; HUD de puntos y paneles alineado al original | Resto de niveles/requisitos y revisión manual del HUD actualizado |
 | Clima/hogueras | Sistemas lógicos portados en el orden original, vistas provisionales y audio | Lluvia/reposición, expiración/distancia/curación manuales |
 | HUD/menús/tutorial | Controles nativos, 13 iconos originales verificados; usuario confirma Tutorial, Guardar/Cargar y retorno al principal tras arreglo de callbacks; regresión aislada de señales y Esc | Resto del HUD, foco/teclado (incluido Esc corregido), tooltips, opacidad y legibilidad manuales |
 | Guardado local actual | Tres slots, JSON v17, metadatos, ida/vuelta aislada, compra tras carga, borrado individual y confirmación UI | Flujos guardar/cargar desde juego y menús manuales |
