@@ -7,8 +7,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - Última fase cerrada: F2 (controles, con validación manual Linux).
   F0, F1, F2, F3 y F4 completadas.
 - Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
-- Próxima tarea ejecutable: comprobar preview/cancelación y clases/equipo
-  pendientes en Linux. Controles y tres slots ya confirmados. Por decisión
+- Próxima tarea ejecutable: comprobar Mago/Escudo y completar los casos
+  pendientes de IA/conflicto en Linux. Controles, slots y preview/cancelación
+  ya confirmados. Por decisión
   del usuario, prueba manual de Windows aplazada; centrar QA en Linux.
 - Incidencias reportadas resueltas por confirmación manual en Linux:
   menús, segunda pulsación de reclutamiento, lag en los límites con 8 unidades
@@ -28,7 +29,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
 | F5 IA/recolección | Usuario confirma seguimiento/recolección y bordes con 8 unidades; cruces/llamadas/interrupciones pendientes |
 | F6 combate/clima | Usuario confirma combate, daño/botín, hoguera, lluvia y derrota/reinicio en Linux; huida/respawn pendientes |
-| F7 compras/equipo | Usuario confirma equipo/mejora/tecnología, reclutamiento consecutivo y uso de 8 unidades en Linux; preview/cancelación/clases pendientes |
+| F7 compras/equipo | Equipo/mejora/tecnología, reclutamiento consecutivo, 8 unidades y preview/cancelación confirmados en Linux; Mago/Escudo pendientes |
 | F8 UI/guardado | Menús/HP y persistencia de los tres slots tras reabrir validados en Linux; borrado/cancelación correctos; resto de revisión UI pendiente |
 | F9 integración/exportación | Tres builds exportados; recorridos Linux confirmados; Windows manual aplazado por usuario, QA Linux restante pendiente |
 
@@ -358,3 +359,8 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   manualmente en Linux; no se amplía a migraciones de versiones antiguas.
 - No se modificó código ni se regeneraron builds para registrar estas
   confirmaciones. El build técnico vigente sigue siendo `8ca52ad`.
+- El usuario confirma además «si todo correcto» a preview libre lejos del
+  tótem, spawn próximo al soltar y cancelación de equipo sobre terreno/clase
+  incompatible sin gasto. Interacción de colocación acreditada en Linux.
+  La distancia exacta de 15 m se acredita con regla pura comparada con TS;
+  la confirmación manual acredita el comportamiento percibido.

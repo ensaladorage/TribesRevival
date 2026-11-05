@@ -81,6 +81,12 @@ principal y pausa, cancelación de borrado conservando datos y borrado exclusivo
 del slot elegido. Se acredita el guardado de la versión actual en Linux;
 las migraciones históricas siguen fuera del alcance activo.
 
+Confirmados preview libre lejos del tótem y aparición de la unidad cerca
+de este al soltar, más cancelación de equipo al soltar sobre terreno/clase
+incompatible sin consumo. El radio exacto de 15 m tiene cobertura de regla
+pura; esta confirmación manual no mide distancias. Mago y Escudo se solicitan
+a continuación como comprobación de equipo pendiente.
+
 | Área | Comprobación y resultado esperado |
 |---|---|
 | Inicio | Menú principal y tutorial opacos; «Jugar» inicia 2 minions, inventario vacío y nivel 0 |
