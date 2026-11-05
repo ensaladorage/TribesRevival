@@ -1,0 +1,5 @@
+.godot/
+builds/
+reports/
+Godot*_linux.*
+Godot*.zip

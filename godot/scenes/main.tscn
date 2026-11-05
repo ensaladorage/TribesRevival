@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+
+[sub_resource type="PlaneMesh" id="Plane_ground"]
+size = Vector2(160, 160)
+
+[sub_resource type="StandardMaterial3D" id="Material_ground"]
+albedo_color = Color(0.26, 0.36, 0.23, 1)
+roughness = 1.0
+
+[sub_resource type="CylinderMesh" id="Cylinder_totem"]
+top_radius = 0.65
+bottom_radius = 0.8
+height = 3.2
+
+[node name="TribesRevival" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+position = Vector3(80, -0.01, 80)
+mesh = SubResource("Plane_ground")
+material_override = SubResource("Material_ground")
+
+[node name="Totem" type="MeshInstance3D" parent="."]
+position = Vector3(80, 1.6, 80)
+mesh = SubResource("Cylinder_totem")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-55, -30, 0)
+light_color = Color(1, 0.93, 0.8, 1)
+light_energy = 1.4
+
+[node name="Camera3D" type="Camera3D" parent="."]
+position = Vector3(112.765, 112.765, 126.794)
+projection = 1
+size = 36.0
+near = 0.1
+far = 1000.0
+current = true

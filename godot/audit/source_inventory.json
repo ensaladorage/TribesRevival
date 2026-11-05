@@ -1,0 +1,371 @@
+{
+  "base_commit": "56125b20d74102f94f30d87b7c90e5b62257e4cd",
+  "files": [
+    {
+      "path": "index.html",
+      "sha256": "5356a71e6dc635cc6b0465e3e50fb4400c41ac6f5e06f7a74f2f8308c583f4c9",
+      "imports": []
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "bfaab73d0dc6056e16370521d6301397472785a4ed5d1f4e823be215b2b8f260",
+      "imports": []
+    },
+    {
+      "path": "package.json",
+      "sha256": "e5c8c6aa6422fe1cdf551abb730a6b6c53e879476b8752ea5d4aa2448e583efc",
+      "imports": []
+    },
+    {
+      "path": "src/engine/BabylonGame.ts",
+      "sha256": "88498e2cd62f8b92170bb379c3daed2f510d42a89a2faa7b52b071366f748832",
+      "imports": [
+        "@babylonjs/core",
+        "../input/actions",
+        "../simulation/createInitialState",
+        "../simulation/worldView",
+        "../simulation/technologyConfig",
+        "../simulation/stepSimulation",
+        "../simulation/survivalRules",
+        "../simulation/economyConfig",
+        "../simulation/types",
+        "../simulation/survivalTypes",
+        "../simulation/survivalTypes",
+        "../simulation/survivalTypes",
+        "../simulation/survivalTypes",
+        "../persistence/saveGame"
+      ]
+    },
+    {
+      "path": "src/input/actions.ts",
+      "sha256": "6fc336a361be0ac2f199b17274238f390446aa02fe331e9788c99b50391837ec",
+      "imports": [
+        "../simulation/types",
+        "../simulation/survivalTypes",
+        "../simulation/survivalCombat"
+      ]
+    },
+    {
+      "path": "src/main.ts",
+      "sha256": "4689765aa5fd7019230c34eb57d8764cd51550efcaa5c94f8266a8229de66c09",
+      "imports": [
+        "./engine/BabylonGame",
+        "./styles.css"
+      ]
+    },
+    {
+      "path": "src/persistence/saveGame.test.ts",
+      "sha256": "b0e4ba3dc4099133ae3fcd80227f5f0c050485e90dedae1facda1d49725d490a",
+      "imports": [
+        "vitest",
+        "../simulation/createInitialState",
+        "../simulation/minionIdle",
+        "../simulation/minionNavigation",
+        "./saveGame"
+      ]
+    },
+    {
+      "path": "src/persistence/saveGame.ts",
+      "sha256": "6a7c0e53dc892208a108c2cf7cc7ce6c62176d8148e19f51838778d1b5940e62",
+      "imports": [
+        "../simulation/types",
+        "../simulation/minionIdle",
+        "../simulation/survivalTypes"
+      ]
+    },
+    {
+      "path": "src/simulation/createInitialState.ts",
+      "sha256": "4e5f6e85647c96691eb7e52c70777fc94fdebe83d701beb1a3eef4183b59f95a",
+      "imports": [
+        "./survivalCatalog",
+        "./seededRandom",
+        "./survivalTypes",
+        "./survivalCombat",
+        "./weatherSystem",
+        "./progression",
+        "./minionIdle",
+        "./types"
+      ]
+    },
+    {
+      "path": "src/simulation/economyConfig.test.ts",
+      "sha256": "d35070360d5c7c093a8cfe599d2b4f103e71903fc960f5e8ddd9076c534bd61b",
+      "imports": [
+        "vitest",
+        "./economyConfig",
+        "./survivalTypes"
+      ]
+    },
+    {
+      "path": "src/simulation/economyConfig.ts",
+      "sha256": "27fbc87d1565230231f9c4a4a8a14752bc3e7f94159b2a74b7060ca01d1ee383",
+      "imports": [
+        "./seededRandom",
+        "./survivalTypes",
+        "./types"
+      ]
+    },
+    {
+      "path": "src/simulation/economyIntegration.test.ts",
+      "sha256": "90c7bbd5586f4c0780e3cee60f7f6cf089f9ee82fdf341fb8cc69700060d26cc",
+      "imports": [
+        "vitest",
+        "./createInitialState",
+        "./stepSimulation"
+      ]
+    },
+    {
+      "path": "src/simulation/minionAwareness.test.ts",
+      "sha256": "ea7fef83c7640321105a2c52ac14d9be84c3587e2f0e735d5006e449a58384f8",
+      "imports": [
+        "vitest",
+        "./minionAwareness"
+      ]
+    },
+    {
+      "path": "src/simulation/minionAwareness.ts",
+      "sha256": "098db2a2fc68a524d98325dcdad7a2978028e3f190c58918e79cabfc4a0fe18e",
+      "imports": [
+        "./types"
+      ]
+    },
+    {
+      "path": "src/simulation/minionCombatPositions.test.ts",
+      "sha256": "4ff4baaab69cbedbb16207f266e21d38c390cb93ef5b42ece5892f5a3a70ef2e",
+      "imports": [
+        "vitest",
+        "./minionCombatPositions"
+      ]
+    },
+    {
+      "path": "src/simulation/minionCombatPositions.ts",
+      "sha256": "b32892130bec5d683df47c8151c9edc0d4a1f3e94332e909c2e57d24cdf51be9",
+      "imports": [
+        "./types"
+      ]
+    },
+    {
+      "path": "src/simulation/minionIdle.test.ts",
+      "sha256": "26d47bc9eca2b9c15fb03e15b720b25d8e72c09c134b4eb3aeea5cb849048b8c",
+      "imports": [
+        "vitest",
+        "./minionIdle"
+      ]
+    },
+    {
+      "path": "src/simulation/minionIdle.ts",
+      "sha256": "f465e9f0294bd23c89c5818f22b4d6ce7276875e15940cf27c3416983976a8a1",
+      "imports": [
+        "./seededRandom",
+        "./types",
+        "./worldView"
+      ]
+    },
+    {
+      "path": "src/simulation/minionNavigation.test.ts",
+      "sha256": "0a67ac39f97e38373590263286183c28bff832cc55bdde653a9a0200b3d9631f",
+      "imports": [
+        "vitest",
+        "./minionNavigation"
+      ]
+    },
+    {
+      "path": "src/simulation/minionNavigation.ts",
+      "sha256": "c94c3ef3746feef38ad8cb5f6beb60776b95de36c976ce036b57b262e770f5b1",
+      "imports": [
+        "./types"
+      ]
+    },
+    {
+      "path": "src/simulation/progression.test.ts",
+      "sha256": "56e3d377b27c9b93663992a3ac63820de5f3907592aa201f43f246d7311a2987",
+      "imports": [
+        "vitest",
+        "./technologyConfig",
+        "./progression"
+      ]
+    },
+    {
+      "path": "src/simulation/progression.ts",
+      "sha256": "a531cd5d7a5c41f76f1c1a92af4575c90e495049326a69fcc03645b347c76f44",
+      "imports": [
+        "./types",
+        "./survivalTypes",
+        "./technologyConfig"
+      ]
+    },
+    {
+      "path": "src/simulation/seededRandom.ts",
+      "sha256": "684aab1a3cac789e3363a666e5801038a36ac8945d8fea5f5de63d762569d30d",
+      "imports": []
+    },
+    {
+      "path": "src/simulation/shieldEquipment.test.ts",
+      "sha256": "d2ad0c2a006b81ad43ef84d4f9412795582b30120423e1deb9cba37b2f5f4e86",
+      "imports": [
+        "vitest",
+        "./createInitialState",
+        "./stepSimulation"
+      ]
+    },
+    {
+      "path": "src/simulation/stepSimulation.test.ts",
+      "sha256": "2f76b6beceae9b6bad6ff8148df6355be728faeb717146dd5c784ce5780f102d",
+      "imports": [
+        "vitest",
+        "./createInitialState",
+        "./stepSimulation",
+        "./survivalCatalog",
+        "./survivalTypes",
+        "./survivalCombat"
+      ]
+    },
+    {
+      "path": "src/simulation/stepSimulation.ts",
+      "sha256": "e1c078322bf4500078d1112a8204ad2494b093800bbcbb76a7cdac2bd7702ce4",
+      "imports": [
+        "../input/actions",
+        "./createInitialState",
+        "./types",
+        "./seededRandom",
+        "./survivalRules",
+        "./economyConfig",
+        "./survivalTypes",
+        "./survivalTypes",
+        "./survivalCombat",
+        "./survivalCombat",
+        "./survivalCatalog",
+        "./weatherSystem",
+        "./progression",
+        "./minionNavigation",
+        "./minionCombatPositions",
+        "./minionAwareness",
+        "./minionIdle"
+      ]
+    },
+    {
+      "path": "src/simulation/survivalCatalog.ts",
+      "sha256": "859ceccda1911a32f253a4d6c92d85503fe2b8255de2e2a5e604480ee5fbf01e",
+      "imports": [
+        "./seededRandom",
+        "./survivalTypes",
+        "./survivalTypes",
+        "./types",
+        "./survivalCombat"
+      ]
+    },
+    {
+      "path": "src/simulation/survivalCombat.test.ts",
+      "sha256": "faa6a811891e9f4f73eba5afe9c35241ccdfac0bcf0c3273013dc3f439cb2c23",
+      "imports": [
+        "vitest",
+        "./survivalCombat"
+      ]
+    },
+    {
+      "path": "src/simulation/survivalCombat.ts",
+      "sha256": "c65b7191ab8606ae18ba91bc36d1b50b6f521bd31887cd2471b24a7c7a96b73e",
+      "imports": [
+        "./types",
+        "./survivalTypes",
+        "./economyConfig"
+      ]
+    },
+    {
+      "path": "src/simulation/survivalDesign.test.ts",
+      "sha256": "4c990b6b04affa576d0984ada6f5183ae4fdf7d9ca9622671d243c685863dc9d",
+      "imports": [
+        "vitest",
+        "./survivalTypes",
+        "./survivalCatalog",
+        "./seededRandom",
+        "./survivalRules",
+        "./survivalTypes"
+      ]
+    },
+    {
+      "path": "src/simulation/survivalRules.ts",
+      "sha256": "1a5b5c5f2232c55dcd911dad61bdb5104c90cf47eff5475b6a4a3a70484f9100",
+      "imports": [
+        "./types",
+        "./types",
+        "./economyConfig",
+        "./survivalTypes"
+      ]
+    },
+    {
+      "path": "src/simulation/survivalTypes.ts",
+      "sha256": "5b67abc0eca4d8bfc756b7428b2bc1417baf9b92b5a6d03e40574cbf27dc6a82",
+      "imports": [
+        "./types"
+      ]
+    },
+    {
+      "path": "src/simulation/technologyConfig.ts",
+      "sha256": "25af865fd59d84757e1642e47f215f1ca61b71a2bcdca0e7ff4bc564ae4d5bdd",
+      "imports": [
+        "./survivalTypes",
+        "./types"
+      ]
+    },
+    {
+      "path": "src/simulation/types.ts",
+      "sha256": "779415008b9fdc6739336d2676063398ff314d5134254dc4259e068218500ee1",
+      "imports": [
+        "./survivalTypes",
+        "./minionIdle",
+        "./minionNavigation"
+      ]
+    },
+    {
+      "path": "src/simulation/weatherSystem.test.ts",
+      "sha256": "b63a4d47926a42cded22e380bcb187b00df44d817da9cc6d66a31dadcb0767aa",
+      "imports": [
+        "vitest",
+        "./createInitialState",
+        "./weatherSystem"
+      ]
+    },
+    {
+      "path": "src/simulation/weatherSystem.ts",
+      "sha256": "0f0088b55a0a7d66161c3236db02b4c5bc80e6f874123f7a99b84c76606c1dab",
+      "imports": [
+        "./seededRandom",
+        "./types",
+        "./survivalTypes"
+      ]
+    },
+    {
+      "path": "src/simulation/worldView.ts",
+      "sha256": "600e96758a6fa336070b54251153390f0c3992996eb209c11813f1e1c0e7bcfa",
+      "imports": []
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "61622b944fa00462f5aacad93e4af5fa35ed2a6d7411c0a3ff4fc33898bc3f17",
+      "imports": []
+    },
+    {
+      "path": "src/vite-env.d.ts",
+      "sha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "imports": []
+    },
+    {
+      "path": "tsconfig.app.json",
+      "sha256": "0f93571a8dceab7ba14614e04ea98d5e983fa59ac4b7fe9e539b43b81971ee20",
+      "imports": []
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808",
+      "imports": []
+    },
+    {
+      "path": "vite.config.ts",
+      "sha256": "c0a37a77b8fe5888995e8eb891eff9d16407ca3ee9399b8b6b72ce732197d64e",
+      "imports": [
+        "vite"
+      ]
+    }
+  ]
+}
