@@ -220,3 +220,21 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - Se acredita ese recorrido básico. No se extrapola a combate, balance,
   8 unidades, navegación extrema, compras ni sistemas operativos nativos;
   el mensaje no identifica la plataforma utilizada.
+
+## Paridad del HUD de tecnologías
+
+- Cotejados GDD (progresión/HUD) y `BabylonGame.ts::updateHud`: el HUD Godot
+  omitía puntos disponibles, apertura al subir de nivel y cierre al gastar
+  el último punto en un desbloqueo. Se incorporan esos comportamientos y
+  el estado «Desbloqueada» sin modificar reglas ni datos de simulación.
+- Al iniciar/cargar, se establece el nivel observado sin abrir el panel;
+  alternar Tecnologías reinicia la selección del árbol como el original.
+- Escudo separado arriba a la derecha y oculto hasta su tecnología; la
+  columna izquierda conserva el orden vigente. Los costes no cambian.
+- Importación, inicialización estructural, 101 comprobaciones de callbacks
+  y 15.325 de datos correctas (`reports/hud-progression-validation.log`).
+  No se automatiza la apariencia ni el loop; revisión manual del HUD pendiente.
+- `tools/export.sh` completo correcto con el HUD actualizado: Linux/Windows/
+  web regenerados; menú Linux inicia headless sin errores. Informe
+  `reports/hud-progression-export-all.log`. Servidores originales y Godot
+  confirmados activos (HTTP 200).

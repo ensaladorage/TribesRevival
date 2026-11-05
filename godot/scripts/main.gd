@@ -161,7 +161,7 @@ func _sync_view() -> void:
 	direction_arrow.visible = dragging or totem.isCarried
 	pause_overlay.visible = false
 	debug_label.text = "Tick %s · %s · velocidad ×%s\nTótem %.2f, %.2f" % [session.state.tick, session.state.phase, session.speed_multiplier, totem.position.x, totem.position.y]
-	inventory_label.text = "Nivel %s · XP %s / %s" % [session.state.progression.level, session.state.progression.experience, session.state.progression.experienceToNextLevel]
+	inventory_label.text = "Nivel %s · XP %s / %s · Puntos %s" % [session.state.progression.level, session.state.progression.experience, session.state.progression.experienceToNextLevel, session.state.progression.technologyPoints]
 	Input.set_default_cursor_shape(Input.CURSOR_DRAG if dragging or not held_item.is_empty() else Input.CURSOR_ARROW)
 
 func _create_direction_arrow() -> void:

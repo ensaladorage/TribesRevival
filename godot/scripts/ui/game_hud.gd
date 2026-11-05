@@ -19,6 +19,10 @@ var _tree_rows := {}
 var _open_panel := ""
 var _selected_tree := ""
 var _resource_counts := {}
+var _technology_toggle: Button
+var _technology_points: Label
+var _last_observed_level := -1
+var _pending_technology := ""
 const ICONS := {"gatherer": "icon-minion", "axe": "icon-axe", "bow": "icon-bow", "sword": "icon-sword", "hammer": "icon-hammer", "mage": "icon-mage", "campfire": "icon-fireplace", "shield": "icon-shield"}
 
 func _ready() -> void:
@@ -56,6 +60,12 @@ func _ready() -> void:
 	sidebar.position = Vector2(16, 155)
 	sidebar.custom_minimum_size.x = 145
 	root.add_child(sidebar)
+	var shield_dock := VBoxContainer.new()
+	shield_dock.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	shield_dock.offset_left = -161
+	shield_dock.offset_right = -16
+	shield_dock.offset_top = 155
+	root.add_child(shield_dock)
 	for item in ["gatherer", "axe", "bow", "sword", "hammer", "mage", "campfire", "shield"]:
 		var button := Button.new()
 		button.text = ITEM_NAMES[item]
@@ -65,7 +75,10 @@ func _ready() -> void:
 		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		button.custom_minimum_size.y = 38
 		button.button_down.connect(func(): placement_requested.emit(item))
-		sidebar.add_child(button)
+		if item == "shield":
+			shield_dock.add_child(button)
+		else:
+			sidebar.add_child(button)
 		_items[item] = button
 	var dock := HBoxContainer.new()
 	dock.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
@@ -77,6 +90,8 @@ func _ready() -> void:
 		button.custom_minimum_size = Vector2(125, 38)
 		button.pressed.connect(func(): _toggle_panel(panel))
 		dock.add_child(button)
+		if panel == "Tecnologías":
+			_technology_toggle = button
 	_management = PanelContainer.new()
 	_management.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	_management.position = Vector2(16, -260)
@@ -92,6 +107,8 @@ func _ready() -> void:
 	_management.add_child(content)
 	_tech_page = VBoxContainer.new()
 	content.add_child(_tech_page)
+	_technology_points = Label.new()
+	_tech_page.add_child(_technology_points)
 	var trees := HFlowContainer.new()
 	_tech_page.add_child(trees)
 	for tree in ["survival", "exploration", "combat"]:
@@ -111,7 +128,9 @@ func _ready() -> void:
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 32)
 		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		button.pressed.connect(func(): action_requested.emit({"type": "unlock-technology", "technology": technology.id}))
+		button.pressed.connect(func():
+			_pending_technology = technology.id
+			action_requested.emit({"type": "unlock-technology", "technology": technology.id}))
 		_tree_rows[technology.tree].add_child(button)
 		_technologies[technology.id] = button
 	_upgrade_page = HFlowContainer.new()
@@ -130,11 +149,15 @@ func _ready() -> void:
 
 func _toggle_panel(panel: String) -> void:
 	_open_panel = "" if _open_panel == panel else panel
+	if panel == "Tecnologías":
+		_selected_tree = ""
 	_refresh_panels()
 
 func reset_panels() -> void:
 	_open_panel = ""
 	_selected_tree = ""
+	_last_observed_level = -1
+	_pending_technology = ""
 	_refresh_panels()
 
 func _refresh_panels() -> void:
@@ -152,6 +175,20 @@ static func _cost_text(cost: Dictionary) -> String:
 	return " + ".join(entries)
 
 func update_state(state: Dictionary) -> void:
+	var progression: Dictionary = state.progression
+	# A fresh/loaded state establishes the baseline without opening a panel.
+	if _last_observed_level >= 0 and progression.level > _last_observed_level:
+		if _open_panel != "Tecnologías":
+			_selected_tree = ""
+		_open_panel = "Tecnologías"
+	_last_observed_level = progression.level
+	if not _pending_technology.is_empty() and _pending_technology in progression.unlockedTechnologies:
+		if progression.technologyPoints == 0:
+			_open_panel = ""
+		_pending_technology = ""
+	_technology_toggle.text = "Tecnologías · %s" % progression.technologyPoints
+	_technology_points.text = "Puntos disponibles: %s" % progression.technologyPoints
+	_refresh_panels()
 	var amounts: Dictionary = state.inventory.amounts
 	for resource in _resource_counts:
 		_resource_counts[resource].text = str(amounts[resource])
@@ -168,6 +205,7 @@ func update_state(state: Dictionary) -> void:
 		elif item == "shield":
 			var shielded: int = state.units.filter(func(unit): return unit.role == "guardian" and unit.hasShield).size()
 			cost = Economy.shield_cost(shielded)
+			_items[item].visible = "shield" in state.progression.unlockedTechnologies
 			available = available and "shield" in state.progression.unlockedTechnologies and Rules.count_role(state.units, "guardian") > shielded
 		else:
 			var definition: Dictionary = Economy.SPECIALIZATIONS[item]
@@ -188,6 +226,7 @@ func update_state(state: Dictionary) -> void:
 		_items[item].tooltip_text = "Arrastra al terreno" if item in ["gatherer", "campfire"] else "Arrastra sobre un Guardián" if item == "shield" else "Arrastra sobre un Recolector"
 	for technology in Progression.TECHNOLOGIES:
 		var unlocked: bool = technology.id in state.progression.unlockedTechnologies
+		_technologies[technology.id].text = "%s · %s" % [technology.name, "Desbloqueada" if unlocked else "%s punto" % technology.cost]
 		_technologies[technology.id].disabled = state.phase != "playing" or not Progression.can_unlock(state.progression, technology.id)
 		_technologies[technology.id].tooltip_text = "%s\n%s\n%s" % [technology.name, technology.description, "Desbloqueado" if unlocked else "Nivel requerido: %s" % technology.minimumLevel]
 	for tool in _upgrades:

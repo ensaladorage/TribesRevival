@@ -45,8 +45,8 @@ No especificó plataforma ni casos extremos; los demás criterios siguen pendien
 | Clima | Nubes cada 30 s hacia claro/pradera/bosque; llegada repone nodos agotados de comida/madera, lluvia 6 s y salida |
 | Reclutamiento | Coste por población viva y límite 8; preview sigue libre al cursor y solo el spawn se limita a 15 m; sin anillo de reclutamiento |
 | Transformaciones | Equipo sobre recolector válido; límites y coste por activos; conservar proveedor de comida para hacha/martillo; Mago tras tecnología, 2 Brillo, máximo 1 |
-| Escudo | Tras tecnología sobre guardián sin escudo, coste por guardianes equipados; +1 HP actual/máximo, sin repetición |
-| Progresión | 1 XP por acción, 3 conejo, 5 bárbaro; nivel inicial 0, umbral 12 y +12 por nivel; tecnologías con requisitos 2/2/1 y 1 punto |
+| Escudo | Acceso separado arriba a la derecha, oculto hasta su tecnología; sobre guardián sin escudo, coste por guardianes equipados; +1 HP actual/máximo, sin repetición |
+| Progresión | 1 XP por acción, 3 conejo, 5 bárbaro; nivel inicial 0, umbral 12 y +12 por nivel; tecnologías con requisitos 2/2/1 y 1 punto; mostrar puntos, abrir Tecnologías al subir nivel y cerrar al gastar el último en desbloquear; cargar no abre el panel |
 | Mejoras/HUD | Niveles 0–10, costes mixtos, bonus entero y Max; paneles excluyentes y árboles plegables; tooltips, orden, colores, reflujo, iconos y tres cifras |
 | Pausa/debug | Esc congela la simulación; velocidades 1/2/3 y debug oculto inicialmente; el input del mapa no atraviesa menús |
 | Slots | Guardar/cargar los 3 slots conserva progreso y mundo; cargar desde principal/pausa enfoca tótem; cancelar borrar conserva datos, confirmar solo elimina ese slot |
