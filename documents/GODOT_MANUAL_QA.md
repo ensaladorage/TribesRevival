@@ -71,6 +71,16 @@ plataformas no quedan acreditados por esa respuesta.
 El usuario no dispone de Windows y pide centrar las pruebas en Linux por
 ahora. Se aplaza esa prueba manual; el build Windows se conserva disponible.
 
+## Controles y slots — Linux
+
+Confirmados Esc para pausar/reanudar y velocidades 1/2/3. Con las revisiones
+anteriores de cámara, zoom, arrastre y bordes con ocho unidades, se cierra F2.
+
+Confirmados los tres slots, persistencia tras cerrar/reabrir, carga desde
+principal y pausa, cancelación de borrado conservando datos y borrado exclusivo
+del slot elegido. Se acredita el guardado de la versión actual en Linux;
+las migraciones históricas siguen fuera del alcance activo.
+
 | Área | Comprobación y resultado esperado |
 |---|---|
 | Inicio | Menú principal y tutorial opacos; «Jugar» inicia 2 minions, inventario vacío y nivel 0 |

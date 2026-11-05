@@ -4,10 +4,11 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 ## Continuidad
 
-- Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
+- Última fase cerrada: F2 (controles, con validación manual Linux).
+  F0, F1, F2, F3 y F4 completadas.
 - Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
-- Próxima tarea ejecutable: continuar controles/slots/preview en Linux;
-  HP ya confirmados legibles manualmente. Por decisión
+- Próxima tarea ejecutable: comprobar preview/cancelación y clases/equipo
+  pendientes en Linux. Controles y tres slots ya confirmados. Por decisión
   del usuario, prueba manual de Windows aplazada; centrar QA en Linux.
 - Incidencias reportadas resueltas por confirmación manual en Linux:
   menús, segunda pulsación de reclutamiento, lag en los límites con 8 unidades
@@ -22,13 +23,13 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 |---|---|
 | F0 auditoría | Completada: inventario de fuentes y 838 originales con hashes; verificados |
 | F1 base | Completada: editor importa, 1 script y 1 escena válidos; arranque sin ticks |
-| F2 controles | Inicio, arrastre y bordes con 8 unidades confirmados en Linux; resto de controles pendiente de confirmación explícita |
+| F2 controles | Completada: contratos cotejados, validación técnica y controles/cámara/bordes/Esc/velocidades confirmados en Linux |
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
 | F5 IA/recolección | Usuario confirma seguimiento/recolección y bordes con 8 unidades; cruces/llamadas/interrupciones pendientes |
 | F6 combate/clima | Usuario confirma combate, daño/botín, hoguera, lluvia y derrota/reinicio en Linux; huida/respawn pendientes |
 | F7 compras/equipo | Usuario confirma equipo/mejora/tecnología, reclutamiento consecutivo y uso de 8 unidades en Linux; preview/cancelación/clases pendientes |
-| F8 UI/guardado | Usuario confirma menús, guardado básico y HP legibles con zoom/daño/curación; slots/Esc restantes pendientes |
+| F8 UI/guardado | Menús/HP y persistencia de los tres slots tras reabrir validados en Linux; borrado/cancelación correctos; resto de revisión UI pendiente |
 | F9 integración/exportación | Tres builds exportados; recorridos Linux confirmados; Windows manual aplazado por usuario, QA Linux restante pendiente |
 
 ## Pruebas y límites
@@ -341,3 +342,19 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   cerca/alejada y vida dañada/curada, responde «Si ya se ven bien».
   Legibilidad de HP confirmada manualmente en Linux; incidencia cerrada.
   No se extrapola a otras plataformas ni al caso específico del escudo.
+
+## Cierre de controles F2 y guardado actual en Linux
+
+- A la comprobación de Esc para pausar/reanudar y teclas 1/2/3 para cambiar
+  velocidad, el usuario responde «si». Sumado a cámara/zoom, arrastre y
+  bordes con ocho unidades ya revisados, cumple el criterio manual de F2.
+- Validación técnica de cierre correcta: importación, 25 scripts/1 escena,
+  101 comprobaciones de menús, cuatro pulsaciones de input y 15.342 de datos;
+  838 originales y 13 iconos intactos. Informe
+  `reports/f2-manual-closure-validation.log`. No se automatizó gameplay.
+- El usuario confirma «si, funciona todo» al guardar en los tres slots,
+  cerrar/reabrir, cargar desde principal/pausa, cancelar borrado y confirmar
+  eliminación de solo el slot elegido. Persistencia vigente acreditada
+  manualmente en Linux; no se amplía a migraciones de versiones antiguas.
+- No se modificó código ni se regeneraron builds para registrar estas
+  confirmaciones. El build técnico vigente sigue siendo `8ca52ad`.
