@@ -6,9 +6,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
 - Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
-- Próxima tarea ejecutable: repetir manualmente Tutorial, Guardar/Cargar y
-  retorno al menú principal tras la corrección de callbacks; continuar la
-  lista de QA antes de cerrar F2/F5/F6/F7/F8/F9.
+- Próxima tarea ejecutable: validar manualmente compras/equipo/combate y
+  ejecutar los builds nativos; completar los casos restantes de QA antes
+  de cerrar F2/F5/F6/F7/F8/F9. Menús y loop básico confirmados por el usuario.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -19,13 +19,13 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 |---|---|
 | F0 auditoría | Completada: 42 archivos con hashes/imports; originales verificados |
 | F1 base | Completada: editor importa, 1 script y 1 escena válidos; arranque sin ticks |
-| F2 controles | Cámara/arrastre/flecha/zoom/pausa/velocidad/debug y ajustes implementados; revisión manual pendiente |
+| F2 controles | Inicio y arrastre confirmados por usuario; zoom/bordes/pausa/velocidad/debug pendientes |
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
-| F5 IA/recolección | Implementada base, seguimiento/idle/navegación/trabajo; pendiente revisión manual e integración de conflicto F6 |
+| F5 IA/recolección | Usuario confirma seguimiento y recolección con aumento de inventario; casos de 8 unidades/obstáculos/interrupciones pendientes |
 | F6 combate/clima | Lógica y feedback provisional integrados; playtest pendiente |
 | F7 compras/equipo | Comandos/drag-to-equip/HUD básico implementados; validación manual pendiente |
-| F8 UI/guardado | Menús/guardado/feedback provisional implementados; revisión manual pendiente |
+| F8 UI/guardado | Usuario confirma Tutorial, Guardar/Cargar y retorno al principal; HUD/slots exhaustivos y Esc pendientes |
 | F9 integración/exportación | Linux/Windows/web exportados y empaquetados; menú Linux inicia headless; validación gráfica/manual pendiente |
 
 ## Pruebas y límites
@@ -37,7 +37,10 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - F1: `bash godot/tools/validate.sh` correcto (editor headless, carga e
   inicialización de escena sin frames de gameplay; 42 originales intactos).
   `git diff --check` correcto. Informes locales: `reports/f1-validation.log`.
-- Sin validación manual ni prueba de gameplay; no se afirma paridad todavía.
+- Usuario confirma que Tutorial, Guardar/Cargar y retorno al principal ya
+  funcionan tras la corrección. Confirma también iniciar, mover el tótem,
+  seguimiento y recolección con aumento de inventario. Resto de UI/gameplay pendientes;
+  no se afirma paridad completa todavía.
 - Export templates 4.7.2 instalados y verificados (13 archivos desktop/web).
   Recibo `audit/export_templates.json`; ZIP de desarrollo generados.
 - Pendientes de diseño heredados: cuevas/jefes/regiones y costes de Pícaro/
@@ -196,4 +199,24 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   1 escena, callbacks, 15.325 comparaciones de datos y exportaciones Linux/
   Windows/web. Arranque headless del build Linux correcto. 838 originales y
   13 iconos sin cambios. Informe `reports/menu-fix-export-all.log`.
-- Revisión visual/manual del arreglo pendiente; F8/F9 continúan abiertas.
+- El usuario confirmó después: «Ya funcionan perfetos», referido a Tutorial,
+  Guardar/Cargar y retorno al menú principal. Evidencia funcional manual de
+  esas rutas; no acredita cada slot/confirmación, plataforma ni el resto de F8.
+- Revisión posterior: Esc en confirmaciones de slot saltaba al menú de origen
+  en vez de volver a slots como «Cancelar»; desde el mensaje también omitía
+  slots. Corregido conservando origen y modo. La regresión aislada falla con
+  el comportamiento anterior y pasa con 101 comprobaciones tras el cambio.
+  No guarda/carga/elimina archivos ni ejecuta gameplay. Esc manual pendiente.
+- `tools/export.sh` volvió a pasar con el ajuste de Esc: 101 comprobaciones
+  de callbacks, 15.325 de datos, importación y tres exports; arranque headless
+  Linux correcto. Informe `reports/menu-escape-export-all.log`.
+- F8/F9 continúan abiertas.
+
+## Segunda evidencia manual: loop básico
+
+- A la pregunta sobre iniciar partida, arrastrar/soltar el tótem junto a
+  recursos, seguimiento de la tribu, recolección y aumento del inventario,
+  el usuario respondió: «Todo funciona, si».
+- Se acredita ese recorrido básico. No se extrapola a combate, balance,
+  8 unidades, navegación extrema, compras ni sistemas operativos nativos;
+  el mensaje no identifica la plataforma utilizada.

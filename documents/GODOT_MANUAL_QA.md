@@ -12,11 +12,21 @@ resultados registrados abajo; una corrección técnica requiere repetición manu
 El usuario informó fallos en Tutorial, Guardar/Cargar y volver al menú
 principal desde pausa. Se reprodujo un error de liberación del botón mientras
 emitía su señal y se corrigió mediante retirada inmediata y liberación diferida.
-Las comprobaciones headless de callbacks pasan; no validan aspecto ni input
-gráfico. Repetir estas rutas en el build actualizado, incluidos cancelar y
-confirmar reemplazo/carga/salida, antes de considerar corregida la experiencia.
+Tras el arreglo, el usuario confirmó que Tutorial, Guardar/Cargar y retorno
+al menú principal «ya funcionan». Esto valida esas rutas manualmente sin
+extender la confirmación a todos los slots, plataformas o casos de la tabla.
+
+Una revisión posterior corrigió Esc para volver al listado desde las
+confirmaciones de slot y los mensajes, igual que «Cancelar»/«Volver», conservando
+origen y modo. Las 101 comprobaciones headless de callbacks pasan; no validan
+aspecto ni input gráfico. Pendiente manual: Esc en confirmar reemplazo/borrado/
+carga → slots; otro Esc → pausa o principal; Esc en confirmar salida → pausa.
 
 ## Lista manual
+
+El usuario confirmó además el recorrido iniciar → arrastrar/soltar tótem
+cerca de recursos → seguimiento → recolección → aumento de inventario.
+No especificó plataforma ni casos extremos; los demás criterios siguen pendientes.
 
 | Área | Comprobación y resultado esperado |
 |---|---|

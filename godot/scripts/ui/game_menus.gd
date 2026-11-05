@@ -16,6 +16,7 @@ var _root: Control
 var _background: ColorRect
 var _content: VBoxContainer
 var _slots: Array = []
+var _confirmation_return_screen := "pause"
 
 func _ready() -> void:
 	layer = 10
@@ -105,6 +106,7 @@ func _confirm_main() -> void:
 		main_requested.emit()
 		return
 	screen = "confirmation"
+	_confirmation_return_screen = "pause"
 	_clear("Volver al menú principal", false)
 	_text("Los cambios sin guardar se perderán.")
 	_button("Volver al menú", func(): main_requested.emit())
@@ -151,6 +153,7 @@ func show_slots(mode: String, from_screen: String, slots: Array) -> void:
 
 func _confirm_delete(slot: int) -> void:
 	screen = "confirmation"
+	_confirmation_return_screen = "slots"
 	_clear("Eliminar partida", origin == "main")
 	_text("¿Eliminar el slot %s? Esta operación no se puede deshacer." % slot)
 	_button("Eliminar", func(): delete_requested.emit(slot))
@@ -158,6 +161,7 @@ func _confirm_delete(slot: int) -> void:
 
 func _confirm_save(slot: int) -> void:
 	screen = "confirmation"
+	_confirmation_return_screen = "slots"
 	_clear("Reemplazar partida", false)
 	_text("¿Reemplazar el guardado del slot %s?" % slot)
 	_button("Guardar", func(): save_requested.emit(slot))
@@ -168,6 +172,7 @@ func _request_load(slot: int) -> void:
 		load_requested.emit(slot)
 		return
 	screen = "confirmation"
+	_confirmation_return_screen = "slots"
 	_clear("Cargar partida", false)
 	_text("Los cambios sin guardar se perderán.")
 	_button("Cargar", func(): load_requested.emit(slot))
@@ -183,7 +188,13 @@ func handle_escape() -> void:
 	match screen:
 		"pause": resume_requested.emit()
 		"tutorial": show_main()
-		"slots", "confirmation", "message":
+		"confirmation":
+			if _confirmation_return_screen == "slots":
+				show_slots(slot_mode, origin, _slots)
+			else:
+				show_pause()
+		"message": show_slots(slot_mode, origin, _slots)
+		"slots":
 			if origin == "pause":
 				show_pause()
 			else:

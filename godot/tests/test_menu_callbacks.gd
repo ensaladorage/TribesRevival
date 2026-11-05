@@ -72,6 +72,7 @@ func _run() -> void:
 	_press("Menú principal", "main")
 	menus.show_pause()
 	_press("Volver", "game", false)
+	_test_escape()
 
 	root.remove_child(menus)
 	menus.free()
@@ -82,6 +83,34 @@ func _run() -> void:
 	if failures.is_empty():
 		print("PASS menu callbacks: %s checks; isolated signals/lifetimes, no rendering or gameplay" % checks)
 	quit(0 if failures.is_empty() else 1)
+
+func _test_escape() -> void:
+	var previous_events := events.duplicate()
+	for from_screen in ["main", "pause"]:
+		for confirmation in ["save", "delete", "load"]:
+			# Load confirmation only applies to dirty paused games.
+			if confirmation == "load" and from_screen == "main":
+				continue
+			var mode := "load" if confirmation == "load" else "save"
+			menus.show_slots(mode, from_screen, _slots())
+			menus.has_unsaved_changes = true
+			match confirmation:
+				"save": menus._confirm_save(2)
+				"delete": menus._confirm_delete(2)
+				"load": menus._request_load(2)
+			menus.handle_escape()
+			_check(menus.screen == "slots" and menus.origin == from_screen and menus.slot_mode == mode, "Escape cancels %s back to original slots (%s)" % [confirmation, from_screen])
+			menus.handle_escape()
+			_check(menus.screen == from_screen, "Escape from slots returns to origin")
+		menus.show_slots("save", from_screen, _slots())
+		menus.show_message("Resultado")
+		menus.handle_escape()
+		_check(menus.screen == "slots" and menus.origin == from_screen, "Escape from feedback matches Back")
+	menus.show_pause()
+	menus._confirm_main()
+	menus.handle_escape()
+	_check(menus.screen == "pause", "Escape cancels exit back to pause")
+	_check(events == previous_events, "Escape never saves, loads, deletes or resumes")
 
 func _slots() -> Array:
 	return [{"slot": 1, "status": "empty"}, {"slot": 2, "status": "valid", "save": {"metadata": {"level": 0, "minionCount": 2, "savedAt": "test"}}}, {"slot": 3, "status": "invalid", "reason": "test"}]
