@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
+
+[sub_resource type="CylinderMesh" id="mesh1"]
+top_radius = 0.5
+bottom_radius = 0.5
+height = 0.06
+radial_segments = 32
+
+[sub_resource type="StandardMaterial3D" id="mat1"]
+albedo_color = Color(0.40784313725490196, 0.4823529411764706, 0.3333333333333333, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[node name="BiomeMeadow" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Default" type="Node3D" parent="Visual"]
+
+[node name="Patch" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(0, 0.04, 0)
+mesh = SubResource("mesh1")
+material_override = SubResource("mat1")
+

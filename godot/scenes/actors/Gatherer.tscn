@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/actors/Minion.tscn" id="base"]
+
+[node name="Gatherer" instance=ExtResource("base")]
+visual_tint = Color(1.0, 1.0, 1.0, 1)
+

@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/UpgradesPanel.tscn" id="UpgradesPanel"]
 
 [node name="HUD" type="CanvasLayer"]
+layer = 2
 script = ExtResource("script")
 
 [node name="Layout" type="Control" parent="."]
@@ -24,22 +25,22 @@ theme = ExtResource("theme")
 [node name="ResourcesPanel" parent="Layout" instance=ExtResource("ResourcesPanel")]
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 220.0
-offset_right = -20.0
-offset_top = 16.0
+offset_left = 90.0
+offset_right = -90.0
+offset_top = 12.0
 
 [node name="RecruitmentPanel" parent="Layout" instance=ExtResource("RecruitmentPanel")]
-offset_left = 16.0
-offset_top = 155.0
-offset_right = 161.0
+offset_left = 14.0
+offset_top = 12.0
+offset_right = 70.0
 
 [node name="EquipmentPanel" parent="Layout" instance=ExtResource("EquipmentPanel")]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -161.0
-offset_right = -16.0
-offset_top = 155.0
+offset_left = -102.0
+offset_right = -14.0
+offset_top = 70.0
 grow_horizontal = 0
 
 [node name="Dock" type="HBoxContainer" parent="Layout"]

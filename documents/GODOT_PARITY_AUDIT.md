@@ -16,13 +16,13 @@ La migración completa todavía no está acreditada.
 | Requisito | Evidencia actual | Falta para acreditarlo completamente |
 |---|---|---|
 | Rama exclusiva, original intacto | `migration/godot`; 838 hashes de archivos originales en `audit/source_inventory.json`, verificados por `tools/verify_original.py` | Mantener la comprobación en cada cambio |
-| Godot 4/GDScript/Compatibility | `project.godot`, 25 scripts, escena principal importada e inicializada headless; arranque gráfico Linux confirmado por usuario | Mantener estos contratos y terminar QA restante |
+| Godot 4/GDScript/Compatibility | `project.godot`, 29 scripts/70 escenas, escena principal importada e inicializada headless; arranque gráfico Linux confirmado por usuario | Mantener estos contratos y terminar QA restante |
 | Escena 3D y cámara | Contratos cotejados, validación técnica; usuario confirma cámara/zoom/arrastre/bordes con 8 unidades y Esc/velocidades; F2 cerrada en Linux | Mantener contratos y resolver los otros bloques de QA |
 | Estado y mundo deterministas | PRNG bit exacto UTF-16/Mulberry32 y estados iniciales completos comparados con TS en 4 semillas, incluida Unicode/emoji | Vista/generación percibida en partida |
 | Tótem/minions/IA/navegación | `minion_movement.gd`, `navigation.gd`, `minion_idle.gd`, `work_system.gd`; funciones puras comparadas con TS; usuario confirma arrastre/seguimiento y bordes con 8 unidades | Cruces, llamadas, obstáculos e interrupciones de F5 |
 | Recolección/economía | Afinidades, tickets, llamadas, tiempos, drops unitarios, inventario y tablas portados; transacciones/reglas puras verificadas; usuario confirma recolección y aumento del inventario | Interrupción y continuidad en los casos restantes de QA |
 | Combate/salud/fauna/loot | `conflict_system.gd`, `combat_rules.gd`, `survival_system.gd`; estadísticas/daño/curación comparados con TS; usuario confirma combate, daño/botín, derrota/reinicio y HP legibles con zoom/daño/curación | Huida, respawn y casos restantes de QA |
-| Compras/equipo/legendarias | Reglas comparadas con TS; usuario confirma equipo/reclutamiento, 8 unidades, preview/cancelación, Mago único y Escudo +1 HP sin repetición en Linux | Distinción visual del Mago: paleta original restaurada tras aviso; repetición manual pendiente |
+| Compras/equipo/legendarias | Reglas comparadas con TS; usuario confirma equipo/reclutamiento, 8 unidades, preview/cancelación, Mago único y Escudo +1 HP sin repetición en Linux | Distinción visual confirmada por usuario; tras refactor AnimatedSprite3D, repetición final pendiente |
 | Herramientas/XP/tecnologías | Tablas 0–10, bonus, XP y tres tecnologías vigentes con requisitos/costes compartidos; usuario confirma mejora/tecnología básica; HUD de puntos y paneles alineado al original | Resto de niveles/requisitos y revisión manual del HUD actualizado |
 | Clima/hogueras | Sistemas portados en el orden original; usuario confirma lluvia y curación con hoguera en Linux | Casos específicos de reposición/expiración/distancia y restante QA |
 | HUD/menús/tutorial | Controles nativos, 13 iconos originales verificados; usuario confirma Tutorial, Guardar/Cargar y retorno al principal tras arreglo de callbacks; regresión aislada de señales y Esc | Resto del HUD, foco/teclado (incluido Esc corregido), tooltips, opacidad y legibilidad manuales |
@@ -43,3 +43,18 @@ La migración completa todavía no está acreditada.
   datos del navegador; Godot usa almacenamiento local nativo y el estado v17.
 - Los modelos/efectos nativos son provisionales; no se afirma equivalencia
   artística ni se han tomado capturas o ejecutado un playtest automatizado.
+
+## Ampliación del objetivo: edición visual y paridad artística
+
+F11 implementa escenas de HUD/menús, Theme, actores AnimatedSprite3D con variantes
+heredadas, recursos/drops/interactivos PackedScene y overrides de apariencia.
+`godot/EDITING_VISUALS.md` documenta los contratos editables. F10 coteja CSS,
+materiales, dimensiones y configuración contra las fuentes; no se declara
+paridad de píxeles ni validación manual de esta nueva arquitectura.
+
+Por instrucción actual del usuario, concentrar el testeo manual al final y
+atender durante implementación solo bloqueos graves. El atasco del slot 1 se
+analizó con copia de solo lectura y helpers geométricos aislados; hay corrección
+de cesión/rutas, pendiente de comprobar en partida. No se ejecutó ese guardado
+automáticamente. El informe de lag de combate sigue pendiente de evidencia
+manual final; un ahorro en rutas no demuestra FPS de una batalla.

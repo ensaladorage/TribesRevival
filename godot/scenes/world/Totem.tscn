@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[sub_resource type="CylinderMesh" id="mesh"]
+top_radius = 0.65
+bottom_radius = 0.8
+height = 3.2
+
+[sub_resource type="StandardMaterial3D" id="material"]
+albedo_color = Color(0.847059, 0.564706, 0.309804, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[node name="Totem" type="MeshInstance3D"]
+mesh = SubResource("mesh")
+material_override = SubResource("material")

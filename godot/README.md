@@ -51,7 +51,11 @@ Informes locales regenerables en `reports/`, fuera de Git.
 Consultar `MIGRATION_PLAN.md` y `MIGRATION_STATUS.md` antes de continuar.
 Las comprobaciones de scripts/datos no acreditan la calidad visual ni el
 playtest. Las fases con revisión manual pendiente permanecen abiertas.
-Los assets 3D son provisionales; los iconos se reutilizan del proyecto.
+La presentación combina sprites de personajes provisionales y modelos del mundo
+editables; reutiliza iconos del proyecto sin generar arte definitivo.
+Consultar [EDITING_VISUALS.md](EDITING_VISUALS.md) para sustituir sprites,
+modelos, paneles y estilos desde el inspector. El testeo manual se concentra
+al final de la migración por decisión del usuario.
 La lista de comprobaciones manuales está en
 [`GODOT_MANUAL_QA.md`](../documents/GODOT_MANUAL_QA.md).
 

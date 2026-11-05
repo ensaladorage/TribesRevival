@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/resource_cost.gd" id="script"]
+
+[node name="ResourceCost" type="HBoxContainer"]
+mouse_filter = 2
+theme_override_constants/separation = 3
+script = ExtResource("script")

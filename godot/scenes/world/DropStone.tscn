@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
+
+[sub_resource type="CylinderMesh" id="mesh1"]
+top_radius = 0.45
+bottom_radius = 0.45
+height = 0.22
+radial_segments = 12
+
+[sub_resource type="StandardMaterial3D" id="mat1"]
+albedo_color = Color(0.7607843137254902, 0.7607843137254902, 0.7411764705882353, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[node name="DropStone" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Default" type="Node3D" parent="Visual"]
+
+[node name="Drop" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(0, 0.18, 0)
+mesh = SubResource("mesh1")
+material_override = SubResource("mat1")
+

@@ -1,5 +1,6 @@
 [gd_scene format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/ui/ResourceCost.tscn" id="cost"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon-minion.png" id="gatherer"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon-axe.png" id="axe"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon-bow.png" id="bow"]
@@ -9,75 +10,166 @@
 [ext_resource type="Texture2D" path="res://assets/ui/icon-fireplace.png" id="campfire"]
 
 [node name="RecruitmentPanel" type="VBoxContainer"]
-custom_minimum_size = Vector2(145, 0)
+theme_override_constants/separation = 5
 
-[node name="gatherer" type="Button" parent="."]
+[node name="gathererRow" type="HBoxContainer" parent="."]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 38)
-text = "Recolector"
+theme_override_constants/separation = 8
+mouse_filter = 2
+metadata/item_row = "gatherer"
+
+[node name="gatherer" type="Button" parent="gathererRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(56, 56)
+size_flags_horizontal = 0
+text = ""
+tooltip_text = "gatherer"
 icon = ExtResource("gatherer")
 expand_icon = true
-theme_override_constants/icon_max_width = 32
+theme_override_constants/icon_max_width = 48
 texture_filter = 1
 metadata/item = "gatherer"
 
-[node name="axe" type="Button" parent="."]
+[node name="Cost" parent="gathererRow" instance=ExtResource("cost")]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 38)
-text = "Leñador"
+size_flags_vertical = 4
+metadata/cost_for = "gatherer"
+
+[node name="axeRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+mouse_filter = 2
+metadata/item_row = "axe"
+
+[node name="axe" type="Button" parent="axeRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(56, 56)
+size_flags_horizontal = 0
+text = ""
+tooltip_text = "axe"
 icon = ExtResource("axe")
 expand_icon = true
-theme_override_constants/icon_max_width = 32
+theme_override_constants/icon_max_width = 34
 texture_filter = 1
 metadata/item = "axe"
 
-[node name="bow" type="Button" parent="."]
+[node name="Cost" parent="axeRow" instance=ExtResource("cost")]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 38)
-text = "Cazador"
+size_flags_vertical = 4
+metadata/cost_for = "axe"
+
+[node name="bowRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+mouse_filter = 2
+metadata/item_row = "bow"
+
+[node name="bow" type="Button" parent="bowRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(56, 56)
+size_flags_horizontal = 0
+text = ""
+tooltip_text = "bow"
 icon = ExtResource("bow")
 expand_icon = true
-theme_override_constants/icon_max_width = 32
+theme_override_constants/icon_max_width = 34
 texture_filter = 1
 metadata/item = "bow"
 
-[node name="sword" type="Button" parent="."]
+[node name="Cost" parent="bowRow" instance=ExtResource("cost")]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 38)
-text = "Guardián"
+size_flags_vertical = 4
+metadata/cost_for = "bow"
+
+[node name="swordRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+mouse_filter = 2
+metadata/item_row = "sword"
+
+[node name="sword" type="Button" parent="swordRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(56, 56)
+size_flags_horizontal = 0
+text = ""
+tooltip_text = "sword"
 icon = ExtResource("sword")
 expand_icon = true
-theme_override_constants/icon_max_width = 32
+theme_override_constants/icon_max_width = 34
 texture_filter = 1
 metadata/item = "sword"
 
-[node name="hammer" type="Button" parent="."]
+[node name="Cost" parent="swordRow" instance=ExtResource("cost")]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 38)
-text = "Artesana"
+size_flags_vertical = 4
+metadata/cost_for = "sword"
+
+[node name="hammerRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+mouse_filter = 2
+metadata/item_row = "hammer"
+
+[node name="hammer" type="Button" parent="hammerRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(56, 56)
+size_flags_horizontal = 0
+text = ""
+tooltip_text = "hammer"
 icon = ExtResource("hammer")
 expand_icon = true
-theme_override_constants/icon_max_width = 32
+theme_override_constants/icon_max_width = 34
 texture_filter = 1
 metadata/item = "hammer"
 
-[node name="mage" type="Button" parent="."]
+[node name="Cost" parent="hammerRow" instance=ExtResource("cost")]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 38)
-text = "Mago"
+size_flags_vertical = 4
+metadata/cost_for = "hammer"
+
+[node name="mageRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+mouse_filter = 2
+metadata/item_row = "mage"
+
+[node name="mage" type="Button" parent="mageRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(56, 56)
+size_flags_horizontal = 0
+text = ""
+tooltip_text = "mage"
 icon = ExtResource("mage")
 expand_icon = true
-theme_override_constants/icon_max_width = 32
+theme_override_constants/icon_max_width = 34
 texture_filter = 1
 metadata/item = "mage"
 
-[node name="campfire" type="Button" parent="."]
+[node name="Cost" parent="mageRow" instance=ExtResource("cost")]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 38)
-text = "Hoguera"
+size_flags_vertical = 4
+metadata/cost_for = "mage"
+
+[node name="campfireRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+mouse_filter = 2
+metadata/item_row = "campfire"
+
+[node name="campfire" type="Button" parent="campfireRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(56, 56)
+size_flags_horizontal = 0
+text = ""
+tooltip_text = "campfire"
 icon = ExtResource("campfire")
 expand_icon = true
-theme_override_constants/icon_max_width = 32
+theme_override_constants/icon_max_width = 34
 texture_filter = 1
 metadata/item = "campfire"
+
+[node name="Cost" parent="campfireRow" instance=ExtResource("cost")]
+layout_mode = 2
+size_flags_vertical = 4
+metadata/cost_for = "campfire"
 

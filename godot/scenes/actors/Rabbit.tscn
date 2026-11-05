@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/actors/Minion.tscn" id="base"]
+
+[node name="Rabbit" instance=ExtResource("base")]
+show_health = false
+visual_tint = Color(0.8784313725490196, 0.8313725490196079, 0.7215686274509804, 1)
+visual_scale = Vector3(0.5, 0.5, 0.5)
+
+[node name="DetectionRange" parent="." index="4"]
+visible = false
+
+[node name="Health" parent="." index="2"]
+visible = false
+

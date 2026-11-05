@@ -1,0 +1,75 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/view/actor_view.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon-minion.png" id="texture"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/HealthPips.tscn" id="health"]
+
+[sub_resource type="SpriteFrames" id="frames"]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("texture")}], "loop": true, "name": &"idle", "speed": 5.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("texture")}], "loop": true, "name": &"move", "speed": 5.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("texture")}], "loop": true, "name": &"work", "speed": 5.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("texture")}], "loop": true, "name": &"attack", "speed": 5.0}]
+
+[sub_resource type="BoxShape3D" id="selection"]
+size = Vector3(0.72, 1.3, 0.72)
+
+[sub_resource type="CylinderMesh" id="shield_mesh"]
+top_radius = 0.3
+bottom_radius = 0.3
+height = 0.1
+
+[sub_resource type="StandardMaterial3D" id="shield_material"]
+albedo_color = Color(0.7411764705882353, 0.6705882352941176, 0.5058823529411764, 1)
+roughness = 1.0
+
+[sub_resource type="TorusMesh" id="ring"]
+inner_radius = 0.9775
+outer_radius = 1.0225
+rings = 64
+ring_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="ring_material"]
+transparency = 1
+albedo_color = Color(0.945, 0.824, 0.478, 0.35)
+shading_mode = 0
+
+[node name="Minion" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Body" type="Node3D" parent="."]
+
+[node name="Sprite" type="AnimatedSprite3D" parent="Body"]
+position = Vector3(0, 0.8, 0)
+pixel_size = 0.025
+billboard = 1
+texture_filter = 0
+shaded = false
+sprite_frames = SubResource("frames")
+animation = &"idle"
+
+[node name="Selection" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+monitorable = false
+input_ray_pickable = false
+
+[node name="Shape" type="CollisionShape3D" parent="Selection"]
+position = Vector3(0, 0.65, 0)
+shape = SubResource("selection")
+
+[node name="Health" type="Marker3D" parent="."]
+position = Vector3(0, 1.5, 0)
+
+[node name="Shield" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(-0.43, 0.85, 0)
+rotation = Vector3(0, 0, 1.5707963)
+mesh = SubResource("shield_mesh")
+material_override = SubResource("shield_material")
+
+[node name="DetectionRange" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.08, 0)
+mesh = SubResource("ring")
+material_override = SubResource("ring_material")
+
+
+[node name="HealthDisplay" parent="." instance=ExtResource("health")]

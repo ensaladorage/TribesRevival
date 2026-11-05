@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[node name="Alert" type="Label3D"]
+text = "!"
+modulate = Color(0.9450980392156862, 0.8235294117647058, 0.47843137254901963, 1)
+billboard = 1
+font_size = 56
+pixel_size = 0.012

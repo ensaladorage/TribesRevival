@@ -7,8 +7,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - Última fase cerrada: F7 (compras/equipo, confirmación final de colores Linux).
   F0, F1, F2, F3, F4 y F7 completadas antes del refactor visual.
 - Fase actual: F11 arquitectura visual editable; F10 paridad visual obligatoria.
-- Próxima tarea ejecutable: extraer HUD/paneles a escenas Control y Theme.
-  Después menús, actores AnimatedSprite3D, recursos/interactivos PackedScene.
+- Próxima tarea ejecutable: terminar cotejo F10 de entorno/menús y regenerar
+  exportaciones. F11 implementada a nivel estructural; revisión en editor y
+  funcionamiento percibido pendientes de la etapa manual final.
 - Decisión vigente: testeo manual al terminar la migración; no solicitar más
   recorridos intermedios ni centrarse en bugs menores. Windows manual aplazado.
 - F5/F6: atasco diagnosticado con copia de solo lectura del slot 1 y corregido
@@ -434,3 +435,52 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   fuentes/iconos originales intactos. reports/editable-ui-validation.log.
   Sin frames de gameplay ni pruebas visuales automáticas. Aspecto/interacción
   completa del nuevo HUD pendiente de la etapa final; F11 global continúa.
+
+## F11b — Actores y mundo como escenas
+
+- Minion.tscn usa AnimatedSprite3D y SpriteFrames editables con animaciones
+  idle/move/work/attack de un frame provisional. Variantes de las seis clases,
+  bárbaro y conejo heredan la base, sin duplicar lógica. Reutilizan iconos ya
+  existentes; no se genera arte ni se afirma disponer de sprites definitivos.
+- actor_view.gd solo presenta estado/feedback y selección. Navegación, IA,
+  economía, progresión y guardados conservan sus módulos e interfaces.
+  Picking usa la caja Selection/Shape de la escena y conserva fallback de 24 px.
+- Tree/Rock/Bush/Twigs/Spark, cinco drops, hoguera, cadáveres, biomas,
+  decoración y nubes son PackedScene; WorldView.tscn expone su catálogo.
+  world_element.gd permite asignar appearance_override (escena Sprite3D,
+  AnimatedSprite3D o modelo) y editar escala/desplazamiento en inspector.
+- Generación procedural sigue calculando los mismos datos/posiciones; la vista
+  instancia escenas. Ya no construye meshes del mundo o cuerpos por código.
+  Se conservan cadáveres geométricos provisionales, sin crear el sprite final
+  pendiente del usuario. Flecha y previews de colocación también son escenas.
+- Guía EDITING_VISUALS.md explica puntos editables y nombres/metadata que
+  conectan los adaptadores. No se atribuye validación en el editor no realizada.
+
+## F10 — Primer cotejo visual por fuentes
+
+- HUD: iconos originales, tarjetas 56×56, recursos 30 px/cifras 20 px,
+  separación/posición y costes variables en cuadrados; fuente monoespaciada y
+  paleta/estados del CSS concentrados en Theme. CostSquare y ResourceCost
+  editables, instanciación dinámica solo por cantidad de recursos.
+- HP: bolitas de 9 px para aliados y 7 px enemigos a tamaño de pantalla,
+  contorno oscuro/colores del CSS; HealthPip/HealthPips y variantes de Theme.
+  Nueva presentación tras el refactor pendiente de revisión final, aunque el
+  indicador anterior de texto sí había sido aprobado manualmente.
+- Mundo: paletas originales de biomas, drops, troncos/follaje, piedras,
+  flores/hogueras restauradas en materiales de escenas. Árbol/arbusto/rocas
+  retoman dimensiones/piezas originales. Brillo conserva aproximación de
+  cristal/halo, no se afirma equivalencia geométrica exacta.
+- Entorno editable en main.tscn: fondo original (0.09,0.075,0.12), materiales
+  mates sin especular, exposición 1 y tonemapping lineal; aproximación de la
+  hemisférica 0.9 mediante ambiente blanco 0.45 + luz superior blanca 0.45,
+  sin sombras proyectadas. Los motores difieren en sus modelos de iluminación:
+  esto es un cotejo de configuración, no equivalencia fotométrica medida.
+- Cámara conserva ortográfica, 45°/35°, altura 72×zoom, distancia 120 y límites
+  vigentes. Menús opacos #777 y pausa (15,12,20)/72% según CSS original.
+- Validación técnica: 29 scripts/70 escenas, 101 callbacks aislados de menú,
+  cuatro pulsaciones y 15.669 comparaciones de datos. 838 originales y 13 iconos
+  intactos. reports/editable-hp-validation.log. Sin gameplay/visual automatizado.
+- Pendientes F10: revisión perceptual/capturas comparables si se obtienen;
+  gradientes/sombras CSS de menú, layout detallado de tutorial/slots, efectos
+  animados y sprites definitivos. Diferencias conocidas quedan explícitas;
+  no declarar F10 ni F11 completamente validadas por importar escenas.

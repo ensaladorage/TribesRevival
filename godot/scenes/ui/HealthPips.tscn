@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/health_pips.gd" id="script"]
+[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
+
+[node name="HealthDisplay" type="CanvasLayer"]
+layer = 1
+script = ExtResource("script")
+
+[node name="Pips" type="HBoxContainer" parent="."]
+mouse_filter = 2
+theme = ExtResource("theme")
+theme_override_constants/separation = 0

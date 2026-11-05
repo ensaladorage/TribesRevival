@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/actors/Minion.tscn" id="base"]
+
+[node name="Barbarian" instance=ExtResource("base")]
+visual_tint = Color(0.7411764705882353, 0.36470588235294116, 0.29411764705882354, 1)
+visual_scale = Vector3(1.1, 1.1, 1.1)
+
+[node name="DetectionRange" parent="." index="4"]
+visible = false
+
+[node name="HealthDisplay" parent="." index="5"]
+enemy = true
+pip_size = Vector2(7, 7)

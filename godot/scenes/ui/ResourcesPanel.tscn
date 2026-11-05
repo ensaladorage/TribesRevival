@@ -9,6 +9,8 @@
 [node name="ResourcesPanel" type="HFlowContainer"]
 mouse_filter = 2
 alignment = 1
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 14
 
 [node name="food" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -16,7 +18,7 @@ mouse_filter = 2
 
 [node name="Icon" type="TextureRect" parent="food"]
 layout_mode = 2
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(30, 30)
 texture = ExtResource("food")
 expand_mode = 1
 stretch_mode = 5
@@ -25,6 +27,7 @@ texture_filter = 1
 
 [node name="Count" type="Label" parent="food"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 20
 custom_minimum_size = Vector2(48, 0)
 text = "0"
 tooltip_text = "Comida"
@@ -37,7 +40,7 @@ mouse_filter = 2
 
 [node name="Icon" type="TextureRect" parent="wood"]
 layout_mode = 2
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(30, 30)
 texture = ExtResource("wood")
 expand_mode = 1
 stretch_mode = 5
@@ -46,6 +49,7 @@ texture_filter = 1
 
 [node name="Count" type="Label" parent="wood"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 20
 custom_minimum_size = Vector2(48, 0)
 text = "0"
 tooltip_text = "Madera"
@@ -58,7 +62,7 @@ mouse_filter = 2
 
 [node name="Icon" type="TextureRect" parent="stone"]
 layout_mode = 2
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(30, 30)
 texture = ExtResource("stone")
 expand_mode = 1
 stretch_mode = 5
@@ -67,6 +71,7 @@ texture_filter = 1
 
 [node name="Count" type="Label" parent="stone"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 20
 custom_minimum_size = Vector2(48, 0)
 text = "0"
 tooltip_text = "Piedra"
@@ -79,7 +84,7 @@ mouse_filter = 2
 
 [node name="Icon" type="TextureRect" parent="spark"]
 layout_mode = 2
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(30, 30)
 texture = ExtResource("spark")
 expand_mode = 1
 stretch_mode = 5
@@ -88,6 +93,7 @@ texture_filter = 1
 
 [node name="Count" type="Label" parent="spark"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 20
 custom_minimum_size = Vector2(48, 0)
 text = "0"
 tooltip_text = "Brillo"
@@ -100,7 +106,7 @@ mouse_filter = 2
 
 [node name="Icon" type="TextureRect" parent="gold"]
 layout_mode = 2
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(30, 30)
 texture = ExtResource("gold")
 expand_mode = 1
 stretch_mode = 5
@@ -109,6 +115,7 @@ texture_filter = 1
 
 [node name="Count" type="Label" parent="gold"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 20
 custom_minimum_size = Vector2(48, 0)
 text = "0"
 tooltip_text = "Oro"

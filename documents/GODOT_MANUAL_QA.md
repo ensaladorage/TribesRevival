@@ -116,3 +116,19 @@ un Recolector y al cargar una partida con Mago.
 | Slots | Guardar/cargar los 3 slots conserva progreso y mundo; cargar desde principal/pausa enfoca tótem; cancelar borrar conserva datos, confirmar solo elimina ese slot |
 | Salir/reiniciar | Advertencia de cambios sin guardar cuando corresponda; derrota con 0 vivos; «Reiniciar» restaura partida inicial |
 | Plataformas | Abrir ejecutable Linux y Windows en sus sistemas, audio y cierre; web secundaria en servidor HTTP; no asumir jugabilidad desde un export exitoso |
+
+## Etapa final de edición y paridad visual (aplazada por usuario)
+
+No solicitar nuevos recorridos durante los subhitos: el usuario hará testeo al
+terminar la migración. Mantener Windows manual aplazado y centrarse en Linux.
+
+- Abrir Minion.tscn y reemplazar SpriteFrames/escala; comprobar propagación a
+  variantes y sustitución individual, selección, HP y equipo tras guardar/cargar.
+- Reorganizar HUD.tscn y modificar Theme; comprobar que cambios aparecen sin
+  editar scripts, con tooltips/paneles y menús/slots accesibles.
+- Editar árbol/drop y asignar un appearance_override con Sprite3D o modelo;
+  comprobar que el generador conserva posiciones y cantidades lógicas.
+- Comparar con Babylon: paleta, luz, cámara, HUD, menús y efectos. Registrar
+  diferencias pendientes; no confundir importación válida con revisión visual.
+- Cargar copia/slot 1 con el atasco comunicado: comprobar que el idle se aparta,
+  el trabajador recoge y no se degrada el combate con ocho unidades.

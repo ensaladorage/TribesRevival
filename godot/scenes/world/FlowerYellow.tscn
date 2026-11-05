@@ -1,0 +1,43 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
+
+[sub_resource type="CylinderMesh" id="mesh1"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 0.48
+radial_segments = 6
+
+[sub_resource type="StandardMaterial3D" id="mat1"]
+albedo_color = Color(0.30980392156862746, 0.6039215686274509, 0.29411764705882354, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[sub_resource type="SphereMesh" id="mesh2"]
+radius = 0.15
+height = 0.3
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="mat2"]
+albedo_color = Color(0.8980392156862745, 0.7843137254901961, 0.30980392156862746, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[node name="FlowerYellow" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Default" type="Node3D" parent="Visual"]
+
+[node name="Stem" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(0, 0.24, 0)
+mesh = SubResource("mesh1")
+material_override = SubResource("mat1")
+
+[node name="Flower" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(0, 0.53, 0)
+mesh = SubResource("mesh2")
+material_override = SubResource("mat2")
+

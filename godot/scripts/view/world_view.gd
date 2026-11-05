@@ -2,16 +2,61 @@ extends Node3D
 ## Replaceable provisional art. State owns positions, roles, health and quantity.
 
 const COLORS := {
-	"food": Color("bc4770"), "wood": Color("6b964b"), "stone": Color("8b919a"),
-	"spark": Color("73e9e9"), "gold": Color("e3bf54"), "twigs": Color("94613d"),
+	"food": Color("d95c5c"), "wood": Color("9a6b43"), "stone": Color("c2c2bd"),
+	"spark": Color("d79aff"), "gold": Color("e6bf5b"), "twigs": Color("79502f"),
 	# Match BabylonGame.unitRoleColor so transformations remain recognizable.
 	"gatherer": Color("f1d27a"), "lumberjack": Color("b98158"), "hunter": Color("8ed6d1"),
 	"guardian": Color("d27575"), "artisan": Color("a5a5a2"), "mage": Color("a276ff"),
 	"barbarian": Color("bd5d4b"), "rabbit": Color("e0d4b8"),
 }
-const BIOME_COLORS := {"clearing": Color("5c7447"), "meadow": Color("648547"), "forest": Color("3f623e"), "rocky": Color("686d64"), "ruins": Color("526c68")}
+@export var minion_scene: PackedScene = preload("res://scenes/actors/Minion.tscn")
+@export var actor_scenes := {
+	"gatherer": preload("res://scenes/actors/Gatherer.tscn"),
+	"lumberjack": preload("res://scenes/actors/Lumberjack.tscn"),
+	"hunter": preload("res://scenes/actors/Hunter.tscn"),
+	"guardian": preload("res://scenes/actors/Guardian.tscn"),
+	"artisan": preload("res://scenes/actors/Artisan.tscn"),
+	"mage": preload("res://scenes/actors/Mage.tscn"),
+	"barbarian": preload("res://scenes/actors/Barbarian.tscn"),
+	"rabbit": preload("res://scenes/actors/Rabbit.tscn"),
+}
+@export var resource_scenes := {
+	"tree": preload("res://scenes/world/Tree.tscn"),
+	"twigs": preload("res://scenes/world/Twigs.tscn"),
+	"stone-vein": preload("res://scenes/world/Rock.tscn"),
+	"ruin": preload("res://scenes/world/Spark.tscn"),
+	"berry-bush": preload("res://scenes/world/Bush.tscn"),
+}
+@export var drop_scenes := {
+	"food": preload("res://scenes/world/DropFood.tscn"),
+	"wood": preload("res://scenes/world/DropWood.tscn"),
+	"stone": preload("res://scenes/world/DropStone.tscn"),
+	"spark": preload("res://scenes/world/DropSpark.tscn"),
+	"gold": preload("res://scenes/world/DropGold.tscn"),
+}
+@export var biome_scenes := {
+	"clearing": preload("res://scenes/world/BiomeClearing.tscn"),
+	"meadow": preload("res://scenes/world/BiomeMeadow.tscn"),
+	"forest": preload("res://scenes/world/BiomeForest.tscn"),
+	"rocky": preload("res://scenes/world/BiomeRocky.tscn"),
+	"ruins": preload("res://scenes/world/BiomeRuins.tscn"),
+	"great-fire": preload("res://scenes/world/BiomeGreatFire.tscn"),
+}
+@export var decoration_scenes := {
+	"grass": preload("res://scenes/world/Grass.tscn"),
+	"mushroom": preload("res://scenes/world/Mushroom.tscn"),
+	"flower-yellow": preload("res://scenes/world/FlowerYellow.tscn"),
+	"flower-blue": preload("res://scenes/world/FlowerBlue.tscn"),
+	"flower-gray": preload("res://scenes/world/FlowerGray.tscn"),
+	"flower-pink": preload("res://scenes/world/FlowerPink.tscn"),
+}
+@export var campfire_scene: PackedScene = preload("res://scenes/world/Campfire.tscn")
+@export var corpse_scene: PackedScene = preload("res://scenes/world/Corpse.tscn")
+@export var barbarian_corpse_scene: PackedScene = preload("res://scenes/world/BarbarianCorpse.tscn")
+@export var cloud_scene: PackedScene = preload("res://scenes/world/Cloud.tscn")
+@export var heal_effect_scene: PackedScene = preload("res://scenes/world/HealEffect.tscn")
+@export var alert_scene: PackedScene = preload("res://scenes/world/Alert.tscn")
 var _views := {}
-var _materials := {}
 var _previous_positions := {}
 var _alpha := 1.0
 var _played_alerts := {}
@@ -20,7 +65,7 @@ var _alert_sound: AudioStreamWAV
 var _command_radius := 10.0
 var _totem_position := {"x": 80.0, "y": 80.0}
 var _health_pixel_size := 0.05
-var _health_screen_offset := Vector3(0, 0.9, 0)
+var _health_screen_up := Vector3.UP
 
 func setup(state: Dictionary) -> void:
 	for child in get_children():
@@ -32,21 +77,12 @@ func setup(state: Dictionary) -> void:
 	_alert_player.volume_db = 0
 	add_child(_alert_player)
 	for biome in state.biomes:
-		var disc := CylinderMesh.new()
-		disc.top_radius = biome.region.size / 2.0
-		disc.bottom_radius = disc.top_radius
-		disc.height = 0.02
-		disc.radial_segments = 48
-		_mesh(self, disc, Vector3(biome.region.x, 0.005, biome.region.y), BIOME_COLORS.get(biome.id, Color("546446")))
+		var patch := _spawn(biome_scenes[biome.id], {"x": biome.region.x, "y": biome.region.y})
+		patch.scale = Vector3(biome.region.size, 1, biome.region.size)
 	for decoration in state.decorations:
-		var stem := BoxMesh.new()
-		stem.size = Vector3(0.12, 0.18, 0.12) * decoration.scale
-		var color := Color("91a957")
-		if decoration.kind == "flower":
-			color = {"yellow": Color("e8cd65"), "blue": Color("7eb0d3"), "gray": Color("b6b9b7"), "pink": Color("e879b9")}.get(decoration.get("flowerColor", "yellow"), color)
-		elif decoration.kind == "mushroom":
-			color = Color("c29b80")
-		_mesh(self, stem, Vector3(decoration.position.x, 0.1, decoration.position.y), color)
+		var key: String = "flower-" + decoration.get("flowerColor", "yellow") if decoration.kind == "flower" else decoration.kind
+		var view := _spawn(decoration_scenes[key], decoration.position)
+		view.scale = Vector3.ONE * decoration.scale
 	sync(state)
 
 func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float = 1.0) -> void:
@@ -58,7 +94,7 @@ func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float =
 		# KEEP_HEIGHT camera: one label pixel spans this many world metres.
 		# Compensate zoom so HP keeps a readable screen size like the original HUD.
 		_health_pixel_size = camera.size / maxf(viewport.get_visible_rect().size.y, 1.0)
-		_health_screen_offset = camera.global_basis.y * (18.0 * _health_pixel_size)
+		_health_screen_up = camera.global_basis.y
 	_command_radius = state.totem.commandRadius
 	_totem_position = state.totem.position
 	var active := {}
@@ -79,13 +115,7 @@ func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float =
 		if drop.amount > 0:
 			active[drop.id] = true
 			if not _views.has(drop.id):
-				var node := Node3D.new()
-				add_child(node)
-				var cube := BoxMesh.new()
-				cube.size = Vector3(0.35, 0.35, 0.35)
-				_mesh(node, cube, Vector3(0, 0.18, 0), COLORS[drop.type])
-				node.position = Vector3(drop.position.x, 0, drop.position.y)
-				_views[drop.id] = node
+				_views[drop.id] = _spawn(drop_scenes[drop.type], drop.position)
 	_sync_survival_views(state, active)
 	for id in _views.keys():
 		if not active.has(id):
@@ -98,32 +128,11 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
 		_views[actor.id].free()
 		_views.erase(actor.id)
 	if not _views.has(actor.id):
-		var node := Node3D.new()
-		node.set_meta("kind", kind)
-		add_child(node)
-		var body := CapsuleMesh.new()
-		body.radius = 0.36 if kind != "rabbit" else 0.24
-		body.height = 1.3 if kind != "rabbit" else 0.5
-		var body_view := _mesh(node, body, Vector3(0, body.height / 2.0, 0), COLORS.get(kind, Color.WHITE))
-		body_view.name = "Body"
-		body_view.set_meta("rest_height", body.height / 2.0)
-		if kind != "rabbit":
-			var health := Label3D.new()
-			health.name = "Health"
-			health.position.y = 2.1
-			health.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-			health.font_size = 20
-			health.outline_size = 4
-			health.outline_modulate = Color("10110f")
-			health.modulate = Color("e45c4f") if kind == "barbarian" else Color("83ed79")
-			health.no_depth_test = true
-			health.pixel_size = _health_pixel_size
-			node.add_child(health)
-		_create_role_tool(node, kind)
-		if kind not in ["barbarian", "rabbit"]:
-			var ring := _range_ring(node, Color(0.945, 0.824, 0.478, 0.35))
-			ring.name = "DetectionRange"
-		_views[actor.id] = node
+		var scene: PackedScene = actor_scenes.get(kind, minion_scene)
+		var instance: Node3D = scene.instantiate()
+		instance.set_meta("kind", kind)
+		add_child(instance)
+		_views[actor.id] = instance
 	var previous: Dictionary = _previous_positions.get(actor.id, actor.position)
 	var point := {"x": lerpf(previous.x, actor.position.x, _alpha), "y": lerpf(previous.y, actor.position.y, _alpha)}
 	if kind == "hunter" and actor.task.kind == "combat":
@@ -138,58 +147,12 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
 	if node.has_node("DetectionRange"):
 		var radius := maxf(_command_radius, 0) * 1.05
 		node.get_node("DetectionRange").scale = Vector3(radius, 1, radius)
-	if node.has_node("Health"):
-		var health: Label3D = node.get_node("Health")
-		health.text = "%s / %s" % [actor.health, actor.maxHealth]
-		health.position = Vector3(0, 1.5, 0) + _health_screen_offset
-		if not is_equal_approx(health.pixel_size, _health_pixel_size):
-			health.pixel_size = _health_pixel_size
-	if actor.get("hasShield", false) and not node.has_node("Shield"):
-		var shield := CylinderMesh.new()
-		shield.top_radius = 0.3
-		shield.bottom_radius = 0.3
-		shield.height = 0.1
-		var view := _mesh(node, shield, Vector3(-0.43, 0.85, 0), Color("bdab81"))
-		view.name = "Shield"
-		view.rotation.z = PI / 2
+	node.present_health(actor, _health_pixel_size, _health_screen_up)
+	node.present(actor)
 
-func _range_ring(parent: Node3D, color: Color) -> MeshInstance3D:
-	var ring := TorusMesh.new()
-	ring.inner_radius = 0.9775
-	ring.outer_radius = 1.0225
-	ring.rings = 64
-	ring.ring_segments = 8
-	return _mesh(parent, ring, Vector3(0, 0.08, 0), color)
-
-func _create_role_tool(node: Node3D, kind: String) -> void:
-	if kind in ["lumberjack", "artisan", "guardian", "barbarian"]:
-		var handle := BoxMesh.new()
-		handle.size = Vector3(0.1, 0.9, 0.1)
-		_mesh(node, handle, Vector3(0.48, 0.85, 0), Color("6e4e32"))
-		var head := BoxMesh.new()
-		head.size = Vector3(0.4, 0.25, 0.18) if kind != "guardian" else Vector3(0.15, 0.9, 0.1)
-		_mesh(node, head, Vector3(0.48, 1.25, 0), Color("a7b7b8"))
-	elif kind == "hunter":
-		var bow := TorusMesh.new()
-		bow.inner_radius = 0.28
-		bow.outer_radius = 0.35
-		var view := _mesh(node, bow, Vector3(0.5, 0.95, 0), Color("9b6c40"))
-		view.rotation.x = PI / 2
-	elif kind == "mage":
-		for index in 2:
-			var page := BoxMesh.new()
-			page.size = Vector3(0.3, 0.06, 0.4)
-			var view := _mesh(node, page, Vector3(0.4 + index * 0.25, 1.0, 0), Color("dad3b5"))
-			view.rotation.z = -0.25 if index == 0 else 0.25
-
-func _billboard(id: String, text: String, color: Color) -> Label3D:
+func _billboard(id: String, scene: PackedScene) -> Label3D:
 	if not _views.has(id):
-		var label := Label3D.new()
-		label.text = text
-		label.modulate = color
-		label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-		label.font_size = 56
-		label.pixel_size = 0.012
+		var label := scene.instantiate()
 		add_child(label)
 		_views[id] = label
 	return _views[id]
@@ -198,49 +161,33 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 	for campfire in state.campfires:
 		active[campfire.id] = true
 		if not _views.has(campfire.id):
-			var node := Node3D.new()
-			add_child(node)
-			node.position = Vector3(campfire.position.x, 0, campfire.position.y)
-			for index in 3:
-				var log_mesh := BoxMesh.new()
-				log_mesh.size = Vector3(0.22, 0.22, 1.3)
-				var log_view := _mesh(node, log_mesh, Vector3(0, 0.15, 0), Color("6d4d35"))
-				log_view.rotation.y = index * PI / 3
-			var flame := SphereMesh.new()
-			flame.radius = 0.35
-			flame.height = 1.1
-			_mesh(node, flame, Vector3(0, 0.65, 0), Color("f6ad4b"))
+			var node := _spawn(campfire_scene, campfire.position)
 			var radius: float = campfire.healingRadius * 1.05
-			_range_ring(node, Color(0.455, 0.859, 0.416, 0.35)).scale = Vector3(radius, 1, radius)
+			node.get_node("Visual/Default/HealingRange").scale = Vector3(radius, 1, radius)
 			_views[campfire.id] = node
 	for corpse in state.corpses + state.barbarianCorpses:
 		active[corpse.id] = true
 		if not _views.has(corpse.id):
-			var marker := BoxMesh.new()
-			marker.size = Vector3(0.9, 0.2, 0.5)
-			_views[corpse.id] = _mesh(self, marker, Vector3(corpse.position.x, 0.1, corpse.position.y), Color("625952"))
+			_views[corpse.id] = _spawn(barbarian_corpse_scene if corpse in state.barbarianCorpses else corpse_scene, corpse.position)
 	for id in _views:
 		var actor_view: Node3D = _views[id]
-		if actor_view.has_node("Body"):
-			var body: MeshInstance3D = actor_view.get_node("Body")
-			body.material_override = _material(COLORS.get(actor_view.get_meta("kind"), Color.WHITE))
-			body.position = Vector3(0, body.get_meta("rest_height"), 0)
+		if actor_view.has_method("reset_feedback"):
+			actor_view.reset_feedback()
 	for effect in state.effects:
 		if effect.kind == "heal-crosses":
 			active[effect.id] = true
-			var label := _billboard(effect.id, "+", Color("86d17a"))
+			var label := _billboard(effect.id, heal_effect_scene)
 			label.position = Vector3(effect.position.x, 2.0 + effect.ageSeconds, effect.position.y)
-		elif _views.has(effect.targetId) and _views[effect.targetId].has_node("Body"):
+		elif _views.has(effect.targetId) and _views[effect.targetId].has_method("flash"):
 			var node: Node3D = _views[effect.targetId]
-			var body: MeshInstance3D = node.get_node("Body")
 			if effect.kind == "damage-flash":
-				body.material_override = _material(Color("ef5b5b"))
+				node.flash(Color("ef5b5b"))
 			elif effect.kind == "attack-lunge":
 				var direction := Vector3(effect.position.x - node.position.x, 0, effect.position.y - node.position.z).normalized()
-				body.position += direction * sin(effect.ageSeconds / effect.durationSeconds * PI) * 0.28
+				node.lunge(direction, sin(effect.ageSeconds / effect.durationSeconds * PI) * 0.28)
 	for alert in state.alerts:
 		active[alert.id] = true
-		var label := _billboard(alert.id, "!", Color("f1d27a"))
+		var label := _billboard(alert.id, alert_scene)
 		var point := Vector3(alert.position.x, 0, alert.position.y)
 		if _views.has(alert.detectorId):
 			point = _views[alert.detectorId].position
@@ -251,23 +198,11 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 	for cloud in state.weather.clouds:
 		active[cloud.id] = true
 		if not _views.has(cloud.id):
-			var node := Node3D.new()
-			add_child(node)
-			for index in 3:
-				var puff := SphereMesh.new()
-				puff.radius = 2.0 + (0.6 if index == 1 else 0.0)
-				puff.height = 2.7
-				_mesh(node, puff, Vector3((index - 1) * 2.2, 0, 0), Color("c5d3d7"))
-			var rain := Node3D.new()
-			rain.name = "Rain"
-			node.add_child(rain)
-			for index in 16:
-				var drop := BoxMesh.new()
-				drop.size = Vector3(0.035, 0.75, 0.035)
-				_mesh(rain, drop, Vector3((index % 4 - 1.5) * 1.4, -2.0 - floor(index / 4.0) * 1.5, sin(index * 2.4) * 2.0), Color("8dc5df"))
-			_views[cloud.id] = node
+			_views[cloud.id] = _spawn(cloud_scene, cloud.position)
 		_views[cloud.id].position = Vector3(cloud.position.x, 11.0, cloud.position.y)
-		_views[cloud.id].get_node("Rain").visible = cloud.phase == "raining"
+		var rain: Node3D = _views[cloud.id].find_child("Rain", true, false)
+		if rain != null:
+			rain.visible = cloud.phase == "raining"
 
 func _make_alert_sound() -> AudioStreamWAV:
 	if _alert_sound != null:
@@ -302,17 +237,12 @@ func pick_unit(camera: Camera3D, screen_point: Vector2, units: Array) -> String:
 	for unit in units:
 		if not _views.has(unit.id):
 			continue
-		for child in _views[unit.id].get_children():
-			if not child is MeshInstance3D:
-				continue
-			var local_origin: Vector3 = child.to_local(origin)
-			var local_direction: Vector3 = child.global_basis.inverse() * direction
-			var hit: Variant = child.get_aabb().intersects_ray(local_origin, local_direction)
-			if hit is Vector3:
-				var distance: float = origin.distance_squared_to(child.to_global(hit))
-				if distance < nearest:
-					nearest = distance
-					selected = unit.id
+		var hit: Variant = _views[unit.id].pick_ray(origin, direction)
+		if hit is Vector3:
+			var distance: float = origin.distance_squared_to(hit)
+			if distance < nearest:
+				nearest = distance
+				selected = unit.id
 	if not selected.is_empty():
 		return selected
 	# Same screen-space tolerance as the original drag-to-equip interaction.
@@ -330,58 +260,10 @@ func pick_unit(camera: Camera3D, screen_point: Vector2, units: Array) -> String:
 	return selected
 
 func _create_resource(resource: Dictionary) -> Node3D:
-	var node := Node3D.new()
-	node.position = Vector3(resource.position.x, 0, resource.position.y)
+	return _spawn(resource_scenes[resource.source], resource.position)
+
+func _spawn(scene: PackedScene, point: Dictionary) -> Node3D:
+	var node := scene.instantiate() as Node3D
+	node.position = Vector3(point.x, 0, point.y)
 	add_child(node)
-	if resource.source == "tree":
-		var trunk := CylinderMesh.new()
-		trunk.top_radius = 0.2
-		trunk.bottom_radius = 0.3
-		trunk.height = 2.0
-		_mesh(node, trunk, Vector3(0, 1, 0), Color("76563c"))
-		var canopy := SphereMesh.new()
-		canopy.radius = 1.1
-		canopy.height = 2.0
-		_mesh(node, canopy, Vector3(0, 2.3, 0), COLORS.wood)
-	elif resource.source == "twigs":
-		for index in 3:
-			var twig := BoxMesh.new()
-			twig.size = Vector3(0.12, 0.12, 0.8)
-			var view := _mesh(node, twig, Vector3((index - 1) * 0.18, 0.1, 0), COLORS.twigs)
-			view.rotation.y = index * 1.1
-	elif resource.type == "stone":
-		for index in 3:
-			var stone := BoxMesh.new()
-			stone.size = Vector3(0.65, 0.65 + index * 0.15, 0.6)
-			_mesh(node, stone, Vector3((index - 1) * 0.45, stone.size.y / 2.0, index * 0.18), COLORS.stone)
-	elif resource.type == "spark":
-		var crystal := CylinderMesh.new()
-		crystal.top_radius = 0
-		crystal.bottom_radius = 0.55
-		crystal.height = 1.4
-		crystal.radial_segments = 4
-		_mesh(node, crystal, Vector3(0, 0.7, 0), COLORS.spark)
-	else:
-		var bush := SphereMesh.new()
-		bush.radius = 0.8
-		bush.height = 1.1
-		_mesh(node, bush, Vector3(0, 0.55, 0), COLORS.food)
 	return node
-
-func _mesh(parent: Node3D, shape: Mesh, offset: Vector3, color: Color) -> MeshInstance3D:
-	var view := MeshInstance3D.new()
-	view.mesh = shape
-	view.position = offset
-	view.material_override = _material(color)
-	parent.add_child(view)
-	return view
-
-func _material(color: Color) -> StandardMaterial3D:
-	if not _materials.has(color):
-		var material := StandardMaterial3D.new()
-		material.albedo_color = color
-		if color.a < 1:
-			material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		material.roughness = 1.0
-		_materials[color] = material
-	return _materials[color]

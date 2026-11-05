@@ -18,8 +18,8 @@ const PAGES := {
 	"message": preload("res://scenes/ui/FeedbackMenu.tscn"),
 }
 const SLOT_ROW = preload("res://scenes/ui/SlotRow.tscn")
-@export var opaque_background := Color(0.06, 0.09, 0.12, 1.0)
-@export var overlay_background := Color(0.06, 0.09, 0.12, 0.65)
+@export var opaque_background := Color("777777")
+@export var overlay_background := Color(0.058824, 0.047059, 0.078431, 0.72)
 var screen := "main"
 var origin := "main"
 var slot_mode := "load"

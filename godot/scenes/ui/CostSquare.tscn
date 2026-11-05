@@ -1,0 +1,5 @@
+[gd_scene format=3]
+
+[node name="CostSquare" type="PanelContainer"]
+custom_minimum_size = Vector2(8, 8)
+mouse_filter = 2

@@ -1,0 +1,164 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
+
+[sub_resource type="CylinderMesh" id="mesh1"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 1.17
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat1"]
+albedo_color = Color(0.4745098039215686, 0.3137254901960784, 0.1843137254901961, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[sub_resource type="CylinderMesh" id="mesh2"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 1.41
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat2"]
+albedo_color = Color(0.4745098039215686, 0.3137254901960784, 0.1843137254901961, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[sub_resource type="CylinderMesh" id="mesh3"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 0.9299999999999999
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat3"]
+albedo_color = Color(0.4745098039215686, 0.3137254901960784, 0.1843137254901961, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[sub_resource type="CylinderMesh" id="mesh4"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 1.17
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat4"]
+albedo_color = Color(0.4745098039215686, 0.3137254901960784, 0.1843137254901961, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[sub_resource type="CylinderMesh" id="mesh5"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 1.41
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat5"]
+albedo_color = Color(0.4745098039215686, 0.3137254901960784, 0.1843137254901961, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[sub_resource type="CylinderMesh" id="mesh6"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 0.9299999999999999
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat6"]
+albedo_color = Color(0.4745098039215686, 0.3137254901960784, 0.1843137254901961, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[sub_resource type="CylinderMesh" id="mesh7"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 1.17
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat7"]
+albedo_color = Color(0.4745098039215686, 0.3137254901960784, 0.1843137254901961, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[sub_resource type="CylinderMesh" id="mesh8"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 1.41
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat8"]
+albedo_color = Color(0.4745098039215686, 0.3137254901960784, 0.1843137254901961, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[sub_resource type="CylinderMesh" id="mesh9"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 0.9299999999999999
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat9"]
+albedo_color = Color(0.4745098039215686, 0.3137254901960784, 0.1843137254901961, 1)
+roughness = 1.0
+metallic_specular = 0.0
+
+[node name="Twigs" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Default" type="Node3D" parent="Visual"]
+
+[node name="Twig00" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(-0.8892186496818966, 0.12, -0.42341386806887155)
+mesh = SubResource("mesh1")
+material_override = SubResource("mat1")
+rotation = Vector3(0, -0.16999999999999998, 1.5707963267948966)
+
+[node name="Twig01" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(-0.3787102444125902, 0.13799999999999998, -0.37671089011896286)
+mesh = SubResource("mesh2")
+material_override = SubResource("mat2")
+rotation = Vector3(0, -0.87, 1.5707963267948966)
+
+[node name="Twig02" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(-0.6973783151161149, 0.156, -0.13084372941202063)
+mesh = SubResource("mesh3")
+material_override = SubResource("mat3")
+rotation = Vector3(0, 0.43, 1.5707963267948966)
+
+[node name="Twig10" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(0.3946786321577401, 0.12, -0.19959338793649123)
+mesh = SubResource("mesh4")
+material_override = SubResource("mat4")
+rotation = Vector3(0, 0.68, 1.5707963267948966)
+
+[node name="Twig11" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(0.7666926076635678, 0.13799999999999998, -0.5523051711651628)
+mesh = SubResource("mesh5")
+material_override = SubResource("mat5")
+rotation = Vector3(0, -0.019999999999999962, 1.5707963267948966)
+
+[node name="Twig12" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(0.7410922319741626, 0.156, -0.15062791170856707)
+mesh = SubResource("mesh6")
+material_override = SubResource("mat6")
+rotation = Vector3(0, 1.28, 1.5707963267948966)
+
+[node name="Twig20" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(-0.09539336349592395, 0.12, 1.0196153042502205)
+mesh = SubResource("mesh7")
+material_override = SubResource("mat7")
+rotation = Vector3(0, 1.28, 1.5707963267948966)
+
+[node name="Twig21" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(0.012486966055361766, 0.13799999999999998, 0.518454816486165)
+mesh = SubResource("mesh8")
+material_override = SubResource("mat8")
+rotation = Vector3(0, 0.5800000000000001, 1.5707963267948966)
+
+[node name="Twig22" type="MeshInstance3D" parent="Visual/Default"]
+position = Vector3(0.21816210552993937, 0.156, 0.8644284238641167)
+mesh = SubResource("mesh9")
+material_override = SubResource("mat9")
+rotation = Vector3(0, 1.88, 1.5707963267948966)
+

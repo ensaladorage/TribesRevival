@@ -7,17 +7,27 @@ const HUD = preload("res://scenes/ui/HUD.tscn")
 const Menus = preload("res://scenes/ui/Menus.tscn")
 const Overlay = preload("res://scenes/ui/Overlay.tscn")
 const Saves = preload("res://scripts/persistence/save_repository.gd")
+@export var placement_scenes := {
+	"gatherer": preload("res://scenes/placement/gatherer.tscn"),
+	"axe": preload("res://scenes/placement/axe.tscn"),
+	"bow": preload("res://scenes/placement/bow.tscn"),
+	"sword": preload("res://scenes/placement/sword.tscn"),
+	"hammer": preload("res://scenes/placement/hammer.tscn"),
+	"mage": preload("res://scenes/placement/mage.tscn"),
+	"campfire": preload("res://scenes/placement/campfire.tscn"),
+	"shield": preload("res://scenes/placement/shield.tscn"),
+}
 var session := Session.new()
-var world_view := WorldView.new()
+var world_view = preload("res://scenes/WorldView.tscn").instantiate()
 var hud = HUD.instantiate()
 var menus = Menus.instantiate()
 var saves := Saves.new()
 var saved_fingerprint := ""
 var held_item := ""
-var held_preview: MeshInstance3D
+var held_preview: Node3D
 var drag_position: Variant = null
 var drag_direction := Vector2(0, 1)
-var direction_arrow: MeshInstance3D
+var direction_arrow: Node3D
 var dragging := false
 var debug_visible := false
 var debug_label: Label
@@ -27,15 +37,6 @@ var inventory_label: Label
 @onready var totem_view: MeshInstance3D = $Totem
 
 func _ready() -> void:
-	var environment := Environment.new()
-	environment.background_mode = Environment.BG_COLOR
-	environment.background_color = Color("26333b")
-	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color = Color("d3e2ef")
-	environment.ambient_light_energy = 0.65
-	var world_environment := WorldEnvironment.new()
-	world_environment.environment = environment
-	add_child(world_environment)
 	add_child(world_view)
 	world_view.setup(session.state)
 	_create_direction_arrow()
@@ -167,17 +168,7 @@ func _sync_view() -> void:
 	Input.set_default_cursor_shape(Input.CURSOR_DRAG if dragging or not held_item.is_empty() else Input.CURSOR_ARROW)
 
 func _create_direction_arrow() -> void:
-	direction_arrow = MeshInstance3D.new()
-	var shape := ImmediateMesh.new()
-	shape.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
-	for point in [Vector3(0, 0, 2.8), Vector3(-0.65, 0, 1.9), Vector3(-0.2, 0, 2.05), Vector3(-0.2, 0, 0), Vector3(0.2, 0, 0), Vector3(0.2, 0, 2.05), Vector3(0.65, 0, 1.9), Vector3(0, 0, 2.8)]:
-		shape.surface_add_vertex(point)
-	shape.surface_end()
-	direction_arrow.mesh = shape
-	var material := StandardMaterial3D.new()
-	material.albedo_color = Color("f1d27a")
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	direction_arrow.material_override = material
+	direction_arrow = preload("res://scenes/world/DirectionArrow.tscn").instantiate()
 	direction_arrow.visible = false
 	add_child(direction_arrow)
 
@@ -187,14 +178,7 @@ func _begin_placement(item: String) -> void:
 	_end_drag()
 	_cancel_placement()
 	held_item = item
-	held_preview = MeshInstance3D.new()
-	var shape := BoxMesh.new()
-	shape.size = Vector3(0.8, 1.0, 0.8) * 1.25
-	held_preview.mesh = shape
-	var material := StandardMaterial3D.new()
-	material.albedo_color = WorldView.COLORS.get(item, Color("f2cb72"))
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	held_preview.material_override = material
+	held_preview = placement_scenes[item].instantiate()
 	add_child(held_preview)
 	_update_held_preview()
 

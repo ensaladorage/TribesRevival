@@ -1,19 +1,28 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/view/isometric_camera.gd" id="2_camera"]
+
+[ext_resource type="PackedScene" path="res://scenes/world/Totem.tscn" id="totem"]
 
 [sub_resource type="PlaneMesh" id="Plane_ground"]
 size = Vector2(160, 160)
 
 [sub_resource type="StandardMaterial3D" id="Material_ground"]
-albedo_color = Color(0.26, 0.36, 0.23, 1)
+albedo_color = Color(0.466667, 0.482353, 0.490196, 1)
+metallic_specular = 0.0
 roughness = 1.0
 
-[sub_resource type="CylinderMesh" id="Cylinder_totem"]
-top_radius = 0.65
-bottom_radius = 0.8
-height = 3.2
+[sub_resource type="Environment" id="environment"]
+background_mode = 1
+background_color = Color(0.09, 0.075, 0.12, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.45
+ambient_light_sky_contribution = 0.0
+reflected_light_source = 1
+tonemap_mode = 0
+tonemap_exposure = 1.0
 
 [node name="TribesRevival" type="Node3D"]
 script = ExtResource("1_main")
@@ -23,14 +32,17 @@ position = Vector3(80, -0.01, 80)
 mesh = SubResource("Plane_ground")
 material_override = SubResource("Material_ground")
 
-[node name="Totem" type="MeshInstance3D" parent="."]
+[node name="Totem" parent="." instance=ExtResource("totem")]
 position = Vector3(80, 1.6, 80)
-mesh = SubResource("Cylinder_totem")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("environment")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-rotation_degrees = Vector3(-55, -30, 0)
-light_color = Color(1, 0.93, 0.8, 1)
-light_energy = 1.4
+rotation_degrees = Vector3(-90, 0, 0)
+light_color = Color(1, 1, 1, 1)
+light_energy = 0.45
+shadow_enabled = false
 
 [node name="Camera3D" type="Camera3D" parent="."]
 position = Vector3(112.765, 112.765, 126.794)

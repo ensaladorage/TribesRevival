@@ -275,6 +275,94 @@ content_margin_top = 8.0
 content_margin_right = 8.0
 content_margin_bottom = 8.0
 
+[sub_resource type="StyleBoxFlat" id="costFood"]
+bg_color = Color(0.8509803921568627, 0.3607843137254902, 0.3607843137254902, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.169, 0.125, 0.094, 1)
+
+[sub_resource type="StyleBoxFlat" id="costWood"]
+bg_color = Color(0.6039215686274509, 0.4196078431372549, 0.2627450980392157, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.169, 0.125, 0.094, 1)
+
+[sub_resource type="StyleBoxFlat" id="costStone"]
+bg_color = Color(0.6666666666666666, 0.6627450980392157, 0.6470588235294118, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.169, 0.125, 0.094, 1)
+
+[sub_resource type="StyleBoxFlat" id="costSpark"]
+bg_color = Color(0.7725490196078432, 0.5490196078431373, 1.0, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.169, 0.125, 0.094, 1)
+
+[sub_resource type="StyleBoxFlat" id="costGold"]
+bg_color = Color(0.9019607843137255, 0.7490196078431373, 0.3568627450980392, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.169, 0.125, 0.094, 1)
+
+[sub_resource type="StyleBoxFlat" id="AllyFilled"]
+bg_color = Color(0.365, 0.867, 0.322, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.063, 0.067, 0.059, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
+[sub_resource type="StyleBoxFlat" id="AllyEmpty"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.063, 0.067, 0.059, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
+[sub_resource type="StyleBoxFlat" id="EnemyFilled"]
+bg_color = Color(0.894, 0.361, 0.31, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.063, 0.067, 0.059, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
+[sub_resource type="StyleBoxFlat" id="EnemyEmpty"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.063, 0.067, 0.059, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
 [resource]
 default_font = SubResource("mono")
 default_font_size = 14
@@ -346,3 +434,21 @@ ToolLevel10/styles/normal = SubResource("level10")
 ToolLevel10/styles/hover = SubResource("level10")
 ToolLevel10/styles/pressed = SubResource("level10")
 ToolLevel10/styles/disabled = SubResource("level10")
+CostFood/base_type = &"PanelContainer"
+CostFood/styles/panel = SubResource("costFood")
+CostWood/base_type = &"PanelContainer"
+CostWood/styles/panel = SubResource("costWood")
+CostStone/base_type = &"PanelContainer"
+CostStone/styles/panel = SubResource("costStone")
+CostSpark/base_type = &"PanelContainer"
+CostSpark/styles/panel = SubResource("costSpark")
+CostGold/base_type = &"PanelContainer"
+CostGold/styles/panel = SubResource("costGold")
+AllyFilled/base_type = &"PanelContainer"
+AllyFilled/styles/panel = SubResource("AllyFilled")
+AllyEmpty/base_type = &"PanelContainer"
+AllyEmpty/styles/panel = SubResource("AllyEmpty")
+EnemyFilled/base_type = &"PanelContainer"
+EnemyFilled/styles/panel = SubResource("EnemyFilled")
+EnemyEmpty/base_type = &"PanelContainer"
+EnemyEmpty/styles/panel = SubResource("EnemyEmpty")

@@ -11,6 +11,8 @@ const ITEM_NAMES := {"gatherer": "Recolector", "axe": "Leñador", "bow": "Cazado
 const RESOURCE_NAMES := {"food": "Comida", "wood": "Madera", "stone": "Piedra", "spark": "Brillo", "gold": "Oro"}
 const ITEM_HINTS := {"gatherer": "Recluta un minion básico. Arrastra al terreno.", "axe": "Convertir en Leñador. Arrastra sobre un Recolector.", "bow": "Convertir en Cazador. Arrastra sobre un Recolector.", "sword": "Convertir en Guardián. Arrastra sobre un Recolector.", "hammer": "Convertir en Artesana para reunir Piedra y Brillo. Arrastra sobre un Recolector.", "mage": "Convertir en Mago. Arrastra sobre un Recolector.", "campfire": "Cura a los minions cercanos consumiendo comida. Arrastra al terreno.", "shield": "Escudo +1 HP. Arrastra sobre un Guardián sin escudo."}
 var _items := {}
+var _item_rows := {}
+var _item_costs := {}
 var _upgrades := {}
 var _technologies := {}
 var _management: PanelContainer
@@ -35,6 +37,11 @@ func _ready() -> void:
 	_technology_toggle = $Layout/Dock/TechnologyToggle
 	_technology_toggle.pressed.connect(func(): _toggle_panel("Tecnologías"))
 	$Layout/Dock/UpgradeToggle.pressed.connect(func(): _toggle_panel("Mejoras"))
+	for row in $Layout.find_children("*", "HBoxContainer", true, false):
+		if row.has_meta("item_row"):
+			_item_rows[row.get_meta("item_row")] = row
+		elif row.has_meta("cost_for"):
+			_item_costs[row.get_meta("cost_for")] = row
 	for label in $Layout.find_children("*", "Label", true, false):
 		if label.has_meta("resource"):
 			_resource_counts[label.get_meta("resource")] = label
@@ -149,11 +156,12 @@ func update_state(state: Dictionary) -> void:
 				var technology := "artisan" if item == "hammer" else "mage"
 				_items[item].visible = technology in state.progression.unlockedTechnologies
 				available = available and _items[item].visible
-		_items[item].text = ITEM_NAMES[item] + "\n" + _cost_text(cost)
+		_items[item].text = ""
 		if item in ["axe", "hammer", "sword"]:
-			_items[item].text = "%s +%s\n%s" % [ITEM_NAMES[item], state.toolLevels[item], _cost_text(cost)]
 			_apply_level_color(_items[item], state.toolLevels[item])
 		_items[item].disabled = not available or not Economy.can_afford(amounts, cost)
+		_item_rows[item].visible = _items[item].visible
+		_item_costs[item].update_cost(cost, not _items[item].disabled)
 		var tooltip := "%s\n%s\nCoste: %s" % [ITEM_NAMES[item], ITEM_HINTS[item], _cost_text(cost)]
 		if not reason.is_empty():
 			tooltip += "\n" + reason
