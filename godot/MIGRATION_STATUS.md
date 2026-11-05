@@ -6,12 +6,11 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
 - Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
-- Próxima tarea ejecutable: completar controles/casos avanzados de QA y
-  comprobar Windows. Usuario confirma reclutamiento consecutivo corregido;
-  las pruebas manuales reportadas corresponden al ejecutable Linux.
-- Incidencia activa: al arrastrar el tótem por el borde de la pantalla en
-  Linux cerca del límite del mundo, el usuario reporta lag intenso. Se evita
-  la búsqueda de rutas imposibles; repetición manual pendiente. F2 sigue abierta.
+- Próxima tarea ejecutable: recoger la comprobación manual de hoguera,
+  lluvia y derrota/reinicio y la disponibilidad de Windows, solicitadas en
+  el chat; continuar los casos pendientes de controles/slots/preview.
+- Incidencias reportadas resueltas por confirmación manual en Linux:
+  menús, segunda pulsación de reclutamiento y lag en los límites con 8 unidades.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -20,14 +19,14 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 | Fase | Estado |
 |---|---|
-| F0 auditoría | Completada: 42 archivos con hashes/imports; originales verificados |
+| F0 auditoría | Completada: inventario de fuentes y 838 originales con hashes; verificados |
 | F1 base | Completada: editor importa, 1 script y 1 escena válidos; arranque sin ticks |
-| F2 controles | Inicio y arrastre confirmados por usuario; zoom/bordes/pausa/velocidad/debug pendientes |
+| F2 controles | Inicio, arrastre y bordes con 8 unidades confirmados en Linux; resto de controles pendiente de confirmación explícita |
 | F3 determinismo/mundo | Completada: estados iniciales completos equivalentes en 4 semillas |
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
-| F5 IA/recolección | Usuario confirma seguimiento y recolección con aumento de inventario; casos de 8 unidades/obstáculos/interrupciones pendientes |
+| F5 IA/recolección | Usuario confirma seguimiento/recolección y bordes con 8 unidades; cruces/llamadas/interrupciones pendientes |
 | F6 combate/clima | Usuario confirma combate con daño/botín; clima/respawn/hogueras/derrota pendientes |
-| F7 compras/equipo | Usuario confirma equipo/mejora/tecnología y reclutamiento consecutivo en Linux; límites/todas las clases pendientes |
+| F7 compras/equipo | Usuario confirma equipo/mejora/tecnología, reclutamiento consecutivo y uso de 8 unidades en Linux; preview/cancelación/clases pendientes |
 | F8 UI/guardado | Usuario confirma Tutorial, Guardar/Cargar y retorno al principal; HUD/slots exhaustivos y Esc pendientes |
 | F9 integración/exportación | Tres builds exportados; usuario confirma arranque y recorridos básicos en ejecutable Linux; Windows/web y QA restante pendientes |
 
@@ -312,3 +311,6 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - `tools/export.sh` completo correcto después del cambio: importación,
   estructura, regresiones permitidas, datos, tres exports y arranque headless
   Linux. Informe `reports/border-route-export-all.log`. Builds regenerados.
+- El usuario responde «Ahora esta perfecto» a repetir el recorrido cerca
+  del límite con 8 unidades en Linux. La incidencia de lag queda cerrada por
+  evidencia manual. Esto no acredita por extensión cada control de F2.

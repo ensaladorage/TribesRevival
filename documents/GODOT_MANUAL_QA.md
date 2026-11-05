@@ -26,7 +26,8 @@ carga → slots; otro Esc → pausa o principal; Esc en confirmar salida → pau
 
 El usuario confirmó además el recorrido iniciar → arrastrar/soltar tótem
 cerca de recursos → seguimiento → recolección → aumento de inventario.
-No especificó plataforma ni casos extremos; los demás criterios siguen pendientes.
+La aclaración posterior identifica la plataforma como ejecutable Linux;
+los casos adicionales se registran a continuación.
 
 En el bloque reclutamiento/equipo/mejora/tecnología/combate, el usuario informó
 que la segunda pulsación de reclutar se perdía y que el resto funcionaba.
@@ -51,9 +52,12 @@ fuera de los límites: ya se rechazan antes de generar el grafo, manteniendo
 el mismo resultado sin modificar las reglas de movimiento. Hay evidencia
 de coste en una función pura; no se automatizó la partida ni se midieron FPS.
 
-Repetición pendiente: reabrir el build Linux actualizado, arrastrar el tótem
-hacia cada borde del mundo con 2 y 8 unidades y soltarlo. Comprobar fluidez,
-reagrupación y cámara; comparar con el recorrido que producía el lag.
+Tras reabrir el build actualizado para repetir el recorrido cerca del límite,
+también con 8 unidades, el usuario respondió «Ahora esta perfecto». La incidencia
+de lag queda resuelta manualmente en Linux; se acredita uso de ocho unidades
+y fluidez en ese recorrido. No se extrapola a todos los controles ni casos
+de navegación. La comprobación de hoguera/lluvia/derrota y disponibilidad de
+Windows se solicitó a continuación y sigue pendiente.
 
 | Área | Comprobación y resultado esperado |
 |---|---|
