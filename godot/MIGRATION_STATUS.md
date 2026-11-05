@@ -7,8 +7,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - Última fase cerrada: F2 (controles, con validación manual Linux).
   F0, F1, F2, F3 y F4 completadas.
 - Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
-- Próxima tarea ejecutable: comprobar Mago/Escudo y completar los casos
-  pendientes de IA/conflicto en Linux. Controles, slots y preview/cancelación
+- Próxima tarea ejecutable: repetir distinción visual Mago/Recolector tras
+  restaurar la paleta original y completar IA/conflicto en Linux. Mago/Escudo
+  funcionales confirmados; controles, slots y preview/cancelación
   ya confirmados. Por decisión
   del usuario, prueba manual de Windows aplazada; centrar QA en Linux.
 - Incidencias reportadas resueltas por confirmación manual en Linux:
@@ -29,7 +30,7 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 | F4 economía/progresión | Completada: tablas/XP/tecnologías/costes y bonuses verificados; integración de compras sigue en F7 |
 | F5 IA/recolección | Usuario confirma seguimiento/recolección y bordes con 8 unidades; cruces/llamadas/interrupciones pendientes |
 | F6 combate/clima | Usuario confirma combate, daño/botín, hoguera, lluvia y derrota/reinicio en Linux; huida/respawn pendientes |
-| F7 compras/equipo | Equipo/mejora/tecnología, reclutamiento consecutivo, 8 unidades y preview/cancelación confirmados en Linux; Mago/Escudo pendientes |
+| F7 compras/equipo | Compras/equipo, preview, Mago único y Escudo +1 HP sin repetición confirmados en Linux; distinción visual del Mago corregida, repetición pendiente |
 | F8 UI/guardado | Menús/HP y persistencia de los tres slots tras reabrir validados en Linux; borrado/cancelación correctos; resto de revisión UI pendiente |
 | F9 integración/exportación | Tres builds exportados; recorridos Linux confirmados; Windows manual aplazado por usuario, QA Linux restante pendiente |
 
@@ -364,3 +365,23 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   incompatible sin gasto. Interacción de colocación acreditada en Linux.
   La distancia exacta de 15 m se acredita con regla pura comparada con TS;
   la confirmación manual acredita el comportamiento percibido.
+
+## Identificación visual de clases
+
+- El usuario confirma Mago único, Escudo +1 HP y rechazo de un segundo
+  Escudo sin gasto, pero informa que no distingue al Mago del Recolector.
+- La revisión estática muestra que Godot usaba una paleta provisional:
+  Mago cian pálido y Recolector crema, distinta de `BabylonGame.unitRoleColor`.
+  Se restaura la paleta de las seis clases activas del original: Mago violeta
+  `#a276ff`, Recolector dorado `#f1d27a`, y colores originales del resto.
+- La vista ya sustituye el cuerpo/herramienta cuando cambia `unit.role` y
+  restaura el material del rol después de los efectos. No se atribuye la
+  incidencia a un rol lógico sin actualizar: falta evidencia de ese fallo.
+- La previsualización de Mago/Recolector usa la misma paleta que su unidad;
+  los demás objetos conservan su placeholder. Sin cambios de reglas/guardados.
+- Verificación estructural y de datos correcta; distinción visual pendiente
+  de repetición manual. No se añaden tests automatizados de color ni capturas.
+- `tools/export.sh` correcto: importación, 25 scripts/1 escena, 101 comprobaciones
+  de menús, cuatro pulsaciones de input, 15.342 comparaciones de datos,
+  integridad de originales/iconos, tres exports y arranque headless Linux.
+  Informe `reports/role-colors-export-all.log`; builds actualizados.

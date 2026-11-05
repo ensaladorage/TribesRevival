@@ -84,8 +84,13 @@ las migraciones históricas siguen fuera del alcance activo.
 Confirmados preview libre lejos del tótem y aparición de la unidad cerca
 de este al soltar, más cancelación de equipo al soltar sobre terreno/clase
 incompatible sin consumo. El radio exacto de 15 m tiene cobertura de regla
-pura; esta confirmación manual no mide distancias. Mago y Escudo se solicitan
-a continuación como comprobación de equipo pendiente.
+pura; esta confirmación manual no mide distancias.
+
+Mago único, Escudo +1 HP y rechazo de un segundo Escudo sin gasto confirmados
+por el usuario. Reporta que no distingue al Mago del Recolector. Se restauran
+los colores de clase del original (Mago violeta, Recolector dorado), también
+en su preview. Pendiente reabrir Linux y comprobar esa diferencia al transformar
+un Recolector y al cargar una partida con Mago.
 
 | Área | Comprobación y resultado esperado |
 |---|---|

@@ -191,7 +191,7 @@ func _begin_placement(item: String) -> void:
 	shape.size = Vector3(0.8, 1.0, 0.8) * 1.25
 	held_preview.mesh = shape
 	var material := StandardMaterial3D.new()
-	material.albedo_color = Color("f2cb72")
+	material.albedo_color = WorldView.COLORS.get(item, Color("f2cb72"))
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	held_preview.material_override = material
 	add_child(held_preview)

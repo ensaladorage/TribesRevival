@@ -4,8 +4,9 @@ extends Node3D
 const COLORS := {
 	"food": Color("bc4770"), "wood": Color("6b964b"), "stone": Color("8b919a"),
 	"spark": Color("73e9e9"), "gold": Color("e3bf54"), "twigs": Color("94613d"),
-	"gatherer": Color("ece3bd"), "lumberjack": Color("dd8d4c"), "hunter": Color("71ac8f"),
-	"guardian": Color("87a9c9"), "artisan": Color("b294c7"), "mage": Color("96dbe0"),
+	# Match BabylonGame.unitRoleColor so transformations remain recognizable.
+	"gatherer": Color("f1d27a"), "lumberjack": Color("b98158"), "hunter": Color("8ed6d1"),
+	"guardian": Color("d27575"), "artisan": Color("a5a5a2"), "mage": Color("a276ff"),
 	"barbarian": Color("bd5d4b"), "rabbit": Color("e0d4b8"),
 }
 const BIOME_COLORS := {"clearing": Color("5c7447"), "meadow": Color("648547"), "forest": Color("3f623e"), "rocky": Color("686d64"), "ruins": Color("526c68")}
