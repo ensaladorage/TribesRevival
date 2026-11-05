@@ -106,6 +106,13 @@ func _test_support(reference: Dictionary) -> void:
 		_equal(Navigation.idle_yield_target(sample.input.agent, sample.input.neighbors), sample.yieldTarget, "yield")
 	for sample in reference.routes:
 		_equal(Navigation.plan_route(sample.start, sample.goal, sample.obstacles, _allowed), sample.result, "visibility route")
+	var allowed_calls := [0]
+	var allowed := func(point: Dictionary) -> bool:
+		allowed_calls[0] += 1
+		return _allowed(point)
+	var invalid_route := Navigation.plan_route({"x": 80, "y": 80}, {"x": 162, "y": 80}, [{"id": "obstacle", "position": {"x": 82, "y": 80}}], allowed)
+	_equal(invalid_route, [], "outside goal has no route")
+	_equal(allowed_calls[0], 1, "reject impossible goal before graph construction")
 	for sample in reference.idle:
 		_equal(Idle.choose_destination(sample.seed, sample.id, sample.step, sample.position, sample.area, sample.neighbors), sample.destination, "idle destination")
 		_equal(Idle.wait_seconds(sample.seed, sample.id, sample.step), sample.wait, "idle wait")

@@ -47,6 +47,10 @@ static func _edge_allowed(first: Dictionary, second: Dictionary, obstacles: Arra
 	return true
 
 static func plan_route(start: Dictionary, goal: Dictionary, obstacles: Array, is_allowed: Callable) -> Array:
+	# Every route must end at goal. Formation offsets can put it outside the
+	# world near its border; building the visibility graph cannot make it valid.
+	if not is_allowed.call(goal):
+		return []
 	var ordered := obstacles.duplicate()
 	ordered.sort_custom(func(a, b): return a.id < b.id)
 	if _edge_allowed(start, goal, ordered, is_allowed):

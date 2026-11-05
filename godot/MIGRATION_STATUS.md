@@ -10,8 +10,8 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
   comprobar Windows. Usuario confirma reclutamiento consecutivo corregido;
   las pruebas manuales reportadas corresponden al ejecutable Linux.
 - Incidencia activa: al arrastrar el tótem por el borde de la pantalla en
-  Linux, el usuario reporta lag intenso. F2 sigue abierta. Investigar antes
-  de cerrar controles; no alterar velocidades ni reglas para ocultarlo.
+  Linux cerca del límite del mundo, el usuario reporta lag intenso. Se evita
+  la búsqueda de rutas imposibles; repetición manual pendiente. F2 sigue abierta.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -286,3 +286,29 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - `tools/export.sh` completo correcto: importación, estructura, regresiones
   de menús/input, 15.325 comparaciones de datos, Linux/Windows/web y arranque
   headless Linux. Informe `reports/hud-reasons-export-all.log`.
+
+## Lag al alcanzar el borde del mundo
+
+- El usuario precisa que el lag aparece **solo cerca del límite del mundo**,
+  al mover el tótem por el borde de la pantalla en Linux.
+- Las posiciones de formación pueden quedar fuera de 2–158 m. El planificador
+  generaba y recorría todo el grafo antes de concluir que un destino así es
+  inválido. Una ruta no puede terminar en un punto rechazado por `is_allowed`.
+- Cambio acotado en `navigation.gd::plan_route`: rechazar el destino inválido
+  antes de construir el grafo. No se cambian destinos, velocidades, límites,
+  formación, predicción, cadencias ni reglas de movimiento.
+- Reproducción con función pura, sin escena/ticks: inicio (80,80), objetivo
+  (162,80), cinco obstáculos del mundo inicial. Antes: 19.681 llamadas al
+  predicado, ~31,676 ms; después: 1 llamada, ~0,002 ms; ambas devuelven `[]`.
+  Son tiempos de una función aislada, no FPS ni medición de una partida.
+  Informes locales `reports/navigation-{baseline,candidate}.log`.
+- Referencias de TypeScript ampliadas con nueve objetivos dentro/fuera/en
+  el límite y obstáculos reales. Guard de complejidad comprobado por conteo
+  de llamadas, sin umbral temporal. Validación correcta: 15.342 comparaciones,
+  101 de menús, cuatro pulsaciones de input, estructura e integridad original.
+  Informe `reports/border-route-validation.log`.
+- Repetición manual en Linux pendiente: mismo recorrido por el borde con
+  2 y 8 unidades y soltar para reagrupar. F2 sigue abierta hasta esa evidencia.
+- `tools/export.sh` completo correcto después del cambio: importación,
+  estructura, regresiones permitidas, datos, tres exports y arranque headless
+  Linux. Informe `reports/border-route-export-all.log`. Builds regenerados.

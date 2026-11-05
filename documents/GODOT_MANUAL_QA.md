@@ -42,6 +42,19 @@ sobre el HUD sin una comprobación específica.
 Los tooltips ahora incluyen motivos de bloqueo y recursos faltantes derivados
 de las reglas existentes. Su revisión visual queda pendiente junto al HUD.
 
+## Incidencia de rendimiento — borde del mundo
+
+El usuario reportó lag al arrastrar por el borde de la pantalla y precisó
+que ocurre solo cerca del límite del mundo, en el ejecutable Linux.
+Se encontró una búsqueda costosa de rutas hacia posiciones de formación
+fuera de los límites: ya se rechazan antes de generar el grafo, manteniendo
+el mismo resultado sin modificar las reglas de movimiento. Hay evidencia
+de coste en una función pura; no se automatizó la partida ni se midieron FPS.
+
+Repetición pendiente: reabrir el build Linux actualizado, arrastrar el tótem
+hacia cada borde del mundo con 2 y 8 unidades y soltarlo. Comprobar fluidez,
+reagrupación y cámara; comparar con el recorrido que producía el lag.
+
 | Área | Comprobación y resultado esperado |
 |---|---|
 | Inicio | Menú principal y tutorial opacos; «Jugar» inicia 2 minions, inventario vacío y nivel 0 |

@@ -49,6 +49,13 @@ try {
     [{id:'worker-1',position:{x:82,y:80}},{id:'worker-2',position:{x:83.3,y:80.3}}]]
     .map(obstacles => ({start:{x:80,y:80},goal:{x:85,y:80},obstacles,
       result:navigation.planMinionRoute({x:80,y:80},{x:85,y:80},obstacles,allowed)}));
+  const edgeObstacles = createInitialState().barbarians.map(({id,position}) => ({id,position}));
+  for (const goal of [{x:-2,y:80},{x:2-1e-5,y:80},{x:2,y:80},
+    {x:158,y:80},{x:158+1e-5,y:80},{x:162,y:80},
+    {x:80,y:-2},{x:80,y:162},{x:162,y:162}]) {
+    routes.push({start:{x:80,y:80},goal,obstacles:edgeObstacles,
+      result:navigation.planMinionRoute({x:80,y:80},goal,edgeObstacles,allowed)});
+  }
   const idleCases = seeds.flatMap(seed => [0,1,8].flatMap(step => [
     {center:{x:80,y:80},commandRadius:10,minimumCoordinate:2,maximumCoordinate:158},
     {center:{x:3,y:3},commandRadius:10,minimumCoordinate:2,maximumCoordinate:158}]
