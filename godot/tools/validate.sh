@@ -19,6 +19,7 @@ run_checked() {
 }
 run_checked import --editor --import
 run_checked structure --script res://tools/validate_project.gd
+run_checked menu-callbacks --script res://tests/test_menu_callbacks.gd
 if [[ -f "$project_dir/tests/test_data.gd" ]]; then
   run_checked data --script res://tests/test_data.gd
 fi

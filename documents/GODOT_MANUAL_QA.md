@@ -4,8 +4,19 @@ Proyecto y comandos: `../godot/README.md`.
 
 Usar el proyecto nativo o los builds de desarrollo. Comparar con Babylon
 servido en `/TribesRevival/`. No sustituir estos casos por automatización de
-capturas ni del loop de gameplay. Todos los casos están pendientes hasta
-que el usuario registre un resultado.
+capturas ni del loop de gameplay. Los casos siguen pendientes salvo los
+resultados registrados abajo; una corrección técnica requiere repetición manual.
+
+## Primer resultado manual — 2026-11-05
+
+El usuario informó fallos en Tutorial, Guardar/Cargar y volver al menú
+principal desde pausa. Se reprodujo un error de liberación del botón mientras
+emitía su señal y se corrigió mediante retirada inmediata y liberación diferida.
+Las comprobaciones headless de callbacks pasan; no validan aspecto ni input
+gráfico. Repetir estas rutas en el build actualizado, incluidos cancelar y
+confirmar reemplazo/carga/salida, antes de considerar corregida la experiencia.
+
+## Lista manual
 
 | Área | Comprobación y resultado esperado |
 |---|---|

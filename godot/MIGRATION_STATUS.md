@@ -6,9 +6,9 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 
 - Última fase completada: F4 (economía/progresión). F0, F1 y F3 completadas.
 - Fase actual: F9 exportaciones generadas; validación manual de paridad pendiente.
-- Próxima tarea ejecutable: recoger el primer resultado manual (solicitado en
-  el chat), reproducir y corregir cualquier fallo; completar la lista de QA
-  antes de cerrar F2/F5/F6/F7/F8/F9.
+- Próxima tarea ejecutable: repetir manualmente Tutorial, Guardar/Cargar y
+  retorno al menú principal tras la corrección de callbacks; continuar la
+  lista de QA antes de cerrar F2/F5/F6/F7/F8/F9.
 - Ejecución local: abrir `godot/project.godot` con el ejecutable local
   `godot/Godot_v4.7.2-stable_linux.x86_64` (4.7.2 confirmado).
 - Comparación original: `npm run dev`, ruta `/TribesRevival/`.
@@ -175,3 +175,25 @@ Actualizado: 2026-11-05. Rama: `migration/godot`. Objetivo completo: activo.
 - Pendiente: abrir gráficamente Windows/Linux/web y completar controles, IA,
   combate, economía, menús, guardado y fluidez según QA. Los modelos/efectos
   son provisionales. No hay evidencia para declarar la migración completa.
+
+## Corrección tras primera revisión manual: navegación de menús
+
+- El usuario informó fallos en Tutorial, Guardar/Cargar y retorno desde pausa
+  al menú principal. La validación anterior inicializaba el menú principal,
+  pero no ejecutaba sus callbacks; no cubría este fallo.
+- Reproducción headless aislada: emitir `Tutorial.pressed` provocaba
+  `Object is locked and can't be freed` y `Attempted to free a locked object`
+  en `game_menus.gd::_clear`. Se destruía el botón durante su propia señal,
+  abortando la limpieza del menú y mezclando controles anteriores y nuevos.
+- Corrección: retirar inmediatamente cada control del contenedor y liberar
+  con `queue_free`, después de terminar la señal. Mismo tratamiento para
+  navegación, confirmaciones y refresco de slots al guardar/eliminar.
+- Regresión técnica: `tests/test_menu_callbacks.gd`, 87 comprobaciones de
+  señales, destinos y liberación diferida en un árbol aislado sin escena de
+  juego, renderizado, ticks ni acceso a guardados del usuario. Incluye las
+  tres rutas reportadas, cancelar/confirmar y selección de slot.
+- `bash tools/export.sh` correcto tras el arreglo: importación, 25 scripts/
+  1 escena, callbacks, 15.325 comparaciones de datos y exportaciones Linux/
+  Windows/web. Arranque headless del build Linux correcto. 838 originales y
+  13 iconos sin cambios. Informe `reports/menu-fix-export-all.log`.
+- Revisión visual/manual del arreglo pendiente; F8/F9 continúan abiertas.

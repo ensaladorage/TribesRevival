@@ -46,7 +46,10 @@ func _clear(title: String, opaque: bool) -> void:
 	_root.show()
 	_background.color = Color(0.06, 0.09, 0.12, 1.0 if opaque else 0.65)
 	for child in _content.get_children():
-		child.free()
+		# Navigation can run inside this child's pressed signal. Detach it now,
+		# but release it after Godot finishes dispatching the signal.
+		_content.remove_child(child)
+		child.queue_free()
 	var label := Label.new()
 	label.text = title
 	label.add_theme_font_size_override("font_size", 28)
