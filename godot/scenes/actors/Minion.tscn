@@ -11,15 +11,6 @@ animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("texture")}],
 [sub_resource type="BoxShape3D" id="selection"]
 size = Vector3(0.72, 1.3, 0.72)
 
-[sub_resource type="CylinderMesh" id="shield_mesh"]
-top_radius = 0.3
-bottom_radius = 0.3
-height = 0.1
-
-[sub_resource type="StandardMaterial3D" id="shield_material"]
-albedo_color = Color(0.7411764705882353, 0.6705882352941176, 0.5058823529411764, 1)
-roughness = 1.0
-
 [sub_resource type="TorusMesh" id="ring"]
 inner_radius = 0.9775
 outer_radius = 1.0225
@@ -58,13 +49,6 @@ shape = SubResource("selection")
 
 [node name="Health" type="Marker3D" parent="."]
 position = Vector3(0, 1.5, 0)
-
-[node name="Shield" type="MeshInstance3D" parent="."]
-visible = false
-position = Vector3(-0.43, 0.85, 0)
-rotation = Vector3(0, 0, 1.5707963)
-mesh = SubResource("shield_mesh")
-material_override = SubResource("shield_material")
 
 [node name="DetectionRange" type="MeshInstance3D" parent="."]
 position = Vector3(0, 0.08, 0)

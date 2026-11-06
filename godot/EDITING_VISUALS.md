@@ -13,15 +13,17 @@ No hace falta modificar la simulación para sustituirlos.
 3. Cambiar `pixel_size`, escala/posición del sprite o `visual_scale` y
    `visual_tint` en la raíz. El filtro nearest conserva los bordes de pixel art.
 4. Las seis clases heredan esta escena. Abrir `Mage.tscn`, `Guardian.tscn`, etc.
-   para editar su tinte/equipo o sobrescribir sus SpriteFrames. La base se
+   para editar su tinte o sobrescribir sus SpriteFrames. La base se
    comparte mientras una variante no sobrescriba esa propiedad.
+   Las herramientas, armas y escudos no tienen sprites o meshes separados en
+   los minions; su aspecto formará parte del sprite de cada clase.
 5. `Barbarian.tscn` y `Rabbit.tscn` son variantes de presentación independientes;
    usan el mismo icono provisional hasta disponer de sprites adecuados.
 
 `Selection/Shape` es la caja editable del picking de equipo. La separación y
 navegación lógica conservan sus radios originales: cambiar la apariencia o esa
 caja no cambia colisiones/reglas de simulación. Se conserva además la tolerancia
-de selección de 24 px del original. `Shield`, `DetectionRange` y el marcador
+de selección de 24 px del original. `DetectionRange` y el marcador
 `Health` pueden editarse en la escena; mantener sus nombres o adaptar el
 adaptador de presentación. El tamaño de las bolitas está en
 `scenes/ui/HealthPips.tscn`; sus estilos en el Theme. `health_screen_margin_pixels`
@@ -41,6 +43,12 @@ Para reemplazar un modelo por pixel art, crear una escena con raíz `Node3D`,
 se previsualizan en el editor mediante `@tool`. El generador no se modifica.
 La geometría predeterminada se oculta al asignar una sustitución; no se borra.
 
+La hoguera usa el sprite de `scenes/placement/campfire.tscn` dentro de
+`Visual/Default`, con color normal para el mundo. Conserva `Visual/Default`
+como contenedor aunque cambies el sprite: `world_element.gd` lo utiliza para
+mostrar u ocultar la apariencia. El aro `HealingRange` está separado para
+seguir visible si se asigna otra apariencia.
+
 `scenes/WorldView.tscn` expone los mapas `actor_scenes`, `resource_scenes`,
 `drop_scenes`, `biome_scenes` y `decoration_scenes`, y las escenas de efectos,
 nubes, hogueras y cuerpos. Para cambiar un tipo completo, asignar otra
@@ -51,8 +59,9 @@ incluir un nodo `Rain` para alternarlo al llover. No renombrar claves semántica
 
 La generación determina posiciones/cantidades/tipos; `world_view.gd` instancia
 escenas y sincroniza presentación. Ningún mesh/sprite decide tareas o botín.
-El cadáver de bárbaro mantiene una representación geométrica provisional;
-no se ha generado el sprite definitivo pendiente del usuario.
+El cadáver de bárbaro utiliza el sprite creado por el usuario en
+`assets/enemies/dead.png`; su tamaño y posición se editan desde el nodo
+`Visual/Default/Sprite` de `BarbarianCorpse.tscn`.
 
 ## HUD y menús
 

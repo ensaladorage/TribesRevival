@@ -33,6 +33,7 @@ for platform in ("linux", "windows", "web"):
         + "Rueda/+/-: zoom. Esc: pausa. 1/2/3: velocidad. Insert: debug.\n"
         + "Validación manual general en Linux confirmada. Quedan problemas de IA y HUD/UI aplazados por el usuario.\n"
         + "Windows: exportado; su prueba manual está aplazada. No se declara una QA exhaustiva.\n"
+        + "Cambios posteriores de seguimiento/formación y presentación: validación técnica completada; prueba manual pendiente.\n"
         + "Licencias: GODOT_LICENSE.txt y LIBERATION_FONTS_LICENSE.txt.\n"
     )
     files = sorted(path for path in folder.rglob("*") if path.is_file())
@@ -53,7 +54,7 @@ for platform in ("linux", "windows", "web"):
     "development_build": True,
     "validation": "Import/scene/reference checks, isolated menu/input contracts, pure data parity, current saves and Linux menu initialization passed; not exhaustive gameplay QA",
     "manual_validation": {
-        "linux": "User confirmed startup, general appearance, editable scenes and absence of reported lag/stuck minions; latest reference-only adjustment initialized headless",
+        "linux": "Migration accepted by user; post-migration following/formation and presentation changes pending manual review; current build menu initialized headless",
         "windows": "Manual launch deferred by user; export verified only",
         "web": "Initial menu inspected; full gameplay not verified",
         "deferred_by_user": ["HUD/UI issues", "AI issues"],

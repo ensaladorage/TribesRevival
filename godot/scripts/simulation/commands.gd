@@ -37,6 +37,10 @@ static func apply(state: Dictionary, action: Dictionary) -> void:
 	match action.type:
 		"pick-up-totem":
 			if not totem.isCarried:
+				for unit in state.units:
+					unit.erase("postCombatFree")
+				totem.formationStartTick = state.tick
+				totem.erase("formationStopTick")
 				totem.isCarried = true
 				totem.moving = false
 				totem.destination = null
@@ -47,6 +51,7 @@ static func apply(state: Dictionary, action: Dictionary) -> void:
 				totem.dragTarget = totem.position.duplicate()
 		"drop-totem":
 			if totem.isCarried:
+				totem.formationStopTick = state.tick
 				totem.isCarried = false
 				totem.moving = true
 				totem.destination = null

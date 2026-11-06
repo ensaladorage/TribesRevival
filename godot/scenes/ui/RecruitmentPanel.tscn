@@ -1,176 +1,178 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dvx5lp1vp6a1i"]
 
-[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
+[ext_resource type="Texture2D" uid="uid://vi20usrsfvb3" path="res://assets/ui/icon-axe.png" id="axe"]
+[ext_resource type="Texture2D" uid="uid://cuxvocm5kxllv" path="res://assets/ui/icon-bow.png" id="bow"]
+[ext_resource type="Texture2D" uid="uid://d3p6qydiejoxs" path="res://assets/ui/icon-fireplace.png" id="campfire"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ResourceCost.tscn" id="cost"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-minion.png" id="gatherer"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-axe.png" id="axe"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-bow.png" id="bow"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-sword.png" id="sword"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-hammer.png" id="hammer"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-mage.png" id="mage"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-fireplace.png" id="campfire"]
+[ext_resource type="Texture2D" uid="uid://dhpsnpll13opv" path="res://assets/ui/icon-minion.png" id="gatherer"]
+[ext_resource type="Texture2D" uid="uid://bgg4cg0o02e11" path="res://assets/ui/icon-hammer.png" id="hammer"]
+[ext_resource type="Texture2D" uid="uid://b1pmrhmsay6uj" path="res://assets/ui/icon-mage.png" id="mage"]
+[ext_resource type="Texture2D" uid="uid://djmru6ko4ufxm" path="res://assets/ui/icon-sword.png" id="sword"]
+[ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
 
-[node name="RecruitmentPanel" type="VBoxContainer"]
+[node name="RecruitmentPanel" type="VBoxContainer" unique_id=1065253867]
 theme = ExtResource("theme")
 theme_override_constants/separation = 5
 
-[node name="gathererRow" type="HBoxContainer" parent="."]
+[node name="gathererRow" type="HBoxContainer" parent="." unique_id=1828804865]
 layout_mode = 2
-theme_override_constants/separation = 8
 mouse_filter = 2
+theme_override_constants/separation = 8
 metadata/item_row = "gatherer"
 
-[node name="gatherer" type="Button" parent="gathererRow"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 56)
-size_flags_horizontal = 0
-text = ""
-tooltip_text = "gatherer"
-icon = ExtResource("gatherer")
-expand_icon = true
-theme_override_constants/icon_max_width = 48
+[node name="gatherer" type="Button" parent="gathererRow" unique_id=1537934284]
 texture_filter = 1
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "gatherer"
+theme_override_constants/icon_max_width = 48
+icon = ExtResource("gatherer")
+icon_alignment = 1
+expand_icon = true
 metadata/item = "gatherer"
 
-[node name="Cost" parent="gathererRow" instance=ExtResource("cost")]
+[node name="Cost" parent="gathererRow" unique_id=1308694415 instance=ExtResource("cost")]
 layout_mode = 2
 size_flags_vertical = 4
 metadata/cost_for = "gatherer"
 
-[node name="axeRow" type="HBoxContainer" parent="."]
+[node name="axeRow" type="HBoxContainer" parent="." unique_id=1032071768]
 layout_mode = 2
-theme_override_constants/separation = 8
 mouse_filter = 2
+theme_override_constants/separation = 8
 metadata/item_row = "axe"
 
-[node name="axe" type="Button" parent="axeRow"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 56)
-size_flags_horizontal = 0
-text = ""
-tooltip_text = "axe"
-icon = ExtResource("axe")
-expand_icon = true
-theme_override_constants/icon_max_width = 34
+[node name="axe" type="Button" parent="axeRow" unique_id=2012582088]
 texture_filter = 1
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "axe"
+theme_override_constants/icon_max_width = 34
+icon = ExtResource("axe")
+icon_alignment = 1
+expand_icon = true
 metadata/item = "axe"
 
-[node name="Cost" parent="axeRow" instance=ExtResource("cost")]
+[node name="Cost" parent="axeRow" unique_id=1819515354 instance=ExtResource("cost")]
 layout_mode = 2
 size_flags_vertical = 4
 metadata/cost_for = "axe"
 
-[node name="bowRow" type="HBoxContainer" parent="."]
+[node name="bowRow" type="HBoxContainer" parent="." unique_id=299832257]
 layout_mode = 2
-theme_override_constants/separation = 8
+offset_transform_enabled = true
 mouse_filter = 2
+theme_override_constants/separation = 8
 metadata/item_row = "bow"
 
-[node name="bow" type="Button" parent="bowRow"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 56)
-size_flags_horizontal = 0
-text = ""
-tooltip_text = "bow"
-icon = ExtResource("bow")
-expand_icon = true
-theme_override_constants/icon_max_width = 34
+[node name="bow" type="Button" parent="bowRow" unique_id=2071421702]
 texture_filter = 1
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "bow"
+theme_override_constants/icon_max_width = 34
+icon = ExtResource("bow")
+icon_alignment = 1
+expand_icon = true
 metadata/item = "bow"
 
-[node name="Cost" parent="bowRow" instance=ExtResource("cost")]
+[node name="Cost" parent="bowRow" unique_id=2122014082 instance=ExtResource("cost")]
 layout_mode = 2
 size_flags_vertical = 4
 metadata/cost_for = "bow"
 
-[node name="swordRow" type="HBoxContainer" parent="."]
+[node name="swordRow" type="HBoxContainer" parent="." unique_id=142993400]
 layout_mode = 2
-theme_override_constants/separation = 8
 mouse_filter = 2
+theme_override_constants/separation = 8
 metadata/item_row = "sword"
 
-[node name="sword" type="Button" parent="swordRow"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 56)
-size_flags_horizontal = 0
-text = ""
-tooltip_text = "sword"
-icon = ExtResource("sword")
-expand_icon = true
-theme_override_constants/icon_max_width = 34
+[node name="sword" type="Button" parent="swordRow" unique_id=1166007577]
 texture_filter = 1
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "sword"
+theme_override_constants/icon_max_width = 34
+icon = ExtResource("sword")
+icon_alignment = 1
+expand_icon = true
 metadata/item = "sword"
 
-[node name="Cost" parent="swordRow" instance=ExtResource("cost")]
+[node name="Cost" parent="swordRow" unique_id=1102232624 instance=ExtResource("cost")]
 layout_mode = 2
 size_flags_vertical = 4
 metadata/cost_for = "sword"
 
-[node name="hammerRow" type="HBoxContainer" parent="."]
+[node name="hammerRow" type="HBoxContainer" parent="." unique_id=568959266]
 layout_mode = 2
-theme_override_constants/separation = 8
 mouse_filter = 2
+theme_override_constants/separation = 8
 metadata/item_row = "hammer"
 
-[node name="hammer" type="Button" parent="hammerRow"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 56)
-size_flags_horizontal = 0
-text = ""
-tooltip_text = "hammer"
-icon = ExtResource("hammer")
-expand_icon = true
-theme_override_constants/icon_max_width = 34
+[node name="hammer" type="Button" parent="hammerRow" unique_id=1592534428]
 texture_filter = 1
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "hammer"
+theme_override_constants/icon_max_width = 34
+icon = ExtResource("hammer")
+icon_alignment = 1
+expand_icon = true
 metadata/item = "hammer"
 
-[node name="Cost" parent="hammerRow" instance=ExtResource("cost")]
+[node name="Cost" parent="hammerRow" unique_id=914493370 instance=ExtResource("cost")]
 layout_mode = 2
 size_flags_vertical = 4
 metadata/cost_for = "hammer"
 
-[node name="mageRow" type="HBoxContainer" parent="."]
+[node name="mageRow" type="HBoxContainer" parent="." unique_id=983645103]
 layout_mode = 2
-theme_override_constants/separation = 8
 mouse_filter = 2
+theme_override_constants/separation = 8
 metadata/item_row = "mage"
 
-[node name="mage" type="Button" parent="mageRow"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 56)
-size_flags_horizontal = 0
-text = ""
-tooltip_text = "mage"
-icon = ExtResource("mage")
-expand_icon = true
-theme_override_constants/icon_max_width = 34
+[node name="mage" type="Button" parent="mageRow" unique_id=884793824]
 texture_filter = 1
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "mage"
+theme_override_constants/icon_max_width = 34
+icon = ExtResource("mage")
+icon_alignment = 1
+expand_icon = true
 metadata/item = "mage"
 
-[node name="Cost" parent="mageRow" instance=ExtResource("cost")]
+[node name="Cost" parent="mageRow" unique_id=1123903125 instance=ExtResource("cost")]
 layout_mode = 2
 size_flags_vertical = 4
 metadata/cost_for = "mage"
 
-[node name="campfireRow" type="HBoxContainer" parent="."]
+[node name="campfireRow" type="HBoxContainer" parent="." unique_id=1167743132]
 layout_mode = 2
-theme_override_constants/separation = 8
 mouse_filter = 2
+theme_override_constants/separation = 8
 metadata/item_row = "campfire"
 
-[node name="campfire" type="Button" parent="campfireRow"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 56)
-size_flags_horizontal = 0
-text = ""
-tooltip_text = "campfire"
-icon = ExtResource("campfire")
-expand_icon = true
-theme_override_constants/icon_max_width = 34
+[node name="campfire" type="Button" parent="campfireRow" unique_id=1233804586]
 texture_filter = 1
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 0
+offset_transform_enabled = true
+tooltip_text = "campfire"
+theme_override_constants/icon_max_width = 34
+icon = ExtResource("campfire")
+icon_alignment = 1
+expand_icon = true
 metadata/item = "campfire"
 
-[node name="Cost" parent="campfireRow" instance=ExtResource("cost")]
+[node name="Cost" parent="campfireRow" unique_id=1106935810 instance=ExtResource("cost")]
 layout_mode = 2
 size_flags_vertical = 4
 metadata/cost_for = "campfire"

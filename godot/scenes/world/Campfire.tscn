@@ -1,87 +1,30 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://60wvgg168f51"]
 
-[ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
+[ext_resource type="PackedScene" uid="uid://dbsy1exehwkpb" path="res://scenes/placement/campfire.tscn" id="2_plni0"]
+[ext_resource type="Script" uid="uid://biv35anr462ct" path="res://scripts/view/world_element.gd" id="script"]
 
-[sub_resource type="CylinderMesh" id="mesh1"]
-top_radius = 0.9
-bottom_radius = 0.9
-height = 0.18
-radial_segments = 12
-
-[sub_resource type="StandardMaterial3D" id="mat1"]
-albedo_color = Color(0.1843137254901961, 0.14901960784313725, 0.19215686274509805, 1)
-roughness = 1.0
+[sub_resource type="StandardMaterial3D" id="healing_material"]
+transparency = 1
+albedo_color = Color(0.45490196, 0.85882354, 0.41568628, 0.35)
 metallic_specular = 0.0
 
-[sub_resource type="BoxMesh" id="mesh2"]
-size = Vector3(1.35, 0.22, 0.28)
-
-[sub_resource type="StandardMaterial3D" id="mat2"]
-albedo_color = Color(0.6039215686274509, 0.4196078431372549, 0.2627450980392157, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[sub_resource type="BoxMesh" id="mesh3"]
-size = Vector3(1.35, 0.22, 0.28)
-
-[sub_resource type="StandardMaterial3D" id="mat3"]
-albedo_color = Color(0.6039215686274509, 0.4196078431372549, 0.2627450980392157, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[sub_resource type="CylinderMesh" id="mesh4"]
-top_radius = 0.025
-bottom_radius = 0.36
-height = 1.05
-radial_segments = 6
-
-[sub_resource type="StandardMaterial3D" id="mat4"]
-albedo_color = Color(0.9372549019607843, 0.3568627450980392, 0.16470588235294117, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[sub_resource type="TorusMesh" id="mesh5"]
+[sub_resource type="TorusMesh" id="healing_ring"]
 inner_radius = 0.9775
 outer_radius = 1.0225
 rings = 32
 ring_segments = 8
 
-[sub_resource type="StandardMaterial3D" id="mat5"]
-albedo_color = Color(0.4549019607843137, 0.8588235294117647, 0.41568627450980394, 0.35)
-roughness = 1.0
-metallic_specular = 0.0
-transparency = 1
-
-[node name="Campfire" type="Node3D"]
+[node name="Campfire" type="Node3D" unique_id=2073158382]
 script = ExtResource("script")
 
-[node name="Visual" type="Node3D" parent="."]
+[node name="Visual" type="Node3D" parent="." unique_id=1172023647]
 
-[node name="Default" type="Node3D" parent="Visual"]
+[node name="Default" type="Node3D" parent="Visual" unique_id=1874113434]
 
-[node name="Base" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.12, 0)
-mesh = SubResource("mesh1")
-material_override = SubResource("mat1")
+[node name="PlacementPreview" parent="Visual/Default" unique_id=1739513132 instance=ExtResource("2_plni0")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 1.08, 0)
 
-[node name="LogA" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.31, 0)
-rotation = Vector3(0, 0.785398, 0)
-mesh = SubResource("mesh2")
-material_override = SubResource("mat2")
-
-[node name="LogB" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.38, 0)
-mesh = SubResource("mesh3")
-material_override = SubResource("mat3")
-rotation = Vector3(0, -0.785398, 0)
-
-[node name="Flame" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.86, 0)
-mesh = SubResource("mesh4")
-material_override = SubResource("mat4")
-
-[node name="HealingRange" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.06, 0)
-mesh = SubResource("mesh5")
-material_override = SubResource("mat5")
+[node name="HealingRange" type="MeshInstance3D" parent="Visual" unique_id=812244472]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
+material_override = SubResource("healing_material")
+mesh = SubResource("healing_ring")

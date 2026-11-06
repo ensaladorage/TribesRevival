@@ -26,8 +26,6 @@ var saved_fingerprint := ""
 var held_item := ""
 var held_preview: Node3D
 var drag_position: Variant = null
-var drag_direction := Vector2(0, 1)
-var direction_arrow: Node3D
 var dragging := false
 var debug_visible := false
 var debug_label: Label
@@ -39,7 +37,6 @@ var inventory_label: Label
 func _ready() -> void:
 	add_child(world_view)
 	world_view.setup(session.state)
-	_create_direction_arrow()
 	_create_overlay()
 	add_child(hud)
 	hud.placement_requested.connect(_begin_placement)
@@ -98,7 +95,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			if event.pressed and session.state.phase == "playing" and not dragging and _hits_totem(event.position):
 				dragging = true
 				drag_position = session.state.totem.position.duplicate()
-				drag_direction = Vector2(0, 1)
 				camera.recentering = false
 				session.enqueue({"type": "pick-up-totem"})
 				_queue_drag(event.position)
@@ -139,7 +135,6 @@ func _queue_drag(screen_point: Vector2) -> void:
 			var distance := sqrt(dx * dx + dy * dy)
 			if distance <= 0.001:
 				return
-			drag_direction = Vector2(dx / distance, dy / distance)
 		drag_position = position
 		session.enqueue({"type": "drag-totem", "position": position})
 
@@ -161,18 +156,10 @@ func _sync_view() -> void:
 	totem_view.position = Vector3(float(visual.x), 4.6 if dragging or totem.isCarried else 2.0, float(visual.y))
 	totem_view.present(dragging or totem.isCarried)
 	$TotemShadow.position = Vector3(visual.x, 0.04, visual.y)
-	direction_arrow.position = Vector3(visual.x, 3.1, visual.y)
-	direction_arrow.rotation.y = atan2(drag_direction.x, drag_direction.y)
-	direction_arrow.visible = dragging or totem.isCarried
 	pause_overlay.visible = false
 	debug_label.text = "Tick %s · %s · velocidad ×%s\nTótem %.2f, %.2f" % [session.state.tick, session.state.phase, session.speed_multiplier, totem.position.x, totem.position.y]
 	inventory_label.text = "Nivel %s · XP %s / %s · Puntos %s" % [session.state.progression.level, session.state.progression.experience, session.state.progression.experienceToNextLevel, session.state.progression.technologyPoints]
 	Input.set_default_cursor_shape(Input.CURSOR_DRAG if dragging or not held_item.is_empty() else Input.CURSOR_ARROW)
-
-func _create_direction_arrow() -> void:
-	direction_arrow = preload("res://scenes/world/DirectionArrow.tscn").instantiate()
-	direction_arrow.visible = false
-	add_child(direction_arrow)
 
 func _begin_placement(item: String) -> void:
 	if session.state.phase != "playing" or menus.screen != "game":

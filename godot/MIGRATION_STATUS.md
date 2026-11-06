@@ -1,5 +1,105 @@
 # Estado de migración a Godot
 
+## Final de combate sin formación obligatoria
+
+- Los minions que terminan un combate con el tótem colocado pasan a buscar
+  trabajo/reposar en su posición o regresan únicamente al radio de mando si
+  están fuera. Si el resto aún se reagrupa, no les exige ocupar una posición
+  de formación; al levantar el tótem de nuevo vuelven a seguirlo normalmente.
+  Pendiente de validación manual en Linux.
+
+## Cantidades enteras de recursos
+
+- Corregida la presentación del inventario y de los textos de coste o recursos
+  faltantes para mostrar unidades enteras después de cargar JSON. La conversión
+  afecta al texto; los valores lógicos existentes no se redondean ni se
+  reescriben. Los decimales de otros datos, como efectos de mejoras, se conservan.
+
+## Entrada en combate y proximidad al tótem
+
+- Revisados contra Babylon los seis huecos cuerpo a cuerpo, posiciones a
+  distancia y reservas. Se suaviza durante 0,4 s la bajada de velocidad del
+  seguimiento al combate y los bárbaros evitan entrar en el espacio del tótem.
+  Queda pendiente comprobar visualmente con minions y bárbaros en Linux.
+
+## Sprite de cadáver de bárbaro
+
+- Integrado `sprites/enemies/dead.png`, creado por el usuario, en la escena
+  Godot `BarbarianCorpse.tscn`, mediante una copia sin modificar en los assets
+  del proyecto. Usa Sprite3D con filtro nearest; revisión visual pendiente.
+
+## Sprite de hoguera
+
+- Reparada la escena editada de la hoguera: recupera `Visual/Default` para el
+  script de presentación y usa el sprite de la previsualización con color
+  normal y filtro de píxel. Se conserva el indicador del radio de curación.
+  Pendiente de revisión manual en juego.
+
+## Prioridad de combate durante el seguimiento
+
+- El usuario reportó que acercar el tótem a un bárbaro demoraba la entrada en
+  combate tras acentuar el seguimiento. Se da prioridad a amenazas próximas
+  durante el arrastre y el reagrupamiento; al soltar el tótem la llegada a los
+  destinos vuelve a ser rápida. Pendiente de comprobación manual en Linux.
+
+## Seguimiento más suelto tras primera revisión
+
+- El usuario confirma que la variación anterior le gusta, pero percibe todavía
+  una formación demasiado estricta al llevar el tótem. Se amplían ligeramente
+  la dispersión y el desplazamiento suave y se diferencian más los tiempos de
+  aproximación. Pendiente de nueva revisión manual en Linux.
+
+## Estado visual de botones inactivos
+
+- Los botones de objetos, tecnologías y mejoras usan iconos en escala de grises,
+  fondo atenuado y borde oscuro cuando están inactivos. Los iconos originales
+  se conservan en las escenas; la interfaz prepara una copia temporal en memoria.
+  Revisión visual manual pendiente.
+
+## Botones de tecnologías
+
+- Las tecnologías muestran su icono y el coste o estado de desbloqueo; el
+  tooltip vuelve a incluir el nombre, además de la descripción y el requisito.
+  La apariencia queda pendiente de revisión manual.
+
+## Textos de ayuda de la interfaz
+
+- Eliminados el coste de los tooltips de los objetos del HUD y los recursos
+  faltantes de los tooltips de mejoras. Los costes visibles y las reglas de
+  compra se conservan. El nombre de tecnologías se restituyó posteriormente.
+  Revisión visual manual pendiente.
+
+## Seguimiento menos rígido del tótem
+
+- Añadidos dispersión individual por recogida, variación suave de destinos al
+  llevar el tótem y frenado individual de llegada. Los destinos se congelan
+  al soltarlo para terminar la convergencia. Conserva el máximo de 10 m/s y la
+  navegación compartida, sin cambiar combate, recolección ni reposo ordinario.
+- Diseño y campos opcionales persistidos descritos en `DESIGN_CHANGES.md`.
+  Aspecto, sensación de movimiento y ajuste de amplitudes pendientes de
+  prueba manual del usuario; no se ejecuta gameplay automatizado.
+- Exportados de nuevo Linux, Windows y web, con los cambios de presentación
+  anteriores incluidos. Importación, 33 scripts/71 escenas, contratos aislados
+  de UI/input, 16.104 comparaciones puras y arranque del menú Linux correctos.
+  Las comprobaciones nuevas muestrean geometría, continuidad y fases de
+  guardado sin avanzar una partida. Informe: `reports/natural-follow-export-all.log`.
+
+## Indicador de dirección del tótem
+
+- Eliminada por decisión del usuario la flecha amarilla que aparecía al
+  arrastrar el tótem, junto con su escena y código de presentación. Los
+  controles y la lógica de arrastre se conservan.
+
+## Presentación de minions
+
+- Por decisión del usuario, las escenas de clase ya no muestran sprites de
+  herramientas ni armas separados, y la escena base tampoco muestra un mesh
+  de escudo. El equipo y sus efectos siguen formando parte de la simulación.
+  Cada clase podrá incorporar su aspecto al sustituir sus SpriteFrames.
+- `tools/validate.sh` ha comprobado la importación y estructura de escenas,
+  callbacks y datos puros sin ejecutar gameplay ni pruebas visuales. La nueva
+  apariencia queda pendiente de revisión manual.
+
 Actualizado: 2026-11-05. Rama: `migration/godot`. Estado: cierre técnico y aceptación del alcance migrado verificados; pendientes aceptados registrados.
 
 ## Continuidad

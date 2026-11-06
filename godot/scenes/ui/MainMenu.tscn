@@ -1,68 +1,80 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dioosw41a0nms"]
 
-[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
-[node name="MainMenu" type="VBoxContainer"]
+[ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
+
+[node name="MainMenu" type="VBoxContainer" unique_id=519519762]
+custom_minimum_size = Vector2(444, 0)
+offset_left = 56.0
+offset_top = 74.0
+offset_right = 500.0
+offset_bottom = 379.0
 theme = ExtResource("theme")
 theme_override_constants/separation = 0
-custom_minimum_size = Vector2(444, 0)
 metadata/panel_style = "MainPanel"
 
-[node name="TitleSpace" type="Control" parent="."]
-layout_mode = 2
+[node name="TitleSpace" type="Control" parent="." unique_id=1919746497]
 custom_minimum_size = Vector2(444, 57)
+layout_mode = 2
 mouse_filter = 2
 
-[node name="Title" type="Label" parent="TitleSpace"]
-theme_type_variation = &"MainTitle"
+[node name="Kicker" type="Label" parent="TitleSpace" unique_id=1490550740]
 layout_mode = 0
-offset_top = -20.0
+offset_top = 39.0
 offset_right = 444.0
-offset_bottom = 37.0
-text = "Tribes Revival"
-theme_override_font_sizes/font_size = 50
-horizontal_alignment = 1
-
-[node name="Kicker" type="Label" parent="."]
+offset_bottom = 53.0
 theme_type_variation = &"MenuKicker"
-layout_mode = 2
+theme_override_colors/font_color = Color(0.722, 0.851, 0.69, 1)
+theme_override_font_sizes/font_size = 12
 text = "LA SUPERVIVENCIA DE LA TRIBU DEPENDE DE TI"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.722, 0.851, 0.69, 1)
+vertical_alignment = 1
 
-[node name="ActionGap" type="Control" parent="."]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 36)
-mouse_filter = 2
+[node name="Title" type="Label" parent="TitleSpace" unique_id=1466359364]
+layout_mode = 0
+offset_top = -24.0
+offset_right = 444.0
+offset_bottom = 34.0
+theme_type_variation = &"MainTitle"
+theme_override_font_sizes/font_size = 50
+text = "Tribes Revival"
+horizontal_alignment = 1
 
-[node name="Actions" type="VBoxContainer" parent="."]
+[node name="Actions" type="VBoxContainer" parent="." unique_id=731113583]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Play" type="Button" parent="Actions"]
+[node name="Play" type="Button" parent="Actions" unique_id=1661261422]
+custom_minimum_size = Vector2(270, 42)
 layout_mode = 2
+size_flags_horizontal = 4
+offset_transform_enabled = true
+offset_transform_position = Vector2(0, 14.315)
+theme_type_variation = &"TribesMenuButton"
 text = "Jugar"
-custom_minimum_size = Vector2(270, 42)
-size_flags_horizontal = 4
-theme_type_variation = &"TribesMenuButton"
 
-[node name="Tutorial" type="Button" parent="Actions"]
+[node name="Tutorial" type="Button" parent="Actions" unique_id=1335311099]
+custom_minimum_size = Vector2(270, 42)
 layout_mode = 2
+size_flags_horizontal = 4
+offset_transform_enabled = true
+offset_transform_position = Vector2(0, 14.315)
+theme_type_variation = &"TribesMenuButton"
 text = "Tutorial"
-custom_minimum_size = Vector2(270, 42)
-size_flags_horizontal = 4
-theme_type_variation = &"TribesMenuButton"
 
-[node name="Load" type="Button" parent="Actions"]
+[node name="Load" type="Button" parent="Actions" unique_id=309539041]
+custom_minimum_size = Vector2(270, 42)
 layout_mode = 2
+size_flags_horizontal = 4
+offset_transform_enabled = true
+offset_transform_position = Vector2(0, 14.315)
+theme_type_variation = &"TribesMenuButton"
 text = "Cargar"
-custom_minimum_size = Vector2(270, 42)
-size_flags_horizontal = 4
-theme_type_variation = &"TribesMenuButton"
 
-[node name="Quit" type="Button" parent="Actions"]
-layout_mode = 2
-text = "Salir"
+[node name="Quit" type="Button" parent="Actions" unique_id=83592291]
 custom_minimum_size = Vector2(270, 42)
+layout_mode = 2
 size_flags_horizontal = 4
+offset_transform_enabled = true
+offset_transform_position = Vector2(0, 14.315)
 theme_type_variation = &"TribesMenuButton"
+text = "Salir"

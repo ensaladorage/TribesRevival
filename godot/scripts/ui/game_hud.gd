@@ -21,6 +21,8 @@ var _selected_tree := ""
 var _resource_counts := {}
 var _last_observed_level := -1
 var _pending_technology := ""
+var _button_icons := {}
+var _disabled_styles := {}
 @export_group("Scene references")
 @export var management_panel: Control
 @export var technologies_panel: Control
@@ -48,6 +50,7 @@ func _ready() -> void:
 		if button.has_meta("item"):
 			var item: String = button.get_meta("item")
 			_items[item] = button
+			_prepare_button_icon(button)
 			button.button_down.connect(func(): placement_requested.emit(item))
 		elif button.has_meta("tree"):
 			var tree: String = button.get_meta("tree")
@@ -57,12 +60,14 @@ func _ready() -> void:
 		elif button.has_meta("technology"):
 			var technology: String = button.get_meta("technology")
 			_technologies[technology] = button
+			_prepare_button_icon(button)
 			button.pressed.connect(func():
 				_pending_technology = technology
 				action_requested.emit({"type": "unlock-technology", "technology": technology}))
 		elif button.has_meta("tool"):
 			var tool: String = button.get_meta("tool")
 			_upgrades[tool] = button
+			_prepare_button_icon(button)
 			button.pressed.connect(func(): action_requested.emit({"type": "upgrade-tool", "tool": tool}))
 	_refresh_panels()
 
@@ -90,7 +95,7 @@ static func _cost_text(cost: Dictionary) -> String:
 	var entries: PackedStringArray = []
 	for resource in Economy.RESOURCE_TYPES:
 		if cost.has(resource):
-			entries.append("%s %s" % [cost[resource], RESOURCE_NAMES[resource]])
+			entries.append("%s %s" % [int(cost[resource]), RESOURCE_NAMES[resource]])
 	return " + ".join(entries)
 
 func update_state(state: Dictionary) -> void:
@@ -110,7 +115,7 @@ func update_state(state: Dictionary) -> void:
 	_refresh_panels()
 	var amounts: Dictionary = state.inventory.amounts
 	for resource in _resource_counts:
-		_resource_counts[resource].text = str(amounts[resource])
+		_resource_counts[resource].text = str(int(amounts[resource]))
 	var gatherers := Rules.count_role(state.units, "gatherer")
 	for item in _items:
 		var cost: Dictionary
@@ -156,9 +161,10 @@ func update_state(state: Dictionary) -> void:
 		if item in ["axe", "hammer", "sword"]:
 			_apply_level_color(_items[item], state.toolLevels[item])
 		_items[item].disabled = not available or not Economy.can_afford(amounts, cost)
+		_update_button_appearance(_items[item])
 		_item_rows[item].visible = _items[item].visible
 		_item_costs[item].update_cost(cost, not _items[item].disabled)
-		var tooltip := "%s\n%s\nCoste: %s" % [ITEM_NAMES[item], ITEM_HINTS[item], _cost_text(cost)]
+		var tooltip := "%s\n%s" % [ITEM_NAMES[item], ITEM_HINTS[item]]
 		if not reason.is_empty():
 			tooltip += "\n" + reason
 		var missing := Economy.missing_resources(amounts, cost)
@@ -167,8 +173,9 @@ func update_state(state: Dictionary) -> void:
 		_items[item].tooltip_text = tooltip
 	for technology in Progression.TECHNOLOGIES:
 		var unlocked: bool = technology.id in state.progression.unlockedTechnologies
-		_technologies[technology.id].text = "%s · %s" % [technology.name, "Desbloqueada" if unlocked else "%s punto" % technology.cost]
+		_technologies[technology.id].text = "Desbloqueada" if unlocked else "%s punto%s" % [technology.cost, "" if technology.cost == 1 else "s"]
 		_technologies[technology.id].disabled = state.phase != "playing" or not Progression.can_unlock(state.progression, technology.id)
+		_update_button_appearance(_technologies[technology.id])
 		_technologies[technology.id].tooltip_text = "%s\n%s\n%s" % [technology.name, technology.description, "Desbloqueado" if unlocked else "Nivel requerido: %s" % technology.minimumLevel]
 	for tool in _upgrades:
 		var level: int = state.toolLevels[tool]
@@ -177,10 +184,11 @@ func update_state(state: Dictionary) -> void:
 		_apply_level_color(_upgrades[tool], level)
 		var upgrade: Variant = Economy.tool_upgrade(tool, level + 1)
 		_upgrades[tool].disabled = state.phase != "playing" or upgrade == null or not Economy.can_afford(amounts, upgrade.cost)
+		_update_button_appearance(_upgrades[tool])
 		if upgrade == null:
 			_upgrades[tool].tooltip_text = name + " · Max"
 		else:
-			_upgrades[tool].tooltip_text = "%s\nActual: %s\nSiguiente: %s\nCoste: %s\nFalta: %s" % [name, _effect_text(tool, level), _effect_text(tool, level + 1), _cost_text(upgrade.cost), _cost_text(Economy.missing_resources(amounts, upgrade.cost))]
+			_upgrades[tool].tooltip_text = "%s\nActual: %s\nSiguiente: %s\nCoste: %s" % [name, _effect_text(tool, level), _effect_text(tool, level + 1), _cost_text(upgrade.cost)]
 
 static func _effect_text(tool: String, level: int) -> String:
 	var effect := Economy.tool_effect(tool, level)
@@ -190,4 +198,39 @@ static func _effect_text(tool: String, level: int) -> String:
 
 func _apply_level_color(button: Button, level: int) -> void:
 	# All eleven variants are editable in TribesTheme.tres.
-	button.theme_type_variation = StringName("ToolLevel%s" % level)
+	var variation := StringName("ToolLevel%s" % level)
+	if button.theme_type_variation != variation:
+		button.theme_type_variation = variation
+		_disabled_styles.erase(button)
+
+func _prepare_button_icon(button: Button) -> void:
+	var original := button.icon
+	if original == null:
+		return
+	var image := original.get_image()
+	if image == null or image.is_empty():
+		return
+	if image.is_compressed():
+		if image.decompress() != OK:
+			return
+	image.convert(Image.FORMAT_RGBA8)
+	for y in image.get_height():
+		for x in image.get_width():
+			var pixel := image.get_pixel(x, y)
+			var gray := pixel.r * 0.2126 + pixel.g * 0.7152 + pixel.b * 0.0722
+			image.set_pixel(x, y, Color(gray, gray, gray, pixel.a))
+	_button_icons[button] = {"normal": original, "disabled": ImageTexture.create_from_image(image)}
+
+func _update_button_appearance(button: Button) -> void:
+	if _button_icons.has(button):
+		var icon: Texture2D = _button_icons[button].disabled if button.disabled else _button_icons[button].normal
+		if button.icon != icon:
+			button.icon = icon
+	if not _disabled_styles.has(button):
+		var normal := button.get_theme_stylebox("normal") as StyleBoxFlat
+		if normal != null:
+			var disabled := normal.duplicate() as StyleBoxFlat
+			disabled.bg_color.a *= 0.5
+			disabled.border_color = Color(0.043, 0.047, 0.078, 1.0)
+			button.add_theme_stylebox_override("disabled", disabled)
+			_disabled_styles[button] = disabled

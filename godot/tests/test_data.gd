@@ -37,6 +37,7 @@ func _initialize() -> void:
 	_test_blocked_idle_yield()
 	_test_purchases(reference.purchases)
 	_test_current_save()
+	_test_formation_geometry()
 	for sample in reference.durations:
 		_equal(Work.gather_duration({"toolLevels": sample.levels}, sample.node), sample.result, "gather duration")
 	for sample in reference.combat.attacks:
@@ -53,6 +54,42 @@ func _initialize() -> void:
 			push_error(failure)
 		print("FAIL data parity: %d mismatches" % failures.size())
 		quit(1)
+
+func _test_formation_geometry() -> void:
+	# Sample only the destination formula: no simulation ticks or movement loop.
+	var state := State.create_initial("formation-geometry")
+	for index in range(2, 8):
+		state.units.append(State.create_unit("formation-%s" % index, "gatherer", {"x": 80.0, "y": 80.0}))
+	state.tick = 100
+	Commands.apply(state, {"type": "pick-up-totem"})
+	for tick in [100, 101, 114, 180, 245]:
+		state.tick = tick
+		var targets: Array = []
+		for index in state.units.size():
+			var follow := Movement.formation_motion(state, index)
+			var angle := float(index) / 8.0 * TAU
+			var nominal := {"x": 80.0 + cos(angle) * 4.0, "y": 80.0 + sin(angle) * 4.0}
+			_equal(Movement.Geo.distance(follow.target, nominal) <= 1.25 + 1e-7, true, "bounded formation variation")
+			_equal(follow.speed > 0 and follow.speed <= Movement.FOLLOW_SPEED, true, "follow speed ceiling")
+			_equal(follow, Movement.formation_motion(state.duplicate(true), index), "reproducible follow profile")
+			for other in targets:
+				_equal(Movement.Geo.distance(follow.target, other) > Movement.Nav.MINIMUM_SEPARATION, true, "eight distinct formation destinations")
+			targets.append(follow.target)
+	var before := Movement.formation_target(state, 0)
+	state.tick += 1
+	_equal(Movement.Geo.distance(before, Movement.formation_target(state, 0)) < 0.1, true, "continuous follow target")
+	var on_release := Movement.formation_target(state, 0)
+	Commands.apply(state, {"type": "drop-totem"})
+	_equal(Movement.formation_target(state, 0), on_release, "release has no target jump")
+	state.tick += 100
+	_equal(Movement.formation_target(state, 0), on_release, "settling destination stops wandering")
+	var restored: Dictionary = JSON.parse_string(JSON.stringify(state, "", false, true))
+	_equal(Movement.formation_target(restored, 0), on_release, "formation phase survives JSON round trip")
+	var legacy := State.create_initial()
+	legacy.totem.moving = true
+	var legacy_target := Movement.formation_target(legacy, 0)
+	legacy.tick += 10
+	_equal(Movement.formation_target(legacy, 0), legacy_target, "old saves settle without optional phase fields")
 
 func _test_blocked_idle_yield() -> void:
 	# Reduced geometry from the user's blocked slot. Pure step selection only.
@@ -82,6 +119,8 @@ func _test_current_save() -> void:
 	var repository := Saves.new(directory)
 	var state := State.create_initial()
 	state.phase = "paused"
+	state.totem.formationStartTick = 42
+	state.totem.formationStopTick = 47
 	state.inventory.amounts.gold = 12
 	_equal(repository.save_slot(1, state, "2026-11-05T00:00:00Z").ok, true, "save current slot")
 	var loaded := repository.read_slot(1)

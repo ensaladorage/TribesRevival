@@ -49,6 +49,9 @@ Informes locales regenerables en `reports/`, fuera de Git.
 
 ## Continuidad y pendientes
 
+Los cambios de diseño posteriores a la migración se recogen en
+[DESIGN_CHANGES.md](DESIGN_CHANGES.md), como complemento del GDD original.
+
 Consultar `MIGRATION_PLAN.md` y `MIGRATION_STATUS.md` antes de continuar.
 Las comprobaciones de scripts/datos no sustituyen el playtest. El usuario
 confirma apertura/aspecto general Linux, edición desde Godot y desaparición de

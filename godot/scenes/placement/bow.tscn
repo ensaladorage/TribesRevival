@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://clglxb0jvkavu"]
 
-[ext_resource type="Texture2D" path="res://assets/ui/icon-bow.png" id="texture"]
+[ext_resource type="Texture2D" uid="uid://cuxvocm5kxllv" path="res://assets/ui/icon-bow.png" id="texture"]
 
-[node name="PlacementPreview" type="Sprite3D"]
-texture = ExtResource("texture")
+[node name="PlacementPreview" type="Sprite3D" unique_id=220572966]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
 pixel_size = 0.03125
 billboard = 1
 texture_filter = 0
-modulate = Color(1, 1, 1, 0.48)
+texture = ExtResource("texture")

@@ -44,27 +44,27 @@ metadata/tree_options = "combat"
 
 [node name="artisan" type="Button" parent="survivalOptions"]
 layout_mode = 2
-text = "artisan"
+custom_minimum_size = Vector2(160, 70)
 icon = ExtResource("artisan")
 expand_icon = true
-theme_override_constants/icon_max_width = 32
+theme_override_constants/icon_max_width = 40
 texture_filter = 1
 metadata/technology = "artisan"
 
 [node name="shield" type="Button" parent="combatOptions"]
 layout_mode = 2
-text = "shield"
+custom_minimum_size = Vector2(160, 70)
 icon = ExtResource("shield")
 expand_icon = true
-theme_override_constants/icon_max_width = 32
+theme_override_constants/icon_max_width = 40
 texture_filter = 1
 metadata/technology = "shield"
 
 [node name="mage" type="Button" parent="explorationOptions"]
 layout_mode = 2
-text = "mage"
+custom_minimum_size = Vector2(160, 70)
 icon = ExtResource("mage")
 expand_icon = true
-theme_override_constants/icon_max_width = 32
+theme_override_constants/icon_max_width = 40
 texture_filter = 1
 metadata/technology = "mage"

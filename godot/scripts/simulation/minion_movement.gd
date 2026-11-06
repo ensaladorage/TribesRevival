@@ -13,6 +13,14 @@ const FOLLOW_SPEED := 10.0
 const RETURN_SPEED := 8.0
 const FORMATION_TOLERANCE := 0.08
 const TOTEM_CLEARANCE := 2.02
+const FORMATION_RADIUS := 4.0
+const FORMATION_SCATTER := 0.6
+const FOLLOW_WANDER := 0.65
+
+static func combat_speed(unit: Dictionary) -> float:
+	var memory: Dictionary = unit.get("navigation", {})
+	var fraction := clampf(float(memory.get("combatEntryRemaining", 0.0)) / 0.4, 0.0, 1.0)
+	return lerpf(UNIT_SPEED, maxf(UNIT_SPEED, float(memory.get("combatEntrySpeed", UNIT_SPEED))), fraction)
 
 static func find_entity(entities: Array, id: Variant) -> Variant:
 	for entity in entities:
@@ -24,8 +32,31 @@ static func area(state: Dictionary) -> Dictionary:
 	return {"center": state.totem.position, "commandRadius": state.totem.commandRadius, "minimumCoordinate": 2.0, "maximumCoordinate": 158.0}
 
 static func formation_target(state: Dictionary, index: int) -> Dictionary:
+	return formation_motion(state, index).target
+
+static func formation_motion(state: Dictionary, index: int) -> Dictionary:
+	# A different, reproducible profile on each pickup. No global/random frame state.
+	var unit: Dictionary = state.units[index]
+	var started := int(state.totem.get("formationStartTick", 0))
+	var random := Random.new("%s:formation:%s:%s" % [state.seed, unit.id, started])
 	var angle := float(index) / maxi(state.units.size(), 1) * PI * 2.0
-	return {"x": state.totem.position.x + cos(angle) * 4.0, "y": state.totem.position.y + sin(angle) * 4.0}
+	var scatter_angle := random.next_float(0.0, TAU)
+	var scatter_radius := sqrt(random.next_float()) * FORMATION_SCATTER
+	var offset := Vector2.from_angle(scatter_angle) * scatter_radius
+	# Independent phases and periods break the rigid ring without jitter per tick.
+	var phase_x := random.next_float(0.0, TAU)
+	var phase_y := random.next_float(0.0, TAU)
+	var period_x := random.next_float(2.8, 4.8)
+	var period_y := random.next_float(3.2, 5.2)
+	var response := random.next_float(1.7, 3.2)
+	var sampled_tick := int(state.tick) if state.totem.isCarried else int(state.totem.get("formationStopTick", started))
+	var seconds := maxf(0.0, float(sampled_tick - started) / 20.0)
+	var blend := smoothstep(0.0, 0.7, seconds)
+	offset += Vector2(sin(phase_x + seconds * TAU / period_x), sin(phase_y + seconds * TAU / period_y)) * (FOLLOW_WANDER / sqrt(2.0)) * blend
+	var target := {"x": state.totem.position.x + cos(angle) * FORMATION_RADIUS + offset.x, "y": state.totem.position.y + sin(angle) * FORMATION_RADIUS + offset.y}
+	# Preserve the follow speed ceiling; each unit eases into its own destination.
+	var minimum_speed := 0.3 if state.totem.isCarried else 6.0
+	return {"target": target, "speed": minf(FOLLOW_SPEED, maxf(minimum_speed, Geo.distance(unit.position, target) * response))}
 
 static func approach(point: Dictionary, target: Dictionary, interaction_range: float) -> Dictionary:
 	var distance := Geo.distance(point, target)
@@ -82,21 +113,25 @@ static func holds_working_position(state: Dictionary, unit: Dictionary) -> bool:
 
 static func create_frame(state: Dictionary, delta: float) -> Dictionary:
 	var origins := {}
+	var followers := {}
 	for unit in state.units:
 		origins[unit.id] = unit.position.duplicate()
-	return {"deltaSeconds": delta, "origins": origins, "reservations": {}, "combatPositions": {}}
+	if state.totem.isCarried or state.totem.moving:
+		for index in state.units.size():
+			followers[state.units[index].id] = formation_motion(state, index)
+	return {"deltaSeconds": delta, "origins": origins, "followers": followers, "reservations": {}, "combatPositions": {}}
 
 static func agent(state: Dictionary, unit: Dictionary, frame: Dictionary) -> Dictionary:
 	if frame.reservations.has(unit.id):
 		return frame.reservations[unit.id]
-	var index: int = state.units.find(unit)
 	var point: Dictionary = frame.origins.get(unit.id, unit.position)
 	var destination: Variant = null
 	var speed := UNIT_SPEED
 	var fixed := holds_working_position(state, unit)
-	if state.totem.isCarried or state.totem.moving:
-		destination = formation_target(state, index)
-		speed = FOLLOW_SPEED
+	if (state.totem.isCarried or (state.totem.moving and not unit.get("postCombatFree", false))) and unit.task.kind not in ["combat", "flee", "hunt"]:
+		var follow: Dictionary = frame.followers[unit.id]
+		destination = follow.target
+		speed = follow.speed
 		fixed = fixed or unit.withdrawAfterAttack
 	elif unit.task.kind == "idle":
 		var idle: Dictionary = unit.get("idleMovement", {})
@@ -121,6 +156,7 @@ static func agent(state: Dictionary, unit: Dictionary, frame: Dictionary) -> Dic
 		var target: Variant = find_entity(state.barbarians, unit.task.get("targetEntityId"))
 		if target != null and target.isAlive and Combat.minion_attack(unit.role, state.toolLevels.sword) != null:
 			destination = frame.combatPositions.get(unit.id, unit.position)
+			speed = combat_speed(unit)
 	elif unit.task.kind == "hunt":
 		var target: Variant = find_entity(state.animals, unit.task.get("targetEntityId"))
 		if target != null and target.isAlive:
@@ -154,7 +190,7 @@ static func move_towards(state: Dictionary, unit: Dictionary, destination: Dicti
 	var is_allowed := func(point: Dictionary) -> bool:
 		if point.x < 2 or point.y < 2 or point.x > 158 or point.y > 158:
 			return false
-		if not state.totem.moving and not state.totem.isCarried and unit.task.kind == "idle":
+		if not state.totem.isCarried and (not state.totem.moving or unit.get("postCombatFree", false)) and unit.task.kind == "idle":
 			if not Idle.within_range(point, area(state)):
 				return false
 			if Geo.distance(point, state.totem.position) < minf(Geo.distance(unit.position, state.totem.position), TOTEM_CLEARANCE) - 1e-8:
@@ -257,7 +293,7 @@ static func _separate_pair(first: Dictionary, second: Dictionary, minimum: float
 static func _constrain(state: Dictionary, unit: Dictionary) -> void:
 	if unit.role == "hunter" and unit.task.kind == "combat":
 		unit.position.merge(project_within(unit.position, state.totem.position, minf(state.totem.commandRadius, 10)), true)
-	if not state.totem.isCarried and not state.totem.moving and unit.task.kind == "idle" and unit.get("idleMovement", {}).get("destination") != null:
+	if not state.totem.isCarried and (not state.totem.moving or unit.get("postCombatFree", false)) and unit.task.kind == "idle" and unit.get("idleMovement", {}).get("destination") != null:
 		unit.position.merge(project_within(unit.position, state.totem.position, state.totem.commandRadius), true)
 		unit.position.merge(State.clamp_position(outside_totem(unit.position, state.totem.position, unit.id)), true)
 

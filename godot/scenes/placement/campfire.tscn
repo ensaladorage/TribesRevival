@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dbsy1exehwkpb"]
 
-[ext_resource type="Texture2D" path="res://assets/ui/icon-fireplace.png" id="texture"]
+[ext_resource type="Texture2D" uid="uid://d3p6qydiejoxs" path="res://assets/ui/icon-fireplace.png" id="texture"]
 
-[node name="PlacementPreview" type="Sprite3D"]
-texture = ExtResource("texture")
-pixel_size = 0.03125
+[node name="PlacementPreview" type="Sprite3D" unique_id=1739513132]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
+pixel_size = 0.03375
 billboard = 1
 texture_filter = 0
-modulate = Color(1, 1, 1, 0.48)
+texture = ExtResource("texture")

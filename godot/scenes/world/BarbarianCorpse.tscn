@@ -1,30 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
-
-[sub_resource type="CylinderMesh" id="mesh1"]
-top_radius = 0.37
-bottom_radius = 0.37
-height = 0.9
-radial_segments = 8
-
-[sub_resource type="StandardMaterial3D" id="mat1"]
-albedo_color = Color(0.38823529411764707, 0.27058823529411763, 0.24705882352941178, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[sub_resource type="TorusMesh" id="mesh2"]
-inner_radius = 0.185
-outer_radius = 0.275
-rings = 32
-ring_segments = 8
-
-[sub_resource type="StandardMaterial3D" id="mat2"]
-albedo_color = Color(0.9019607843137255, 0.7490196078431373, 0.3568627450980392, 1)
-roughness = 1.0
-metallic_specular = 0.0
-emission_enabled = true
-emission = Color(0.5529411764705883, 0.42745098039215684, 0.13333333333333333, 1)
+[ext_resource type="Texture2D" path="res://assets/enemies/dead.png" id="corpse_texture"]
 
 [node name="BarbarianCorpse" type="Node3D"]
 script = ExtResource("script")
@@ -33,15 +10,10 @@ script = ExtResource("script")
 
 [node name="Default" type="Node3D" parent="Visual"]
 
-[node name="Body" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.37, 0)
-mesh = SubResource("mesh1")
-material_override = SubResource("mat1")
-rotation = Vector3(0, 0, 1.5707963267948966)
-
-[node name="Loot" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.5, 0)
-mesh = SubResource("mesh2")
-material_override = SubResource("mat2")
-rotation = Vector3(1.5707963267948966, 0, 0)
-
+[node name="Sprite" type="Sprite3D" parent="Visual/Default"]
+position = Vector3(0, 0.8, 0)
+pixel_size = 0.025
+billboard = 1
+texture_filter = 0
+shaded = false
+texture = ExtResource("corpse_texture")

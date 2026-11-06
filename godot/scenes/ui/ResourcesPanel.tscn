@@ -1,125 +1,123 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dipexx30008i1"]
 
-[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
-[ext_resource type="Texture2D" path="res://assets/ui/resource-food.png" id="food"]
-[ext_resource type="Texture2D" path="res://assets/ui/resource-wood.png" id="wood"]
-[ext_resource type="Texture2D" path="res://assets/ui/resource-stone.png" id="stone"]
-[ext_resource type="Texture2D" path="res://assets/ui/resource-spark.png" id="spark"]
-[ext_resource type="Texture2D" path="res://assets/ui/resource-gold.png" id="gold"]
+[ext_resource type="Texture2D" uid="uid://dqw2fbup847pb" path="res://assets/ui/resource-food.png" id="food"]
+[ext_resource type="Texture2D" uid="uid://bl3c5v4xdbwxs" path="res://assets/ui/resource-gold.png" id="gold"]
+[ext_resource type="Texture2D" uid="uid://mpy6nj7hxegq" path="res://assets/ui/resource-spark.png" id="spark"]
+[ext_resource type="Texture2D" uid="uid://bivrnxh86ak4p" path="res://assets/ui/resource-stone.png" id="stone"]
+[ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
+[ext_resource type="Texture2D" uid="uid://btaresku1moo7" path="res://assets/ui/resource-wood.png" id="wood"]
 
-[node name="ResourcesPanel" type="HFlowContainer"]
-theme = ExtResource("theme")
+[node name="ResourcesPanel" type="HFlowContainer" unique_id=1046190446]
+offset_right = 85.0
+offset_bottom = 206.0
+scale = Vector2(1.2, 1.2)
 mouse_filter = 2
-alignment = 1
+theme = ExtResource("theme")
 theme_override_constants/h_separation = 24
 theme_override_constants/v_separation = 14
+alignment = 1
 
-[node name="food" type="HBoxContainer" parent="."]
+[node name="food" type="HBoxContainer" parent="." unique_id=2047109979]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="food"]
-layout_mode = 2
+[node name="Icon" type="TextureRect" parent="food" unique_id=1292635564]
+texture_filter = 1
 custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
 texture = ExtResource("food")
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
-texture_filter = 1
 
-[node name="Count" type="Label" parent="food"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
+[node name="Count" type="Label" parent="food" unique_id=556693307]
 custom_minimum_size = Vector2(48, 0)
-text = "0"
+layout_mode = 2
 tooltip_text = "Comida"
-mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
 metadata/resource = "food"
 
-[node name="wood" type="HBoxContainer" parent="."]
+[node name="wood" type="HBoxContainer" parent="." unique_id=1024713379]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="wood"]
-layout_mode = 2
+[node name="Icon" type="TextureRect" parent="wood" unique_id=1305225324]
+texture_filter = 1
 custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
 texture = ExtResource("wood")
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
-texture_filter = 1
 
-[node name="Count" type="Label" parent="wood"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
+[node name="Count" type="Label" parent="wood" unique_id=1656031438]
 custom_minimum_size = Vector2(48, 0)
-text = "0"
+layout_mode = 2
 tooltip_text = "Madera"
-mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
 metadata/resource = "wood"
 
-[node name="stone" type="HBoxContainer" parent="."]
+[node name="stone" type="HBoxContainer" parent="." unique_id=1194589204]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="stone"]
-layout_mode = 2
+[node name="Icon" type="TextureRect" parent="stone" unique_id=1475002890]
+texture_filter = 1
 custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
 texture = ExtResource("stone")
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
-texture_filter = 1
 
-[node name="Count" type="Label" parent="stone"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
+[node name="Count" type="Label" parent="stone" unique_id=1967360296]
 custom_minimum_size = Vector2(48, 0)
-text = "0"
+layout_mode = 2
 tooltip_text = "Piedra"
-mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
 metadata/resource = "stone"
 
-[node name="spark" type="HBoxContainer" parent="."]
+[node name="spark" type="HBoxContainer" parent="." unique_id=1429787148]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="spark"]
-layout_mode = 2
+[node name="Icon" type="TextureRect" parent="spark" unique_id=1095887308]
+texture_filter = 1
 custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
 texture = ExtResource("spark")
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
-texture_filter = 1
 
-[node name="Count" type="Label" parent="spark"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
+[node name="Count" type="Label" parent="spark" unique_id=1835370509]
 custom_minimum_size = Vector2(48, 0)
-text = "0"
+layout_mode = 2
 tooltip_text = "Brillo"
-mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
 metadata/resource = "spark"
 
-[node name="gold" type="HBoxContainer" parent="."]
+[node name="gold" type="HBoxContainer" parent="." unique_id=946671049]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="gold"]
-layout_mode = 2
+[node name="Icon" type="TextureRect" parent="gold" unique_id=1968014602]
+texture_filter = 1
 custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
 texture = ExtResource("gold")
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
-texture_filter = 1
 
-[node name="Count" type="Label" parent="gold"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
+[node name="Count" type="Label" parent="gold" unique_id=1714545798]
 custom_minimum_size = Vector2(48, 0)
-text = "0"
+layout_mode = 2
 tooltip_text = "Oro"
-mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
 metadata/resource = "gold"

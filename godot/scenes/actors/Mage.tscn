@@ -2,14 +2,5 @@
 
 [ext_resource type="PackedScene" path="res://scenes/actors/Minion.tscn" id="base"]
 
-[ext_resource type="Texture2D" path="res://assets/ui/icon-mage.png" id="equipment"]
-
 [node name="Mage" instance=ExtResource("base")]
 visual_tint = Color(0.6352941176470588, 0.4627450980392157, 1.0, 1)
-
-[node name="Equipment" type="Sprite3D" parent="Body" index="1"]
-position = Vector3(0.5, 0.9, 0)
-pixel_size = 0.012
-billboard = 1
-texture_filter = 0
-texture = ExtResource("equipment")

@@ -1,5 +1,23 @@
 # Validación manual pendiente — Godot
 
+## Seguimiento del tótem con variación individual
+
+Pendiente de prueba manual tras el ajuste del 2026-11-06:
+
+- Con 2 y 8 unidades, arrastrar despacio, rápido, hacer curvas y detenerse:
+  comprobar movimiento menos rígido, sin saltos, temblores ni nuevos bloqueos.
+- Soltar y volver a levantar el tótem: las posiciones deben variar ligeramente,
+  terminar de asentarse al soltar y permitir retomar tareas.
+- Repetir cerca del borde del mundo, en pausa y a velocidades 1/2/3; guardar
+  durante el seguimiento o la convergencia y cargar para revisar continuidad.
+- Con un Guardián y/o Cazador, acercar el tótem a un bárbaro sin soltarlo y
+  también justo después de soltarlo. Deben interrumpir el seguimiento y entrar
+  en combate en cuanto la amenaza quede dentro del radio de mando; al terminar,
+  deben volver al tótem sin quedarse bloqueados.
+
+La geometría y la persistencia pueden verificarse con funciones puras; la
+naturalidad del movimiento se valida jugando manualmente.
+
 Proyecto y comandos: `../godot/README.md`.
 
 Usar el proyecto nativo o los builds de desarrollo. Comparar con Babylon

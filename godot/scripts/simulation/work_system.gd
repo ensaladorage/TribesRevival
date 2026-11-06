@@ -12,8 +12,15 @@ const Economy = preload("res://scripts/simulation/economy.gd")
 const Progression = preload("res://scripts/simulation/progression.gd")
 
 static func set_task(unit: Dictionary, task: Dictionary) -> void:
+	var entry_speed := 0.0
+	if task.kind == "combat" and unit.task.kind != "combat" and unit.state == "follow-totem":
+		entry_speed = Geo.length(unit.get("navigation", {}).get("velocity", {"x": 0.0, "y": 0.0}))
 	if unit.task.kind != task.kind or unit.task.get("targetEntityId", "__undefined") != task.get("targetEntityId", "__undefined") or unit.task.targetResourceId != task.targetResourceId:
 		unit.erase("navigation")
+	if entry_speed > Move.UNIT_SPEED:
+		unit.navigation = Move.Nav.create_state(unit.position)
+		unit.navigation.combatEntrySpeed = minf(entry_speed, Move.FOLLOW_SPEED)
+		unit.navigation.combatEntryRemaining = 0.4
 	if task.kind != "idle" or unit.task.kind != "idle":
 		Move.cancel_idle(unit)
 	unit.task = task
@@ -78,6 +85,12 @@ static func drop_cargo(state: Dictionary, unit: Dictionary, point: Dictionary, s
 
 static func return_task(state: Dictionary, unit: Dictionary, cause: String) -> Dictionary:
 	return {"kind": "return-to-totem", "targetResourceId": null, "destination": Idle.range_entry(unit.position, Move.area(state)), "cause": cause}
+
+static func finish_combat(state: Dictionary, unit: Dictionary) -> void:
+	if not state.totem.isCarried and state.totem.moving:
+		unit.postCombatFree = true
+	unit.cancelledTargetId = null
+	set_task(unit, Rules.idle_task("combat-ended") if Idle.within_range(unit.position, Move.area(state)) else return_task(state, unit, "combat-ended"))
 
 static func _corpse_task(state: Dictionary, unit: Dictionary) -> Variant:
 	var reserved: Array = []
@@ -199,7 +212,11 @@ static func update_tribe(state: Dictionary, delta: float, frame: Dictionary) -> 
 	for index in state.units.size():
 		var unit: Dictionary = state.units[index]
 		if unit.task.kind in ["combat", "flee", "hunt"]:
-			all_in_formation = false
+			if state.totem.isCarried:
+				all_in_formation = false
+			continue
+		if not state.totem.isCarried and unit.get("postCombatFree", false):
+			update_unit(state, unit, delta, frame)
 			continue
 		if state.totem.isCarried or state.totem.moving:
 			if unit.task.kind in ["gather", "collect-drop", "loot-corpse"]:
@@ -209,8 +226,9 @@ static func update_tribe(state: Dictionary, delta: float, frame: Dictionary) -> 
 				var resource: Variant = Move.find_entity(state.resources, unit.task.targetResourceId)
 				drop_cargo(state, unit, unit.position, resource.id if resource != null else null)
 			Move.cancel_idle(unit)
-			var target := Move.formation_target(state, index)
-			var reached := Move.move_towards(state, unit, target, Move.FOLLOW_SPEED * delta, frame)
+			var follow: Dictionary = frame.followers[unit.id]
+			var target: Dictionary = follow.target
+			var reached := Move.move_towards(state, unit, target, follow.speed * delta, frame)
 			var in_formation := reached or Geo.distance(unit.position, target) <= Move.FORMATION_TOLERANCE
 			unit.state = "formation" if not state.totem.isCarried and in_formation else "follow-totem"
 			unit.task = Rules.idle_task("totem-moved")
@@ -222,3 +240,4 @@ static func update_tribe(state: Dictionary, delta: float, frame: Dictionary) -> 
 		state.totem.moving = false
 		for unit in state.units:
 			unit.cancelledTargetId = null
+			unit.erase("postCombatFree")

@@ -1,14 +1,14 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://ptqhsm4p3puu"]
 
-[ext_resource type="Script" path="res://scripts/ui/game_hud.gd" id="script"]
-[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
-[ext_resource type="PackedScene" path="res://scenes/ui/ResourcesPanel.tscn" id="ResourcesPanel"]
-[ext_resource type="PackedScene" path="res://scenes/ui/RecruitmentPanel.tscn" id="RecruitmentPanel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/EquipmentPanel.tscn" id="EquipmentPanel"]
+[ext_resource type="PackedScene" uid="uid://dvx5lp1vp6a1i" path="res://scenes/ui/RecruitmentPanel.tscn" id="RecruitmentPanel"]
+[ext_resource type="PackedScene" uid="uid://dipexx30008i1" path="res://scenes/ui/ResourcesPanel.tscn" id="ResourcesPanel"]
+[ext_resource type="Script" uid="uid://btwvkfglb1xkh" path="res://scripts/ui/game_hud.gd" id="script"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TechnologiesPanel.tscn" id="TechnologiesPanel"]
+[ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
 [ext_resource type="PackedScene" path="res://scenes/ui/UpgradesPanel.tscn" id="UpgradesPanel"]
 
-[node name="HUD" type="CanvasLayer" node_paths=PackedStringArray("management_panel", "technologies_panel", "upgrades_panel", "technology_toggle", "upgrades_toggle", "technology_points")]
+[node name="HUD" type="CanvasLayer" unique_id=218159773 node_paths=PackedStringArray("management_panel", "technologies_panel", "upgrades_panel", "technology_toggle", "upgrades_toggle", "technology_points")]
 layer = 2
 script = ExtResource("script")
 management_panel = NodePath("Layout/Management")
@@ -18,7 +18,7 @@ technology_toggle = NodePath("Layout/Dock/TechnologyToggle")
 upgrades_toggle = NodePath("Layout/Dock/UpgradeToggle")
 technology_points = NodePath("Layout/Management/Pages/TechnologiesPanel/Points")
 
-[node name="Layout" type="Control" parent="."]
+[node name="Layout" type="Control" parent="." unique_id=1420912093]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -28,28 +28,33 @@ grow_vertical = 2
 mouse_filter = 2
 theme = ExtResource("theme")
 
-[node name="ResourcesPanel" parent="Layout" instance=ExtResource("ResourcesPanel")]
+[node name="ResourcesPanel" parent="Layout" unique_id=1944212950 instance=ExtResource("ResourcesPanel")]
+layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 90.0
-offset_right = -90.0
+offset_left = 73.0
 offset_top = 12.0
+offset_right = -201.16675
+offset_bottom = 52.833332
+grow_horizontal = 2
 
-[node name="RecruitmentPanel" parent="Layout" instance=ExtResource("RecruitmentPanel")]
+[node name="RecruitmentPanel" parent="Layout" unique_id=1847617870 instance=ExtResource("RecruitmentPanel")]
+layout_mode = 0
 offset_left = 14.0
 offset_top = 12.0
 offset_right = 70.0
 
-[node name="EquipmentPanel" parent="Layout" instance=ExtResource("EquipmentPanel")]
-anchors_preset = 1
+[node name="EquipmentPanel" parent="Layout" unique_id=877213935 instance=ExtResource("EquipmentPanel")]
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -102.0
-offset_right = -14.0
 offset_top = 70.0
+offset_right = -14.0
 grow_horizontal = 0
 
-[node name="Dock" type="HBoxContainer" parent="Layout"]
+[node name="Dock" type="HBoxContainer" parent="Layout" unique_id=240378157]
+layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -57,32 +62,34 @@ offset_left = 16.0
 offset_top = -54.0
 grow_vertical = 0
 
-[node name="TechnologyToggle" type="Button" parent="Layout/Dock"]
+[node name="TechnologyToggle" type="Button" parent="Layout/Dock" unique_id=1392331249]
+custom_minimum_size = Vector2(125, 38)
 layout_mode = 2
 text = "Tecnologías"
-custom_minimum_size = Vector2(125, 38)
 
-[node name="UpgradeToggle" type="Button" parent="Layout/Dock"]
+[node name="UpgradeToggle" type="Button" parent="Layout/Dock" unique_id=42528517]
+custom_minimum_size = Vector2(125, 38)
 layout_mode = 2
 text = "Mejoras"
-custom_minimum_size = Vector2(125, 38)
 
-[node name="Management" type="PanelContainer" parent="Layout"]
+[node name="Management" type="PanelContainer" parent="Layout" unique_id=2010901684]
 visible = false
+custom_minimum_size = Vector2(560, 190)
+layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 16.0
-offset_top = -260.0
-custom_minimum_size = Vector2(560, 190)
+offset_top = -337.0
+offset_right = 576.0
+offset_bottom = -59.0
 grow_vertical = 0
 
-[node name="Pages" type="VBoxContainer" parent="Layout/Management"]
+[node name="Pages" type="VBoxContainer" parent="Layout/Management" unique_id=1739747589]
 layout_mode = 2
 
-[node name="TechnologiesPanel" parent="Layout/Management/Pages" instance=ExtResource("TechnologiesPanel")]
+[node name="TechnologiesPanel" parent="Layout/Management/Pages" unique_id=543458275 instance=ExtResource("TechnologiesPanel")]
 layout_mode = 2
 
-[node name="UpgradesPanel" parent="Layout/Management/Pages" instance=ExtResource("UpgradesPanel")]
+[node name="UpgradesPanel" parent="Layout/Management/Pages" unique_id=1969440384 instance=ExtResource("UpgradesPanel")]
 layout_mode = 2
-

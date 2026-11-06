@@ -1,6 +1,6 @@
 @tool
 extends Node3D
-## Presentation only. SpriteFrames, transforms, selection shape and tools live in scenes.
+## Presentation only. SpriteFrames, transforms and selection shape live in scenes.
 
 @export var visual_scale := Vector3.ONE:
 	set(value):
@@ -35,7 +35,6 @@ func present(actor: Dictionary) -> void:
 	if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(animation):
 		if sprite.animation != animation or not sprite.is_playing():
 			sprite.play(animation)
-	$Shield.visible = actor.get("hasShield", false)
 
 func reset_feedback() -> void:
 	$Body.position = _rest_position
