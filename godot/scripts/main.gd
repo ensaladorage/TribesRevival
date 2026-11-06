@@ -2,6 +2,7 @@ extends Node3D
 ## Godot entry point. Input produces semantic actions; nodes only read state.
 
 const Session = preload("res://scripts/simulation/game_session.gd")
+const Numbers = preload("res://scripts/ui/player_numbers.gd")
 const WorldView = preload("res://scripts/view/world_view.gd")
 const HUD = preload("res://scenes/ui/HUD.tscn")
 const Menus = preload("res://scenes/ui/Menus.tscn")
@@ -157,8 +158,8 @@ func _sync_view() -> void:
 	totem_view.present(dragging or totem.isCarried)
 	$TotemShadow.position = Vector3(visual.x, 0.04, visual.y)
 	pause_overlay.visible = false
-	debug_label.text = "Tick %s · %s · velocidad ×%s\nTótem %.2f, %.2f" % [session.state.tick, session.state.phase, session.speed_multiplier, totem.position.x, totem.position.y]
-	inventory_label.text = "Nivel %s · XP %s / %s · Puntos %s" % [session.state.progression.level, session.state.progression.experience, session.state.progression.experienceToNextLevel, session.state.progression.technologyPoints]
+	debug_label.text = "Tick %s · %s · velocidad ×%s\nTótem %s, %s" % [Numbers.integer(session.state.tick), session.state.phase, Numbers.integer(session.speed_multiplier), Numbers.integer(totem.position.x), Numbers.integer(totem.position.y)]
+	inventory_label.text = "Nivel %s · XP %s / %s · Puntos %s" % [Numbers.integer(session.state.progression.level), Numbers.integer(session.state.progression.experience), Numbers.integer(session.state.progression.experienceToNextLevel), Numbers.integer(session.state.progression.technologyPoints)]
 	Input.set_default_cursor_shape(Input.CURSOR_DRAG if dragging or not held_item.is_empty() else Input.CURSOR_ARROW)
 
 func _begin_placement(item: String) -> void:

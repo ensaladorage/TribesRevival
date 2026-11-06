@@ -15,6 +15,7 @@ const Combat = preload("res://scripts/simulation/combat_rules.gd")
 const Commands = preload("res://scripts/simulation/commands.gd")
 const Saves = preload("res://scripts/persistence/save_repository.gd")
 const Work = preload("res://scripts/simulation/work_system.gd")
+const PlayerNumbers = preload("res://scripts/ui/player_numbers.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -37,6 +38,7 @@ func _initialize() -> void:
 	_test_blocked_idle_yield()
 	_test_purchases(reference.purchases)
 	_test_current_save()
+	_test_player_numbers()
 	_test_formation_geometry()
 	for sample in reference.durations:
 		_equal(Work.gather_duration({"toolLevels": sample.levels}, sample.node), sample.result, "gather duration")
@@ -54,6 +56,20 @@ func _initialize() -> void:
 			push_error(failure)
 		print("FAIL data parity: %d mismatches" % failures.size())
 		quit(1)
+
+func _test_player_numbers() -> void:
+	# Text/data only, including numbers decoded from current-version save JSON.
+	var decoded: Dictionary = JSON.parse_string('{"technologyPoints":3,"level":2,"experience":7,"resources":100}')
+	_equal(PlayerNumbers.integer(decoded.technologyPoints), "3", "decoded technology points have no decimal suffix")
+	_equal(PlayerNumbers.integer(decoded.level), "2", "decoded level has no decimal suffix")
+	_equal(PlayerNumbers.integer(decoded.experience), "7", "decoded XP has no decimal suffix")
+	_equal(PlayerNumbers.integer(decoded.resources), "100", "decoded resources have no decimal suffix")
+	_equal(PlayerNumbers.bonus(0.25, "de daño adicional"), "+0,25 de daño adicional", "fractional damage remains precise")
+	_equal(PlayerNumbers.bonus(1.5, "% velocidad"), "+1,5 % velocidad", "fractional efficiency remains precise")
+	_equal(PlayerNumbers.bonus(2.0, "% velocidad"), "+2 % velocidad", "whole bonuses remain exact")
+	for value in [0.0, 0.25, 0.5, 1.0, 1.5, 2.75, 100.0, -10.25]:
+		var label := PlayerNumbers.integer(value)
+		_equal(not "." in label and not "," in label, true, "count text has no decimal separator")
 
 func _test_formation_geometry() -> void:
 	# Sample only the destination formula: no simulation ticks or movement loop.

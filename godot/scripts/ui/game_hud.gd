@@ -5,6 +5,7 @@ signal placement_requested(item: String)
 signal action_requested(action: Dictionary)
 
 const Economy = preload("res://scripts/simulation/economy.gd")
+const Numbers = preload("res://scripts/ui/player_numbers.gd")
 const Rules = preload("res://scripts/simulation/survival_rules.gd")
 const Progression = preload("res://scripts/simulation/progression.gd")
 const ITEM_NAMES := {"gatherer": "Recolector", "axe": "Leñador", "bow": "Cazador", "sword": "Guardián", "hammer": "Artesana", "mage": "Mago", "campfire": "Hoguera", "shield": "Escudo"}
@@ -95,7 +96,7 @@ static func _cost_text(cost: Dictionary) -> String:
 	var entries: PackedStringArray = []
 	for resource in Economy.RESOURCE_TYPES:
 		if cost.has(resource):
-			entries.append("%s %s" % [int(cost[resource]), RESOURCE_NAMES[resource]])
+			entries.append("%s %s" % [Numbers.integer(cost[resource]), RESOURCE_NAMES[resource]])
 	return " + ".join(entries)
 
 func update_state(state: Dictionary) -> void:
@@ -110,12 +111,12 @@ func update_state(state: Dictionary) -> void:
 		if progression.technologyPoints == 0:
 			_open_panel = ""
 		_pending_technology = ""
-	technology_toggle.text = "Tecnologías · %s" % progression.technologyPoints
-	technology_points.text = "Puntos disponibles: %s" % progression.technologyPoints
+	technology_toggle.text = "Tecnologías · %s" % Numbers.integer(progression.technologyPoints)
+	technology_points.text = "Puntos disponibles: %s" % Numbers.integer(progression.technologyPoints)
 	_refresh_panels()
 	var amounts: Dictionary = state.inventory.amounts
 	for resource in _resource_counts:
-		_resource_counts[resource].text = str(int(amounts[resource]))
+		_resource_counts[resource].text = Numbers.integer(amounts[resource])
 	var gatherers := Rules.count_role(state.units, "gatherer")
 	for item in _items:
 		var cost: Dictionary
@@ -173,14 +174,14 @@ func update_state(state: Dictionary) -> void:
 		_items[item].tooltip_text = tooltip
 	for technology in Progression.TECHNOLOGIES:
 		var unlocked: bool = technology.id in state.progression.unlockedTechnologies
-		_technologies[technology.id].text = "Desbloqueada" if unlocked else "%s punto%s" % [technology.cost, "" if technology.cost == 1 else "s"]
+		_technologies[technology.id].text = "Desbloqueada" if unlocked else "%s punto%s" % [Numbers.integer(technology.cost), "" if technology.cost == 1 else "s"]
 		_technologies[technology.id].disabled = state.phase != "playing" or not Progression.can_unlock(state.progression, technology.id)
 		_update_button_appearance(_technologies[technology.id])
-		_technologies[technology.id].tooltip_text = "%s\n%s\n%s" % [technology.name, technology.description, "Desbloqueado" if unlocked else "Nivel requerido: %s" % technology.minimumLevel]
+		_technologies[technology.id].tooltip_text = "%s\n%s\n%s" % [technology.name, technology.description, "Desbloqueado" if unlocked else "Nivel requerido: %s" % Numbers.integer(technology.minimumLevel)]
 	for tool in _upgrades:
 		var level: int = state.toolLevels[tool]
 		var name: String = {"axe": "Hacha", "hammer": "Martillo", "sword": "Espada"}[tool]
-		_upgrades[tool].text = "%s   %s" % [name, "Max" if level == 10 else "+%s" % level]
+		_upgrades[tool].text = "%s   %s" % [name, "Max" if level == 10 else "+%s" % Numbers.integer(level)]
 		_apply_level_color(_upgrades[tool], level)
 		var upgrade: Variant = Economy.tool_upgrade(tool, level + 1)
 		_upgrades[tool].disabled = state.phase != "playing" or upgrade == null or not Economy.can_afford(amounts, upgrade.cost)
@@ -193,8 +194,8 @@ func update_state(state: Dictionary) -> void:
 static func _effect_text(tool: String, level: int) -> String:
 	var effect := Economy.tool_effect(tool, level)
 	if tool == "sword":
-		return "+%.2f daño" % effect.guardianDamageBonus
-	return "+%s%% velocidad · %s%% de +1 recurso" % [effect.gatherSpeedPercent, effect.bonusResourceChance]
+		return Numbers.bonus(effect.guardianDamageBonus, "de daño adicional")
+	return "%s · %s de +1 recurso" % [Numbers.bonus(effect.gatherSpeedPercent, "% velocidad"), Numbers.bonus(effect.bonusResourceChance, "% probabilidad")]
 
 func _apply_level_color(button: Button, level: int) -> void:
 	# All eleven variants are editable in TribesTheme.tres.

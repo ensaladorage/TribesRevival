@@ -24,6 +24,14 @@ Antes de modificar el proyecto, consulta los documentos relevantes:
 
 ## Reglas de trabajo
 
+- Hasta indicación explícita del usuario, no mostrar números con decimales en
+  ninguna interfaz del juego, incluidos tooltips, tecnologías, mejoras, slots
+  y debug. Usar `godot/scripts/ui/player_numbers.gd` para los nuevos textos
+  numéricos. Conservar la precisión interna de la simulación y los guardados;
+  Los porcentajes de eficiencia y el daño pueden mostrar decimales por
+  indicación explícita del usuario; recursos, experiencia y puntos de
+  tecnologías siempre se muestran como enteros.
+
 1.  No mezclar diseño, planificación, estado y QA en el GDD. Si cambia
     una mecánica del juego, actualizar el GDD; si cambia el orden de
     trabajo, actualizar el roadmap; si una tarea se implementa o valida,

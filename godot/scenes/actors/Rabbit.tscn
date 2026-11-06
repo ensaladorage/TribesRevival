@@ -1,15 +1,51 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://464b8bn3nr7f"]
 
-[ext_resource type="PackedScene" path="res://scenes/actors/Minion.tscn" id="base"]
+[ext_resource type="Texture2D" uid="uid://b6pwkm7ohxya1" path="res://assets/animals/sheep.png" id="2_eq1ne"]
+[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/Minion.tscn" id="base"]
 
-[node name="Rabbit" instance=ExtResource("base")]
-show_health = false
-visual_tint = Color(0.8784313725490196, 0.8313725490196079, 0.7215686274509804, 1)
+[sub_resource type="SpriteFrames" id="SpriteFrames_xtlbp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_eq1ne")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_eq1ne")
+}],
+"loop": 1,
+"name": &"move",
+"speed": 5.0
+}]
+
+[node name="Rabbit" unique_id=1554297231 instance=ExtResource("base")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 0, 0.016203761, 0)
 visual_scale = Vector3(0.5, 0.5, 0.5)
+visual_tint = Color(0.8784314, 0.83137256, 0.72156864, 1)
+show_health = false
 
-[node name="DetectionRange" parent="." index="3"]
+[node name="Body" parent="." index="0" unique_id=635982024]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.0029436112, 0)
+
+[node name="Sprite" parent="Body" index="0" unique_id=588141790]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.79264987, 0)
+modulate = Color(0.8784314, 0.83137256, 0.72156864, 1)
+sprite_frames = SubResource("SpriteFrames_xtlbp")
+
+[node name="Selection" parent="." index="1" unique_id=1553720391]
+transform = Transform3D(1, 0, 0, 0, 1.4544129, 0, 0, 0, 1, 0, -0.0029811382, 0)
+
+[node name="Shape" parent="Selection" index="0" unique_id=385145280]
+transform = Transform3D(0.44440147, 0, 0, 0, 0.25330284, 0, 0, 0, 1, 0, 0.22735389, 0)
+
+[node name="Health" parent="." index="2" unique_id=1752847821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2778102, 0)
 visible = false
 
-[node name="Health" parent="." index="2"]
+[node name="DetectionRange" parent="." index="3" unique_id=656574462]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.43885937, 0)
 visible = false
-

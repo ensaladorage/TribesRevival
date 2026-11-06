@@ -1,5 +1,15 @@
 # IMPLEMENTATION_STATUS --- Tribes Revival
 
+## Presentación numérica en Godot — 06-11-2026
+
+- Recursos, XP, niveles y puntos de tecnologías usan el formato entero común
+  de `godot/scripts/ui/player_numbers.gd`, también para números leídos de JSON.
+  Los porcentajes de eficiencia y el daño admiten fracciones decimales por
+  decisión explícita del usuario. La precisión interna no cambia.
+- Verificados importación, scripts/escenas y pruebas puras de formato y
+  guardado actual. La presentación al cargar una partida queda pendiente de
+  revisión manual; no se automatiza gameplay ni una comprobación visual.
+
 **Propósito:** registro del estado real conocido de implementación y
 validación. No define mecánicas ni sustituye el GDD.
 

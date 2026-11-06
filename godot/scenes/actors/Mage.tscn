@@ -1,6 +1,9 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bksyyjcx2g4nu"]
 
-[ext_resource type="PackedScene" path="res://scenes/actors/Minion.tscn" id="base"]
+[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/Minion.tscn" id="base"]
 
-[node name="Mage" instance=ExtResource("base")]
-visual_tint = Color(0.6352941176470588, 0.4627450980392157, 1.0, 1)
+[node name="Mage" unique_id=2145638211 instance=ExtResource("base")]
+visual_tint = Color(0.63529414, 0.4627451, 1, 1)
+
+[node name="Sprite" parent="Body" parent_id_path=PackedInt32Array(635982024) index="0" unique_id=588141790]
+modulate = Color(0.3166666, 0, 1, 1)

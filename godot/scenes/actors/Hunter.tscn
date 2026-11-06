@@ -1,6 +1,9 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dyit84w2qwhxx"]
 
-[ext_resource type="PackedScene" path="res://scenes/actors/Minion.tscn" id="base"]
+[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/Minion.tscn" id="base"]
 
-[node name="Hunter" instance=ExtResource("base")]
-visual_tint = Color(0.5568627450980392, 0.8392156862745098, 0.8196078431372549, 1)
+[node name="Hunter" unique_id=123285781 instance=ExtResource("base")]
+visual_tint = Color(0.5568628, 0.8392157, 0.81960785, 1)
+
+[node name="Sprite" parent="Body" parent_id_path=PackedInt32Array(635982024) index="0" unique_id=588141790]
+modulate = Color(0, 0.84, 0.78400004, 1)

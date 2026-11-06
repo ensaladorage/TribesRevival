@@ -1,4 +1,5 @@
 extends CanvasLayer
+const Numbers = preload("res://scripts/ui/player_numbers.gd")
 ## Scene-backed modal navigation; save data only configures dynamic slot rows.
 
 signal new_game_requested
@@ -114,11 +115,11 @@ func show_slots(mode: String, from_screen: String, slots: Array) -> void:
 		var row = SLOT_ROW.instantiate()
 		_content.find_child("Rows").add_child(row)
 		var button: Button = row.get_node("Select")
-		button.text = "Slot %s · Vacío" % slot.slot
+		button.text = "Slot %s · Vacío" % Numbers.integer(slot.slot)
 		if slot.status == "valid":
-			button.text = "Slot %s · Nivel %s · %s minions\n%s" % [slot.slot, slot.save.metadata.level, slot.save.metadata.minionCount, slot.save.metadata.savedAt]
+			button.text = "Slot %s · Nivel %s · %s minions\n%s" % [Numbers.integer(slot.slot), Numbers.integer(slot.save.metadata.level), Numbers.integer(slot.save.metadata.minionCount), slot.save.metadata.savedAt]
 		elif slot.status == "invalid":
-			button.text = "Slot %s · No disponible (%s)" % [slot.slot, slot.reason]
+			button.text = "Slot %s · No disponible (%s)" % [Numbers.integer(slot.slot), slot.reason]
 		button.disabled = mode == "load" and slot.status != "valid"
 		button.pressed.connect(func():
 			if mode == "save":
@@ -130,7 +131,7 @@ func show_slots(mode: String, from_screen: String, slots: Array) -> void:
 				_request_load(slot.slot))
 		var delete: Button = row.get_node("Delete")
 		delete.text = "×"
-		delete.tooltip_text = "Eliminar slot %s" % slot.slot
+		delete.tooltip_text = "Eliminar slot %s" % Numbers.integer(slot.slot)
 		delete.visible = slot.status != "empty"
 		delete.pressed.connect(func(): _confirm_delete(slot.slot))
 	_connect_button("Back", show_pause if origin == "pause" else show_main)

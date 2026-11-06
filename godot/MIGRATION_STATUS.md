@@ -1,5 +1,13 @@
 # Estado de migración a Godot
 
+## Presentación numérica sin decimales
+
+- Centralizado el formato entero de cantidades y puntos visibles: recursos,
+  tecnologías, progreso/XP, niveles de mejoras, slots y coordenadas debug.
+  Por indicación posterior del usuario, los efectos de eficiencia y daño sí
+  muestran su fracción decimal. Se conserva la precisión de simulación y
+  guardados; regla de continuidad reflejada en `AGENTS.md`.
+
 ## Final de combate sin formación obligatoria
 
 - Los minions que terminan un combate con el tótem colocado pasan a buscar
