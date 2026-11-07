@@ -1,6 +1,13 @@
 extends Node3D
 ## Replaceable provisional art. State owns positions, roles, health and quantity.
 
+const AppearanceRandom = preload("res://scripts/simulation/seeded_random.gd")
+const DECORATION_VARIANTS := {
+	"grass": ["grass-small", "grass"],
+	"mushroom": ["mushroom-small", "mushroom", "mushroom-big"],
+	"bush": ["bush-small", "bush", "bush-big"],
+}
+
 const COLORS := {
 	"food": Color("d95c5c"), "wood": Color("9a6b43"), "stone": Color("c2c2bd"),
 	"spark": Color("d79aff"), "gold": Color("e6bf5b"), "twigs": Color("79502f"),
@@ -27,6 +34,10 @@ const COLORS := {
 	"ruin": preload("res://scenes/world/Spark.tscn"),
 	"berry-bush": preload("res://scenes/world/Bush.tscn"),
 }
+@export var large_resource_scenes := {
+	"stone-vein": preload("res://scenes/world/RockLarge.tscn"),
+	"ruin": preload("res://scenes/world/SparkLarge.tscn"),
+}
 @export var drop_scenes := {
 	"food": preload("res://scenes/world/DropFood.tscn"),
 	"wood": preload("res://scenes/world/DropWood.tscn"),
@@ -44,11 +55,13 @@ const COLORS := {
 }
 @export var decoration_scenes := {
 	"grass": preload("res://scenes/world/Grass.tscn"),
+	"grass-small": preload("res://scenes/world/GrassSmall.tscn"),
 	"mushroom": preload("res://scenes/world/Mushroom.tscn"),
-	"flower-yellow": preload("res://scenes/world/FlowerYellow.tscn"),
-	"flower-blue": preload("res://scenes/world/FlowerBlue.tscn"),
-	"flower-gray": preload("res://scenes/world/FlowerGray.tscn"),
-	"flower-pink": preload("res://scenes/world/FlowerPink.tscn"),
+	"mushroom-small": preload("res://scenes/world/MushroomSmall.tscn"),
+	"mushroom-big": preload("res://scenes/world/MushroomBig.tscn"),
+	"bush": preload("res://scenes/world/DecorationBush.tscn"),
+	"bush-small": preload("res://scenes/world/DecorationBushSmall.tscn"),
+	"bush-big": preload("res://scenes/world/DecorationBushBig.tscn"),
 }
 @export var campfire_scene: PackedScene = preload("res://scenes/world/Campfire.tscn")
 @export var corpse_scene: PackedScene = preload("res://scenes/world/Corpse.tscn")
@@ -80,10 +93,22 @@ func setup(state: Dictionary) -> void:
 		var patch := _spawn(biome_scenes[biome.id], {"x": biome.region.x, "y": biome.region.y})
 		patch.scale = Vector3(biome.region.size, 1, biome.region.size)
 	for decoration in state.decorations:
-		var key: String = "flower-" + decoration.get("flowerColor", "yellow") if decoration.kind == "flower" else decoration.kind
-		var view := _spawn(decoration_scenes[key], decoration.position)
-		view.scale = Vector3.ONE * decoration.scale
+		_create_decoration(decoration, state.seed)
 	sync(state)
+
+func _create_decoration(decoration: Dictionary, seed_text: String) -> void:
+	# Appearance has its own PRNG: changing art never consumes simulation randomness.
+	# Retired decoration types in a loaded world have no visual representation.
+	if not DECORATION_VARIANTS.has(decoration.kind):
+		return
+	var random := AppearanceRandom.new(seed_text + ":" + decoration.id + ":appearance")
+	var variants: Array = DECORATION_VARIANTS[decoration.kind]
+	var key: String = variants[random.next_int(0, variants.size() - 1)]
+	var view := _spawn(decoration_scenes[key], decoration.position)
+	view.scale = Vector3.ONE * decoration.scale
+	var sprite := view.get_node_or_null("Visual/Default/Sprite") as Sprite3D
+	if sprite != null:
+		sprite.flip_h = random.next_int(0, 1) == 1
 
 func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float = 1.0) -> void:
 	_previous_positions = previous_positions
@@ -110,7 +135,7 @@ func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float =
 		if resource.amount > 0:
 			active[resource.id] = true
 			if not _views.has(resource.id):
-				_views[resource.id] = _create_resource(resource)
+				_views[resource.id] = _create_resource(resource, state.seed)
 	for drop in state.drops:
 		if drop.amount > 0:
 			active[drop.id] = true
@@ -174,10 +199,10 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 			if not _views.has(effect.id):
 				_views[effect.id] = _spawn(heal_effect_scene, effect.position)
 			var point: Dictionary = effect.position
-			for unit in state.units:
-				if unit.id == effect.targetId:
-					point = unit.position
-					break
+			if _views.has(effect.targetId):
+				# Match the visible actor, including interpolation between simulation ticks.
+				var target: Node3D = _views[effect.targetId]
+				point = {"x": target.position.x, "y": target.position.z}
 			if _views[effect.id].has_method("present"):
 				_views[effect.id].present(effect, point)
 		elif _views.has(effect.targetId) and _views[effect.targetId].has_method("flash"):
@@ -263,8 +288,15 @@ func pick_unit(camera: Camera3D, screen_point: Vector2, units: Array) -> String:
 			selected = unit.id
 	return selected
 
-func _create_resource(resource: Dictionary) -> Node3D:
-	return _spawn(resource_scenes[resource.source], resource.position)
+func _create_resource(resource: Dictionary, seed_text: String) -> Node3D:
+	var scene: PackedScene = resource_scenes[resource.source]
+	if large_resource_scenes.has(resource.source):
+		# Equal visual chances, stable per node and independent of simulation RNG.
+		# Size does not affect tier, amount, yield or interaction radius yet.
+		var random := AppearanceRandom.new(seed_text + ":" + resource.id + ":resource-appearance")
+		if random.next_int(0, 1) == 1:
+			scene = large_resource_scenes[resource.source]
+	return _spawn(scene, resource.position)
 
 func _spawn(scene: PackedScene, point: Dictionary) -> Node3D:
 	var node := scene.instantiate() as Node3D

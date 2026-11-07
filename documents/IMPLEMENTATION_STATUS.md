@@ -1,5 +1,75 @@
 # IMPLEMENTATION_STATUS --- Tribes Revival
 
+## Sprites de nodos de piedra y Brillo — 07-11-2026
+
+- Reemplazadas las mallas provisionales de `Rock.tscn` y `Spark.tscn`,
+  incluido el halo de Brillo, por sprites pequeños. Añadidas `RockLarge.tscn`
+  y `SparkLarge.tscn`; las cuatro heredan `ResourceSprite.tscn`, con Nearest,
+  billboard, recorte AtlasTexture y apoyo inferior en el terreno.
+- `world_view.gd` elige tamaño con probabilidad equivalente por semilla/ID,
+  mediante PRNG de apariencia independiente. Ambas variantes conservan los
+  datos de recurso originales; no cambian cantidades, rendimiento, tier,
+  posiciones, radios, generación ni formato de guardado. No se configura ni
+  se referencia el sprite de piedra de nivel 2 en escenas o scripts.
+- Verificado en Godot 4.7.2: importación, carga de 36 scripts/79 escenas,
+  10946 comprobaciones de datos y guardado actual y 29309 de decoración.
+  Comprobación dirigida de recursos en 32 semillas: sin meshes, Nearest,
+  variedad estable tras reconstruir desde JSON y estado intacto. Reparto:
+  86/81 piedras pequeñas/grandes y 89/100 nodos de Brillo pequeños/grandes.
+- Revisada captura conjunta de las cuatro variantes junto a un minion para
+  comprobar escala y apoyo. Pendiente de ajuste artístico por el usuario y
+  revisión manual de las escenas desde el Inspector.
+
+## Centrado y seguimiento del efecto de curación — 07-11-2026
+
+- Centrado en X/Z el sprite de `HealEffect.tscn`, conservando su altura,
+  escala y animación. Retirado de `heal_effect_view.gd` el desplazamiento,
+  ascenso y encogimiento que se aplicaban a las antiguas cruces 3D.
+- `world_view.gd` sigue la posición visible/interpolada del minion objetivo,
+  en lugar de adelantarse a la posición lógica del siguiente tick.
+- Verificado mediante comprobación dirigida sin ticks: seis clases, cuatro
+  fases de interpolación, transform editable intacto, estado sin mutaciones
+  y retirada del efecto al expirar. Pasan carga de 36 scripts/76 escenas y
+  10946 comprobaciones de datos/guardado actual. Revisada captura centrada
+  con el efecto sobre un minion; queda la prueba manual durante movimiento.
+
+## Filtro Nearest en toda la interfaz — 07-11-2026
+
+- Configurado `textures/canvas_textures/default_texture_filter=0` en
+  `godot/project.godot`: HUD, menús, tooltips y controles 2D nuevos heredan
+  Nearest. Se mantienen las sobrescrituras Nearest existentes.
+- Corregido el AnimatedSprite3D del fuego de `Campfire.tscn`, que todavía
+  conservaba el filtro predeterminado con suavizado.
+- Verificado con Godot 4.7.2: valor efectivo Nearest del viewport y recorrido
+  de las 76 escenas, sin sobrescrituras lineales en CanvasItem ni sprites 3D
+  con otro filtro; carga de scripts/escenas, 101 comprobaciones de callbacks
+  de menús y prueba de entrada de colocación, sin errores.
+- Pendiente de revisión visual en el editor y durante una partida; no se
+  modifican escalas, posiciones ni imágenes originales.
+
+## Vegetación decorativa con sprites en Godot — 07-11-2026
+
+- Sustituidas por Sprite3D las setas y el césped 3D provisionales; eliminadas
+  las cuatro escenas de flores y su generación. Integrados los ocho sprites
+  existentes de `godot/assets/environment/`: tres tamaños de setas, tres de
+  arbustos decorativos y dos de césped, con escenas heredadas editables.
+- Aumentada la cantidad a `12–18` por claro (incluido el inicial), `18–26`
+  por pradera y `16–24` por bosque. Se conservan el margen interior, la escala
+  lógica y el máximo de dos setas; ninguna decoración en pedregales/ruinas.
+  Los arbustos decorativos no sustituyen los nodos recolectables de bayas.
+- Variante y reflejo estables por semilla/ID en presentación, sin campos
+  nuevos de guardado ni consumo del PRNG de simulación.
+- Verificado con Godot 4.7.2 en Windows: importación, carga de 36 scripts y
+  76 escenas; suite de decoración (29309 comprobaciones en 32 semillas), datos
+  y guardado actual (10946 comparaciones), callbacks de menús (101), entrada
+  de colocación y las dos suites tácticas. Todas las comprobaciones Godot pasan.
+- Revisadas cuatro capturas renderizadas con Compatibility: claro inicial
+  a zoom normal y en detalle, bosque y pradera. Pendientes una partida manual
+  con movimiento/zoom y la comprobación de edición desde el Inspector.
+- `verify_original.py` no pasa: su inventario histórico no coincide con numerosos
+  archivos actuales del repositorio, incluidos documentos y fuentes Babylon.
+  No se regenera el inventario ni se modifican esas fuentes para esta tarea.
+
 ## Presentación numérica en Godot — 06-11-2026
 
 - Recursos, XP, niveles y puntos de tecnologías usan el formato entero común
@@ -445,3 +515,13 @@ manualmente solo porque Codex haya escrito el código.
   con contenido visible, recurso compartido, tamaño, estructura, callbacks
   de menú y entrada de colocación en Godot headless. Comprobador estático:
   cero errores y avisos. Pendiente revisión visual en partida.
+
+- Combate Godot y tótem levantado: el minion que supera los 10 m del mando
+  termina el impulso activo y pasa a seguimiento sin soltar el tótem ni iniciar
+  otro golpe. La comprobación precede a la adquisición de amenazas, incluso
+  cuando el enemigo permanece dentro del mando. Regresión reproducida antes
+  del cambio y superada después para guardián, leñador y cazador, con y sin
+  impulso activo. Pasan `test_tactical_behavior.gd`, `test_tactical_edges.gd`, validación estructural
+  (36 scripts y 79 escenas) y 10946 comparaciones de datos/guardados en Godot
+  4.7.2 headless. La estructura emite avisos de UID de Theme y usa las rutas
+  de archivo como alternativa. Pendiente comprobación manual del arrastre.

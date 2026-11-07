@@ -1,6 +1,6 @@
 class_name TribeWorldCatalog
 extends RefCounted
-## Pure procedural data. No nodes or Godot global RNG; mirrors survivalCatalog.ts.
+## Pure procedural data. No nodes or Godot global RNG; Godot vegetation replaces the legacy decoration.
 
 const Random = preload("res://scripts/simulation/seeded_random.gd")
 const RESOURCE_BIOMES := ["meadow", "forest", "rocky", "ruins"]
@@ -25,13 +25,12 @@ const HITO_3 := {
 }
 const SOURCES := {"food": "berry-bush", "wood": "tree", "stone": "stone-vein", "spark": "ruin"}
 const RADII := {"food": 1.45, "wood": 1.35, "stone": 1.35, "spark": 1.3}
-const FLOWER_COLORS := ["yellow", "blue", "gray", "pink"]
 const DECORATIONS := {
-	"clearing": [8, 12, [["grass", 60], ["flower", 25], ["mushroom", 15]]],
-	"meadow": [9, 14, [["grass", 60], ["flower", 25], ["mushroom", 15]]],
-	"forest": [8, 12, [["grass", 58], ["flower", 27], ["mushroom", 15]]],
+	"clearing": [12, 18, [["grass", 60], ["bush", 25], ["mushroom", 15]]],
+	"meadow": [18, 26, [["grass", 60], ["bush", 25], ["mushroom", 15]]],
+	"forest": [16, 24, [["grass", 58], ["bush", 27], ["mushroom", 15]]],
 	"rocky": [0, 0, []], "ruins": [0, 0, []],
-	"great-fire": [2, 4, [["grass", 100]]],
+	"great-fire": [0, 0, []],
 }
 
 static func _round_position(value: float) -> float:
@@ -226,6 +225,8 @@ static func _decoration_kinds(count: int, distribution: Array, random: Random) -
 	for entry in distribution:
 		var exact: float = count * entry[1] / total_weight
 		var assigned := int(floor(exact))
+		if entry[0] == "mushroom":
+			assigned = mini(assigned, 2)
 		allocations.append({"kind": entry[0], "count": assigned, "remainder": exact - assigned})
 		remaining -= assigned
 	while remaining > 0:
@@ -255,15 +256,12 @@ static func create_decorations(seed_text: String, biomes: Array) -> Array:
 		var count := random.next_int(rule[0], rule[1])
 		var radius := maxf(biome.region.size / 2.0 - 1.2, 0)
 		for kind in _decoration_kinds(count, rule[2], random):
-			var flower_color: String = FLOWER_COLORS[random.next_int(0, FLOWER_COLORS.size() - 1)] if kind == "flower" else ""
 			var decoration := {
 				"id": "decoration-%03d" % (decorations.size() + 1), "kind": kind,
 				"biome": biome.id, "biomeInstanceId": biome.instanceId,
 				"position": point_in_circle(random, {"x": biome.region.x, "y": biome.region.y}, radius, minf(1.5, radius)),
 				"scale": _round_position(random.next_float(1.26, 1.62)),
 			}
-			if not flower_color.is_empty():
-				decoration.flowerColor = flower_color
 			decorations.append(decoration)
 	return decorations
 

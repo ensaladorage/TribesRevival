@@ -1,0 +1,12 @@
+Generated with the built-in Imagegen tool.
+Style reference: sprites/Guardian Minion.png
+Visual review: single full-body character, separate head and torso, bare chest, abundant hair, red eyes, broad sword, fur trousers and thin brown boots.
+Integration into Godot and in-game scale have not been tested.
+
+Use case: stylized-concept
+Asset type: single 2D pixel-art barbarian character sprite for Tribes Revival.
+Input image: Guardian Minion.png is a STYLE AND PROPORTIONS reference only, not a character to reproduce. Create a new barbarian in the same visual family.
+Primary request: tiny, almost round chibi barbarian. A clearly separate round head above a separate small round torso, with a readable neck/outline separation; do not merge head and body into one potato shape. Bare torso entirely skin colored, no chest clothing or armor. Very abundant shaggy dark brown hair, fierce clearly visible red eyes. Short animal-fur trousers. Two very thin short brown feet/legs suggesting narrow boots, not large bulky boots. Holds one broad steel sword.
+Style: match the reference's charming compact low-resolution pixel sprite, dark blue-charcoal outline, limited color palette, crisp stepped pixel edges and simple clustered shading. Small simple hands, compact stocky proportions; head and torso both rounded. Hair frames the head while leaving eyes and bare chest legible.
+Composition: one full-body sprite centered, slight three-quarter view like the reference, entire sword, hair and thin feet inside the canvas with a small transparent margin. Readable at small game sprite size.
+Constraints: genuinely transparent background. No helmet, shield, chest straps, shirt, armor, cape, extra weapons, text, watermark, scenery or ground plane. Do not turn this into a tall muscular adult, detailed painting, smooth vector or 3D render.

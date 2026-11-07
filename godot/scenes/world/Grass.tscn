@@ -1,96 +1,14 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/world/DecorationSprite.tscn" id="base"]
+[ext_resource type="Texture2D" path="res://assets/environment/Grass big.png" id="texture"]
 
-[sub_resource type="CylinderMesh" id="mesh1"]
-top_radius = 0.0125
-bottom_radius = 0.05
-height = 0.7
-radial_segments = 4
+[sub_resource type="AtlasTexture" id="atlas"]
+atlas = ExtResource("texture")
+region = Rect2(20, 15, 32, 35)
 
-[sub_resource type="StandardMaterial3D" id="mat1"]
-albedo_color = Color(0.3686274509803922, 0.6039215686274509, 0.2823529411764706, 1)
-roughness = 1.0
-metallic_specular = 0.0
+[node name="Grass" instance=ExtResource("base")]
 
-[sub_resource type="CylinderMesh" id="mesh2"]
-top_radius = 0.0125
-bottom_radius = 0.05
-height = 0.7
-radial_segments = 4
-
-[sub_resource type="StandardMaterial3D" id="mat2"]
-albedo_color = Color(0.3686274509803922, 0.6039215686274509, 0.2823529411764706, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[sub_resource type="CylinderMesh" id="mesh3"]
-top_radius = 0.0125
-bottom_radius = 0.05
-height = 0.7
-radial_segments = 4
-
-[sub_resource type="StandardMaterial3D" id="mat3"]
-albedo_color = Color(0.3686274509803922, 0.6039215686274509, 0.2823529411764706, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[sub_resource type="CylinderMesh" id="mesh4"]
-top_radius = 0.0125
-bottom_radius = 0.05
-height = 0.7
-radial_segments = 4
-
-[sub_resource type="StandardMaterial3D" id="mat4"]
-albedo_color = Color(0.3686274509803922, 0.6039215686274509, 0.2823529411764706, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[sub_resource type="CylinderMesh" id="mesh5"]
-top_radius = 0.0125
-bottom_radius = 0.05
-height = 0.7
-radial_segments = 4
-
-[sub_resource type="StandardMaterial3D" id="mat5"]
-albedo_color = Color(0.3686274509803922, 0.6039215686274509, 0.2823529411764706, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[node name="Grass" type="Node3D"]
-script = ExtResource("script")
-
-[node name="Visual" type="Node3D" parent="."]
-
-[node name="Default" type="Node3D" parent="Visual"]
-
-[node name="Blade0" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(-0.16, 0.35, 0.03)
-mesh = SubResource("mesh1")
-material_override = SubResource("mat1")
-rotation = Vector3(-0.13, 0, -0.2)
-
-[node name="Blade1" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.35, -0.04)
-mesh = SubResource("mesh2")
-material_override = SubResource("mat2")
-rotation = Vector3(0.0, 0, 0)
-
-[node name="Blade2" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0.15, 0.35, 0.05)
-mesh = SubResource("mesh3")
-material_override = SubResource("mat3")
-rotation = Vector3(0.13, 0, 0.2)
-
-[node name="Blade3" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(-0.04, 0.35, 0.14)
-mesh = SubResource("mesh4")
-material_override = SubResource("mat4")
-rotation = Vector3(-0.065, 0, -0.1)
-
-[node name="Blade4" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0.04, 0.35, -0.16)
-mesh = SubResource("mesh5")
-material_override = SubResource("mat5")
-rotation = Vector3(0.065, 0, 0.1)
-
+[node name="Sprite" parent="Visual/Default" index="0"]
+offset = Vector2(0, 17.5)
+texture = SubResource("atlas")

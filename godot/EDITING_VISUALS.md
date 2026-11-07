@@ -3,6 +3,12 @@
 Abrir `project.godot` en Godot 4.7.2. Los personajes usan imágenes de un solo fotograma por estado; no son animaciones definitivas.
 No hace falta modificar la simulación para sustituirlos.
 
+El filtro 2D predeterminado del proyecto es Nearest, también para los iconos
+del HUD, menús, tooltips y controles nuevos que hereden el filtro. En el
+Inspector se configura en `CanvasItem > Texture > Filter`; conservar Nearest
+o la herencia, sin sobrescribirlo con Linear. Los Sprite3D/AnimatedSprite3D
+configuran Nearest por separado en sus escenas, incluido el fuego de la hoguera.
+
 ## Personajes
 
 1. Abrir `scenes/actors/CharactersBase.tscn`.
@@ -61,6 +67,46 @@ escenas y sincroniza presentación. Ningún mesh/sprite decide tareas o botín.
 El cadáver de bárbaro utiliza el sprite creado por el usuario en
 `assets/enemies/dead.png`; su tamaño y posición se editan desde el nodo
 `Visual/Default/Sprite` de `BarbarianCorpse.tscn`.
+
+## Nodos de piedra y Brillo
+
+`scenes/world/Rock.tscn` y `RockLarge.tscn` representan piedra pequeña y grande;
+`Spark.tscn` y `SparkLarge.tscn`, Brillo pequeño y grande. Las cuatro escenas
+heredan `ResourceSprite.tscn`, con `Visual/Default/Sprite`, filtro Nearest,
+billboard y recorte AtlasTexture. La base define el apoyo en el suelo; cada
+variante expone textura, región, offset y tamaño por píxel en el Inspector.
+
+`WorldView.resource_scenes` contiene las variantes pequeñas y
+`large_resource_scenes` las grandes, conservando las claves `stone-vein` y `ruin`.
+La elección tiene la misma probabilidad para ambos tamaños y se mantiene por
+semilla/ID. El tamaño es solo visual por ahora: no altera recursos ni niveles.
+El sprite `stone node level 2.png` permanece sin escenas ni referencias activas.
+
+## Efecto de curación
+
+En `scenes/world/HealEffect.tscn`, editar `Visual/HealVFX` para ajustar posición,
+escala, textura, fotogramas y velocidad. La posición X/Z está centrada en el
+minion; la altura conserva el ajuste de la escena. El script mueve únicamente
+la raíz para seguir la posición interpolada del personaje, sin sobrescribir
+el transform del sprite ni añadir el antiguo ascenso de las cruces 3D.
+
+## Vegetación decorativa
+
+`scenes/world/DecorationSprite.tscn` define el Sprite3D compartido: filtro nearest,
+billboard, recorte alfa y tamaño por píxel. No contiene geometría provisional.
+Las ocho variantes son `Grass.tscn` y `GrassSmall.tscn`,
+`Mushroom.tscn`, `MushroomSmall.tscn`, `MushroomBig.tscn`,
+`DecorationBush.tscn`, `DecorationBushSmall.tscn` y `DecorationBushBig.tscn`.
+Cada variante expone `Visual/Default/Sprite`, su textura AtlasTexture, región y
+offset. El offset vertical es la mitad de la altura recortada para apoyar el
+borde inferior en el terreno; revisarlo si se sustituye la imagen o su recorte.
+
+`WorldView.decoration_scenes` permite sustituir cada variante. La semilla y el ID
+del decorado eligen una variante y su reflejo horizontal estable; la escala lógica
+se aplica a la raíz sin cambiar navegación o recolección. Los arbustos decorativos
+no dan comida: `Bush.tscn` sigue siendo el nodo de bayas funcional. Las flores se
+han retirado. La generación de cantidades, tipos y posiciones permanece en
+`world_catalog.gd`; el claro inicial sigue las mismas reglas que los demás claros.
 
 ## HUD y menús
 

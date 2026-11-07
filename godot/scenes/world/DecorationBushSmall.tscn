@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world/DecorationSprite.tscn" id="base"]
+[ext_resource type="Texture2D" path="res://assets/environment/Bush small.png" id="texture"]
+
+[sub_resource type="AtlasTexture" id="atlas"]
+atlas = ExtResource("texture")
+region = Rect2(16, 21, 31, 22)
+
+[node name="DecorationBushSmall" instance=ExtResource("base")]
+
+[node name="Sprite" parent="Visual/Default" index="0"]
+offset = Vector2(0, 11.0)
+texture = SubResource("atlas")

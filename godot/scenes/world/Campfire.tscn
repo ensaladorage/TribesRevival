@@ -358,6 +358,7 @@ frame_progress = 0.85932094
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Visual/Default" unique_id=1182242332]
 transform = Transform3D(0.3123196, 0, 0, 0, 0.3123196, 0, 0, 0, 0.3004433, 0.03525734, 1.3056746, 0)
 billboard = 1
+texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_v8fbi")
 animation = &"fire"
 autoplay = "fire"

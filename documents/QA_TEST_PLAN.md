@@ -14,6 +14,48 @@ guardar y cargar durante el desarrollo de sistemas que dependan de ello.
 
 ### Tests automáticos
 
+#### Variantes de nodos de piedra y Brillo — Godot
+
+- Verificar tamaños pequeños/grandes estables por semilla e ID, también al
+  reconstruir desde JSON; muestrear distintas semillas para comprobar variedad.
+- Las cuatro escenas deben contener Sprite3D con Nearest y ninguna geometría
+  provisional. No deben referenciar el sprite de piedra de nivel 2.
+- Confirmar que la presentación no modifica posiciones, niveles, cantidades,
+  rendimientos, radios ni el estado serializado. Conservar la regresión de datos
+  y guardado/carga actual.
+- Revisar visualmente tamaño, centrado y apoyo en el suelo; comprobar edición
+  de las cuatro variantes desde el Inspector en la siguiente prueba manual.
+
+#### Seguimiento del efecto de curación — Godot
+
+- Comprobar que el efecto coincide con la posición interpolada del minion
+  en las seis clases, conserva el transform del sprite definido en escena,
+  no modifica el estado y se retira al expirar.
+- Revisión manual: centrar el anillo alrededor de los pies y observar la
+  curación mientras camina, sin separación entre ticks ni ascenso adicional.
+
+#### Filtrado de sprites e iconos — Godot
+
+- Comprobar que el viewport usa Nearest como filtro 2D predeterminado,
+  que ningún CanvasItem de la UI lo sobrescribe con Linear y que los
+  Sprite3D/AnimatedSprite3D usan Nearest, incluido el fuego de la hoguera.
+- Revisión visual manual: recursos del HUD, reclutamiento, equipo,
+  tecnologías, mejoras, menús y tooltips, tanto en editor como en ejecución.
+
+#### Vegetación decorativa con sprites — Godot
+
+- `test_world_decorations.gd`: generación repetible en 32 semillas; césped,
+  arbustos y setas solo en claros, praderas y bosques; cantidades por bioma,
+  incluido el claro inicial, margen interior y máximo de dos setas.
+- Carga de las ocho variantes con filtro nearest, sin meshes ni colisiones;
+  selección visual estable al reconstruir el mundo y estado lógico intacto.
+- La referencia Babylon se mantiene sin modificar. `test_data.gd` compara
+  todos los datos iniciales salvo decoración, cuya divergencia Godot se comprueba
+  en la suite específica. Guardado/carga actual sigue cubierto por `test_data.gd`.
+- Revisión visual: capturas del claro inicial al zoom normal y en detalle,
+  bosque y pradera. Revisar además en una partida manual el zoom, la oclusión
+  durante el movimiento y la edición de variantes desde el Inspector.
+
 #### Suite de regresión — movimiento y formación
 
 -   levantar el tótem solo mediante la acción semántica correspondiente;
@@ -30,6 +72,12 @@ guardar y cargar durante el desarrollo de sistemas que dependan de ello.
     arrancar.
 
 #### Cobertura general de regresión
+
+-   Tótem levantado: guardianes, leñadores y cazadores conservan combate
+    cercano dentro del mando. Al superar los 10 m terminan el impulso activo
+    y siguen al tótem sin soltarlo, sin otro golpe ni readquisición fuera
+    del radio, incluso si el enemigo sigue dentro. Regresión automatizada
+    en `godot/tests/test_tactical_behavior.gd`; repetir manualmente el arrastre.
 
 -   llamadas puras de enemigos/animales: detector de cualquier rol,
     respondedor fuera de rango propio, afinidad, disponibilidad, reserva

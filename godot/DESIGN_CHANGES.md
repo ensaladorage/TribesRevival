@@ -27,6 +27,10 @@ referencia original; los ajustes de esta lista se aplican a Godot.
   interrumpe su seguimiento y activa el combate, incluso mientras el tótem se
   lleva o la tribu termina de reagruparse. Durante el seguimiento la tribu no
   persigue enemigos que queden fuera del radio de mando.
+- Si un combatiente supera los 10 m del radio de mando durante el seguimiento,
+  termina solo el impulso del golpe ya iniciado y sigue al tótem sin esperar
+  a que se suelte. No inicia otro ataque fuera del radio, aunque el enemigo
+  permanezca dentro de él.
 - Al terminar el combate con el tótem colocado, cada minion busca trabajo o
   entra en reposo desde su posición; si está fuera del radio de mando, regresa
   solo hasta entrar en él. Esto también se aplica si otros minions aún están

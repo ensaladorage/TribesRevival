@@ -1,24 +1,32 @@
 [gd_scene format=3 uid="uid://sxm3qgassm8t"]
 
+[ext_resource type="Texture2D" uid="uid://vk4jw8s4a75h" path="res://assets/enemies/Barbarian.png" id="2_45ldh"]
 [ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/CharactersBase.tscn" id="base"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ct6id"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_45ldh")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]
 
 [node name="Barbarian" unique_id=463826534 instance=ExtResource("base")]
 transform = Transform3D(1.02, 0, 0, 0, 1.02, 0, 0, 0, 1.02, 0, 0.006309271, 0)
 visual_scale = Vector3(1.1, 1.1, 1.1)
-visual_tint = Color(0.7411765, 0.3647059, 0.29411766, 1)
 
 [node name="Body" parent="." index="0" unique_id=635982024]
 transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0, 0)
 
 [node name="Sprite" parent="Body" index="0" unique_id=588141790]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8901852, 0)
-modulate = Color(0.7411765, 0.3647059, 0.29411766, 1)
+transform = Transform3D(0.7500001, 0, 0, 0, 0.7500001, 0, 0, 0, 0.7500001, 0.13278386, 1.1788496, 0)
+sprite_frames = SubResource("SpriteFrames_ct6id")
 
 [node name="Health" parent="." index="2" unique_id=1752847821]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9954305, 0)
-
-[node name="DetectionRange" parent="." index="3" unique_id=656574462]
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5397754, 0)
 
 [node name="HealthDisplay" parent="." index="4" unique_id=375189917]
 enemy = true

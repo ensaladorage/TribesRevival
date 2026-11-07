@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://dr33btyvdmyqq"]
+
+[ext_resource type="PackedScene" path="res://scenes/world/ResourceSprite.tscn" id="base"]
+[ext_resource type="Texture2D" uid="uid://cfjktj456x68b" path="res://assets/resources/sparks node big.png" id="texture"]
+
+[sub_resource type="AtlasTexture" id="atlas"]
+atlas = ExtResource("texture")
+region = Rect2(20.985, 25.735, 85.88, 80.125)
+
+[node name="SparkLarge" unique_id=1464865409 instance=ExtResource("base")]
+
+[node name="Sprite" parent="Visual/Default" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.049020648, 0.12613767, -0.07764912)
+offset = Vector2(0, 36)
+pixel_size = 0.025
+texture = SubResource("atlas")

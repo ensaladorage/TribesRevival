@@ -216,6 +216,12 @@ static func update(state: Dictionary, delta: float, frame: Dictionary) -> void:
 				continue
 		var following: bool = state.totem.isCarried or (state.totem.moving and not unit.get("postCombatFree", false))
 		if following:
+			# The fighter's leash takes priority even if the enemy is still in range
+			# of the totem. Finish only the active impulse, never start another hit.
+			if stats != null and Geo.distance(unit.position, state.totem.position) > state.totem.commandRadius:
+				if unit.attackLockRemainingSeconds <= 0:
+					Work.set_task(unit, Work.return_task(state, unit, "totem-moved"))
+				continue
 			# A nearby barbarian takes priority over following, even while carried.
 			# Keep the leash local so the tribe does not chase distant enemies.
 			var nearby: Variant = _nearest(unit.position, state.barbarians, Combat.MINION_THREAT_DETECTION_RADIUS)

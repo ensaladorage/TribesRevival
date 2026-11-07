@@ -1,92 +1,14 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/world/DecorationSprite.tscn" id="base"]
+[ext_resource type="Texture2D" path="res://assets/environment/Shroom medium.png" id="texture"]
 
-[sub_resource type="CylinderMesh" id="mesh1"]
-top_radius = 0.08
-bottom_radius = 0.08
-height = 0.42
-radial_segments = 8
+[sub_resource type="AtlasTexture" id="atlas"]
+atlas = ExtResource("texture")
+region = Rect2(21, 20, 26, 27)
 
-[sub_resource type="StandardMaterial3D" id="mat1"]
-albedo_color = Color(0.9490196078431372, 0.9333333333333333, 0.8784313725490196, 1)
-roughness = 1.0
-metallic_specular = 0.0
+[node name="Mushroom" instance=ExtResource("base")]
 
-[sub_resource type="SphereMesh" id="mesh2"]
-radius = 0.26
-height = 0.52
-radial_segments = 8
-rings = 4
-
-[sub_resource type="StandardMaterial3D" id="mat2"]
-albedo_color = Color(0.7764705882352941, 0.29411764705882354, 0.27058823529411763, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[sub_resource type="SphereMesh" id="mesh3"]
-radius = 0.05
-height = 0.1
-radial_segments = 8
-rings = 4
-
-[sub_resource type="StandardMaterial3D" id="mat3"]
-albedo_color = Color(1.0, 0.9764705882352941, 0.9098039215686274, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[sub_resource type="SphereMesh" id="mesh4"]
-radius = 0.05
-height = 0.1
-radial_segments = 8
-rings = 4
-
-[sub_resource type="StandardMaterial3D" id="mat4"]
-albedo_color = Color(1.0, 0.9764705882352941, 0.9098039215686274, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[sub_resource type="SphereMesh" id="mesh5"]
-radius = 0.05
-height = 0.1
-radial_segments = 8
-rings = 4
-
-[sub_resource type="StandardMaterial3D" id="mat5"]
-albedo_color = Color(1.0, 0.9764705882352941, 0.9098039215686274, 1)
-roughness = 1.0
-metallic_specular = 0.0
-
-[node name="Mushroom" type="Node3D"]
-script = ExtResource("script")
-
-[node name="Visual" type="Node3D" parent="."]
-
-[node name="Default" type="Node3D" parent="Visual"]
-
-[node name="Stem" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.21, 0)
-mesh = SubResource("mesh1")
-material_override = SubResource("mat1")
-
-[node name="Cap" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.46, 0)
-mesh = SubResource("mesh2")
-material_override = SubResource("mat2")
-scale = Vector3(0.95, 0.48, 0.95)
-
-[node name="Dot0" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(-0.12, 0.63, 0.02)
-mesh = SubResource("mesh3")
-material_override = SubResource("mat3")
-
-[node name="Dot1" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0.1, 0.63, 0.04)
-mesh = SubResource("mesh4")
-material_override = SubResource("mat4")
-
-[node name="Dot2" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.63, -0.11)
-mesh = SubResource("mesh5")
-material_override = SubResource("mat5")
-
+[node name="Sprite" parent="Visual/Default" index="0"]
+offset = Vector2(0, 13.5)
+texture = SubResource("atlas")

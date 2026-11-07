@@ -5,8 +5,10 @@ const Geo = preload("res://scripts/simulation/geometry.gd")
 const Tactics = preload("res://scripts/simulation/tactical_movement.gd")
 const Conflict = preload("res://scripts/simulation/conflict_system.gd")
 const Movement = preload("res://scripts/simulation/minion_movement.gd")
+const Work = preload("res://scripts/simulation/work_system.gd")
 var failures: Array[String] = []
 func _initialize() -> void:
+	check_carried_totem_leash()
 	check_decisions()
 	check_normal_combat()
 	var first := scenario(false)
@@ -26,6 +28,44 @@ func _initialize() -> void:
 	else:
 		print("PASS tactical scenarios")
 		quit()
+func check_carried_totem_leash() -> void:
+	for role in ["guardian", "lumberjack", "hunter"]:
+		for locked in [false, true]:
+			var session := Session.new("carried-leash")
+			var state: Dictionary = session.state
+			state.animals = []
+			state.resources = []
+			state.totem.isCarried = true
+			var unit := State.create_unit("fighter", role, {"x": 84.0, "y": 80.0})
+			unit.task = {"kind": "combat", "targetEntityId": state.barbarians[0].id, "targetResourceId": null, "destination": null, "cause": "threat-nearby"}
+			var enemy: Dictionary = state.barbarians[0]
+			enemy.position = {"x": 83.1, "y": 80.0}
+			enemy.health = 100.0
+			state.barbarians = [enemy]
+			state.units = [unit]
+			# Keep fighting within command range, even while the totem is held.
+			unit.attackCooldownRemainingSeconds = 1.0
+			Conflict.update(state, 0.05, Movement.create_frame(state, 0.05))
+			if unit.task.kind != "combat": failures.append(role + ": nearby combat interrupted")
+			# Move the held totem: enemy remains inside, fighter falls outside.
+			state.totem.position = {"x": 73.5, "y": 80.0}
+			unit.attackCooldownRemainingSeconds = 0.0
+			unit.attackLockRemainingSeconds = 0.22 if locked else 0.0
+			var before: Dictionary = unit.position.duplicate()
+			Conflict.update(state, 0.05, Movement.create_frame(state, 0.05))
+			if locked:
+				if unit.position != before: failures.append(role + ": attack impulse interrupted")
+				unit.attackLockRemainingSeconds = 0.0
+				Conflict.update(state, 0.05, Movement.create_frame(state, 0.05))
+			if unit.task.kind == "combat": failures.append(role + ": fighter outside held totem range keeps fighting")
+			if enemy.health != 100.0: failures.append(role + ": starts another attack outside held totem range")
+			# Repeated decisions cannot reacquire the enemy before returning.
+			Conflict.update(state, 0.05, Movement.create_frame(state, 0.05))
+			if unit.task.kind == "combat": failures.append(role + ": outside fighter reacquires enemy")
+			Work.update_tribe(state, 0.05, Movement.create_frame(state, 0.05))
+			if not state.totem.isCarried or unit.state != "follow-totem" or Geo.distance(unit.position, before) <= 0:
+				failures.append(role + ": fails to follow without dropping totem")
+
 func scenario(combat: bool) -> Dictionary:
 	var session = Session.new("tactical-test")
 	var state: Dictionary = session.state

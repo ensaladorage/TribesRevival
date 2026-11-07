@@ -270,12 +270,20 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
     `lumberjack`; las piedras y las ruinas luminosas quedan preparadas
     pero no son asignables a los roles jugables actuales. El diseño de mundo incorpora bárbaros, conejos, oro, drops de comida de origen cárnico y combate automático. Los recursos se representan únicamente mediante
     sus nodos activos: los decorados antiguos de árboles, rocas y ruinas
-    ya no se generan. La vegetación decorativa de césped, setas y flores
-    no es interactuable. La decoración de suelo usa `60 %` césped,
-    `25 %` flores y `15 %` setas en claros y praderas; en bosques usa
-    `58 %` césped, `27 %` flores y `15 %` setas. Nunca se generan más de
-    `2` setas por instancia de bioma. La vegetación decorativa usa una
-    escala lógica de `1.26` a `1.62`.
+    ya no se generan. En Godot, la vegetación decorativa de césped, setas
+    y arbustos no es interactuable. Usa pesos `60/25/15` para
+    césped/arbustos/setas en claros y praderas, y `58/27/15` en bosques.
+    El límite de `2` setas por instancia se aplica también al reparto
+    inicial entero, antes de asignar las plazas sobrantes a otros tipos.
+    Se generan `12–18` decoraciones por claro (también el inicial),
+    `18–26` por pradera y `16–24` por bosque; ninguna en pedregales/ruinas.
+    Se conserva la escala lógica `1.26–1.62` y el margen de colocación.
+    Las ocho variantes Sprite3D editables heredan `DecorationSprite.tscn`,
+    usan AtlasTexture sin márgenes transparentes, nearest y billboard,
+    con el borde inferior apoyado sobre el suelo. La vista elige tamaño
+    y reflejo con un PRNG independiente por semilla/ID; no añade datos
+    visuales al guardado ni altera el estado. Las flores retiradas no se
+    representan si aparecen en datos cargados; sus escenas se eliminan.
 
 -   La distribución se mantiene como blueprint aislado para que la
     futura generación circular pueda sustituir al contenedor provisional
@@ -323,13 +331,16 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
 -   En todo el juego cada `ResourceDrop` visible representa exactamente
     `1` recurso. La carga soltada al morir o cancelarse se divide
     también en drops independientes por unidad.
--   Las ruinas luminosas usan una malla emisiva y un halo local como
-    feedback visual provisional; no se introducen modelos externos ni
-    efectos que entren en `GameState`.
--   Los nodos de madera se ven como tronco y copa; los nodos de piedra
-    como un conjunto de bloques cúbicos; los nodos de Brillo como un
-    octaedro romboidal con núcleo emisivo y halo. Los tipos decorativos
-    quedan limitados a césped, setas y flores.
+-   En Godot, piedra y Brillo usan Sprite3D pequeños y grandes en escenas
+    editables (`Rock`/`RockLarge` y `Spark`/`SparkLarge`), con filtro Nearest
+    y sin los meshes provisionales ni el halo anterior. Heredan la base
+    `ResourceSprite.tscn`. La vista elige la variante con probabilidad
+    equivalente mediante PRNG separado por semilla e ID; reconstruir el
+    mismo nodo conserva su apariencia. El tamaño aún es visual: no modifica
+    tier, cantidad, rendimiento, radio ni estructura de guardado. Las piedras
+    de nivel 2 no se instancian ni se configuran.
+-   Los nodos de madera se ven como tronco y copa. Los tipos decorativos
+    quedan limitados a césped, setas y arbustos decorativos en Godot.
 -   La validación cubre determinismo del blueprint, cobertura por bioma,
     tala, drops, inventario, ramitas y rechazo de tareas inaccesibles.
 
@@ -354,6 +365,10 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
 -   Al mover el tótem, los combatientes completan como máximo un golpe
     en curso y se reagrupan. Los bárbaros abandonan la persecución
     cuando todos los minions salen de `15 m`.
+    En Godot, durante el seguimiento, `conflict_system.gd` comprueba primero
+    la distancia del minion al tótem: fuera del radio de mando espera solo
+    a que termine `attackLockRemainingSeconds` y asigna retorno, sin esperar
+    al cooldown ni readquirir amenazas mientras siga fuera. No cambia v17.
 -   Los bárbaros usan velocidades separadas: `7 m/s` al perseguir minions
     y `8 m/s` al volver a su punto de aparición.
 -   Las barras de vida y alertas 2D del bárbaro se destruyen al morir y

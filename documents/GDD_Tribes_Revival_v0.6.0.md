@@ -371,21 +371,27 @@ decoración; las regiones principales de una partida serán
 aproximadamente `20`, sin contar esas manchas menores. La generación debe producir un mapa circular con regiones principales y manchas decorativas pequeñas, sin solapamientos.
 Distribución prevista:
 -   claros pequeños: vegetación decorativa y relleno del mapa. Su
-    distribución visual es de `60 %` césped, `25 %` flores y `15 %`
-    setas. Las setas son de tallo blanco y copa roja con puntos blancos;
-    las flores tienen tallo verde y cabezas amarillas, azules, grises o
-    rosas. Cada instancia de bioma puede contener como máximo `2` setas;
+    distribución usa pesos de `60 %` césped, `25 %` arbustos decorativos
+    y `15 %` setas, con un máximo de `2` setas por instancia de bioma;
 -   praderas: arbustos con bayas;
 -   bosques: nodos de recursos con silueta de árbol y vegetación
-    decorativa de suelo. La vegetación se distribuye como `58 %` césped,
-    `27 %` flores y `15 %` setas, con un máximo de `2` setas por
+    decorativa de suelo. La vegetación usa pesos de `58 %` césped,
+    `27 %` arbustos decorativos y `15 %` setas, con un máximo de `2` setas por
     instancia;
--   pedregales: nodos de recursos con silueta de roca cúbica;
--   ruinas: nodos de Brillo con silueta de rombo luminoso.
-La escala visual de la vegetación decorativa se incrementa un `20 %`
-adicional respecto al tamaño anterior, dentro de un multiplicador lógico
-de `1.26` a `1.62`. Esto incluye césped, flores y setas. La selección y
-colocación se mantienen deterministas mediante la semilla del mapa; esta
+-   pedregales: nodos de piedra con sprites pequeños y grandes;
+-   ruinas: nodos de Brillo con sprites de cristales pequeños y grandes.
+Los tamaños de piedra y Brillo se distribuyen de forma variada y determinista.
+Por ahora solo cambia su apariencia; sus rendimientos distintos se definirán
+más adelante. Las piedras de nivel 2 siguen pendientes y no se generan.
+La vegetación decorativa usa sprites de césped, setas y arbustos con
+varios tamaños y una distribución abundante en bosques, claros y praderas,
+incluido el claro inicial. Las praderas usan los mismos pesos que los claros.
+El límite de setas prevalece sobre su peso; las plazas restantes se reparten
+entre césped y arbustos. Se eliminan las flores y los modelos 3D provisionales
+de esta vegetación. Los arbustos decorativos no sustituyen a los nodos de bayas
+recolectables. El multiplicador lógico de escala se conserva de `1.26` a `1.62`;
+el aspecto y los tamaños se ajustan en las escenas de presentación. La selección
+y colocación se mantienen deterministas mediante la semilla del mapa; esta
 decoración es visual y no interactuable.
 Ningún área de bioma puede superponerse con otra, incluidos los `Claros`
 decorativos y el `Claro` inicial. Cuando el recurso de un bioma está
@@ -499,6 +505,10 @@ reagrupamiento sin cancelar un combate en curso.
     como máximo el golpe pendiente y después se reagrupa; si el objetivo
     muere o queda fuera de alcance, vuelve de inmediato. Los bárbaros
     persiguen hasta que nadie queda a menos de `15 m`.
+    En Godot, una amenaza cercana puede mantener el combate durante el
+    seguimiento, pero si el minion supera los `10 m` del radio de mando,
+    termina solo el impulso del golpe ya iniciado y sigue al tótem sin
+    iniciar otro ataque ni esperar a que el jugador lo suelte.
 -   Los minions mantienen una separación mínima, pueden atravesar el
     tótem y no terminan dentro de un radio de `2 m` desde su centro. El
     recorrido no usa un collider rígido para el tótem; los golpes se

@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://b6ep158c4231t"]
+
+[ext_resource type="PackedScene" path="res://scenes/world/ResourceSprite.tscn" id="base"]
+[ext_resource type="Texture2D" uid="uid://badb8pbtx7oo8" path="res://assets/resources/stone node big.png" id="texture"]
+
+[sub_resource type="AtlasTexture" id="atlas"]
+atlas = ExtResource("texture")
+region = Rect2(7, 17, 50, 36)
+
+[node name="RockLarge" unique_id=440701751 instance=ExtResource("base")]
+
+[node name="Sprite" parent="Visual/Default" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.003233388, 0)
+offset = Vector2(0, 18)
+texture = SubResource("atlas")

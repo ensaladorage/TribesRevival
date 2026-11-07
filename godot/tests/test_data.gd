@@ -31,7 +31,12 @@ func _initialize() -> void:
 			_equal(random.next_uint(), expected, "PRNG: " + sample.seed)
 	for expected in reference.initialStates:
 		var actual := State.create_initial(expected.seed)
-		_equal(actual, expected, "initial: " + expected.seed)
+		# Godot now uses the requested sprite vegetation; the Babylon fixture
+		# remains unchanged. Its other initial data must still match exactly.
+		var original: Dictionary = expected.duplicate(true)
+		actual.erase("decorations")
+		original.erase("decorations")
+		_equal(actual, original, "initial except Godot decoration: " + expected.seed)
 	_test_economy(reference.economy)
 	_test_transactions()
 	_test_support(reference.support)
