@@ -1,12 +1,11 @@
 # Editar la presentación desde Godot
 
-Abrir `project.godot` en Godot 4.7.2. Los sprites actuales reutilizan iconos
-originales; son placeholders de un solo frame, no animaciones definitivas.
+Abrir `project.godot` en Godot 4.7.2. Los personajes usan imágenes de un solo fotograma por estado; no son animaciones definitivas.
 No hace falta modificar la simulación para sustituirlos.
 
 ## Personajes
 
-1. Abrir `scenes/actors/Minion.tscn`.
+1. Abrir `scenes/actors/CharactersBase.tscn`.
 2. Seleccionar `Body/Sprite` (`AnimatedSprite3D`), abrir `Sprite Frames` y
    sustituir las imágenes de `idle`, `move`, `work` y `attack`. Se pueden añadir
    frames y cambiar su velocidad desde ese mismo recurso.
@@ -17,8 +16,8 @@ No hace falta modificar la simulación para sustituirlos.
    comparte mientras una variante no sobrescriba esa propiedad.
    Las herramientas, armas y escudos no tienen sprites o meshes separados en
    los minions; su aspecto formará parte del sprite de cada clase.
-5. `Barbarian.tscn` y `Rabbit.tscn` son variantes de presentación independientes;
-   usan el mismo icono provisional hasta disponer de sprites adecuados.
+5. `Barbarian.tscn` y `Sheep.tscn` son variantes de presentación independientes;
+   la oveja usa su sprite propio y el bárbaro conserva el icono provisional.
 
 `Selection/Shape` es la caja editable del picking de equipo. La separación y
 navegación lógica conservan sus radios originales: cambiar la apariencia o esa
@@ -26,7 +25,7 @@ caja no cambia colisiones/reglas de simulación. Se conserva además la toleranc
 de selección de 24 px del original. `DetectionRange` y el marcador
 `Health` pueden editarse en la escena; mantener sus nombres o adaptar el
 adaptador de presentación. El tamaño de las bolitas está en
-`scenes/ui/HealthPips.tscn`; sus estilos en el Theme. `health_screen_margin_pixels`
+`scenes/ui/HealthController.tscn`; sus estilos en el Theme. `health_screen_margin_pixels`
 controla el margen sobre el marcador, sin cambiar la vida real.
 
 ## Árboles, recursos, drops e interactivos
@@ -65,7 +64,26 @@ El cadáver de bárbaro utiliza el sprite creado por el usuario en
 
 ## HUD y menús
 
+- Reclutamiento, equipo, tecnologías y mejoras usan un hijo `Icon`
+  (`TextureRect`) en cada botón. Su escala se edita en
+  `Layout > Transform > Scale`; `Texture > Region` del AtlasTexture controla
+  el recorte. Los recursos usan `IconSlot/Icon` con el mismo sistema.
+  Los iconos ignoran el ratón; los textos de tarjetas usan el hijo `Caption`.
+  Recargar las escenas desde disco si Godot mantiene versiones abiertas
+  anteriores antes de guardar nuevos cambios del editor.
+- Para cambiar el tamaño del hacha, abre `scenes/ui/RecruitmentPanel.tscn` y
+  selecciona `axeRow/axe/Icon` en el árbol. En `Layout > Transform > Scale`,
+  usa el mismo valor en X e Y: `1` mantiene el tamaño, `1.2` lo amplía un 20 %.
+  El pivote mantiene el dibujo centrado y el botón conserva su tamaño.
+  `Icon` es un TextureRect independiente; su `Texture` recorta los márgenes
+  transparentes de la imagen mediante un AtlasTexture.
 - Abrir `scenes/ui/HUD.tscn`: mover/redimensionar paneles en el editor 2D.
+- El icono de Hoguera usa `assets/ui/icon-fireplace.png`, actualmente de
+  1254 × 1254 píxeles. Su AtlasTexture en `RecruitmentPanel.tscn` abarca
+  la imagen completa: al sustituirla por otra resolución, ajustar también
+  `Texture > Region`. Un recorte antiguo puede mostrar solo transparencia.
+  `scenes/placement/campfire.tscn` comparte esta imagen; ajustar `pixel_size`
+  si cambia la resolución para conservar el tamaño de la previsualización.
 - Abrir sus subescenas para editar recursos, reclutamiento, equipo, tecnologías
   y mejoras. Los iconos y tamaños están en los controles, no en el script.
 - `scenes/ui/Menus.tscn` contiene el marco modal; MainMenu, PauseMenu,
@@ -100,3 +118,13 @@ Importación, referencias y contratos de señales comprobados sin avanzar una
 partida. La etapa manual final verificará sustitución de assets en el editor,
 interacción completa y apariencia a distintos tamaños/zoom. No se considera
 esta guía evidencia de una inspección visual que todavía no se ha realizado.
+
+El tótem jugable se edita en `scenes/world/TotemSprite.tscn`: selecciona el nodo hijo `Sprite` para ajustar su textura, tamaño, posición y orientación. Su posición vertical es independiente de la posición de juego. El modelo previo está en `scenes/world/Totem3D.tscn`.
+
+Para cambiar el tótem de la partida, abre `scenes/main.tscn`, sustituye la instancia `Totem` por `scenes/world/Totem3D.tscn` o `TotemSprite.tscn` y conserva el nombre `Totem`. La posición inicial es (80, 2, 80); el código la actualiza durante la partida.
+
+En `Totem3D.tscn`, selecciona la raíz `Totem` y abre `Model Material → Next Pass → Shader Parameters`: `Outline Color` cambia el color del contorno y `Outline Width` su grosor.
+
+Los cadáveres usan `Corpse.tscn` (minions) y `BarbarianCorpse.tscn` (bárbaros). En `Visual/Default/Sprite`, editar `Sprite Frames > death` para ajustar velocidad y fotogramas. La animación se reproduce una vez a 10 FPS y conserva el último fotograma hasta que la simulación retira el cadáver. `pixel_size` y posición controlan su apariencia. Al cargar una partida, los cadáveres recreados vuelven a reproducir esta animación visual.
+
+En `scenes/world/Campfire.tscn`, los nodos `Visual/Default/Fire` y `Visual/Default/Embers1`, `Embers2`, `Embers3` permiten ajustar posición y tamaño (`pixel_size`). En `Sprite Frames` se editan los fotogramas y la velocidad; cada nodo de brasas se reproduce en bucle; la duración de su primer fotograma transparente determina la pausa.

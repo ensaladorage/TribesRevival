@@ -86,7 +86,7 @@ Mover tótem → explorar → detectar recursos o amenaza
     equiparse.
 5.  El jugador decide si mantener la posición, curarse, crecer o
     avanzar.
-6.  Aparecen conejos y bárbaros; los minions adecuados cazan o combaten
+6.  Aparecen ovejas y bárbaros; los minions adecuados cazan o combaten
     automáticamente.
 7.  El jugador elige mejoras y nuevos roles al subir de nivel.
 8.  La tribu busca mejorar sus herramientas, desbloquear regiones y
@@ -258,7 +258,7 @@ Cada transición debe guardar una causa legible: `resource-found`,
                  de bayas                      drops
   `lumberjack`   tala árboles   hacha          tala y combate básico equipable
                                                con hacha
-  `hunter`       caza fauna     arco           caza conejos y básico equipable
+  `hunter`       caza fauna     arco           caza ovejas y básico equipable
                                                combate con
                                                flechas
   `guardian`     combate cuerpo espada         combate con    transformación
@@ -467,7 +467,7 @@ reagrupamiento sin cancelar un combate en curso.
     cercano dentro de `15 m` y, si pierden el rastro lejos de su
     aparición, regresan a ella a `8 m/s`. Al llegar, esperan el
     intervalo determinista de patrulla y retoman su recorrido a `1 m/s`.
--   Hay seis conejos pasivos en praderas, con `2 HP`. Se mueven dentro
+-   Hay seis ovejas pasivas en praderas, con `2 HP`. Se mueven dentro
     de su bioma; el `hunter` los caza en al menos dos golpes y genera
     `1–2` drops físicos de comida. Reaparecen en su punto a los `30 s`.
 ### Estadísticas y comportamiento de combate
@@ -486,7 +486,7 @@ reagrupamiento sin cancelar un combate en curso.
     ocupadas, esperan en un anillo exterior a `2,1 m`. Los cazadores se
     distribuyen a `4,6 m`, respetando alcance y radio del tótem. El movimiento
     evita cuerpos aliados y enemigos; los minions no desplazan al bárbaro
-    mediante la separación. Los conejos solo son objetivo del
+    mediante la separación. Las ovejas solo son objetivo del
     `hunter`. Los minions permanecen inmóviles durante el impulso de ataque
     de `0,22 s`. El cazador se reposiciona a `6 m/s` y no se aleja más del radio de
     mando (`10 m`) del tótem.
@@ -494,7 +494,7 @@ reagrupamiento sin cancelar un combate en curso.
     entre objetivos y tareas de combate/caza: solo se recarga al golpear
     y nunca se reinicia al cambiar de objetivo.
 -   `gatherer`, `explorer` y `artisan` no atacan. Si un bárbaro los
-    detecta, huyen hacia el tótem.
+    detecta, buscan espacio seguro alejándose de los enemigos dentro del radio de mando. Si son perseguidos, continúan esquivando, incluso alrededor del tótem, en lugar de detenerse en su centro. Los bárbaros priorizan a quienes los están atacando y, bajo presión de varios combatientes, alternan golpes con retiradas cortas y cambios de posición.
 -   Al mover/cargar el tótem, un combatiente a distancia válida termina
     como máximo el golpe pendiente y después se reagrupa; si el objetivo
     muere o queda fuera de alcance, vuelve de inmediato. Los bárbaros
@@ -595,7 +595,7 @@ coloca en el mapa. La hoguera cuesta `2` de madera y se coloca en el mapa. Las u
 ### Progresión y tecnologías
 La progresión es determinista. Comienza en nivel
 0, con 0 XP y 0 puntos tecnológicos. Cada acción de recolección
-completada concede 1 XP, cada conejo cazado 3 XP y cada bárbaro
+completada concede 1 XP, cada oveja cazada 3 XP y cada bárbaro
 derrotado 5 XP. El primer nivel requiere 12 XP; el requisito aumenta en
 12 XP por cada nivel posterior. Cada nivel concede 1 punto tecnológico.
 El panel de tecnologías puede abrirse durante la partida y no la pausa.
@@ -756,3 +756,7 @@ activarse o desactivarse sin cambiar el estado de la partida.
 - Definir usos de piedra y Brillo dentro de las cuevas.
 - Definir composición exacta de campamentos, estadísticas de jefes y balance de llaves.
 - Definir detalles de las especializaciones futuras del Mago (Nigromante y Fuego), fuera del alcance actual.
+
+La casilla de vida adicional otorgada por equipo se distingue en dorado (borde dorado cuando está vacía); la vida base mantiene su color verde.
+
+El HUD muestra el nivel y una barra de experiencia centrada en la zona inferior. Su tooltip informa del progreso, la experiencia restante y cómo obtenerla.

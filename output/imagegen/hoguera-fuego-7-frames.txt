@@ -1,0 +1,5 @@
+Spritesheet: 7 columnas, 1 fila; celdas de 1024 x 1024; transparencia RGBA.
+Prompt: Combinar la hoguera original completamente estatica con los siete fotogramas originales de Fire.png en su orden original, alineacion fija, escalado nearest uniforme y fondo transparente.
+Se uso image_gen integrado para el borrador. Correccion final mediante composicion determinista de los originales para garantizar la base estatica y las fases exactas del fuego.
+PNG 7168x1024; 7 cells 1024x1024; base crop 213,379,799,547; base origin 112,445; fire scale 5; fire origin 192,115; 6509132 static pixel comparisons passed. Removed only background alpha <=16; source campfire pixels otherwise unchanged.
+No integrado en escenas ni validado en reproduccion dentro de Godot.

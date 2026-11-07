@@ -1,9 +1,51 @@
 [gd_scene format=3 uid="uid://dyit84w2qwhxx"]
 
-[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/Minion.tscn" id="base"]
+[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/CharactersBase.tscn" id="base"]
+
+
+[ext_resource type="Texture2D" path="res://assets/characters/Archer Minion.png" id="character_texture"]
+
+[sub_resource type="SpriteFrames" id="character_frames"]
+animations = [{
+"frames": [{"duration": 1.0, "texture": ExtResource("character_texture")}],
+"loop": true,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("character_texture")}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("character_texture")}],
+"loop": true,
+"name": &"move",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("character_texture")}],
+"loop": true,
+"name": &"work",
+"speed": 5.0
+}]
 
 [node name="Hunter" unique_id=123285781 instance=ExtResource("base")]
-visual_tint = Color(0.5568628, 0.8392157, 0.81960785, 1)
 
-[node name="Sprite" parent="Body" parent_id_path=PackedInt32Array(635982024) index="0" unique_id=588141790]
-modulate = Color(0, 0.84, 0.78400004, 1)
+[node name="Body" parent="." index="0" unique_id=635982024]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32487726, 0)
+
+[node name="Sprite" parent="Body" index="0" unique_id=588141790]
+sprite_frames = SubResource("character_frames")
+animation = &"idle"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7785688, 0)
+
+[node name="Selection" parent="." index="1" unique_id=1553720391]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.006557584, 0)
+
+[node name="Shape" parent="Selection" index="0" unique_id=385145280]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0065039396, 0.88883, 0)
+
+[node name="Health" parent="." index="2" unique_id=1752847821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2717836, 0)
+
+[node name="DetectionRange" parent="." index="3" unique_id=656574462]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.062404335, 0)

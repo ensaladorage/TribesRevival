@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://464b8bn3nr7f"]
 
 [ext_resource type="Texture2D" uid="uid://b6pwkm7ohxya1" path="res://assets/animals/sheep.png" id="2_eq1ne"]
-[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/Minion.tscn" id="base"]
+[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/CharactersBase.tscn" id="base"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_xtlbp"]
 animations = [{
@@ -22,7 +22,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Rabbit" unique_id=1554297231 instance=ExtResource("base")]
+[node name="Sheep" unique_id=1554297231 instance=ExtResource("base")]
 transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 0, 0.016203761, 0)
 visual_scale = Vector3(0.5, 0.5, 0.5)
 visual_tint = Color(0.8784314, 0.83137256, 0.72156864, 1)

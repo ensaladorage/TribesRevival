@@ -192,3 +192,19 @@ barras enemigas se retiran al morir y se recrean al reaparecer.
 - Determinismo: repetir una misma semilla y secuencia de acciones y comparar el estado lógico resultante.
 
 Los casos anteriores describen cobertura de validación, no implican que las funciones estén implementadas ni que los tests ya existan.
+
+### IA táctica en Godot
+
+- Ejecutar `godot --headless --path godot --script res://tests/test_tactical_behavior.gd`: persecución civil acotada, repetición determinista y respuesta de un bárbaro superado en número.
+- Ejecutar `godot --headless --path godot --script res://tests/test_tactical_edges.gd`: seis civiles, cuatro esquinas, mando móvil y ocho civiles con dos perseguidores; límites, separación, bloqueo y continuidad tras guardado/carga.
+- Revisión renderizada: `godot --path godot --script res://tools/capture_tactical_review.gd` captura un combate mixto en `godot/reports/tactics/`. Utiliza 40 HP en el bárbaro de prueba para observar varias maniobras. No modifica las estadísticas normales.
+
+En mando fijo se exige distancia máxima de 10 m. Si el tótem se desplaza, el
+límite de cada paso parte de la distancia tras ese desplazamiento: el civil no
+puede aumentarla. El ensayo de movimiento usa pasos del tótem de 0,04 m,
+comprueba recuperación en menos de un segundo y exige estar dentro del radio
+al final tras detenerlo; no se corrige mediante teletransporte. La suite de
+comportamiento incluye prioridades ante un civil más próximo, calma en zona
+segura, pausa, regreso al spawn, traslado distante del mando y combate normal
+con cadáver y botín. La persecución individual mide inversiones bruscas de
+trayectoria para detectar oscilaciones frecuentes.

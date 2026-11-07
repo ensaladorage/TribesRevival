@@ -7,6 +7,26 @@
 [ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
 [ext_resource type="Texture2D" uid="uid://btaresku1moo7" path="res://assets/ui/resource-wood.png" id="wood"]
 
+[sub_resource type="AtlasTexture" id="crop_food"]
+atlas = ExtResource("food")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="crop_wood"]
+atlas = ExtResource("wood")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="crop_stone"]
+atlas = ExtResource("stone")
+region = Rect2(0, 0, 32, 26)
+
+[sub_resource type="AtlasTexture" id="crop_spark"]
+atlas = ExtResource("spark")
+region = Rect2(0, 0, 28, 27.49)
+
+[sub_resource type="AtlasTexture" id="crop_gold"]
+atlas = ExtResource("gold")
+region = Rect2(0, 0, 64, 64)
+
 [node name="ResourcesPanel" type="HFlowContainer" unique_id=1046190446]
 offset_right = 85.0
 offset_bottom = 206.0
@@ -21,12 +41,25 @@ alignment = 1
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="food" unique_id=1292635564]
-texture_filter = 1
+[node name="IconSlot" type="Control" parent="food" unique_id=853155013]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("food")
+
+[node name="Icon" type="TextureRect" parent="food/IconSlot" unique_id=805395439]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+pivot_offset = Vector2(15, 15)
+mouse_filter = 2
+texture = SubResource("crop_food")
 expand_mode = 1
 stretch_mode = 5
 
@@ -42,12 +75,25 @@ metadata/resource = "food"
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="wood" unique_id=1305225324]
-texture_filter = 1
+[node name="IconSlot" type="Control" parent="wood" unique_id=1151486191]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("wood")
+
+[node name="Icon" type="TextureRect" parent="wood/IconSlot" unique_id=165403013]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+pivot_offset = Vector2(15, 15)
+mouse_filter = 2
+texture = SubResource("crop_wood")
 expand_mode = 1
 stretch_mode = 5
 
@@ -63,12 +109,25 @@ metadata/resource = "wood"
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="stone" unique_id=1475002890]
-texture_filter = 1
+[node name="IconSlot" type="Control" parent="stone" unique_id=1019088839]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("stone")
+
+[node name="Icon" type="TextureRect" parent="stone/IconSlot" unique_id=868591101]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+pivot_offset = Vector2(15, 15)
+mouse_filter = 2
+texture = SubResource("crop_stone")
 expand_mode = 1
 stretch_mode = 5
 
@@ -84,12 +143,27 @@ metadata/resource = "stone"
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="spark" unique_id=1095887308]
-texture_filter = 1
+[node name="IconSlot" type="Control" parent="spark" unique_id=955407070]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("spark")
+
+[node name="Icon" type="TextureRect" parent="spark/IconSlot" unique_id=506382454]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -15.0
+offset_top = -17.833342
+offset_right = 15.0
+offset_bottom = 12.166658
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(15, 15)
+mouse_filter = 2
+texture = SubResource("crop_spark")
 expand_mode = 1
 stretch_mode = 5
 
@@ -105,12 +179,25 @@ metadata/resource = "spark"
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="gold" unique_id=1968014602]
-texture_filter = 1
+[node name="IconSlot" type="Control" parent="gold" unique_id=1682381944]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("gold")
+
+[node name="Icon" type="TextureRect" parent="gold/IconSlot" unique_id=122847902]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+pivot_offset = Vector2(15, 15)
+mouse_filter = 2
+texture = SubResource("crop_gold")
 expand_mode = 1
 stretch_mode = 5
 

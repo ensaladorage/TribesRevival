@@ -7,9 +7,9 @@ const COLORS := {
 	# Match BabylonGame.unitRoleColor so transformations remain recognizable.
 	"gatherer": Color("f1d27a"), "lumberjack": Color("b98158"), "hunter": Color("8ed6d1"),
 	"guardian": Color("d27575"), "artisan": Color("a5a5a2"), "mage": Color("a276ff"),
-	"barbarian": Color("bd5d4b"), "rabbit": Color("e0d4b8"),
+	"barbarian": Color("bd5d4b"), "sheep": Color("e0d4b8"),
 }
-@export var minion_scene: PackedScene = preload("res://scenes/actors/Minion.tscn")
+@export var minion_scene: PackedScene = preload("res://scenes/actors/CharactersBase.tscn")
 @export var actor_scenes := {
 	"gatherer": preload("res://scenes/actors/Gatherer.tscn"),
 	"lumberjack": preload("res://scenes/actors/Lumberjack.tscn"),
@@ -18,7 +18,7 @@ const COLORS := {
 	"artisan": preload("res://scenes/actors/Artisan.tscn"),
 	"mage": preload("res://scenes/actors/Mage.tscn"),
 	"barbarian": preload("res://scenes/actors/Barbarian.tscn"),
-	"rabbit": preload("res://scenes/actors/Rabbit.tscn"),
+	"sheep": preload("res://scenes/actors/Sheep.tscn"),
 }
 @export var resource_scenes := {
 	"tree": preload("res://scenes/world/Tree.tscn"),
@@ -105,7 +105,7 @@ func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float =
 			_sync_actor(barbarian, "barbarian", active)
 	for animal in state.animals:
 		if animal.isAlive:
-			_sync_actor(animal, "rabbit", active)
+			_sync_actor(animal, "sheep", active)
 	for resource in state.resources:
 		if resource.amount > 0:
 			active[resource.id] = true

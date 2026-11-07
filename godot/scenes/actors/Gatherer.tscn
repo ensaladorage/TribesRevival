@@ -1,7 +1,44 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dv2p0ggsh8s4l"]
 
-[ext_resource type="PackedScene" path="res://scenes/actors/Minion.tscn" id="base"]
+[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/CharactersBase.tscn" id="base"]
+[ext_resource type="Texture2D" uid="uid://cqcin1ts66dbi" path="res://assets/characters/Base Minion.png" id="character_texture"]
 
-[node name="Gatherer" instance=ExtResource("base")]
-visual_tint = Color(1.0, 1.0, 1.0, 1)
+[sub_resource type="SpriteFrames" id="character_frames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("character_texture")
+}],
+"loop": 1,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("character_texture")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("character_texture")
+}],
+"loop": 1,
+"name": &"move",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("character_texture")
+}],
+"loop": 1,
+"name": &"work",
+"speed": 5.0
+}]
 
+[node name="Gatherer" unique_id=1534256023 instance=ExtResource("base")]
+
+[node name="Sprite" parent="Body" parent_id_path=PackedInt32Array(635982024) index="0" unique_id=588141790]
+sprite_frames = SubResource("character_frames")

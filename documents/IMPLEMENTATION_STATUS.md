@@ -390,3 +390,58 @@ Actualizar este documento cuando el trabajo se ejecute y exista
 evidencia del resultado. Diferenciar siempre implementación, tests
 automáticos y validación manual. No marcar una función como validada
 manualmente solo porque Codex haya escrito el código.
+
+
+- Godot: escenas de presentación renombradas a `CharactersBase`, `Sheep` y `HealthController`; importación y validación estructural headless completadas. Los identificadores y semillas internos de `rabbit` se conservan por compatibilidad y determinismo. Pendiente comprobación visual en el editor.
+
+- Godot: sprites propios asignados a recolector, cazador, guardián, artesano, leñador y mago; cada estado visual usa un fotograma. Importación y validación estructural headless correctas; apariencia y escala pendientes de revisión visual.
+
+- Godot: el tótem jugable usa `TotemSprite.tscn` con `Totem 2.png`; el modelo anterior se conserva en `Totem3D.tscn`. Importación y validaciones estructural y de entrada de colocación completadas sin renderizado; pendiente revisión visual y arrastre manual.
+
+- Godot: retirados título, mensaje y experiencia del overlay superior izquierdo. La casilla adicional del escudo usa dorado, incluido su borde cuando está vacía. Validación estructural y comprobación headless de estilos con daño y cambio de equipo correctas; pendiente revisión visual.
+
+- Godot: HUD incorpora barra de experiencia y nivel con tooltip de progreso y fuentes de experiencia; validaciones estructural y de callbacks de menú completadas sin renderizado. Pendiente revisión visual, tooltip y disposición en distintas resoluciones.
+
+- Godot: el material del tótem 3D incluye un contorno configurable; importación y validación estructural headless completadas. Aspecto y grosor pendientes de revisión visual en partida.
+- Godot: el hacha del panel de reclutamiento usa un nodo `Icon` editable por
+  separado. Comprobadas carga estructural, escala sin cambio de tamaño del
+  botón y alternancia de texturas normal/deshabilitada mediante headless.
+  Pendiente revisión visual en el editor.
+- Godot: todos los iconos gráficos de los paneles del HUD usan un nodo `Icon`
+  y un AtlasTexture editable; los recursos usan `IconSlot/Icon`.
+  Verificadas carga estructural, escala independiente, filtros del ratón y
+  texturas normal/deshabilitada de 14 botones en headless; callbacks de menú:
+  101 comprobaciones correctas. Pendiente revisión visual de tarjetas y recursos.
+
+- Cadáveres Godot: integradas las hojas Dead_Minion_Spritesheet y Dead_Enemy_Spritesheet mediante AnimatedSprite3D, siete frames y reproducción única. Validados carga estructural, reproducción y permanencia del último frame; 16119 comprobaciones de datos correctas. Pendiente comprobación visual y saqueo en partida.
+
+- IA táctica Godot implementada: civiles que buscan distancia de amenazas y
+  espacio entre aliados dentro del mando; continúan esquivando si los persiguen
+  y pueden detenerse cuando están seguros. Bárbaros que priorizan atacantes,
+  mantienen objetivos estables y alternan golpes con maniobras cortas bajo
+  presión de varios combatientes.
+  Verificados: persecución determinista, seis y ocho civiles, dos perseguidores,
+  cuatro esquinas, límites y separación, mando móvil, retorno gradual tras
+  desplazar el tótem, pausa, fin de amenaza, guardado/carga, combate y saqueo
+  con estadísticas normales. Pasan las dos suites tácticas, la validación
+  estructural y 16119 comprobaciones de datos. Revisadas cinco capturas
+  renderizadas de un combate mixto con Godot Compatibility.
+  Con mando móvil, el escenario de prueba registra hasta 0,04 m fuera del radio
+  debido al desplazamiento del propio tótem; se verifica ausencia de huida
+  voluntaria hacia fuera, recuperación en menos de un segundo y regreso dentro
+  del límite al detenerse. La fluidez se apoya en trazas y capturas; queda como
+  ajuste de sensaciones la valoración del usuario en una partida libre.
+
+- Hoguera Godot: fuego en bucle y brasas intermitentes configurados como AnimatedSprite3D editables en Campfire.tscn. Validados estructura y reproducción headless; revisión visual de posición y ritmo pendiente.
+
+- Hoguera: tres animaciones de brasas alternadas con pausas editables. Secuencia y carga verificadas headless; pendiente revisión visual.
+
+- Hoguera: brasas en tres nodos independientes con bucle y pausa transparente editable; inicio y duración verificados headless, pendiente revisión visual.
+
+- Hoguera HUD y cursor: corregido el AtlasTexture del icono nuevo de
+  1254 × 1254 (el recorte anterior de 64 × 64 mostraba transparencia).
+  La previsualización de colocación comparte el nuevo icono y conserva su
+  tamaño mundial mediante `pixel_size`. Verificados importación, textura
+  con contenido visible, recurso compartido, tamaño, estructura, callbacks
+  de menú y entrada de colocación en Godot headless. Comprobador estático:
+  cero errores y avisos. Pendiente revisión visual en partida.

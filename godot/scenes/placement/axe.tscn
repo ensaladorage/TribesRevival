@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://vi20usrsfvb3" path="res://assets/ui/icon-axe.png" id="texture"]
 
 [node name="PlacementPreview" type="Sprite3D" unique_id=1519280128]
-transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
+transform = Transform3D(1.9583812, 0, 0, 0, 1.9583812, 0, 0, 0, 1.9583812, 0, 0, 0)
 modulate = Color(1.353256, 1.353256, 1.353256, 1)
 pixel_size = 0.03125
 billboard = 1

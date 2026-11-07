@@ -3,8 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://d3p6qydiejoxs" path="res://assets/ui/icon-fireplace.png" id="texture"]
 
 [node name="PlacementPreview" type="Sprite3D" unique_id=1739513132]
-transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
-pixel_size = 0.03375
+transform = Transform3D(1.3911196, 0, 0, 0, 1.3911196, 0, 0, 0, 1.3911196, 0, 0.109321, 0)
+pixel_size = 0.001722488
 billboard = 1
 texture_filter = 0
 texture = ExtResource("texture")

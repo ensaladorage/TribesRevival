@@ -371,3 +371,7 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
 -   La derrota ocurre al quedar `0` minions vivos. No hay armadura ni retirada automática por salud o energía de vínculo.
 
 ------------------------------------------------------------------------
+
+### IA táctica en Godot
+
+`tactical_movement.gd` puntúa destinos locales deterministas según distancia a amenazas, espacio aliado, continuidad y dominio permitido. Los civiles mantienen la tarea de huida dentro del mando; si el tótem los deja fuera, retornan progresivamente. Los bárbaros priorizan combatientes dirigidos contra ellos, conservan el objetivo ante diferencias pequeñas de distancia y realizan maniobras cortas durante parte del enfriamiento si hay varios atacantes. Se reutilizan navegación, daño y temporizadores existentes. La simulación no depende del renderizado y el formato de guardado permanece en versión 17.

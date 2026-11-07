@@ -1,0 +1,4 @@
+Prompt: Ampliar el fuego original un 60% en ancho y alto, mantener fija la hoguera y conservar las siete fases, PNG transparente.
+Herramienta image_gen integrada para referencia de composicion; montaje final determinista con los originales para conservar los pixeles de la base y las fases exactas.
+PNG 7168x1024; 7 celdas de 1024x1024. Fuego: escala nearest 8 (antes 5), aumento lineal 60%. Origen fuego: 0,-30. Base identica: recorte 213,379,799,547; origen 112,445. 5212928 comparaciones de pixeles estaticos correctas; 1339456 pixeles de fuego comprobados sin recortes. Siete fases distintas conservadas en orden.
+PNG inspeccionado; pendiente reproduccion dentro de Godot.

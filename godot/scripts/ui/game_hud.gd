@@ -101,6 +101,11 @@ static func _cost_text(cost: Dictionary) -> String:
 
 func update_state(state: Dictionary) -> void:
 	var progression: Dictionary = state.progression
+	var experience_bar: ProgressBar = $Layout/Experience/Bar
+	$Layout/Experience/Level.text = "Nivel %s" % Numbers.integer(progression.level)
+	experience_bar.max_value = maxf(float(progression.experienceToNextLevel), 1.0)
+	experience_bar.value = progression.experience
+	experience_bar.tooltip_text = "Exp. %s/%s\nGana experiencia al recolectar recursos y derrotar ovejas y bárbaros." % [Numbers.integer(progression.experience), Numbers.integer(progression.experienceToNextLevel)]
 	# A fresh/loaded state establishes the baseline without opening a panel.
 	if _last_observed_level >= 0 and progression.level > _last_observed_level:
 		if _open_panel != "Tecnologías":
@@ -168,20 +173,17 @@ func update_state(state: Dictionary) -> void:
 		var tooltip := "%s\n%s" % [ITEM_NAMES[item], ITEM_HINTS[item]]
 		if not reason.is_empty():
 			tooltip += "\n" + reason
-		var missing := Economy.missing_resources(amounts, cost)
-		if not missing.is_empty():
-			tooltip += "\nFalta: " + _cost_text(missing)
 		_items[item].tooltip_text = tooltip
 	for technology in Progression.TECHNOLOGIES:
 		var unlocked: bool = technology.id in state.progression.unlockedTechnologies
-		_technologies[technology.id].text = "Desbloqueada" if unlocked else "%s punto%s" % [Numbers.integer(technology.cost), "" if technology.cost == 1 else "s"]
+		_technologies[technology.id].get_node("Caption").text = "Desbloqueada" if unlocked else "%s punto%s" % [Numbers.integer(technology.cost), "" if technology.cost == 1 else "s"]
 		_technologies[technology.id].disabled = state.phase != "playing" or not Progression.can_unlock(state.progression, technology.id)
 		_update_button_appearance(_technologies[technology.id])
 		_technologies[technology.id].tooltip_text = "%s\n%s\n%s" % [technology.name, technology.description, "Desbloqueado" if unlocked else "Nivel requerido: %s" % Numbers.integer(technology.minimumLevel)]
 	for tool in _upgrades:
 		var level: int = state.toolLevels[tool]
 		var name: String = {"axe": "Hacha", "hammer": "Martillo", "sword": "Espada"}[tool]
-		_upgrades[tool].text = "%s   %s" % [name, "Max" if level == 10 else "+%s" % Numbers.integer(level)]
+		_upgrades[tool].get_node("Caption").text = "%s   %s" % [name, "Max" if level == 10 else "+%s" % Numbers.integer(level)]
 		_apply_level_color(_upgrades[tool], level)
 		var upgrade: Variant = Economy.tool_upgrade(tool, level + 1)
 		_upgrades[tool].disabled = state.phase != "playing" or upgrade == null or not Economy.can_afford(amounts, upgrade.cost)
@@ -205,7 +207,8 @@ func _apply_level_color(button: Button, level: int) -> void:
 		_disabled_styles.erase(button)
 
 func _prepare_button_icon(button: Button) -> void:
-	var original := button.icon
+	var icon_node := button.get_node_or_null("Icon") as TextureRect
+	var original: Texture2D = icon_node.texture if icon_node != null else button.icon
 	if original == null:
 		return
 	var image := original.get_image()
@@ -220,12 +223,16 @@ func _prepare_button_icon(button: Button) -> void:
 			var pixel := image.get_pixel(x, y)
 			var gray := pixel.r * 0.2126 + pixel.g * 0.7152 + pixel.b * 0.0722
 			image.set_pixel(x, y, Color(gray, gray, gray, pixel.a))
-	_button_icons[button] = {"normal": original, "disabled": ImageTexture.create_from_image(image)}
+	_button_icons[button] = {"normal": original, "disabled": ImageTexture.create_from_image(image), "node": icon_node}
 
 func _update_button_appearance(button: Button) -> void:
 	if _button_icons.has(button):
 		var icon: Texture2D = _button_icons[button].disabled if button.disabled else _button_icons[button].normal
-		if button.icon != icon:
+		var icon_node: TextureRect = _button_icons[button].node
+		if icon_node != null:
+			if icon_node.texture != icon:
+				icon_node.texture = icon
+		elif button.icon != icon:
 			button.icon = icon
 	if not _disabled_styles.has(button):
 		var normal := button.get_theme_stylebox("normal") as StyleBoxFlat

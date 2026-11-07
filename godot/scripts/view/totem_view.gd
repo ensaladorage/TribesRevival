@@ -1,15 +1,28 @@
+@tool
 extends MeshInstance3D
-## The editable rest material remains the source of truth; carrying is feedback.
+## El material se edita desde la raíz, sin modificar la escena importada.
 
-@export var carried_color := Color("f1b35c")
-var _rest_material: Material
-var _carried_material: StandardMaterial3D
+@export var model_material: StandardMaterial3D:
+	set(value):
+		model_material = value
+		_apply_material()
+@export var carried_color := Color("e0e2deff")
 
 func _ready() -> void:
-	_rest_material = material_override
-	if _rest_material is StandardMaterial3D:
-		_carried_material = _rest_material.duplicate()
-		_carried_material.albedo_color = carried_color
+	_apply_material()
+
+func _apply_material() -> void:
+	var model := get_node_or_null("3D Totem/tripo_node_0aac9488-70dc-4007-9213-d5f963b1f7dd") as MeshInstance3D
+	if model != null:
+		model.material_override = model_material
 
 func present(carried: bool) -> void:
-	material_override = _carried_material if carried and _carried_material != null else _rest_material
+	var model := get_node_or_null("3D Totem/tripo_node_0aac9488-70dc-4007-9213-d5f963b1f7dd") as MeshInstance3D
+	if model == null:
+		return
+	if carried and model_material != null:
+		var carried_material := model_material.duplicate() as StandardMaterial3D
+		carried_material.albedo_color = carried_color
+		model.material_override = carried_material
+	else:
+		model.material_override = model_material

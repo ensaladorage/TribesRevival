@@ -1,12 +1,31 @@
 [gd_scene format=3 uid="uid://ptqhsm4p3puu"]
 
-[ext_resource type="PackedScene" path="res://scenes/ui/EquipmentPanel.tscn" id="EquipmentPanel"]
+[ext_resource type="PackedScene" uid="uid://chn1xoc7346d7" path="res://scenes/ui/EquipmentPanel.tscn" id="EquipmentPanel"]
 [ext_resource type="PackedScene" uid="uid://dvx5lp1vp6a1i" path="res://scenes/ui/RecruitmentPanel.tscn" id="RecruitmentPanel"]
 [ext_resource type="PackedScene" uid="uid://dipexx30008i1" path="res://scenes/ui/ResourcesPanel.tscn" id="ResourcesPanel"]
 [ext_resource type="Script" uid="uid://btwvkfglb1xkh" path="res://scripts/ui/game_hud.gd" id="script"]
-[ext_resource type="PackedScene" path="res://scenes/ui/TechnologiesPanel.tscn" id="TechnologiesPanel"]
+[ext_resource type="PackedScene" uid="uid://eix2pkp8edvq" path="res://scenes/ui/TechnologiesPanel.tscn" id="TechnologiesPanel"]
 [ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
-[ext_resource type="PackedScene" path="res://scenes/ui/UpgradesPanel.tscn" id="UpgradesPanel"]
+[ext_resource type="PackedScene" uid="uid://h7xm76175hkk" path="res://scenes/ui/UpgradesPanel.tscn" id="UpgradesPanel"]
+
+[sub_resource type="StyleBoxFlat" id="xp_background"]
+bg_color = Color(0.09, 0.075, 0.12, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.55, 0.4, 0.22, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="xp_fill"]
+bg_color = Color(0.945, 0.69, 0.28, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
 
 [node name="HUD" type="CanvasLayer" unique_id=218159773 node_paths=PackedStringArray("management_panel", "technologies_panel", "upgrades_panel", "technology_toggle", "upgrades_toggle", "technology_points")]
 layer = 2
@@ -93,3 +112,34 @@ layout_mode = 2
 
 [node name="UpgradesPanel" parent="Layout/Management/Pages" unique_id=1969440384 instance=ExtResource("UpgradesPanel")]
 layout_mode = 2
+
+[node name="Experience" type="HBoxContainer" parent="Layout" unique_id=1945261881]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -170.0
+offset_top = -38.0
+offset_right = 170.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 8
+
+[node name="Level" type="Label" parent="Layout/Experience" unique_id=1308824572]
+layout_mode = 2
+text = "Nivel 0"
+vertical_alignment = 1
+
+[node name="Bar" type="ProgressBar" parent="Layout/Experience" unique_id=15689775]
+custom_minimum_size = Vector2(230, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 1
+theme_override_styles/background = SubResource("xp_background")
+theme_override_styles/fill = SubResource("xp_fill")
+max_value = 12.0
+show_percentage = false

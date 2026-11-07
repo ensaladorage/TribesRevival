@@ -25,3 +25,6 @@ run_checked placement-input --script res://tests/test_placement_input.gd
 if [[ -f "$project_dir/tests/test_data.gd" ]]; then
   run_checked data --script res://tests/test_data.gd
 fi
+
+run_checked tactical-behavior --script res://tests/test_tactical_behavior.gd
+run_checked tactical-edges --script res://tests/test_tactical_edges.gd

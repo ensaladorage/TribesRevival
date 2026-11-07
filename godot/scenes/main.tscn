@@ -1,62 +1,59 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://xqn5i806mnbb"]
 
-[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="Script" path="res://scripts/view/isometric_camera.gd" id="2_camera"]
-
-[ext_resource type="PackedScene" path="res://scenes/world/Totem.tscn" id="totem"]
-
+[ext_resource type="Script" uid="uid://k2fovhbeufpc" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://dv8evvpdms88a" path="res://scripts/view/isometric_camera.gd" id="2_camera"]
+[ext_resource type="PackedScene" uid="uid://d1fuif7fptwlk" path="res://scenes/world/TotemSprite.tscn" id="6_tefeu"]
 [ext_resource type="PackedScene" path="res://scenes/world/Grid.tscn" id="grid"]
-[ext_resource type="PackedScene" path="res://scenes/world/TotemShadow.tscn" id="shadow"]
-
-[sub_resource type="PlaneMesh" id="Plane_ground"]
-size = Vector2(160, 160)
+[ext_resource type="PackedScene" uid="uid://bft582aur8gpc" path="res://scenes/world/TotemShadow.tscn" id="shadow"]
+[ext_resource type="PackedScene" uid="uid://6nf0pjkqq1m1" path="res://scenes/world/Totem3D.tscn" id="totem"]
 
 [sub_resource type="StandardMaterial3D" id="Material_ground"]
 albedo_color = Color(0.466667, 0.482353, 0.490196, 1)
 metallic_specular = 0.0
-roughness = 1.0
+
+[sub_resource type="PlaneMesh" id="Plane_ground"]
+size = Vector2(160, 160)
 
 [sub_resource type="Environment" id="environment"]
 background_mode = 1
 background_color = Color(0.09, 0.075, 0.12, 1)
 ambient_light_source = 2
 ambient_light_color = Color(1, 1, 1, 1)
-ambient_light_energy = 0.45
 ambient_light_sky_contribution = 0.0
+ambient_light_energy = 0.45
 reflected_light_source = 1
-tonemap_mode = 0
-tonemap_exposure = 1.0
 
-[node name="TribesRevival" type="Node3D"]
+[node name="TribesRevival" type="Node3D" unique_id=1428168490]
 script = ExtResource("1_main")
 
-[node name="Ground" type="MeshInstance3D" parent="."]
-position = Vector3(80, -0.01, 80)
-mesh = SubResource("Plane_ground")
+[node name="Ground" type="MeshInstance3D" parent="." unique_id=488999179]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 80, -0.01, 80)
 material_override = SubResource("Material_ground")
+mesh = SubResource("Plane_ground")
 
-[node name="Totem" parent="." instance=ExtResource("totem")]
-position = Vector3(80, 2, 80)
+[node name="Totem" parent="." unique_id=1051383212 instance=ExtResource("totem")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 80, 2, 80)
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=748812208]
 environment = SubResource("environment")
 
-[node name="Sun" type="DirectionalLight3D" parent="."]
-rotation_degrees = Vector3(-90, 0, 0)
-light_color = Color(1, 1, 1, 1)
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=798138442]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
 light_energy = 0.45
-shadow_enabled = false
 
-[node name="Camera3D" type="Camera3D" parent="."]
-position = Vector3(112.765, 112.765, 126.794)
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1330280886]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 112.765, 112.765, 126.794)
 projection = 1
+current = true
 size = 36.0
 near = 0.1
 far = 1000.0
-current = true
 script = ExtResource("2_camera")
 
-[node name="Grid" parent="." instance=ExtResource("grid")]
+[node name="Grid" parent="." unique_id=1135127415 instance=ExtResource("grid")]
 
-[node name="TotemShadow" parent="." instance=ExtResource("shadow")]
-position = Vector3(80, 0.04, 80)
+[node name="TotemShadow" parent="." unique_id=1805306938 instance=ExtResource("shadow")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 80, 0.04, 80)
+
+[node name="Totem2" parent="." unique_id=1238820205 instance=ExtResource("6_tefeu")]
+visible = false

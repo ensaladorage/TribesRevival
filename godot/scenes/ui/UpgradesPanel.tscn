@@ -1,39 +1,124 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://h7xm76175hkk"]
 
-[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-axe.png" id="axe"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-hammer.png" id="hammer"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-sword.png" id="sword"]
+[ext_resource type="Texture2D" uid="uid://vi20usrsfvb3" path="res://assets/ui/icon-axe.png" id="axe"]
+[ext_resource type="Texture2D" uid="uid://bgg4cg0o02e11" path="res://assets/ui/icon-hammer.png" id="hammer"]
+[ext_resource type="Texture2D" uid="uid://djmru6ko4ufxm" path="res://assets/ui/icon-sword.png" id="sword"]
+[ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
 
-[node name="UpgradesPanel" type="HFlowContainer"]
+[sub_resource type="AtlasTexture" id="crop_axe"]
+atlas = ExtResource("axe")
+region = Rect2(18, 20, 27, 23)
+
+[sub_resource type="AtlasTexture" id="crop_hammer"]
+atlas = ExtResource("hammer")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="crop_sword"]
+atlas = ExtResource("sword")
+region = Rect2(1.86, 1.695, 32.435, 33.855)
+
+[node name="UpgradesPanel" type="HFlowContainer" unique_id=1855753278]
 theme = ExtResource("theme")
 
-[node name="axe" type="Button" parent="."]
-layout_mode = 2
-custom_minimum_size = Vector2(160, 70)
-text = "axe"
-icon = ExtResource("axe")
-expand_icon = true
-theme_override_constants/icon_max_width = 40
+[node name="axe" type="Button" parent="." unique_id=894501063]
 texture_filter = 1
+custom_minimum_size = Vector2(160, 70)
+layout_mode = 2
 metadata/tool = "axe"
 
-[node name="hammer" type="Button" parent="."]
-layout_mode = 2
-custom_minimum_size = Vector2(160, 70)
-text = "hammer"
-icon = ExtResource("hammer")
-expand_icon = true
-theme_override_constants/icon_max_width = 40
+[node name="Icon" type="TextureRect" parent="axe" unique_id=469942247]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -20.0
+offset_right = 48.0
+offset_bottom = 20.0
+pivot_offset = Vector2(20, 20)
+mouse_filter = 2
+texture = SubResource("crop_axe")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="axe" unique_id=1330641164]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 56.0
+offset_right = -8.0
+theme_override_font_sizes/font_size = 12
+text = "axe"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="hammer" type="Button" parent="." unique_id=2126754175]
 texture_filter = 1
+custom_minimum_size = Vector2(160, 70)
+layout_mode = 2
 metadata/tool = "hammer"
 
-[node name="sword" type="Button" parent="."]
-layout_mode = 2
-custom_minimum_size = Vector2(160, 70)
-text = "sword"
-icon = ExtResource("sword")
-expand_icon = true
-theme_override_constants/icon_max_width = 40
+[node name="Icon" type="TextureRect" parent="hammer" unique_id=918231963]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -20.0
+offset_right = 48.0
+offset_bottom = 20.0
+pivot_offset = Vector2(20, 20)
+mouse_filter = 2
+texture = SubResource("crop_hammer")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="hammer" unique_id=2059242713]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 56.0
+offset_right = -8.0
+theme_override_font_sizes/font_size = 12
+text = "hammer"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="sword" type="Button" parent="." unique_id=726487203]
 texture_filter = 1
+custom_minimum_size = Vector2(160, 70)
+layout_mode = 2
 metadata/tool = "sword"
+
+[node name="Icon" type="TextureRect" parent="sword" unique_id=321547182]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -20.0
+offset_right = 48.0
+offset_bottom = 20.0
+grow_vertical = 2
+pivot_offset = Vector2(20, 20)
+mouse_filter = 2
+texture = SubResource("crop_sword")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="sword" unique_id=32586763]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 56.0
+offset_right = -8.0
+theme_override_font_sizes/font_size = 12
+text = "sword"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3

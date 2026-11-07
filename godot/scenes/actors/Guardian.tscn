@@ -1,9 +1,46 @@
 [gd_scene format=3 uid="uid://7ex4450go2ji"]
 
-[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/Minion.tscn" id="base"]
+[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/CharactersBase.tscn" id="base"]
+[ext_resource type="Texture2D" uid="uid://c2hkkxc57kmrc" path="res://assets/characters/Guardian Minion.png" id="character_texture"]
+
+[sub_resource type="SpriteFrames" id="character_frames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("character_texture")
+}],
+"loop": 1,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("character_texture")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("character_texture")
+}],
+"loop": 1,
+"name": &"move",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("character_texture")
+}],
+"loop": 1,
+"name": &"work",
+"speed": 5.0
+}]
 
 [node name="Guardian" unique_id=1883547838 instance=ExtResource("base")]
-visual_tint = Color(0.8235294, 0.45882353, 0.45882353, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.059352577, 0)
 
 [node name="Sprite" parent="Body" parent_id_path=PackedInt32Array(635982024) index="0" unique_id=588141790]
-modulate = Color(0.80633336, 0.82, 0, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0075502, 0)
+sprite_frames = SubResource("character_frames")

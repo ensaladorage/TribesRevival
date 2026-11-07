@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://do706uinsf8u0"]
+[gd_scene format=3 uid="uid://vva2lek08u4y"]
 
-[ext_resource type="PackedScene" path="res://scenes/ui/HealthPips.tscn" id="health"]
+[ext_resource type="PackedScene" path="res://scenes/ui/HealthController.tscn" id="health"]
 [ext_resource type="Script" uid="uid://cfgalpovwpwp6" path="res://scripts/view/actor_view.gd" id="script"]
 [ext_resource type="Texture2D" uid="uid://dhpsnpll13opv" path="res://assets/ui/icon-minion.png" id="texture"]
 

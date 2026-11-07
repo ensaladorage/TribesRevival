@@ -31,9 +31,8 @@ var dragging := false
 var debug_visible := false
 var debug_label: Label
 var pause_overlay: ColorRect
-var inventory_label: Label
 @onready var camera: Camera3D = $Camera3D
-@onready var totem_view: MeshInstance3D = $Totem
+@onready var totem_view: Node3D = $Totem
 
 func _ready() -> void:
 	add_child(world_view)
@@ -124,7 +123,7 @@ func _notification(what: int) -> void:
 func _hits_totem(screen_point: Vector2) -> bool:
 	var origin := totem_view.to_local(camera.project_ray_origin(screen_point))
 	var direction := totem_view.global_basis.inverse() * camera.project_ray_normal(screen_point)
-	return totem_view.get_aabb().intersects_ray(origin, direction) != null
+	return AABB(Vector3(-1.2, -2.0, -0.8), Vector3(2.4, 4.0, 1.6)).intersects_ray(origin, direction) != null
 
 func _queue_drag(screen_point: Vector2) -> void:
 	var point: Variant = camera.ground_point(screen_point)
@@ -159,7 +158,6 @@ func _sync_view() -> void:
 	$TotemShadow.position = Vector3(visual.x, 0.04, visual.y)
 	pause_overlay.visible = false
 	debug_label.text = "Tick %s · %s · velocidad ×%s\nTótem %s, %s" % [Numbers.integer(session.state.tick), session.state.phase, Numbers.integer(session.speed_multiplier), Numbers.integer(totem.position.x), Numbers.integer(totem.position.y)]
-	inventory_label.text = "Nivel %s · XP %s / %s · Puntos %s" % [Numbers.integer(session.state.progression.level), Numbers.integer(session.state.progression.experience), Numbers.integer(session.state.progression.experienceToNextLevel), Numbers.integer(session.state.progression.technologyPoints)]
 	Input.set_default_cursor_shape(Input.CURSOR_DRAG if dragging or not held_item.is_empty() else Input.CURSOR_ARROW)
 
 func _begin_placement(item: String) -> void:
@@ -269,7 +267,6 @@ func _delete_slot(slot: int) -> void:
 func _create_overlay() -> void:
 	var overlay := Overlay.instantiate()
 	add_child(overlay)
-	inventory_label = overlay.get_node("Progression")
 	pause_overlay = overlay.get_node("Pause")
 	debug_label = overlay.get_node("Debug/Status")
 	overlay.get_node("Debug/PauseButton").pressed.connect(_open_pause)

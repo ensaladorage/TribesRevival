@@ -1,17 +1,18 @@
 [gd_scene format=3 uid="uid://sxm3qgassm8t"]
 
-[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/Minion.tscn" id="base"]
+[ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/CharactersBase.tscn" id="base"]
 
 [node name="Barbarian" unique_id=463826534 instance=ExtResource("base")]
+transform = Transform3D(1.02, 0, 0, 0, 1.02, 0, 0, 0, 1.02, 0, 0.006309271, 0)
 visual_scale = Vector3(1.1, 1.1, 1.1)
 visual_tint = Color(0.7411765, 0.3647059, 0.29411766, 1)
 
 [node name="Body" parent="." index="0" unique_id=635982024]
-transform = Transform3D(1.02, 0, 0, 0, 1.02, 0, 0, 0, 1.02, 0, 0, 0)
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0, 0)
 
 [node name="Sprite" parent="Body" index="0" unique_id=588141790]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8901852, 0)
-modulate = Color(1, 0.14999998, 0, 1)
+modulate = Color(0.7411765, 0.3647059, 0.29411766, 1)
 
 [node name="Health" parent="." index="2" unique_id=1752847821]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9954305, 0)

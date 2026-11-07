@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://d1fuif7fptwlk"]
+
+[ext_resource type="Script" uid="uid://gww4v7uo16fg" path="res://scripts/view/totem_sprite_view.gd" id="script"]
+[ext_resource type="Texture2D" uid="uid://du2eh4gqkcptv" path="res://assets/totem/Totem 2.png" id="texture"]
+
+[node name="Totem" type="Node3D" unique_id=1238820205]
+script = ExtResource("script")
+
+[node name="Sprite" type="Sprite3D" parent="." unique_id=535967406]
+transform = Transform3D(2.0200214, 0, 0, 0, 2.0200214, 0, 0, 0, 2.0200214, 0, 1.1413927, 0)
+pixel_size = 0.00319
+billboard = 1
+texture_filter = 0
+texture = ExtResource("texture")

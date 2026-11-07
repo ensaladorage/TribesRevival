@@ -2,6 +2,7 @@ class_name TribeConflictSystem
 extends RefCounted
 ## Combat, fauna, respawn and loot. Rendering never decides hits or targets.
 
+const Tactics = preload("res://scripts/simulation/tactical_movement.gd")
 const Combat = preload("res://scripts/simulation/combat_rules.gd")
 const Move = preload("res://scripts/simulation/minion_movement.gd")
 const Work = preload("res://scripts/simulation/work_system.gd")
@@ -208,6 +209,11 @@ static func update(state: Dictionary, delta: float, frame: Dictionary) -> void:
 				Survival.record_alert(state, "barbarian", barbarian.id, barbarian.position, false)
 	for unit in state.units:
 		var stats: Variant = Combat.minion_attack(unit.role, state.toolLevels.sword)
+		if stats == null:
+			var civilian_threat: Variant = _nearest(unit.position, state.barbarians, 15.0)
+			if civilian_threat != null:
+				Work.set_task(unit, _entity_task("flee", "threat-nearby", civilian_threat.id))
+				continue
 		var following: bool = state.totem.isCarried or (state.totem.moving and not unit.get("postCombatFree", false))
 		if following:
 			# A nearby barbarian takes priority over following, even while carried.
@@ -217,9 +223,6 @@ static func update(state: Dictionary, delta: float, frame: Dictionary) -> void:
 				if stats != null:
 					unit.withdrawAfterAttack = false
 					Work.set_task(unit, _entity_task("combat", "threat-nearby", nearby.id))
-					continue
-				if Geo.distance(unit.position, nearby.position) <= 8.0:
-					Work.set_task(unit, _entity_task("flee", "threat-nearby", nearby.id))
 					continue
 			var current: Variant = _living(state.barbarians, unit.task.get("targetEntityId"))
 			if unit.task.kind == "combat" and current != null and stats != null and Geo.distance(unit.position, current.position) <= stats.range + 1e-6:
@@ -237,9 +240,6 @@ static func update(state: Dictionary, delta: float, frame: Dictionary) -> void:
 		if stats != null and threat != null:
 			var target: Variant = _choose_combat_target(state, unit)
 			Work.set_task(unit, _entity_task("combat", "threat-nearby", target.id if target != null else threat.id))
-			continue
-		if stats == null and threat != null and Geo.distance(unit.position, threat.position) <= 15.0:
-			Work.set_task(unit, _entity_task("flee", "threat-nearby", threat.id))
 			continue
 		if unit.task.kind == "combat":
 			Work.finish_combat(state, unit)
@@ -261,7 +261,8 @@ static func update(state: Dictionary, delta: float, frame: Dictionary) -> void:
 		if unit.attackLockRemainingSeconds > 0:
 			continue
 		if unit.task.kind == "flee":
-			Move.move_towards(state, unit, Move.approach(unit.position, state.totem.position, 2.02), 10.0 * delta, frame)
+			unit.task.destination = Tactics.flee_goal(state, unit)
+			Move.move_towards(state, unit, unit.task.destination, 10.0 * delta, frame)
 			continue
 		if unit.task.kind == "combat":
 			var combat_speed := Move.combat_speed(unit)
@@ -308,11 +309,17 @@ static func update(state: Dictionary, delta: float, frame: Dictionary) -> void:
 
 static func _update_barbarian(state: Dictionary, barbarian: Dictionary, delta: float, frame: Dictionary) -> void:
 	var had_target: bool = barbarian.targetUnitId != null
-	var target: Variant = _nearest(barbarian.position, state.units, 15.0, false)
+	var threats := Tactics.attackers(state, barbarian)
+	var target: Variant = threats[0] if not threats.is_empty() else _nearest(barbarian.position, state.units, 15.0, false)
+	var current: Variant = Move.find_entity(state.units, barbarian.targetUnitId)
+	if current != null and current in threats and Geo.distance(current.position, barbarian.position) <= Geo.distance(target.position, barbarian.position) + 0.8:
+		target = current
 	barbarian.targetUnitId = target.id if target != null else null
 	if target != null:
 		barbarian.returningToSpawn = false
-		if Geo.distance(barbarian.position, target.position) > 1.2:
+		if threats.size() >= 2 and barbarian.attackProgressSeconds >= 0.22 and barbarian.attackProgressSeconds < 0.75:
+			_move_barbarian(state, barbarian, Tactics.reposition_goal(state, barbarian, target, threats), 7.0 * delta, frame)
+		elif Geo.distance(barbarian.position, target.position) > 1.2:
 			_move_barbarian(state, barbarian, Move.approach(barbarian.position, target.position, 1.2), 7.0 * delta, frame)
 		barbarian.attackProgressSeconds = minf(barbarian.attackProgressSeconds + delta, 2.5)
 		if Geo.distance(barbarian.position, target.position) <= 1.2 + 1e-6 and barbarian.attackProgressSeconds + 1e-9 >= 2.5:

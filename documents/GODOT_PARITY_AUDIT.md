@@ -58,9 +58,9 @@ verificación técnica, sin atribuir una ejecución real en ese sistema.
 
 | Requisito explícito | Fuente actual/evidencia |
 |---|---|
-| Abrir Minion.tscn y sustituir sprite sin GDScript | Body/Sprite es AnimatedSprite3D con SpriteFrames; inspector permite cambiar imágenes/frames/escala; seis clases y enemigos heredan la base; usuario confirma capacidad de edición |
+| Abrir CharactersBase.tscn y sustituir sprite sin GDScript | Body/Sprite es AnimatedSprite3D con SpriteFrames; inspector permite cambiar imágenes/frames/escala; seis clases y enemigos heredan la base; usuario confirma capacidad de edición |
 | IA/navegación/combate/estadísticas independientes de assets | Scripts de simulación solo poseen datos; actor_view presenta estado y selección, sin gobernar reglas; guardado no incorpora nodos |
-| Variantes sin duplicar lógica | Gatherer/Lumberjack/Hunter/Guardian/Artisan/Mage/Barbarian/Rabbit instancian Minion.tscn y comparten el adaptador |
+| Variantes sin duplicar lógica | Gatherer/Lumberjack/Hunter/Guardian/Artisan/Mage/Barbarian/Rabbit instancian CharactersBase.tscn y comparten el adaptador |
 | Conservar selección/colisiones/navegación | Selection/Shape y fallback de 24 px; radios lógicos conservados y pruebas geométricas puras; no confundir escala visual con radios del estado |
 | Árbol, roca, arbusto, drop e interactivos editables | Tree/Rock/Bush/Twigs/Spark/Drop/Campfire/cuerpos, biomas/decoración/nube son escenas; Drop es base compartida de sus cinco variantes |
 | Generación procedural instancia PackedScene | world_catalog produce datos; WorldView.tscn expone catálogos y world_view._spawn instancia escenas |

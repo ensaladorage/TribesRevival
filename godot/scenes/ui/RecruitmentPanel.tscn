@@ -10,6 +10,34 @@
 [ext_resource type="Texture2D" uid="uid://djmru6ko4ufxm" path="res://assets/ui/icon-sword.png" id="sword"]
 [ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
 
+[sub_resource type="AtlasTexture" id="crop_gatherer"]
+atlas = ExtResource("gatherer")
+region = Rect2(0, 0, 52, 71)
+
+[sub_resource type="AtlasTexture" id="axe_icon_crop"]
+atlas = ExtResource("axe")
+region = Rect2(18, 20, 29.695, 23.695)
+
+[sub_resource type="AtlasTexture" id="crop_bow"]
+atlas = ExtResource("bow")
+region = Rect2(0, 0, 28.245, 30)
+
+[sub_resource type="AtlasTexture" id="crop_sword"]
+atlas = ExtResource("sword")
+region = Rect2(1.895, 1.535, 32.28, 33.785)
+
+[sub_resource type="AtlasTexture" id="crop_hammer"]
+atlas = ExtResource("hammer")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="crop_mage"]
+atlas = ExtResource("mage")
+region = Rect2(0.705, 2.14, 32.175, 32.13)
+
+[sub_resource type="AtlasTexture" id="crop_campfire"]
+atlas = ExtResource("campfire")
+region = Rect2(0, 0, 1254, 1254)
+
 [node name="RecruitmentPanel" type="VBoxContainer" unique_id=1065253867]
 theme = ExtResource("theme")
 theme_override_constants/separation = 5
@@ -26,11 +54,24 @@ custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 0
 tooltip_text = "gatherer"
-theme_override_constants/icon_max_width = 48
-icon = ExtResource("gatherer")
-icon_alignment = 1
-expand_icon = true
 metadata/item = "gatherer"
+
+[node name="Icon" type="TextureRect" parent="gathererRow/gatherer" unique_id=721451430]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 24.0
+offset_bottom = 24.0
+pivot_offset = Vector2(24, 24)
+mouse_filter = 2
+texture = SubResource("crop_gatherer")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Cost" parent="gathererRow" unique_id=1308694415 instance=ExtResource("cost")]
 layout_mode = 2
@@ -49,11 +90,26 @@ custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 0
 tooltip_text = "axe"
-theme_override_constants/icon_max_width = 34
-icon = ExtResource("axe")
-icon_alignment = 1
-expand_icon = true
 metadata/item = "axe"
+
+[node name="Icon" type="TextureRect" parent="axeRow/axe" unique_id=2103367996]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(20, 20)
+mouse_filter = 2
+texture = SubResource("axe_icon_crop")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Cost" parent="axeRow" unique_id=1819515354 instance=ExtResource("cost")]
 layout_mode = 2
@@ -73,11 +129,26 @@ custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 0
 tooltip_text = "bow"
-theme_override_constants/icon_max_width = 34
-icon = ExtResource("bow")
-icon_alignment = 1
-expand_icon = true
 metadata/item = "bow"
+
+[node name="Icon" type="TextureRect" parent="bowRow/bow" unique_id=1799650014]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -19.0
+offset_right = 20.0
+offset_bottom = 21.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(19.925, 19.21)
+mouse_filter = 2
+texture = SubResource("crop_bow")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Cost" parent="bowRow" unique_id=2122014082 instance=ExtResource("cost")]
 layout_mode = 2
@@ -96,11 +167,26 @@ custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 0
 tooltip_text = "sword"
-theme_override_constants/icon_max_width = 34
-icon = ExtResource("sword")
-icon_alignment = 1
-expand_icon = true
 metadata/item = "sword"
+
+[node name="Icon" type="TextureRect" parent="swordRow/sword" unique_id=827243861]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -21.0
+offset_right = 22.0
+offset_bottom = 21.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(20.03, 20.95)
+mouse_filter = 2
+texture = SubResource("crop_sword")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Cost" parent="swordRow" unique_id=1102232624 instance=ExtResource("cost")]
 layout_mode = 2
@@ -119,11 +205,26 @@ custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 0
 tooltip_text = "hammer"
-theme_override_constants/icon_max_width = 34
-icon = ExtResource("hammer")
-icon_alignment = 1
-expand_icon = true
 metadata/item = "hammer"
+
+[node name="Icon" type="TextureRect" parent="hammerRow/hammer" unique_id=1090473541]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -17.0
+offset_top = -17.0
+offset_right = 17.0
+offset_bottom = 17.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(17, 17)
+mouse_filter = 2
+texture = SubResource("crop_hammer")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Cost" parent="hammerRow" unique_id=914493370 instance=ExtResource("cost")]
 layout_mode = 2
@@ -142,11 +243,26 @@ custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 size_flags_horizontal = 0
 tooltip_text = "mage"
-theme_override_constants/icon_max_width = 34
-icon = ExtResource("mage")
-icon_alignment = 1
-expand_icon = true
 metadata/item = "mage"
+
+[node name="Icon" type="TextureRect" parent="mageRow/mage" unique_id=218542794]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -18.0
+offset_right = 17.0
+offset_bottom = 19.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(19.42, 17.71)
+mouse_filter = 2
+texture = SubResource("crop_mage")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Cost" parent="mageRow" unique_id=1123903125 instance=ExtResource("cost")]
 layout_mode = 2
@@ -166,11 +282,26 @@ layout_mode = 2
 size_flags_horizontal = 0
 offset_transform_enabled = true
 tooltip_text = "campfire"
-theme_override_constants/icon_max_width = 34
-icon = ExtResource("campfire")
-icon_alignment = 1
-expand_icon = true
 metadata/item = "campfire"
+
+[node name="Icon" type="TextureRect" parent="campfireRow/campfire" unique_id=886534361]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -23.0
+offset_top = -23.0
+offset_right = 22.0
+offset_bottom = 22.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(22.87, 22.835)
+mouse_filter = 2
+texture = SubResource("crop_campfire")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Cost" parent="campfireRow" unique_id=1106935810 instance=ExtResource("cost")]
 layout_mode = 2

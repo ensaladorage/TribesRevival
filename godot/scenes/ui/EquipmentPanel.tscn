@@ -1,32 +1,51 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://chn1xoc7346d7"]
 
-[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ResourceCost.tscn" id="cost"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-shield.png" id="shield"]
+[ext_resource type="Texture2D" uid="uid://cx24fwr10j1rk" path="res://assets/ui/icon-shield.png" id="shield"]
+[ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
 
-[node name="EquipmentPanel" type="VBoxContainer"]
+[sub_resource type="AtlasTexture" id="crop_shield"]
+atlas = ExtResource("shield")
+region = Rect2(0.975, -8.835, 62.98, 83.63)
+
+[node name="EquipmentPanel" type="VBoxContainer" unique_id=1180876985]
 theme = ExtResource("theme")
 theme_override_constants/separation = 5
 
-[node name="shieldRow" type="HBoxContainer" parent="."]
+[node name="shieldRow" type="HBoxContainer" parent="." unique_id=1892287480]
 layout_mode = 2
-theme_override_constants/separation = 8
 mouse_filter = 2
+theme_override_constants/separation = 8
 metadata/item_row = "shield"
 
-[node name="Cost" parent="shieldRow" instance=ExtResource("cost")]
+[node name="Cost" parent="shieldRow" unique_id=1085026956 instance=ExtResource("cost")]
 layout_mode = 2
 size_flags_vertical = 4
 metadata/cost_for = "shield"
 
-[node name="shield" type="Button" parent="shieldRow"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 56)
-size_flags_horizontal = 0
-text = ""
-tooltip_text = "shield"
-icon = ExtResource("shield")
-expand_icon = true
-theme_override_constants/icon_max_width = 34
+[node name="shield" type="Button" parent="shieldRow" unique_id=854356232]
 texture_filter = 1
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "shield"
 metadata/item = "shield"
+
+[node name="Icon" type="TextureRect" parent="shieldRow/shield" unique_id=168814305]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -23.0
+offset_top = -23.0
+offset_right = 22.0
+offset_bottom = 22.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(22.195, 23.05)
+mouse_filter = 2
+texture = SubResource("crop_shield")
+expand_mode = 1
+stretch_mode = 5

@@ -140,7 +140,7 @@ un Recolector y al cargar una partida con Mago.
 No solicitar nuevos recorridos durante los subhitos: el usuario hará testeo al
 terminar la migración. Mantener Windows manual aplazado y centrarse en Linux.
 
-- Abrir Minion.tscn y reemplazar SpriteFrames/escala; comprobar propagación a
+- Abrir CharactersBase.tscn y reemplazar SpriteFrames/escala; comprobar propagación a
   variantes y sustitución individual, selección, HP y equipo tras guardar/cargar.
 - Reorganizar HUD.tscn y modificar Theme; comprobar que cambios aparecen sin
   editar scripts, con tooltips/paneles y menús/slots accesibles.

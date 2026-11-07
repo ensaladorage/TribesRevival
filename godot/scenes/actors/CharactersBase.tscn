@@ -1,0 +1,89 @@
+[gd_scene format=3 uid="uid://do706uinsf8u0"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/HealthController.tscn" id="health"]
+[ext_resource type="Script" uid="uid://cfgalpovwpwp6" path="res://scripts/view/actor_view.gd" id="script"]
+[ext_resource type="Texture2D" uid="uid://dhpsnpll13opv" path="res://assets/ui/icon-minion.png" id="texture"]
+
+[sub_resource type="SpriteFrames" id="frames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("texture")
+}],
+"loop": 1,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("texture")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("texture")
+}],
+"loop": 1,
+"name": &"move",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("texture")
+}],
+"loop": 1,
+"name": &"work",
+"speed": 5.0
+}]
+
+[sub_resource type="BoxShape3D" id="selection"]
+size = Vector3(1.3704298, 1.783789, 0.72)
+
+[sub_resource type="StandardMaterial3D" id="ring_material"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.945, 0.824, 0.478, 0.35)
+
+[sub_resource type="TorusMesh" id="ring"]
+inner_radius = 0.9775
+outer_radius = 1.0225
+ring_segments = 8
+
+[node name="CharactersBase" type="Node3D" unique_id=1062038343]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.006309271, 0)
+script = ExtResource("script")
+
+[node name="Body" type="Node3D" parent="." unique_id=635982024]
+
+[node name="Sprite" type="AnimatedSprite3D" parent="Body" unique_id=588141790]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.89441615, 0)
+pixel_size = 0.025
+billboard = 1
+texture_filter = 0
+sprite_frames = SubResource("frames")
+animation = &"idle"
+
+[node name="Selection" type="Area3D" parent="." unique_id=1553720391]
+collision_layer = 0
+collision_mask = 0
+input_ray_pickable = false
+monitoring = false
+monitorable = false
+
+[node name="Shape" type="CollisionShape3D" parent="Selection" unique_id=385145280]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0065039396, 0.9115673, 0)
+shape = SubResource("selection")
+
+[node name="Health" type="Marker3D" parent="." unique_id=1752847821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.830359, 0)
+
+[node name="DetectionRange" type="MeshInstance3D" parent="." unique_id=656574462]
+visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.053235605, 0)
+material_override = SubResource("ring_material")
+mesh = SubResource("ring")
+
+[node name="HealthDisplay" parent="." unique_id=375189917 instance=ExtResource("health")]

@@ -1,19 +1,79 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://d17qldnubytxp"]
 
-[ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
-[ext_resource type="Texture2D" path="res://assets/enemies/dead.png" id="corpse_texture"]
+[ext_resource type="Script" uid="uid://biv35anr462ct" path="res://scripts/view/world_element.gd" id="script"]
+[ext_resource type="Texture2D" uid="uid://vvr0ut3tg658" path="res://assets/enemies/Dead_Enemy_Spritesheet.png" id="sheet"]
 
-[node name="BarbarianCorpse" type="Node3D"]
+[sub_resource type="AtlasTexture" id="frame_0"]
+atlas = ExtResource("sheet")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_1"]
+atlas = ExtResource("sheet")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_2"]
+atlas = ExtResource("sheet")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_3"]
+atlas = ExtResource("sheet")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_4"]
+atlas = ExtResource("sheet")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_5"]
+atlas = ExtResource("sheet")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_6"]
+atlas = ExtResource("sheet")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="frames"]
+animations = [{
+"frames": [{
+"duration": 2.0,
+"texture": SubResource("frame_0")
+}, {
+"duration": 1.7,
+"texture": SubResource("frame_1")
+}, {
+"duration": 1.5,
+"texture": SubResource("frame_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_5")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_6")
+}],
+"loop": 0,
+"name": &"death",
+"speed": 12.0
+}]
+
+[node name="BarbarianCorpse" type="Node3D" unique_id=1374648874]
 script = ExtResource("script")
 
-[node name="Visual" type="Node3D" parent="."]
+[node name="Visual" type="Node3D" parent="." unique_id=1033563635]
 
-[node name="Default" type="Node3D" parent="Visual"]
+[node name="Default" type="Node3D" parent="Visual" unique_id=2135778036]
 
-[node name="Sprite" type="Sprite3D" parent="Visual/Default"]
-position = Vector3(0, 0.8, 0)
-pixel_size = 0.025
+[node name="Sprite" type="AnimatedSprite3D" parent="Visual/Default" unique_id=268250915]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 0, 1.0821614, 0)
+pixel_size = 0.02
 billboard = 1
 texture_filter = 0
-shaded = false
-texture = ExtResource("corpse_texture")
+sprite_frames = SubResource("frames")
+animation = &"death"
+autoplay = "death"
+frame = 6
+frame_progress = 1.0

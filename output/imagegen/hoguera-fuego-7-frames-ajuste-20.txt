@@ -1,0 +1,4 @@
+Prompt: Reducir el fuego un 20% respecto a la version grande, centrar su base en los palitos de madera y conservar hoguera fija, siete fases originales y transparencia.
+Herramienta image_gen integrada para referencia de composicion; montaje final determinista desde los originales para conservar la base y las fases exactas.
+PNG 7168x1024; 7 celdas de 1024x1024. Fuego: reduccion al 80% de la version grande; cuadro escalado 819px (redondeado de 819.2px) con nearest. Origen fuego 102,11; ancla original (64,110) situada aproximadamente en (512,715), centrada en la madera. Base identica: recorte 213,379,799,547; origen 112,445. 5980058 comparaciones de pixeles estaticos correctas; 856289 pixeles de fuego sin recortes. Siete fases distintas conservadas en orden.
+PNG inspeccionado; no se modifican escenas ni archivos originales.

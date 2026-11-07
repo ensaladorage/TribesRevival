@@ -29,14 +29,12 @@ func _refresh_appearance() -> void:
 		_replacement.get_parent().remove_child(_replacement)
 		_replacement.queue_free()
 		_replacement = null
-	$Visual/Default.visible = true
+	$Visual.visible = true
 	if appearance_override == null:
 		return
 	var instance := appearance_override.instantiate()
 	if instance is Node3D:
 		_replacement = instance
-		$Visual.add_child(instance)
-		$Visual/Default.hide()
 	else:
 		instance.free()
 		push_warning("Appearance override must have a Node3D root")

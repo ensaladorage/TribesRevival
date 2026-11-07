@@ -59,4 +59,4 @@ func present_health(actor: Dictionary, _pixel_size: float, _screen_up: Vector3) 
 	if not $HealthDisplay.visible:
 		return
 	var screen := camera.unproject_position(to_global(_health_position)) - Vector2(0, health_screen_margin_pixels)
-	$HealthDisplay.present(int(ceil(maxf(actor.health, 0))), int(ceil(actor.maxHealth)), screen)
+	$HealthDisplay.present(int(ceil(maxf(actor.health, 0))), int(ceil(actor.maxHealth)), screen, 1 if actor.get("hasShield", false) else 0)

@@ -150,7 +150,7 @@ static func agent(state: Dictionary, unit: Dictionary, frame: Dictionary) -> Dic
 		if corpse != null:
 			destination = approach(point, corpse.position, 1.25)
 	elif unit.task.kind in ["return-to-totem", "flee"]:
-		destination = Idle.range_entry(point, area(state)) if unit.task.kind == "return-to-totem" else approach(point, state.totem.position, TOTEM_CLEARANCE)
+		destination = Idle.range_entry(point, area(state)) if unit.task.kind == "return-to-totem" else unit.task.get("destination", point)
 		speed = RETURN_SPEED if unit.task.kind == "return-to-totem" else FOLLOW_SPEED
 	elif unit.task.kind == "combat":
 		var target: Variant = find_entity(state.barbarians, unit.task.get("targetEntityId"))
@@ -190,6 +190,10 @@ static func move_towards(state: Dictionary, unit: Dictionary, destination: Dicti
 	var is_allowed := func(point: Dictionary) -> bool:
 		if point.x < 2 or point.y < 2 or point.x > 158 or point.y > 158:
 			return false
+		if unit.task.kind == "flee":
+			var limit := maxf(state.totem.commandRadius, Geo.distance(unit.position, state.totem.position))
+			if Geo.distance(point, state.totem.position) > limit + 1e-8:
+				return false
 		if not state.totem.isCarried and (not state.totem.moving or unit.get("postCombatFree", false)) and unit.task.kind == "idle":
 			if not Idle.within_range(point, area(state)):
 				return false
@@ -290,7 +294,9 @@ static func _separate_pair(first: Dictionary, second: Dictionary, minimum: float
 	second.x += nx * adjustment * (1.0 - first_share)
 	second.y += ny * adjustment * (1.0 - first_share)
 
-static func _constrain(state: Dictionary, unit: Dictionary) -> void:
+static func _constrain(state: Dictionary, unit: Dictionary, flee_limits: Dictionary) -> void:
+	if unit.task.kind == "flee":
+		unit.position.merge(project_within(State.clamp_position(unit.position), state.totem.position, flee_limits[unit.id]), true)
 	if unit.role == "hunter" and unit.task.kind == "combat":
 		unit.position.merge(project_within(unit.position, state.totem.position, minf(state.totem.commandRadius, 10)), true)
 	if not state.totem.isCarried and (not state.totem.moving or unit.get("postCombatFree", false)) and unit.task.kind == "idle" and unit.get("idleMovement", {}).get("destination") != null:
@@ -298,12 +304,18 @@ static func _constrain(state: Dictionary, unit: Dictionary) -> void:
 		unit.position.merge(State.clamp_position(outside_totem(unit.position, state.totem.position, unit.id)), true)
 
 static func resolve_spacing(state: Dictionary) -> void:
+	# If a moved totem leaves a civilian outside, allow gradual return without
+	# an artificial snap. Spacing may never push it farther out this tick.
+	var flee_limits := {}
+	for unit in state.units:
+		if unit.task.kind == "flee":
+			flee_limits[unit.id] = maxf(state.totem.commandRadius, Geo.distance(unit.position, state.totem.position))
 	var units: Array = state.units.duplicate()
 	units.sort_custom(func(a, b): return a.id < b.id)
 	var barbarians: Array = state.barbarians.filter(func(barbarian): return barbarian.isAlive)
 	barbarians.sort_custom(func(a, b): return a.id < b.id)
 	for unit in units:
-		_constrain(state, unit)
+		_constrain(state, unit, flee_limits)
 	for pass_index in 8:
 		for first_index in units.size():
 			var first: Dictionary = units[first_index]
@@ -313,13 +325,13 @@ static func resolve_spacing(state: Dictionary) -> void:
 				var second_fixed := holds_working_position(state, second)
 				var first_share := 0.0 if first_fixed and not second_fixed else (1.0 if second_fixed and not first_fixed else 0.5)
 				_separate_pair(first.position, second.position, Nav.MINIMUM_SEPARATION, first.id + ":" + second.id, first_share)
-				_constrain(state, first)
-				_constrain(state, second)
+				_constrain(state, first, flee_limits)
+				_constrain(state, second, flee_limits)
 			for barbarian in barbarians:
 				_separate_pair(first.position, barbarian.position, Nav.MINIMUM_SEPARATION, first.id + ":" + barbarian.id, 1.0)
-				_constrain(state, first)
+				_constrain(state, first, flee_limits)
 		for first_index in barbarians.size():
 			for second_index in range(first_index + 1, barbarians.size()):
 				_separate_pair(barbarians[first_index].position, barbarians[second_index].position, Nav.MINIMUM_SEPARATION, barbarians[first_index].id + ":" + barbarians[second_index].id)
 	for unit in units:
-		_constrain(state, unit)
+		_constrain(state, unit, flee_limits)

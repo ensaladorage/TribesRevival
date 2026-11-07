@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://6nf0pjkqq1m1"]
+
+[ext_resource type="Texture2D" uid="uid://bfbityy4va5wq" path="res://assets/totem/3D Totem_3D_Totem_basecolor.jpg" id="1_g4st4"]
+[ext_resource type="PackedScene" uid="uid://4p1itapxpj3c" path="res://assets/totem/3D Totem.glb" id="3_5ox35"]
+[ext_resource type="Shader" uid="uid://jik38i3boqs3" path="res://shaders/totem_outline.gdshader" id="outline_shader"]
+[ext_resource type="Script" uid="uid://cv80u7q8csudd" path="res://scripts/view/totem_view.gd" id="script"]
+
+[sub_resource type="ShaderMaterial" id="outline_material"]
+render_priority = 0
+shader = ExtResource("outline_shader")
+shader_parameter/outline_color = Color(0.08627451, 0.10980392, 0.18039216, 1)
+shader_parameter/outline_width = 0.0110000005225
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_06hfm"]
+next_pass = SubResource("outline_material")
+shading_mode = 0
+diffuse_mode = 3
+albedo_texture = ExtResource("1_g4st4")
+
+[node name="Totem" type="MeshInstance3D" unique_id=532543030]
+script = ExtResource("script")
+model_material = SubResource("StandardMaterial3D_06hfm")
+
+[node name="3D Totem" parent="." unique_id=1940209137 instance=ExtResource("3_5ox35")]
+transform = Transform3D(2.24384, -0.56212205, 7.0352144, -0.5035788, 7.3506503, 0.7479389, -7.0396466, -0.7049989, 2.1889226, 0.4547458, -1.9835594, 0.24388558)

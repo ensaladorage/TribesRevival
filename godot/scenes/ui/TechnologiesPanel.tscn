@@ -1,70 +1,160 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://eix2pkp8edvq"]
 
-[ext_resource type="Theme" path="res://themes/TribesTheme.tres" id="theme"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-hammer.png" id="artisan"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-shield.png" id="shield"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon-mage.png" id="mage"]
+[ext_resource type="Texture2D" uid="uid://bgg4cg0o02e11" path="res://assets/ui/icon-hammer.png" id="artisan"]
+[ext_resource type="Texture2D" uid="uid://b1pmrhmsay6uj" path="res://assets/ui/icon-mage.png" id="mage"]
+[ext_resource type="Texture2D" uid="uid://cx24fwr10j1rk" path="res://assets/ui/icon-shield.png" id="shield"]
+[ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
 
-[node name="TechnologiesPanel" type="VBoxContainer"]
+[sub_resource type="AtlasTexture" id="crop_artisan"]
+atlas = ExtResource("artisan")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="crop_mage"]
+atlas = ExtResource("mage")
+region = Rect2(0, 0, 35.545, 34.44)
+
+[sub_resource type="AtlasTexture" id="crop_shield"]
+atlas = ExtResource("shield")
+region = Rect2(0.975, -8.835, 62.98, 83.63)
+
+[node name="TechnologiesPanel" type="VBoxContainer" unique_id=868778684]
 theme = ExtResource("theme")
 
-[node name="Points" type="Label" parent="."]
+[node name="Points" type="Label" parent="." unique_id=978555867]
 layout_mode = 2
 text = "Puntos disponibles: 0"
 
-[node name="Trees" type="HFlowContainer" parent="."]
+[node name="Trees" type="HFlowContainer" parent="." unique_id=753850599]
 layout_mode = 2
 
-[node name="survival" type="Button" parent="Trees"]
+[node name="survival" type="Button" parent="Trees" unique_id=275805593]
 layout_mode = 2
 text = "Supervivencia"
 metadata/tree = "survival"
 
-[node name="exploration" type="Button" parent="Trees"]
+[node name="exploration" type="Button" parent="Trees" unique_id=936465300]
 layout_mode = 2
 text = "Exploración"
 metadata/tree = "exploration"
 
-[node name="combat" type="Button" parent="Trees"]
+[node name="combat" type="Button" parent="Trees" unique_id=1809345826]
 layout_mode = 2
 text = "Combate"
 metadata/tree = "combat"
 
-[node name="survivalOptions" type="HFlowContainer" parent="."]
+[node name="survivalOptions" type="HFlowContainer" parent="." unique_id=937347956]
 layout_mode = 2
 metadata/tree_options = "survival"
 
-[node name="explorationOptions" type="HFlowContainer" parent="."]
+[node name="artisan" type="Button" parent="survivalOptions" unique_id=472853664]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 70)
+layout_mode = 2
+metadata/technology = "artisan"
+
+[node name="Icon" type="TextureRect" parent="survivalOptions/artisan" unique_id=1240681064]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 14.0
+offset_top = -20.0
+offset_right = 54.0
+offset_bottom = 20.0
+grow_vertical = 2
+pivot_offset = Vector2(20, 20)
+mouse_filter = 2
+texture = SubResource("crop_artisan")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="survivalOptions/artisan" unique_id=1429387809]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 56.0
+offset_right = -8.0
+theme_override_font_sizes/font_size = 12
+text = "artisan"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="explorationOptions" type="HFlowContainer" parent="." unique_id=259860005]
 layout_mode = 2
 metadata/tree_options = "exploration"
 
-[node name="combatOptions" type="HFlowContainer" parent="."]
+[node name="mage" type="Button" parent="explorationOptions" unique_id=1615414390]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 70)
+layout_mode = 2
+metadata/technology = "mage"
+
+[node name="Icon" type="TextureRect" parent="explorationOptions/mage" unique_id=1739987455]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 13.0
+offset_top = -20.0
+offset_right = 53.0
+offset_bottom = 20.0
+grow_vertical = 2
+pivot_offset = Vector2(20, 20)
+mouse_filter = 2
+texture = SubResource("crop_mage")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="explorationOptions/mage" unique_id=1901963582]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 56.0
+offset_right = -8.0
+theme_override_font_sizes/font_size = 12
+text = "mage"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="combatOptions" type="HFlowContainer" parent="." unique_id=704954534]
 layout_mode = 2
 metadata/tree_options = "combat"
 
-[node name="artisan" type="Button" parent="survivalOptions"]
-layout_mode = 2
-custom_minimum_size = Vector2(160, 70)
-icon = ExtResource("artisan")
-expand_icon = true
-theme_override_constants/icon_max_width = 40
+[node name="shield" type="Button" parent="combatOptions" unique_id=1591204906]
 texture_filter = 1
-metadata/technology = "artisan"
-
-[node name="shield" type="Button" parent="combatOptions"]
-layout_mode = 2
 custom_minimum_size = Vector2(160, 70)
-icon = ExtResource("shield")
-expand_icon = true
-theme_override_constants/icon_max_width = 40
-texture_filter = 1
+layout_mode = 2
 metadata/technology = "shield"
 
-[node name="mage" type="Button" parent="explorationOptions"]
-layout_mode = 2
-custom_minimum_size = Vector2(160, 70)
-icon = ExtResource("mage")
-expand_icon = true
-theme_override_constants/icon_max_width = 40
-texture_filter = 1
-metadata/technology = "mage"
+[node name="Icon" type="TextureRect" parent="combatOptions/shield" unique_id=1380061983]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 9.0
+offset_top = -24.0
+offset_right = 54.0
+offset_bottom = 21.0
+grow_vertical = 2
+pivot_offset = Vector2(21.105, 23.05)
+mouse_filter = 2
+texture = SubResource("crop_shield")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="combatOptions/shield" unique_id=1732106474]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 56.0
+offset_right = -8.0
+theme_override_font_sizes/font_size = 12
+text = "shield"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
