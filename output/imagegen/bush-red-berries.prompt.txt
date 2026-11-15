@@ -1,0 +1,6 @@
+Tool: built-in image_gen
+Reference: godot/assets/environment/Bush big.png
+Use case: stylized-concept
+Asset type: single pixel-art food resource bush sprite for Tribes Revival.
+Input image: reference for exact art direction, foliage palette, pixel scale, silhouette and viewing angle.
+Primary request: create a bush very similar to the reference, with clearly visible round RED BERRIES distributed naturally across the foliage. Maintain its compact low wide mound shape, dark blue-teal outline and shadows, blue-green leaves with muted olive-green highlights, and slightly elevated front view. Berries are simple round bright red pixel clusters with darker crimson shading and a small warm highlight, readable at small game scale. Keep the coarse low-resolution pixel-art look with crisp square pixels, limited palette and simple leaf clusters; do not add detail density or smooth painted rendering. One isolated whole bush centered with small transparent margins. Truly transparent background. No ground plane, no scenery, no text, no border, no watermark. Match the reference proportions and visual simplicity.

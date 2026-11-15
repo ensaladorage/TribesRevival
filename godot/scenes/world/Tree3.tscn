@@ -1,0 +1,94 @@
+[gd_scene format=3 uid="uid://cgcix0wjxagld"]
+
+[ext_resource type="PackedScene" uid="uid://bft582aur8gpc" path="res://scenes/world/TotemShadow.tscn" id="3_lj7qr"]
+[ext_resource type="Script" uid="uid://dvg23j3gbsgnf" path="res://scripts/view/tree_view.gd" id="script"]
+[ext_resource type="Texture2D" uid="uid://dwiiaxld1vhti" path="res://assets/resources/Tree3.png" id="sheet"]
+
+[sub_resource type="AtlasTexture" id="frame_0"]
+atlas = ExtResource("sheet")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="frame_1"]
+atlas = ExtResource("sheet")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="frame_2"]
+atlas = ExtResource("sheet")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="frame_3"]
+atlas = ExtResource("sheet")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="frame_4"]
+atlas = ExtResource("sheet")
+region = Rect2(768, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="frame_5"]
+atlas = ExtResource("sheet")
+region = Rect2(960, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="frame_6"]
+atlas = ExtResource("sheet")
+region = Rect2(1152, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="frame_7"]
+atlas = ExtResource("sheet")
+region = Rect2(1344, 0, 192, 192)
+
+[sub_resource type="SpriteFrames" id="frames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_5")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_6")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_7")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 6.0
+}]
+
+[node name="Tree" type="Node3D" unique_id=2110248027]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08542907, 0)
+script = ExtResource("script")
+canopy_region = Rect2(0.06, 0.03, 0.88, 0.77)
+decoration_clearance_radius = 1.2
+
+[node name="Visual" type="Node3D" parent="." unique_id=329156189]
+
+[node name="Default" type="Node3D" parent="Visual" unique_id=688078369]
+
+[node name="TotemShadow" parent="Visual/Default" unique_id=1671596345 instance=ExtResource("3_lj7qr")]
+transform = Transform3D(0.43514043, 0, 0, 0, 0.43514043, 0, 0, 0, 0.43514043, -0.39866042, 0.009676397, -0.3893299)
+
+[node name="Sprite" type="AnimatedSprite3D" parent="Visual/Default" unique_id=954656654]
+transform = Transform3D(1.9044261, 0, 0, 0, 1.9044261, 0, 0, 0, 1.9044261, 0, 0.1315381, 0)
+cast_shadow = 0
+offset = Vector2(0, 68)
+pixel_size = 0.02
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+sprite_frames = SubResource("frames")
+animation = &"idle"
+autoplay = "idle"

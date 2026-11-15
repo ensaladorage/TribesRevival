@@ -9,6 +9,31 @@
 [ext_resource type="Texture2D" uid="uid://djmru6ko4ufxm" path="res://assets/ui/icon-sword.png" id="sword"]
 [ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
 
+[sub_resource type="AtlasTexture" id="atlas_minion"]
+atlas = ExtResource("minion")
+region = Rect2(0, 0, 52, 71)
+margin = Rect2(5.595, 7.875, 12.36, 10.775)
+
+[sub_resource type="AtlasTexture" id="atlas_axe"]
+atlas = ExtResource("axe")
+region = Rect2(17.4, 18.58, 31.805, 26.07)
+
+[sub_resource type="AtlasTexture" id="atlas_bow"]
+atlas = ExtResource("bow")
+region = Rect2(0, 0, 28, 30)
+margin = Rect2(0.885, 1.96, 3.965, 4.85)
+
+[sub_resource type="AtlasTexture" id="atlas_sword"]
+atlas = ExtResource("sword")
+region = Rect2(0, 0, 36, 36)
+
+[sub_resource type="AtlasTexture" id="atlas_hammer"]
+atlas = ExtResource("hammer")
+
+[sub_resource type="AtlasTexture" id="atlas_mage"]
+atlas = ExtResource("mage")
+region = Rect2(0, 0, 36, 36)
+
 [node name="TutorialMenu" type="VBoxContainer" unique_id=1160800354]
 custom_minimum_size = Vector2(912, 0)
 offset_right = 912.0
@@ -81,7 +106,7 @@ layout_mode = 2
 texture_filter = 1
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-texture = ExtResource("minion")
+texture = SubResource("atlas_minion")
 expand_mode = 1
 stretch_mode = 5
 
@@ -116,7 +141,7 @@ layout_mode = 2
 texture_filter = 1
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-texture = ExtResource("axe")
+texture = SubResource("atlas_axe")
 expand_mode = 1
 stretch_mode = 5
 
@@ -150,7 +175,7 @@ layout_mode = 2
 texture_filter = 1
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-texture = ExtResource("bow")
+texture = SubResource("atlas_bow")
 expand_mode = 1
 stretch_mode = 5
 
@@ -184,7 +209,7 @@ layout_mode = 2
 texture_filter = 1
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-texture = ExtResource("sword")
+texture = SubResource("atlas_sword")
 expand_mode = 1
 stretch_mode = 5
 
@@ -219,7 +244,7 @@ texture_filter = 1
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 offset_transform_enabled = true
-texture = ExtResource("hammer")
+texture = SubResource("atlas_hammer")
 expand_mode = 1
 stretch_mode = 5
 
@@ -253,7 +278,7 @@ layout_mode = 2
 texture_filter = 1
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-texture = ExtResource("mage")
+texture = SubResource("atlas_mage")
 expand_mode = 1
 stretch_mode = 5
 

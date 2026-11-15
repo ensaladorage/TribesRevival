@@ -4,6 +4,9 @@ documentos de este índice se encuentran en esta carpeta
 
 # Tribes Revival --- Índice de documentación
 
+Para instalaciones, comandos y limitaciones de las herramientas locales de
+desarrollo, consultar `documents/DEVELOPMENT_TOOLS.md`.
+
 Este conjunto separa diseño, arquitectura, planificación, estado y
 validación para que cada documento tenga una responsabilidad clara.
 

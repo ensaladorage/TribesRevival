@@ -1,14 +1,92 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dwmxes6o2ax8l"]
 
-[ext_resource type="PackedScene" path="res://scenes/world/DecorationSprite.tscn" id="base"]
-[ext_resource type="Texture2D" path="res://assets/environment/Bush big.png" id="texture"]
+[ext_resource type="Script" uid="uid://dvg23j3gbsgnf" path="res://scripts/view/tree_view.gd" id="script"]
+[ext_resource type="Texture2D" uid="uid://bsd8rodtd34ek" path="res://assets/environment/Bushe2.png" id="sheet"]
 
-[sub_resource type="AtlasTexture" id="atlas"]
-atlas = ExtResource("texture")
-region = Rect2(2, 11, 61, 42)
+[sub_resource type="AtlasTexture" id="frame_0"]
+atlas = ExtResource("sheet")
+region = Rect2(0, 0, 128, 128)
 
-[node name="DecorationBushBig" instance=ExtResource("base")]
+[sub_resource type="AtlasTexture" id="frame_1"]
+atlas = ExtResource("sheet")
+region = Rect2(128, 0, 128, 128)
 
-[node name="Sprite" parent="Visual/Default" index="0"]
-offset = Vector2(0, 21.0)
-texture = SubResource("atlas")
+[sub_resource type="AtlasTexture" id="frame_2"]
+atlas = ExtResource("sheet")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_3"]
+atlas = ExtResource("sheet")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_4"]
+atlas = ExtResource("sheet")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_5"]
+atlas = ExtResource("sheet")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_6"]
+atlas = ExtResource("sheet")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_7"]
+atlas = ExtResource("sheet")
+region = Rect2(896, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="frames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_5")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_6")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_7")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 3.0
+}]
+
+[node name="DecorationBushBig" type="Node3D" unique_id=1474143075]
+script = ExtResource("script")
+canopy_region = Rect2(0, 0, 1, 1)
+center_on_overlap = true
+hole_radius = 0.6
+dither_pixel_size = 1.0
+
+[node name="Visual" type="Node3D" parent="." unique_id=1943226988]
+
+[node name="Default" type="Node3D" parent="Visual" unique_id=1637553709]
+
+[node name="Sprite" type="AnimatedSprite3D" parent="Visual/Default" unique_id=753968510]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.121117786, 0)
+cast_shadow = 0
+offset = Vector2(0, 8)
+pixel_size = 0.0308
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+sprite_frames = SubResource("frames")
+animation = &"idle"
+autoplay = "idle"
+

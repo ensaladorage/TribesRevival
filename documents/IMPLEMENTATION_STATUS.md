@@ -1,5 +1,392 @@
 # IMPLEMENTATION_STATUS --- Tribes Revival
 
+
+## Límite del tótem para aceptar avisos de recursos — 2026-11-15
+
+- Los avisos de nodos solo asignan receptores si el recurso está dentro del radio
+  de mando del tótem más el margen del 5 %, según decisión del usuario. El
+  límite se mide desde el tótem y se adapta al radio actual. Se conservan las
+  reglas de emisores levantados, afinidad, disponibilidad y reservas.
+- Actualizados `work_system.gd`, las regresiones de `test_minion_carry.gd`, GDD,
+  contratos técnicos y QA. No cambian detección directa ni llamadas de combate/caza.
+- Verificado con Godot 4.7.2: 17/17 pruebas GdUnit y 8584 comparaciones de datos.
+  Incluye el escenario tras soltar lejos y destinos dentro/en/fuera del borde
+  con dos radios distintos. Pendiente validación manual en partida.
+
+
+## Corrección de avisos de recursos desde minions levantados — 2026-11-15
+
+- `dispatch_resource_call` rechaza emisores con `isCarried`: levantar una unidad
+  ya no puede enviar a un aliado hacia recursos lejanos por una llamada suya.
+  Los avisos normales de unidades en el suelo conservan su comportamiento.
+- Añadida regresión en `test_minion_carry.gd`: reproduce el fallo antes del
+  arreglo, comprueba cuatro segundos de simulación sin que el aliado abandone
+  el mando y verifica que el emisor vuelve a poder avisar al depositarlo.
+- Verificado con Godot 4.7.2: 16/16 pruebas GdUnit y 8584 comparaciones de datos,
+  sin errores. Pendiente comprobación manual del escenario en partida.
+
+
+
+## Reposicionamiento manual de minions — 2026-11-15
+
+- Implementado pulsar/mantener/soltar sobre minions propios, uno cada vez,
+  sin coste ni límite de distancia al tótem. Cámara fija; cuerpo elevado,
+  marcador de suelo y altura editable desde las escenas de personajes.
+- En el aire no trabajan, atacan, detectan, bloquean ni reciben daño; no avanzan
+  su enfriamiento/bloqueo de ataque ni su curación. Los enemigos cambian de
+  objetivo inmediatamente o regresan a patrulla. Al soltar, recuperan IA y
+  vulnerabilidad; fuera del mando regresan sin iniciar tareas o combate.
+- Colocación libre más cercana determinista, sin empujar otros cuerpos. HUD,
+  pausa y pérdida de foco depositan en la última posición de mapa. Guardados
+  conservan la unidad en el suelo; el estado portado es opcional en v17.
+- Archivos: `minion_carry.gd`, entrada `main.gd`, comandos, combate, trabajo,
+  movimiento, supervivencia, persistencia y vistas; escena `MinionCarryMarker`
+  y sus instancias en CharactersBase/Minion. Cobertura nueva en GdUnit y
+  `test_minion_drag_input.gd`, integrada en `godot/tools/validate.sh`.
+- Verificado con Godot 4.7.2: 15/15 pruebas GdUnit (11 nuevas); 17 comprobaciones
+  de entrada nativa/escenas; 8584 comparaciones de datos/guardados; 101 de menús;
+  cuatro ciclos de entrada de colocación; escenarios tácticos, bordes tácticos,
+  combate del mago, huida civil e interpolación de respawn, todos sin errores.
+  Carga de 38 scripts/90 escenas; verificador estático: cero errores y seis
+  avisos en fixtures del complemento GdUnit4.
+- Captura automatizada renderizada y revisada con Compatibility/AMD Radeon
+  RX 6700: cuerpo elevado, marcador en el suelo y salud desplazada. Evidencia
+  local: `godot/reports/minion-carry-preview.png`. No equivale a playtest manual.
+- La importación headless cargó el editor, pero al cerrarlo emitió avisos de
+  siete instancias ObjectDB y tres recursos retenidos. El log verbose identifica
+  los tres scripts retenidos en `addons/funplay_mcp/core/` (settings, core_tools y
+  tool_registry); no se ha modificado ese complemento. Los runners de estructura,
+  pruebas y captura terminaron sin esos avisos.
+- Pendiente: playtest con dos/ocho unidades, selección entre oclusiones,
+  distintos zooms, comodidad del rescate y edición de altura/marcador en Inspector.
+
+## Interruptor de dither y césped grande — 2026-11-13
+
+- Añadido `dither_enabled` editable por escena; desactivarlo limpia el recorte y omite las comprobaciones de oclusión.
+- Grass usa el dither de arbustos; GrassSmall permanece sin efecto.
+- Validación ejecutada: carga de 37 scripts y 87 escenas; visibilidad natural, 5184 comprobaciones; referencias, cero errores y seis avisos existentes de fixtures de gdUnit4.
+- Pendiente revisión visual del césped grande en juego.
+
+## Ajustes de dither de arbustos — 2026-11-13
+
+- Las cinco variantes decorativas usan hole_radius 0.6, dither_edge_width 0.5
+  y dither_pixel_size 1 por indicación del usuario.
+
+## Corrección del centro dither en arbustos — 2026-11-13
+
+- Reproducido fallo de integración: el centro basado en rectángulos completos
+  podía caer sobre márgenes transparentes, dejando el follaje visible intacto.
+  491 de 732 solapamientos con un personaje real tenían centros mal colocados.
+- covered_point selecciona una muestra opaca del cuerpo realmente oculta por
+  follaje, próxima al centro del cuerpo. Árboles mantienen su centro anterior;
+  arbustos conservan sus radios pequeños y detección previa optimizada.
+- test_bush_occlusion pasa 732 solapamientos, cinco variantes y ambos reflejos:
+  cero centros mal colocados. Verificado también en Compatibility con captura
+  bush-character-dither.png. Pasan visibilidad (5184) y vegetación (31722).
+
+## Dither en arbustos decorativos — 2026-11-13
+
+- Cinco variantes con recorte localizado: radio/borde 0.2/0.1; pequeño 0.1/0.05.
+  Centrado en el solapamiento cuerpo/follaje, usando detección optimizada compartida.
+- Sin cambios en bayas, césped, setas ni datos de simulación. Escenas editables.
+- Pasan test_bush_dither renderizado, vegetación (31722), visibilidad (5184)
+  y estructura (37 scripts/87 escenas). Captura de las cinco variantes revisada
+  y radios reducidos para conservar follaje. Pendiente recorrido interactivo.
+
+## Círculos dither en árboles — 2026-11-13
+
+- Sustituida la atenuación global por recortes circulares: centro completamente
+  despejado, anillo Bayer y exterior opaco. Radio, ancho y tamaño del patrón
+  editables; varios círculos independientes por árbol, máximo 32. Tótem excluido.
+- Shader con profundidad normal, atlas/animaciones originales y material por
+  instancia. Conservado el descarte previo por cajas proyectadas optimizado.
+- Pasan visibilidad (5184), árboles (36845), estructura (37 scripts/87 escenas),
+  pruebas de píxeles renderizados (centro/exterior/borde) y escenas reales en
+  bosque/pradera a dos zooms, con avance de animación y exclusión del tótem.
+- Capturas revisadas. Benchmark sintético de ocho minions con sombras: 2–5 ms
+  por fotograma en tres tandas; no equivale a FPS de una partida completa ni
+  mide el peor caso con 32 círculos. Pendiente recorrido interactivo prolongado.
+- Comprobador de referencias: cero errores; seis advertencias en plantillas
+  y recursos de pruebas del addon gdUnit4 ajeno a este cambio.
+
+## Transparencia de árboles sin tótem — 2026-11-13
+
+- El tótem deja de activar la atenuación de árboles; minions y enemigos mantienen
+  el comportamiento. Retirado el muestreo de la malla del tótem y su caché.
+- Pasan visibilidad (5183), árboles (36845) y renderizado Compatibility en
+  bosque/pradera a dos zooms con tótem delante/detrás y personajes ocultos.
+
+## Optimización de oclusión con ocho minions — 2026-11-13
+
+- Identificado coste excesivo en update_occlusion: cada árbol recorría las
+  muestras de todos los cuerpos aunque no se solaparan. Añadido descarte previo
+  por cajas proyectadas y reutilización de transformaciones por cuerpo.
+- Sombras TotemShadow conservadas. Medición Compatibility/Radeon RX 6700,
+  semilla shadow-bench, ocho minions, VSync desactivado, tres tandas alternadas
+  de 60 frames después de calentamiento: mediana con sombras 18.99 → 2.12 ms;
+  sin sombras 18.85 → 2.03 ms. Escena de presentación sin ticks de simulación:
+  no representa FPS garantizados de una partida completa.
+- Microbenchmark headless de oclusión: ocho minions ~37.37 → 1.14 ms; informes
+  y scripts en godot/reports/bench_shadows*.gd y bench-shadows-*.log.
+- Pasan visibilidad (5183 checks), vegetación (31722), árboles (36845) y
+  renderizado real de transparencia con personajes/tótem en bosque/pradera
+  a dos zooms. Pendiente confirmar mejora en la partida concreta del usuario.
+
+## Sombras de minions y enemigos — 2026-11-08
+
+- CharactersBase y Minion incorporan una instancia centrada y reducida de
+  TotemShadow como GroundShadow; las clases y Barbarian la heredan.
+  Sheep oculta la heredada y conserva su sombra existente.
+- Validación Godot: 37 scripts/87 escenas. Comprobador de referencias:
+  cero errores/advertencias en 330 archivos. Pendiente revisión visual en partida.
+
+## Ajuste de densidad y altura de nubes — 2026-11-08
+
+- Altura central reducida a 15 m. Composiciones Cloud/2/3/4 con cantidades
+  grande/mediana/pequeña: 1/1/1, 1/2/2, 1/1/3 y 1/2/3 respectivamente.
+  Sombra, recorte alfa y velocidad física de lluvia conservados; origen de
+  gotas adaptado automáticamente a la altura.
+- Pasan 127 comprobaciones de nubes y 48 elecciones estables. Captura de las
+  cuatro composiciones renderizada en Compatibility y revisada visualmente.
+
+## Nubes elevadas y sombra de terreno — 2026-11-08
+
+- Veinte sprites con Discard 0.5; eliminada la franja pintada al 33 %. Altura
+  central editable de 22 m mediante Clouds; conservadas las cuatro composiciones.
+- GroundShadow compartida: plano 14 × 9, elipse suave, opacidad máxima 12 %,
+  profundidad normal. Altura ajustada a 0.08 m porque el bioma llega a 0.07;
+  el valor previsto de 0.06 quedaría oculto por el terreno.
+- Lluvia desde altura − 1.2 hasta 0.9, conservando velocidad física original.
+- Importación, estructura (37 scripts/87 escenas), referencias (324 archivos),
+  pruebas de nubes (131 checks/48 elecciones) y datos/guardados (8575) pasan.
+- Compatibility/Radeon RX 6700: seis capturas sobre claro/pradera/bosque a
+  zoom 36/72 y comparación de píxeles con/sin sombra pasan. Revisadas capturas
+  de altura, lluvia y composiciones. Pendiente recorrido interactivo prolongado.
+
+## Nubes sprite en cuatro composiciones — 2026-11-08
+
+- Retiradas las cinco esferas y sus materiales provisionales de Cloud. Cuatro
+  composiciones editables Cloud/Cloud2/Cloud3/Cloud4, cada una con una grande,
+  dos medianas y dos pequeñas de los dos tipos; CloudBase comparte Rain y adaptador.
+- Selección visual estable por semilla/ID independiente del PRNG de simulación;
+  posiciones, fases, lluvia y guardados conservan sus contratos. Texturas
+  Lossless, sin mipmaps, detección 3D desactivada y sprites Nearest.
+- Godot 4.7.2: importación y estructura (37 scripts/87 escenas), 83 comprobaciones
+  de nubes y 48 elecciones estables, datos/guardados (8575), árboles/tala/lluvia
+  (36845) pasan. Referencias: cero errores/advertencias en 320 archivos.
+- Captura Compatibility/Radeon RX 6700 de las cuatro composiciones generada y
+  revisada en `godot/reports/cloud-compositions.png`. Pendiente recorrido
+  interactivo de un ciclo completo de clima y ajuste manual desde Inspector.
+
+## Profundidad natural, separación y transparencia — 2026-11-08
+
+- Sustituye las prioridades visuales documentadas en las entradas históricas
+  inferiores: recursos, personajes, tótem 3D y contorno vuelven a respetar profundidad.
+- Separación decorativa solo visual, determinista por semilla/ID; doce candidatos
+  dentro del bioma u omisión, con huellas editables y reservas de nodos agotados.
+- Cuatro árboles con zona de copa, opacidad 35 % y tiempos 150/250/150 ms editables.
+  Detección por muestras de cuerpo/malla y alfa de la copa; atlas comprimidos
+  descomprimidos antes de recortar. Animación y opacidad independientes por instancia.
+- Conservados transforms, velocidades y sombras editadas por el usuario. Las
+  pruebas antiguas aceptan velocidad positiva editable y sombras auxiliares,
+  sin permitir que vuelva la geometría provisional del árbol.
+- Godot 4.7.2: importación y estructura (37 scripts/83 escenas), visibilidad
+  (5108 checks, ocho semillas), vegetación (31722), árboles (36845, tala/lluvia
+  y mundo guardado), datos (8575, guardados actuales) e input (cuatro ciclos) pasan.
+- Compatibility/Radeon RX 6700: ocho comprobaciones de profundidad con malla real
+  del tótem y contorno; pruebas de transparencia con personaje y tótem detrás/delante,
+  y avance de animación en bosque/pradera a cámara 36/18 pasan. Capturas en
+  `godot/reports/visibility-*.png`, inspeccionadas visualmente; arranque renderizado
+  de 120 frames sin errores. No equivale a un recorrido interactivo manual.
+- Pendiente recorrido prolongado con arrastre, movimiento y zoom y comprobación
+  de los controles del Inspector. No se ha ejecutado la matriz ampliada de
+  migraciones ni el wrapper completo de validación de sistemas ajenos.
+
+## Retirada del tótem sprite
+
+- Eliminados su escena, adaptador GDScript/UID y textura exclusiva con import.
+  Retiradas la referencia y la instancia oculta Totem2 de main.tscn; se conserva
+  el tótem 3D jugable. Documentación de edición y prueba de capas adaptadas.
+
+## Prioridad máxima del tótem 3D y sprite
+
+- La partida usa Totem3D; el ajuste anterior solo cubría TotemSprite.
+  Corregidos material y contorno del modelo 3D y elevada a 127 la prioridad
+  de ambas versiones (contorno 126), por encima de recursos y personajes.
+- Pasan siete solapamientos renderizados con Compatibility/Radeon RX 6700,
+  incluido el material real del tótem 3D sobre geometría de prueba, y estructura
+  (36 scripts/84 escenas). Pendiente recorrido visual con la malla completa.
+
+## Recursos por delante de la decoración
+
+- Prioridad 10 para árboles, bayas, piedra, Brillo y ramitas; prioridad 20 para
+  minions, enemigos, animales y tótem sprite. Sin test de profundidad en estas
+  capas; recursos sprite con Alpha Cut desactivado.
+- Pasan cinco solapamientos renderizados con Godot 4.7.2 Compatibility/AMD
+  Radeon RX 6700 y estructura (36 scripts/84 escenas). Pendiente recorrido
+  manual de todos los recursos con distintos zooms.
+
+## Bordes del atlas del minion
+
+- Activado `filter_clip` en el icono del minion de tutorial y reclutamiento
+  para evitar repetición de píxeles al extender la región de recorte.
+  La edición visual documenta `Region`, `Margin` y `Filter Clip`.
+
+## Recorte editable de iconos del tutorial
+
+- Los seis iconos de clases de `TutorialMenu.tscn` usan AtlasTexture propios,
+  con la región inicial igual a la imagen completa y editable en el Inspector.
+  Las instrucciones de recorte están en `godot/EDITING_VISUALS.md`.
+- Pasan estructura (36 scripts/84 escenas) y callbacks de menús (101 checks)
+  en Godot 4.7.2 headless. Pendiente comprobación manual del recorte en Inspector;
+  no se ha realizado una revisión visual del menú en esta tarea.
+
+## Restauración de la escena de bayas — 08-11-2026
+
+- La escena antigua `scenes/world/Bush.tscn` fue eliminada, pero `WorldView`
+  todavía la esperaba para presentar los recursos `berry-bush`.
+- Se añadió `scenes/world/BerryBush.tscn`, basada en `assets/resources/bush node.png`,
+  y se actualizó la referencia semántica `berry-bush`. Ya no quedan referencias
+  a la ruta antigua en scripts, escenas o documentación.
+- Godot 4.7.2 pasa la carga headless, la validación de estructura (36 scripts,
+  84 escenas), datos/guardados (8575 comparaciones) y el arranque con escena
+  principal durante dos segundos.
+
+## Arbustos decorativos animados — 08-11-2026
+
+- Sustituidos medianos/grandes por cuatro escenas AnimatedSprite3D editables:
+  Bushe1/2 en claros/praderas y Bushe3/4 en bosques, ocho fotogramas a 10 FPS.
+  Se conserva la elección equiprobable pequeño/mediano/grande y su reflejo
+  estable. Pequeños y césped siguen estáticos; bayas y simulación intactas.
+- Pasan importación, estructura (36 scripts/84 escenas), vegetación (31722
+  comprobaciones) y datos/guardados (8575) en Godot 4.7.2. Revisadas capturas
+  de los tres biomas a cámara 36/18 y composición de cuatro variantes con
+  Compatibility/AMD Radeon RX 6700; confirmado avance de la animación.
+- La suite de árboles falla en cuatro aserciones de velocidad: las escenas
+  existentes están a 6 FPS y el test anterior exige 10. Se conservan esos
+  ajustes ajenos al cambio de arbustos. Pendiente edición manual de variantes
+  desde Inspector y recorrido para valorar oclusión en movimiento.
+- Capturas locales regenerables: `godot/reports/bushes-*.png`.
+
+## Árboles animados por bioma — 08-11-2026
+
+- Sustituidos los meshes de árbol por cuatro escenas AnimatedSprite3D editables,
+  ocho fotogramas a 10 FPS: 1/2 en bosques y otros biomas, 3/4 en praderas.
+  Elección visual equiprobable por semilla/ID, sin campos nuevos en guardados.
+- Mapas nuevos: mínimo tres bosques dentro de diez biomas de recursos y al
+  menos un árbol por pradera, conservando bayas. Los mundos guardados mantienen
+  sus biomas y recursos; solo actualizan su presentación.
+- Godot 4.7.2: pasa importación, estructura (36 scripts/82 escenas), suite de
+  árboles (36845 comprobaciones en 64 semillas, tala/lluvia y guardado v17),
+  vegetación (31414), datos/guardados (8575), menús, colocación y suites tácticas
+  y civiles existentes. La referencia Babylon permanece intacta; se contrastan
+  por separado los campos del mundo que ahora divergen por diseño.
+- Revisadas capturas renderizadas con Compatibility/AMD Radeon RX 6700 de las
+  cuatro variantes y de bosque/pradera con cámara 36/18. Confirmado avance de
+  animación. Pendiente recorrido manual para oclusión con minions en movimiento
+  y edición desde Inspector. Capturas locales: `godot/reports/trees-*.png`.
+- El verificador histórico de hashes `verify_original.py` falla por diferencias
+  frente a su manifiesto en numerosos archivos ajenos a esta tarea y documentos
+  actualizados. No se modifica el manifiesto ni se declara ese control superado.
+
+## Trabajo en combate y transferencia de foco por golpe — 08-11-2026
+
+- Los civiles no perseguidos pueden iniciar y completar recolección, drops
+  y saqueo dentro del área de combate. La tarea en curso o disponible tiene
+  prioridad sobre apartarse, evitando el bucle de acercarse al cadáver y
+  retirarse. Se comparte la selección existente mediante `choose_work_task`.
+- Un golpe con daño de un combatiente transfiere a este el foco de un bárbaro
+  que persigue a un civil. Daño cero no transfiere; una vez centrado en un
+  combatiente no cambia por otros golpes. El impacto letal limpia el foco.
+- Pasan en Godot 4.7.2 headless: aproximación/saqueo completo junto a enemigo,
+  drops y nodos dentro del combate, interrupción por persecución real,
+  transferencia de guardián/leñador/cazador, no transferencia entre combatientes
+  y continuación de guardado/carga. Se corrigió la semilla de drops para usar
+  tick entero tras cargar JSON. Pasan suite civil, ambas suites tácticas,
+  estructura (36 scripts/79 escenas) y 10946 comparaciones de datos/guardados.
+  Pendiente revisión manual en partida del saqueo y rescate por impacto.
+
+## Foco enemigo persistente — 08-11-2026
+
+- Diagnosticado cambio por cercanía: el foco anterior solo se retenía si era
+  atacante y estaba como máximo 0,8 m más lejos que otro atacante. Sustituido
+  por retención del objetivo vivo actual mientras siga dentro de 15 m.
+  Nuevos atacantes, mayor cercanía de otro minion o transformación no roban
+  el foco. Muerte/desaparición o salida de alcance permiten adquirir otro;
+  la muerte del bárbaro limpia el ID. Se conserva guardado v17 sin nuevos campos.
+- Regresión verificada en Godot 4.7.2 headless: 100 ticks con presa civil y
+  guardián atacante, transformación, ventaja de distancia de otro combatiente,
+  muerte/desaparición y pérdida de alcance, limpieza al morir el enemigo y
+  continuación tras guardar/cargar. Pasan suite civil, ambas suites tácticas,
+  estructura (36 scripts/79 escenas) y 10946 comparaciones de datos/guardados.
+  Pendiente valoración manual del foco durante una partida.
+
+## Huida aleatoria sin atravesar el tótem — 08-11-2026
+
+- Pausas ampliadas a 2–4 s y destinos aleatorios entre 4 m y el borde del mando,
+  con PRNG por semilla, unidad, tick inicial y ciclo. Se conservan 8 m/1,6 s
+  entre pausas, huida exclusivamente ante persecución y guardados v17.
+- El tótem actúa como obstáculo durante huida: puntos de rodeo, segmentos de
+  navegación, pasos y separación respetan el despeje de 2,02 m. El traslado
+  del tótem encima de la unidad permite salida gradual sin teletransporte.
+- Pasan suite civil (variedad de destinos, determinismo, segmentos sin cruce,
+  pausas 2–4 s y guardado/carga), ambas suites tácticas, estructura y 10946
+  comparaciones de datos/guardados en Godot 4.7.2 headless. Pendiente comprobar
+  en partida la naturalidad de los rodeos y la distribución de destinos.
+
+## Huida condicionada a intención enemiga — 08-11-2026
+
+- El objetivo enemigo se resuelve tras las decisiones armadas y antes de las
+  respuestas civiles. Solo el civil elegido activa huida; al perder la
+  persecución limpia su episodio. Se conservan pausas y recorridos de 8 m
+  para persecuciones reales.
+- Los civiles no perseguidos dentro de 3 m de un enemigo que ataca a un aliado
+  armado se apartan mediante `avoid-combat`, sin pausas de huida. Fuera de la
+  pelea mantienen trabajo/idle; la selección civil omite nodos y drops dentro
+  de áreas de combate activas. Al cruzar el tótem y dejar de ser perseguidos,
+  salen gradualmente de su despeje para evitar saltos al entrar en idle.
+- Verificado: cambio de objetivo entre dos civiles, tribu mixta, retirada
+  breve, progreso de recolección conservado, recogida de drops e idle seguros,
+  continuación tras guardar/cargar durante retirada. Pasan suite civil, ambas
+  suites tácticas, estructura (36 scripts/79 escenas) y 10946 comparaciones
+  de datos/guardados en Godot 4.7.2 headless. Pendiente revisión manual en partida.
+
+## Ajuste de huida tras prueba del usuario — 08-11-2026
+
+- Eliminadas la zona fija de 2 m y la exigencia de mejorar la seguridad actual,
+  que agotaban las opciones. Cada pausa de 1–2 s permite otro desplazamiento
+  de hasta 8 m/1,6 s dentro del mando. La regresión exige al menos tres
+  reanudaciones y registra recorridos de 8 m; salud normal: muerte en 168 ticks.
+- Pasan suite civil, ambas suites tácticas, estructura y 10946 comprobaciones
+  de datos/guardados. Corregido el redondeo de destinos en el borde del mapa
+  para mantener la selección tras guardar/cargar. Pendiente revisión manual.
+
+## Huida civil limitada inicial — 08-11-2026
+
+- Implementadas carrera a destino fijo, pausa determinista de 1–2 s y esquivas
+  de hasta 1 m/0,4 s dentro de una zona fija de 2 m y del mando. Se aplica a
+  cualquier rol sin ataque, también en tribus mixtas. El bloqueo de la carrera
+  durante 1 s inicia la fase local. Las pausas publican velocidad cero.
+- Alejar el tótem suspende la huida y permite seguirlo hacia una entrada libre
+  del mando, conservando la pausa pendiente. Recoger/soltar sin mover, daño y
+  cambio de perseguidor no reinician el episodio. Transformación o desaparición
+  de amenaza lo limpian. Memoria opcional serializable; guardados v17 sin ella
+  siguen cargando, sin cambio de esquema obligatorio.
+- Corregido el atasco del bárbaro frente al despeje del tótem cuando persigue
+  a un civil parado al otro lado, conservando velocidad, alcance y daño.
+- Verificado en Godot 4.7.2 headless: ambas suites tácticas y nueva suite
+  `test_civil_flee.gd`; destino estable, tres fases, presupuestos y pausas,
+  bloqueo, daño, transformación, tribu mixta, cuatro esquinas, seis/ocho civiles,
+  dos perseguidores, tótem móvil y continuación de guardado en cada fase.
+  Recolector, artesano y explorador con salud normal mueren en 151 ticks
+  (menos de 8 s) en la regresión con tótem fijo y sin curación. El bárbaro
+  alcanza al civil estático desde cuatro direcciones y junto a cuatro bordes.
+  Pasan validación estructural (36 scripts/79 escenas) y 10946 comparaciones
+  de datos/guardados. Pendiente revisión manual de fluidez y aspecto en partida.
+- El verificador histórico `verify_original.py` no pasa: detecta diferencias
+  de hashes respecto al inventario antiguo, incluidos archivos con CRLF y
+  assets retirados. No se modifica ese inventario para ocultarlas.
+
 ## Sprites de nodos de piedra y Brillo — 07-11-2026
 
 - Reemplazadas las mallas provisionales de `Rock.tscn` y `Spark.tscn`,
@@ -525,3 +912,88 @@ manualmente solo porque Codex haya escrito el código.
   (36 scripts y 79 escenas) y 10946 comparaciones de datos/guardados en Godot
   4.7.2 headless. La estructura emite avisos de UID de Theme y usa las rutas
   de archivo como alternativa. Pendiente comprobación manual del arrastre.
+
+## Huida de cazadores y preferencia por cuerpo a cuerpo — 13-11-2026
+
+- El cazador perseguido comparte la huida limitada de los civiles: destino
+  inicial fijo, pausas y esquivas acotadas, suspensión al seguir el tótem y
+  memoria opcional persistida. Conserva el ataque a distancia durante las
+  pausas dentro del mando y el combate/caza normales cuando no es perseguido.
+- Los bárbaros prefieren atacantes cuerpo a cuerpo al adquirir objetivo y
+  pueden abandonar a un cazador por uno de ellos dentro de los 15 m. Conservan
+  el foco cuerpo a cuerpo; la clasificación usa alcance y admite futuros roles.
+- Verificado en Godot 4.7.2 headless: `test_civil_flee.gd` (incluye fases,
+  guardado/carga del cazador, disparos durante pausas, mortalidad frente a
+  enemigo resistente y relevo por guardián/leñador), `test_tactical_behavior.gd`,
+  `test_tactical_edges.gd`, `test_data.gd` (8575 comparaciones) y estructura
+  (37 scripts, 87 escenas), sin errores. Pendiente valoración manual en partida
+  de las persecuciones alrededor del tótem y del combate de tribus mixtas.
+# Herramientas de desarrollo — 13-11-2026
+
+- Ambos complementos figuran activados. Funplay respondió por MCP stdio
+  autenticado con la escena abierta y 49 nodos; queda comprobar su disponibilidad
+  en un nuevo chat de Codex y el panel de GdUnit en el editor.
+
+- GdUnit4 6.2.3 incorporado; cuatro pruebas de economía y combate pasan en
+  Godot 4.7.2 headless. Falta validar su panel dentro del editor.
+- Funplay MCP 0.9.2 copiado al proyecto; activación y comunicación con Codex
+  pendientes. MemPalace y las Skills se detallan en `DEVELOPMENT_TOOLS.md`.
+
+## Sombras de recursos recolectables
+
+- Piedras y Brillo de ambos tamaños, bayas y ramitas tienen la sombra compartida
+  ajustada por escena. Retiradas las sombras añadidas a decoración y otros objetos.
+- Captura comparativa con renderer Compatibility revisada junto a un árbol; queda
+  pendiente comprobar las sombras durante una partida completa.
+
+- Sombras de recursos corregidas con escala uniforme y centradas bajo sus sprites;
+  captura comparativa revisada con Compatibility. Pendiente revisión en partida.
+
+## Combate básico del mago
+
+- Implementado ataque automático de objetivo único: 2 de daño, alcance 3 m y
+  cooldown 2.5 s. Comparte reservas a distancia, huida y límites del tótem con
+  hunter, sin adquirir animales para caza. Las ramas futuras siguen pendientes.
+- Añadida escena editable MageProjectile y presentación violeta provisional
+  desde el evento de ataque existente; captura mage-basic-attack.png revisada.
+- Godot 4.7.2: pasan estructura (37 scripts/88 escenas), test_mage_combat,
+  test_tactical_behavior (incluye mago), test_tactical_edges, test_civil_flee y
+  test_data (8584 comparaciones). Captura con renderer Compatibility ejecutada.
+- Pendiente playtest del ritmo de disparo y del proyectil en movimiento.
+
+## Proyectil provisional del cazador
+
+- Añadida HunterProjectile.tscn y conexión visual en WorldView al evento
+  attack-lunge del cazador, compartido por combate y caza. Flecha orientada
+  al punto del ataque; daño y cadencia conservan su resolución existente.
+- Captura de combate revisada con Compatibility; pasan estructura
+  (37 scripts, 89 escenas) y datos (8584 comparaciones).
+- Pendiente revisión en partida del vuelo durante combate/caza.
+
+## Reaparición sin deslizamiento
+
+- Corregida la captura de posiciones previas de TribeSession: excluye actores
+  muertos para evitar interpolar desde la muerte hasta el punto de reaparición.
+- Godot 4.7.2 headless: pasa test_respawn_interpolation (bárbaro y oveja, cinco
+  fracciones de render y movimiento posterior), estructura, test_data y
+  test_tree_resources. Pendiente observación visual durante una partida.
+
+## Cursor de agarre
+
+- Flecha personalizada en menús, HUD y espacio vacío; interact al pasar sobre
+  minions o tótem agarrables; grab al llevarlos o colocar un elemento del HUD.
+  Texturas y puntos activos editables en el Inspector de main.
+- Durante el transporte de minions o tótem, CarryCursor.tscn dibuja la mano
+  elevada según la proyección de la altura visual y el zoom. Conserva el
+  punto lógico del ratón; restaura el cursor nativo al soltar, perder foco o salir.
+- Godot 4.7.2 headless pasa las 33 comprobaciones de
+  `test_minion_drag_input.gd`, incluidos estados del cursor, cruce del HUD y pausa.
+  Pendiente revisar apariencia y puntos activos durante una partida.
+
+## Área de interacción del menú principal
+
+- Sustituido el desplazamiento visual de los cuatro botones por espacio real
+  en el contenedor del título para alinear dibujo y área de interacción.
+- Godot 4.7.2 headless pasa las 40 comprobaciones de hover y clic de
+  `test_main_menu_hit_areas.gd` en las cuatro esquinas y el borde inferior de
+  cada botón. Pendiente observación visual en ventana.

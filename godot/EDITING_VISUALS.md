@@ -36,7 +36,31 @@ controla el margen sobre el marcador, sin cambiar la vida real.
 
 ## Árboles, recursos, drops e interactivos
 
-Abrir `scenes/world/Tree.tscn`, `Rock.tscn`, `Bush.tscn`, `DropFood.tscn`,
+La profundidad es natural: `render_priority = 0` y `no_depth_test = false`.
+No elevar el tótem por encima del resto. Los recursos y personajes usan Alpha
+Cut Discard; el árbol usa temporalmente un shader de recorte circular con
+borde dither, sin mezcla alfa. El contorno del tótem también respeta profundidad.
+
+En la raíz de cada recurso, **Visual clearance > Decoration Clearance Radius**
+define la huella en metros que debe quedar libre de decoración (árboles 1.2,
+bayas 1.4, otros recursos 1). En decoración, el radio predeterminado es 0.45
+y se multiplica por su escala. Cambiar estos radios requiere reconstruir/cargar
+la vista para recalcular la separación; no cambia los datos guardados.
+
+Las cuatro escenas de árbol exponen **Canopy occlusion**: `canopy_region` es un
+Rect2 normalizado de la textura, con origen arriba a la izquierda, ajustado a
+la copa. Además se descartan sus píxeles transparentes. `hole_radius` (1.15 m)
+controla el centro completamente despejado; `dither_edge_width` (0.5 m), el
+anillo de transición; `dither_pixel_size` (2 píxeles de render), el tamaño del patrón.
+Los tiempos son 0.15 s para abrir, 0.25 s para cerrar y 0.15 s de espera antes
+de cerrar. El círculo sigue el centro del cuerpo de cada minion/enemigo oculto;
+el tótem queda excluido. El resto del árbol permanece opaco. Hasta 32 círculos
+por árbol, con estado y material propios. El radio en metros escala naturalmente
+con el zoom. Se conservan escalas, apoyos y SpriteFrames.
+El shader usa billboard completo, eje Z y atlas/frames de los árboles actuales.
+Una sustitución sin SpriteBase3D visible no recibe el efecto.
+
+Abrir `scenes/world/Tree.tscn`, `Rock.tscn`, `BerryBush.tscn`, `DropFood.tscn`,
 `Campfire.tscn`, etc. Editar meshes/materiales bajo `Visual/Default`, su escala
 o posición. Cada color de drop tiene su propia escena; `Drop.tscn` es la base
 compartida por las cinco variantes; editar su geometría afecta a todas.
@@ -68,6 +92,19 @@ El cadáver de bárbaro utiliza el sprite creado por el usuario en
 `assets/enemies/dead.png`; su tamaño y posición se editan desde el nodo
 `Visual/Default/Sprite` de `BarbarianCorpse.tscn`.
 
+## Árboles animados de madera
+
+`scenes/world/Tree.tscn`, `Tree2.tscn`, `Tree3.tscn` y `Tree4.tscn` contienen
+`Visual/Default/Sprite` (AnimatedSprite3D). Editar allí `Sprite Frames > idle`,
+velocidad, `pixel_size`, `offset` y posición. El bucle usa los ocho fotogramas
+originales a 10 FPS, nearest y billboard. Las hojas 1/2 usan celdas 192 × 256;
+3/4, 192 × 192. Los offsets individuales apoyan la base visible sobre el bioma.
+
+`WorldView.tree_scenes` asigna las cuatro escenas. Bosques y otros biomas eligen
+1/2; praderas, 3/4. La elección es estable por semilla/ID incluso al cargar.
+Se retira el árbol al agotarse y reaparece con la misma variante con la lluvia.
+La edición del sprite no afecta a navegación, afinidad, duración ni botín.
+
 ## Nodos de piedra y Brillo
 
 `scenes/world/Rock.tscn` y `RockLarge.tscn` representan piedra pequeña y grande;
@@ -94,22 +131,36 @@ el transform del sprite ni añadir el antiguo ascenso de las cruces 3D.
 
 `scenes/world/DecorationSprite.tscn` define el Sprite3D compartido: filtro nearest,
 billboard, recorte alfa y tamaño por píxel. No contiene geometría provisional.
-Las ocho variantes son `Grass.tscn` y `GrassSmall.tscn`,
+Las variantes estáticas son `Grass.tscn` y `GrassSmall.tscn`,
 `Mushroom.tscn`, `MushroomSmall.tscn`, `MushroomBig.tscn`,
-`DecorationBush.tscn`, `DecorationBushSmall.tscn` y `DecorationBushBig.tscn`.
-Cada variante expone `Visual/Default/Sprite`, su textura AtlasTexture, región y
-offset. El offset vertical es la mitad de la altura recortada para apoyar el
+`DecorationBushSmall.tscn`. Los arbustos medianos/grandes ahora usan
+`DecorationBush.tscn` y `DecorationBushBig.tscn` (hojas 1/2, praderas y claros),
+y `DecorationBushForest.tscn` y `DecorationBushForestBig.tscn` (3/4, bosques).
+Estas cuatro escenas contienen AnimatedSprite3D con ocho celdas de 128 × 128,
+bucle `idle` a 10 FPS. Editar Sprite Frames, pixel_size y offset desde el
+Inspector; cada variante conserva la altura aproximada mediana/grande previa.
+Cada variante expone `Visual/Default/Sprite`: textura AtlasTexture en las
+estáticas, SpriteFrames en las animadas, y offset para ajustar el apoyo. El offset vertical es la mitad de la altura recortada para apoyar el
 borde inferior en el terreno; revisarlo si se sustituye la imagen o su recorte.
 
 `WorldView.decoration_scenes` permite sustituir cada variante. La semilla y el ID
 del decorado eligen una variante y su reflejo horizontal estable; la escala lógica
 se aplica a la raíz sin cambiar navegación o recolección. Los arbustos decorativos
-no dan comida: `Bush.tscn` sigue siendo el nodo de bayas funcional. Las flores se
+no dan comida: `BerryBush.tscn` sigue siendo el nodo de bayas funcional. Las flores se
 han retirado. La generación de cantidades, tipos y posiciones permanece en
 `world_catalog.gd`; el claro inicial sigue las mismas reglas que los demás claros.
 
 ## HUD y menús
 
+- Si un AtlasTexture repite píxeles en los bordes al ampliar `Region`, activar
+  `Texture > Filter Clip`. Los atlas del minion en tutorial y reclutamiento
+  lo tienen activado. Mantener el recorte dentro de la imagen; para añadir
+  espacio transparente alrededor, usar `Margin` en vez de extender `Region`.
+- Los seis iconos de clases del tutorial usan AtlasTexture independientes.
+  Abrir `scenes/ui/TutorialMenu.tscn`, seleccionar `Roles/Role0` a `Role5/Row/Icon`
+  (el nodo `Icon` dentro de `Row` de cada tarjeta) y desplegar `Texture > Region`
+  para recortar los márgenes transparentes. Cada región comienza abarcando la
+  imagen completa. El recorte es propio del tutorial y no cambia los del HUD.
 - Reclutamiento, equipo, tecnologías y mejoras usan un hijo `Icon`
   (`TextureRect`) en cada botón. Su escala se edita en
   `Layout > Transform > Scale`; `Texture > Region` del AtlasTexture controla
@@ -165,12 +216,96 @@ partida. La etapa manual final verificará sustitución de assets en el editor,
 interacción completa y apariencia a distintos tamaños/zoom. No se considera
 esta guía evidencia de una inspección visual que todavía no se ha realizado.
 
-El tótem jugable se edita en `scenes/world/TotemSprite.tscn`: selecciona el nodo hijo `Sprite` para ajustar su textura, tamaño, posición y orientación. Su posición vertical es independiente de la posición de juego. El modelo previo está en `scenes/world/Totem3D.tscn`.
+El tótem jugable se edita en `scenes/world/Totem3D.tscn`. La versión sprite se ha retirado del proyecto.
 
-Para cambiar el tótem de la partida, abre `scenes/main.tscn`, sustituye la instancia `Totem` por `scenes/world/Totem3D.tscn` o `TotemSprite.tscn` y conserva el nombre `Totem`. La posición inicial es (80, 2, 80); el código la actualiza durante la partida.
+La instancia `Totem` de `scenes/main.tscn` usa `scenes/world/Totem3D.tscn`. Conserva su nombre. La posición inicial es (80, 2, 80); el código la actualiza durante la partida.
 
 En `Totem3D.tscn`, selecciona la raíz `Totem` y abre `Model Material → Next Pass → Shader Parameters`: `Outline Color` cambia el color del contorno y `Outline Width` su grosor.
 
 Los cadáveres usan `Corpse.tscn` (minions) y `BarbarianCorpse.tscn` (bárbaros). En `Visual/Default/Sprite`, editar `Sprite Frames > death` para ajustar velocidad y fotogramas. La animación se reproduce una vez a 10 FPS y conserva el último fotograma hasta que la simulación retira el cadáver. `pixel_size` y posición controlan su apariencia. Al cargar una partida, los cadáveres recreados vuelven a reproducir esta animación visual.
 
 En `scenes/world/Campfire.tscn`, los nodos `Visual/Default/Fire` y `Visual/Default/Embers1`, `Embers2`, `Embers3` permiten ajustar posición y tamaño (`pixel_size`). En `Sprite Frames` se editan los fotogramas y la velocidad; cada nodo de brasas se reproduce en bucle; la duración de su primer fotograma transparente determina la pausa.
+
+## Nubes de clima
+
+Las cuatro composiciones son `scenes/world/Cloud.tscn`, `Cloud2.tscn`,
+`Cloud3.tscn` y `Cloud4.tscn`. Cada una contiene una nube grande, entre una y dos medianas
+y entre una y tres pequeñas de los dos tipos suministrados. Editar sus Sprite3D bajo
+`Visual/Default/Clouds`: posición, escala, textura y pixel_size son libres.
+Los sprites usan billboard, Nearest y Alpha Cut Discard con umbral 0.5 para
+eliminar la sombra pintada al 33 % sin cambiar el cuerpo opaco. Las seis texturas usan Lossless sin mipmaps.
+
+`CloudBase.tscn` comparte el adaptador y el efecto `Visual/Default/Rain`;
+no contiene las antiguas esferas. Editar la base cambia la lluvia de las cuatro
+composiciones. `WorldView.cloud_variants` permite asignar otras escenas;
+`cloud_scene` se conserva como alternativa si la lista está vacía. La selección
+es estable por semilla e ID y también se aplica a nubes guardadas, sin cambiar
+trayectorias, duración, cantidad de nubes lógicas ni regeneración de recursos.
+
+### Altura y sombra de las nubes
+
+En la raíz de cualquiera de las cuatro composiciones, `cloud_height` controla
+la altura central (15 m). El contenedor Clouds aplica el desplazamiento sobre
+las posiciones originales de sus sprites y actualiza la previsualización
+en el editor. La lluvia parte 1.2 m por debajo; `rain_speed` conserva su significado
+anterior: velocidad física de caída = rain_speed × 11.3 m/s.
+
+En CloudBase, GroundShadow es un plano horizontal independiente del contenedor
+Clouds. Mesh > Size controla el tamaño (14 × 9); el ShaderMaterial expone
+shadow_color, opacity (máximo 0.12) y soft_edge. Su altura es 0.08 m porque los
+biomas llegan a 0.07 m; a 0.06 quedaría enterrado. Respeta profundidad, no escribe
+en ella y no usa prioridades. La sombra sigue la posición horizontal del grupo.
+
+### Sombra de minions y enemigos
+
+CharactersBase y Minion instancian TotemShadow como GroundShadow en la raíz.
+Todas las clases y Barbarian heredan esa sombra; permanece bajo los pies durante
+los movimientos visuales de Body. Su escala es 0.32 × 1 × 0.26; visual_offset
+compensa el desplazamiento original del mesh para centrarlo en el personaje.
+Editar posición/escala de GroundShadow para ajustar el apoyo. Sheep conserva
+su sombra propia y oculta esta instancia heredada para evitar duplicados.
+
+### Dither en arbustos decorativos
+
+Las cinco variantes DecorationBush usan el mismo adaptador de recorte que los
+árboles. En sus raíces: hole_radius 0.6, dither_edge_width 0.5 y dither_pixel_size 1 en todas,
+incluida la pequeña. center_on_overlap centra el círculo en una muestra opaca del cuerpo
+realmente tapada por el follaje, excluyendo los márgenes vacíos, para que funcione también al tapar los pies.
+El resto de la silueta conserva su opacidad y las animaciones permanecen activas.
+Los valores están en unidades del mundo y se pueden editar por escena.
+Grass (césped grande) también usa este efecto con los mismos parámetros.
+GrassSmall, bayas recolectables y setas quedan fuera.
+En la raíz de árboles, arbustos y Grass, desmarca **Canopy Occlusion > Dither Enabled**
+para desactivar el recorte por escena. Al desactivarlo se retira inmediatamente cualquier
+recorte activo y se omiten sus comprobaciones de oclusión.
+
+### Sombras de recursos recolectables
+
+Piedras, Brillo, bayas y ramitas usan `Visual/Default/GroundShadow`, instancia
+de `TotemShadow.tscn` ajustable en posición y escala. Los árboles conservan
+sus sombras propias. Las decoraciones no tienen sombra.
+
+### Disparo básico del mago
+
+WorldView expone `mage_projectile_scene`, por defecto
+`scenes/world/MageProjectile.tscn`. Editar Orb para sustituir la esfera violeta
+provisional. WorldView lo desplaza hacia el punto de ataque durante el impulso
+existente; daño, alcance y cadencia pertenecen a la simulación.
+
+### Flecha provisional del cazador
+
+WorldView expone `hunter_projectile_scene`, que usa
+`scenes/world/HunterProjectile.tscn`. Shaft y Tip definen la flecha editable,
+orientada hacia -Z. Se muestra tanto al combatir como al cazar, durante el
+impulso de ataque existente.
+
+
+## Minion levantado
+
+En `scenes/actors/CharactersBase.tscn`, la raíz expone `carried_height` para la
+altura visual al arrastrar. `CarryMarker` instancia
+`scenes/world/MinionCarryMarker.tscn`: su mesh, material y altura sobre el suelo
+se editan en esa escena. Las variantes heredan ambos ajustes. El cuerpo sube,
+la sombra y el marcador permanecen en el suelo y la barra de vida acompaña la
+altura visual. Ninguno de estos ajustes altera la colocación ni las distancias
+lógicas. El marcador se oculta automáticamente al depositar la unidad.

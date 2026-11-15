@@ -17,6 +17,9 @@ extends Node3D
 		visual_offset = value
 		if is_node_ready():
 			$Visual.position = value
+@export_group("Visual clearance")
+## Ground footprint only; never changes collision, navigation or saved positions.
+@export_range(0.0, 5.0, 0.05) var decoration_clearance_radius := 0.45
 var _replacement: Node3D
 
 func _ready() -> void:

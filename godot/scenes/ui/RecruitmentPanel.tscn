@@ -13,6 +13,7 @@
 [sub_resource type="AtlasTexture" id="crop_gatherer"]
 atlas = ExtResource("gatherer")
 region = Rect2(0, 0, 52, 71)
+filter_clip = true
 
 [sub_resource type="AtlasTexture" id="axe_icon_crop"]
 atlas = ExtResource("axe")

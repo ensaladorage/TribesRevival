@@ -21,7 +21,8 @@ Las etiquetas `[DECISIÓN DE DISEÑO]`, `[PROPUESTO]` e `[INFERIDO]` distinguen 
 El jugador guía una pequeña comunidad mediante un tótem que puede
 desplazar por un mundo isométrico. Las unidades no se controlan una por
 una de forma constante: interpretan la posición del tótem, el estado de
-la tribu y las oportunidades del entorno.
+la tribu y las oportunidades del entorno. Como intervención puntual, el jugador
+puede levantar un minion para reorganizarlo o rescatarlo del combate.
 La fantasía principal es actuar como guía de una comunidad viva:
 -   explorar un territorio peligroso;
 -   detenerse en lugares con recursos;
@@ -187,6 +188,35 @@ dirección del arrastre.
 
 ---
 
+### Reposicionamiento manual de minions
+
+- Pulsar el botón izquierdo sobre un minion propio vivo lo levanta; mantenerlo
+  pulsado lo mueve bajo el cursor y soltarlo lo deposita. Solo puede llevarse
+  un minion o el tótem a la vez. No hay coste, enfriamiento ni límite de distancia
+  al tótem. La cámara no se desplaza durante el arrastre de un minion.
+- Mientras está levantado no trabaja, ataca, detecta amenazas, llama a aliados,
+  bloquea el movimiento ni recibe daño. Tampoco se cura ni avanza su enfriamiento
+  de ataque. Se conserva el tiempo pendiente de ataque y el progreso de curación;
+  levantarlo no revierte golpes ya resueltos. La protección puede mantenerse
+  indefinidamente mientras se sostenga el botón, por decisión de diseño.
+- Levantarlo interrumpe la tarea, descarta su progreso parcial y libera sus
+  reservas. No introduce transporte de recursos. Los enemigos lo descartan como
+  objetivo inmediatamente y eligen otro con sus prioridades habituales; si no
+  encuentran ninguno, regresan a su aparición y retoman la patrulla.
+- Al soltarlo vuelve a ser vulnerable sin gracia adicional. Dentro del radio de
+  mando reevalúa su IA desde la nueva posición, pudiendo volver al combate;
+  fuera regresa al radio del tótem con el movimiento existente. La huida de un
+  perseguido conserva las reglas normales de retorno al mando.
+- Un destino ocupado se ajusta al punto libre más cercano, respetando los
+  límites del mapa, el despeje del tótem y la separación de los personajes.
+  No desplaza a otros actores para hacer hueco.
+- Al pasar sobre el HUD o salir de la ventana se conserva el último punto del
+  mapa. Soltar sobre el HUD, pausar o perder el foco deposita allí al minion,
+  ajustando la posición si hace falta. Los guardados lo conservan en el suelo.
+- La presentación muestra el cuerpo elevado y un marcador en el suelo. En un
+  solapamiento de selección, el tótem conserva su prioridad; entre minions se
+  elige el más cercano a la cámara.
+
 ## 6. Tótem y formación
 ``` ts
 type TotemState = {
@@ -277,8 +307,8 @@ otro rol.
 Todos los minions pueden recoger drops y saquear cadáveres. La
 herramienta no limita la recogida física; sí determina la recolección y
 el combate: `lumberjack`, `hunter` y `guardian` luchan con sus
-diferencias de alcance y daño; los roles sin arma no combaten y huyen al
-detectar un bárbaro.
+diferencias de alcance y daño; los roles sin arma no combaten y solo huyen
+si un enemigo los elige como objetivo.
 
 Los minions comparten avistamientos de enemigos y animales mediante llamadas
 internas silenciosas, igual que los nodos de recursos. Cualquier rol puede
@@ -288,8 +318,15 @@ más cercano o, para un animal, al cazador libre más cercano, aunque el objetiv
 quede fuera de su detección personal. Libre significa en idle o regresando al
 tótem y sin carga. Si el objetivo ya está atendido, la llamada no añade más
 respondedores; los avistamientos directos conservan sus reglas habituales.
+Para aceptar un aviso de un nodo de recursos, el nodo debe estar dentro del
+radio de mando del tótem más el margen de detección del `5 %`, medido desde el
+tótem. Verlo junto al emisor no basta para enviar allí a otro minion. Este
+límite también se aplica cuando el emisor acaba de ser depositado lejos del
+mando; dentro del límite se conservan afinidad, disponibilidad y reservas.
+No cambia la detección directa ni las llamadas de enemigos o animales.
 Los enemigos tienen prioridad sobre animales y llamadas de recursos.
-Los roles sin arma siguen huyendo de amenazas cercanas, no combaten por un aviso.
+Los roles sin arma no huyen ni combaten por un aviso; la huida requiere
+ser objetivo de persecución o ataque.
 El aviso continúa mientras algún minion vea al objetivo vivo. Al morir o perderse
 el objetivo se vuelve a evaluar la tarea. Mover el tótem conserva su prioridad,
 y los cazadores respetan su límite de combate alrededor del tótem.
@@ -356,7 +393,7 @@ trabajo, combate y huida conservan sus objetivos y prioridades actuales.
 ### Biomas iniciales
 -   claro: área verde decorativa, la más pequeña, sin recursos ni
     función de recolección;
--   pradera: arbustos con bayas;
+-   pradera: arbustos con bayas y árboles recolectables;
 -   bosque: árboles;
 -   pedregal: piedras;
 -   ruinas: Brillo.
@@ -373,7 +410,7 @@ Distribución prevista:
 -   claros pequeños: vegetación decorativa y relleno del mapa. Su
     distribución usa pesos de `60 %` césped, `25 %` arbustos decorativos
     y `15 %` setas, con un máximo de `2` setas por instancia de bioma;
--   praderas: arbustos con bayas;
+-   praderas: arbustos con bayas y al menos un árbol recolectable;
 -   bosques: nodos de recursos con silueta de árbol y vegetación
     decorativa de suelo. La vegetación usa pesos de `58 %` césped,
     `27 %` arbustos decorativos y `15 %` setas, con un máximo de `2` setas por
@@ -383,6 +420,10 @@ Distribución prevista:
 Los tamaños de piedra y Brillo se distribuyen de forma variada y determinista.
 Por ahora solo cambia su apariencia; sus rendimientos distintos se definirán
 más adelante. Las piedras de nivel 2 siguen pendientes y no se generan.
+Los arbustos decorativos medianos y grandes usan animaciones sencillas: hojas
+`1` y `2` en praderas y claros, `3` y `4` en bosques. El reparto conserva
+tres posibilidades equiprobables: pequeño estático y dos variantes animadas.
+El césped permanece estático.
 La vegetación decorativa usa sprites de césped, setas y arbustos con
 varios tamaños y una distribución abundante en bosques, claros y praderas,
 incluido el claro inicial. Las praderas usan los mismos pesos que los claros.
@@ -399,7 +440,22 @@ activo, cada área genera entre `1` y `3` nodos: al menos uno es del
 recurso propio del bioma y los restantes tienen una alta probabilidad de
 ser también propios, aunque pueden pertenecer a otro bioma. Esta regla
 queda preparada para activar nuevos recursos progresivamente.
+En los mapas nuevos de Godot, los `10` biomas de recursos incluyen al menos
+`3` bosques. Los árboles usan sprites animados: variantes `1` y `2` en bosques,
+y `3` y `4` en praderas, con elección equiprobable estable por semilla y nodo.
+Los árboles secundarios de otros biomas usan las variantes `1` y `2`.
+Cada pradera conserva sus bayas y garantiza al menos un árbol; si el reparto
+normal de `1–3` nodos no incluye madera, se añade un nodo de árbol adicional.
+Las reglas y rendimientos de tala son comunes a todas las variantes. Los mundos
+guardados conservan su distribución y recursos al cargarse.
+
 ### Recursos
+Recursos, decoración, personajes y tótem se ocluyen por profundidad natural.
+La decoración deja espacio alrededor de la base de los recursos. Los árboles
+abren un pequeño círculo despejado alrededor de minions o enemigos ocultos,
+con borde dither y el resto de la copa opaco; el círculo se cierra al despejarse. No hay prioridades por tipo ni por tamaño.
+Estos ajustes son visuales y no modifican posiciones lógicas ni guardados.
+
   -----------------------------------------------------------------------
   Recurso                 Obtención               Uso
   ----------------------- ----------------------- -----------------------
@@ -469,8 +525,19 @@ reagrupamiento sin cancelar un combate en curso.
     bárbaros a `18 m`. Se muestran signos de exclamación sobre quienes
     detectan y se reproduce un sonido breve una sola vez por encuentro,
     aunque ambos bandos se detecten.
--   Los bárbaros persiguen a `7 m/s`, seleccionan al minion vivo más
-    cercano dentro de `15 m` y, si pierden el rastro lejos de su
+-   Los bárbaros persiguen a `7 m/s`. Al adquirir objetivo priorizan a
+    sus atacantes cuerpo a cuerpo, después los demás atacantes; en su ausencia eligen al minion vivo más cercano dentro
+    de `15 m`. Mantienen ese objetivo mientras viva y permanezca en dicho
+    alcance, aunque otro minion se acerque o el objetivo cambie de clase.
+    Hay una excepción: si persiguen a un minion sin capacidad de combate y
+    un combatiente les causa daño, cambian el foco a ese atacante. Una vez
+    centrados en un combatiente cuerpo a cuerpo, otros golpes no les roban el foco.
+    Si persiguen a un cazador y hay un atacante cuerpo a cuerpo dentro de
+    los 15 m, pasan a ese atacante; un golpe cuerpo a cuerpo con daño también
+    puede liberar al cazador. La preferencia se basa en el alcance del ataque,
+    no en una lista cerrada de clases. También
+    vuelven a elegir si el objetivo muere, desaparece o sale del alcance.
+    Si pierden el rastro lejos de su
     aparición, regresan a ella a `8 m/s`. Al llegar, esperan el
     intervalo determinista de patrulla y retoman su recorrido a `1 m/s`.
 -   Hay seis ovejas pasivas en praderas, con `2 HP`. Se mueven dentro
@@ -482,25 +549,60 @@ reagrupamiento sin cancelar un combate en curso.
   `guardian`        4      2       1 m      1,5 s
   `lumberjack`      4    1,5       1 m        2 s
   `hunter`          4      1       5 m      1,3 s
+  `mage`            4      2       3 m      2,5 s
   Bárbaro           5      1     1,2 m      2,5 s
--   Los tres roles armados combaten automáticamente al detectar
+-   Los cuatro roles armados combaten automáticamente al detectar
     bárbaros; la IA selecciona la amenaza válida menos ocupada,
     priorizando distancia e identificador estable. Los atacantes usan
     posiciones libres reservadas alrededor del objetivo, conservando su
     hueco mientras sea válido. Guardianes y leñadores usan el anillo de
     cuerpo a cuerpo, a `0,98 m`: caben seis posiciones separadas; si están
     ocupadas, esperan en un anillo exterior a `2,1 m`. Los cazadores se
-    distribuyen a `4,6 m`, respetando alcance y radio del tótem. El movimiento
+    distribuyen a `4,6 m` y los magos a `2,6 m`, respetando alcance y radio del tótem. El movimiento
     evita cuerpos aliados y enemigos; los minions no desplazan al bárbaro
     mediante la separación. Las ovejas solo son objetivo del
     `hunter`. Los minions permanecen inmóviles durante el impulso de ataque
-    de `0,22 s`. El cazador se reposiciona a `6 m/s` y no se aleja más del radio de
+    de `0,22 s`. El cazador y el mago se reposicionan a `6 m/s` y no se aleja más del radio de
     mando (`10 m`) del tótem.
 -   El enfriamiento es un temporizador restante por minion, compartido
     entre objetivos y tareas de combate/caza: solo se recarga al golpear
     y nunca se reinicia al cambiar de objetivo.
--   `gatherer`, `explorer` y `artisan` no atacan. Si un bárbaro los
-    detecta, buscan espacio seguro alejándose de los enemigos dentro del radio de mando. Si son perseguidos, continúan esquivando, incluso alrededor del tótem, en lugar de detenerse en su centro. Los bárbaros priorizan a quienes los están atacando y, bajo presión de varios combatientes, alternan golpes con retiradas cortas y cambios de posición.
+-   `gatherer`, `explorer` y `artisan` no atacan. Solo activan la huida si
+    un enemigo los elige como objetivo de persecución/ataque. Detectar un
+    enemigo no interrumpe por sí solo el idle, recolección ni recogida de drops.
+    Si no son el objetivo pero están dentro de la zona de combate (3 m
+    alrededor de un enemigo que ataca a un combatiente), pueden recolectar
+    nodos, recoger drops y saquear cadáveres dentro de ella. El trabajo
+    disponible tiene prioridad sobre apartarse; la proximidad del combate
+    no interrumpe una tarea en curso. Solo se apartan sin activar huida
+    cuando no tienen trabajo disponible. Ser elegidos como objetivo sí
+    interrumpe el trabajo y activa la huida.
+    Cuando son perseguidos, huyen hacia un destino aleatorio dentro del radio
+    de mando, evitando puntos a menos de 4 m del centro. Pueden rodear
+    obstáculos sin cambiar continuamente de destino. Al llegar, alternan
+    pausas de `2–4 s` con desplazamientos de hasta `8 m` y `1,6 s` dentro
+    del mando, sin zona local fija ni exigir mejorar la seguridad actual.
+    Si no encuentran destino alcanzable, repiten la pausa. Tras un segundo
+    bloqueados sin avanzar, comienzan las pausas en su posición actual.
+    No realizan vueltas continuas alrededor del tótem ni son inmunes al daño.
+    Si el tótem los deja fuera del mando, lo siguen hasta entrar; suspenden
+    la huida conservando la pausa pendiente y reubican la zona si deja de ser
+    válida. Levantar/soltar el tótem en el mismo sitio, recibir daño o cambiar
+    de perseguidor no reinicia la huida. Al desaparecer la amenaza o
+    transformarse, termina el episodio.
+    El `hunter` usa estas mismas fases y límites cuando es perseguido, en
+    lugar de intentar mantener continuamente su posición de tiro. Durante
+    las pausas dentro del mando puede disparar a su perseguidor si está a
+    5 m o menos, conservando daño y cadencia; no dispara mientras huye o sigue
+    al tótem fuera del mando. Sin perseguidores conserva su combate a distancia
+    y la caza normales.
+-   Al adquirir un objetivo nuevo, los bárbaros priorizan a quienes los
+    están atacando, con preferencia por cuerpo a cuerpo; no abandonan un
+    combatiente cuerpo a cuerpo válido por otro atacante.
+    Si la presa actual no combate, un golpe con daño de un combatiente
+    transfiere el foco a quien ha golpeado.
+    Bajo presión de
+    varios combatientes, alternan golpes con retiradas cortas y cambios de posición.
 -   Al mover/cargar el tótem, un combatiente a distancia válida termina
     como máximo el golpe pendiente y después se reagrupa; si el objetivo
     muere o queda fuera de alcance, vuelve de inmediato. Los bárbaros
@@ -510,8 +612,11 @@ reagrupamiento sin cancelar un combate en curso.
     termina solo el impulso del golpe ya iniciado y sigue al tótem sin
     iniciar otro ataque ni esperar a que el jugador lo suelte.
 -   Los minions mantienen una separación mínima, pueden atravesar el
-    tótem y no terminan dentro de un radio de `2 m` desde su centro. El
-    recorrido no usa un collider rígido para el tótem; los golpes se
+    tótem y no terminan dentro de un radio de `2 m` desde su centro.
+    La huida es una excepción: deben rodear el tótem, sin atravesar
+    su zona de despeje. Los destinos cambian aleatoriamente entre pausas,
+    sin usar el centro del tótem como punto de huida.
+    El recorrido normal no usa un collider rígido para el tótem; los golpes se
     refuerzan con un breve impulso procedural.
 -   No existe armadura. Los futuros objetos defensivos aumentarán los HP
     máximos.
@@ -534,7 +639,8 @@ reagrupamiento sin cancelar un combate en curso.
     protección y al combate. La espada del HUD y el modelo de arrastre
     muestran hoja gris, empuñadura de madera y guarda oscura, alineadas
     en un eje vertical.
--   `gatherer`, `explorer` y `artisan` no atacan; huyen hacia el tótem cuando un bárbaro los detecta.
+-   `gatherer`, `explorer` y `artisan` no atacan; usan la huida limitada
+    descrita arriba cuando un bárbaro los detecta.
 ------------------------------------------------------------------------
 
 ---
@@ -702,7 +808,7 @@ Tecnologías y Mejoras.
 
 Hay tres clases legendarias: **Mago** (libro), **Pícaro** (daga) y **Paladín** (espada luminosa). La tecnología de Mago cuesta 1 punto. En el exterior, el libro transforma un `gatherer` válido en Mago, consume Brillo con la curva inicial `2, 3, 3, 4, 4` y no aumenta la población total. La transformación es irreversible y no consume recursos si falla. El Pícaro tiene menos vida que las demás clases legendarias y puede asestar golpes críticos; sus valores numéricos quedan por definir. Las curvas de Pícaro y Paladín siguen sin fijarse y no deben inventarse como decisiones de diseño.
 
-El límite global de la tribu exterior es de 8 unidades y solo puede haber una clase legendaria activa fuera de una cueva. La regla de selección o sustitución debe mantener un único arquetipo legendario exterior. Las especializaciones del Mago —Nigromante y Fuego— quedan fuera del alcance actual y se reservan para una ampliación futura.
+El límite global de la tribu exterior es de 8 unidades y solo puede haber una clase legendaria activa fuera de una cueva. La regla de selección o sustitución debe mantener un único arquetipo legendario exterior. El ataque básico compartido del Mago es un disparo mágico a distancia, de un solo objetivo: 2 de daño, 3 m de alcance y un ataque cada 2,5 s. Comparte el posicionamiento y la respuesta de huida del cazador, sin cazar ovejas. Las especializaciones del Mago —Nigromante y Fuego— quedan fuera del alcance actual y se reservan para una ampliación futura.
 
 ## 13. Fronteras, campamentos y jefes
 

@@ -4,6 +4,10 @@
 [ext_resource type="Script" uid="uid://cfgalpovwpwp6" path="res://scripts/view/actor_view.gd" id="script"]
 [ext_resource type="Texture2D" uid="uid://dhpsnpll13opv" path="res://assets/ui/icon-minion.png" id="texture"]
 
+[ext_resource type="PackedScene" path="res://scenes/world/TotemShadow.tscn" id="actor_shadow"]
+
+[ext_resource type="PackedScene" path="res://scenes/world/MinionCarryMarker.tscn" id="carry_marker"]
+
 [sub_resource type="SpriteFrames" id="frames"]
 animations = [{
 "frames": [{
@@ -62,6 +66,7 @@ script = ExtResource("script")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.89441615, 0)
 pixel_size = 0.025
 billboard = 1
+alpha_cut = 1
 texture_filter = 0
 sprite_frames = SubResource("frames")
 animation = &"idle"
@@ -86,3 +91,10 @@ material_override = SubResource("ring_material")
 mesh = SubResource("ring")
 
 [node name="HealthDisplay" parent="." unique_id=375189917 instance=ExtResource("health")]
+
+[node name="GroundShadow" parent="." instance=ExtResource("actor_shadow")]
+position = Vector3(0, 0.1, 0)
+scale = Vector3(0.32, 1, 0.26)
+visual_offset = Vector3(-0.56987023, -0.18824244, -0.42224002)
+
+[node name="CarryMarker" parent="." instance=ExtResource("carry_marker")]

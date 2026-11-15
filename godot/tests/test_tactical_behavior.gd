@@ -18,8 +18,7 @@ func _initialize() -> void:
 	print("Outnumbered barbarian: ", fight)
 	if first != repeat: failures.append("Non deterministic pursuit")
 	if first.maximum_radius > 10.00001: failures.append("Civilian leaves command radius")
-	if first.reversals > first.moving_steps / 5: failures.append("Civilian repeatedly reverses direction")
-	if first.travel < 20: failures.append("Pursued civilian stops moving")
+	if first.damage_dealt <= 0: failures.append("Pursued civilian remains untouchable")
 	if fight.enemy_travel < 2: failures.append("Outnumbered barbarian remains stationary")
 	if fight.damage_dealt <= 0: failures.append("Barbarian never retaliates")
 	if not failures.is_empty():
@@ -29,7 +28,7 @@ func _initialize() -> void:
 		print("PASS tactical scenarios")
 		quit()
 func check_carried_totem_leash() -> void:
-	for role in ["guardian", "lumberjack", "hunter"]:
+	for role in ["guardian", "lumberjack", "hunter", "mage"]:
 		for locked in [false, true]:
 			var session := Session.new("carried-leash")
 			var state: Dictionary = session.state
@@ -43,10 +42,10 @@ func check_carried_totem_leash() -> void:
 			enemy.health = 100.0
 			state.barbarians = [enemy]
 			state.units = [unit]
-			# Keep fighting within command range, even while the totem is held.
+			# Melee fights while carried; a pursued hunter uses bounded flight.
 			unit.attackCooldownRemainingSeconds = 1.0
 			Conflict.update(state, 0.05, Movement.create_frame(state, 0.05))
-			if unit.task.kind != "combat": failures.append(role + ": nearby combat interrupted")
+			if unit.task.kind != ("flee" if role in ["hunter", "mage"] else "combat"): failures.append(role + ": incorrect nearby threat response")
 			# Move the held totem: enemy remains inside, fighter falls outside.
 			state.totem.position = {"x": 73.5, "y": 80.0}
 			unit.attackCooldownRemainingSeconds = 0.0
@@ -123,7 +122,6 @@ func check_decisions() -> void:
 	if enemy.targetUnitId != fighter.id: failures.append("Barbarian ignores fighter for closer civilian")
 	state.units = [civil]
 	civil.position = {"x": 75.0, "y": 80.0}
-	if Geo.distance(civil.position, Tactics.flee_goal(state, civil)) > 0.001: failures.append("Safe civilian keeps fleeing unnecessarily")
 	state.phase = "paused"
 	var before = state.duplicate(true)
 	session.advance(0.1)

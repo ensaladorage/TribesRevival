@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://k2fovhbeufpc" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" uid="uid://dv8evvpdms88a" path="res://scripts/view/isometric_camera.gd" id="2_camera"]
-[ext_resource type="PackedScene" uid="uid://d1fuif7fptwlk" path="res://scenes/world/TotemSprite.tscn" id="6_tefeu"]
 [ext_resource type="PackedScene" path="res://scenes/world/Grid.tscn" id="grid"]
 [ext_resource type="PackedScene" uid="uid://bft582aur8gpc" path="res://scenes/world/TotemShadow.tscn" id="shadow"]
 [ext_resource type="PackedScene" uid="uid://6nf0pjkqq1m1" path="res://scenes/world/Totem3D.tscn" id="totem"]
@@ -55,5 +54,3 @@ script = ExtResource("2_camera")
 [node name="TotemShadow" parent="." unique_id=1805306938 instance=ExtResource("shadow")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 80, 0.04, 80)
 
-[node name="Totem2" parent="." unique_id=1238820205 instance=ExtResource("6_tefeu")]
-visible = false

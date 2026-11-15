@@ -18,6 +18,8 @@ static func age_effects(state: Dictionary, delta: float) -> void:
 
 static func update_cooldowns(state: Dictionary, delta: float) -> void:
 	for unit in state.units:
+		if unit.get("isCarried", false):
+			continue
 		unit.attackCooldownRemainingSeconds = maxf(unit.attackCooldownRemainingSeconds - delta, 0)
 		unit.attackLockRemainingSeconds = maxf(unit.attackLockRemainingSeconds - delta, 0)
 
@@ -27,7 +29,7 @@ static func damage_unit(state: Dictionary, id: String, amount: float, source_kin
 		if candidate.id == id:
 			unit = candidate
 			break
-	if unit == null:
+	if unit == null or unit.get("isCarried", false):
 		return 0.0
 	var result := Combat.deal_damage(source_kind, "minion", unit, amount)
 	unit.health = result.health
@@ -52,6 +54,8 @@ static func update_campfires(state: Dictionary, delta: float) -> void:
 		var dy: float = campfire.position.y - state.totem.position.y
 		return campfire.remainingLifetimeSeconds > 0 and dx * dx + dy * dy <= 900.0)
 	for unit in state.units:
+		if unit.get("isCarried", false):
+			continue
 		var matching: Array = state.campfires.filter(func(campfire): return Geo.distance(unit.position, campfire.position) <= campfire.get("healingRadius", 15.0))
 		matching.sort_custom(func(a, b): return a.id < b.id)
 		if matching.is_empty() or unit.health >= unit.maxHealth or state.inventory.amounts.food < 1:

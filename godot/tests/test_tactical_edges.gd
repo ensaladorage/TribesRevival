@@ -5,6 +5,11 @@ const Geo = preload("res://scripts/simulation/geometry.gd")
 const Saves = preload("res://scripts/persistence/save_repository.gd")
 var failures: Array[String] = []
 func _initialize() -> void:
+	if "--corner-only" in OS.get_cmdline_user_args():
+		run_case({"name": "corner", "corner": true, "moving": false})
+		for failure in failures: push_error(failure)
+		quit(1 if not failures.is_empty() else 0)
+		return
 	if "--crowded-only" in OS.get_cmdline_user_args():
 		run_case({"name": "eight-two-enemies", "corner": false, "moving": false, "count": 8, "enemies": 2})
 		for failure in failures: push_error(failure)
@@ -78,9 +83,11 @@ func run_case(config: Dictionary) -> void:
 		elif tick > 200 and resumed != null:
 			if config.moving and tick < 300: resumed.state.totem.position.x += 0.04
 			resumed.advance(0.05)
-			if tick == 399:
+			if tick >= 201:
 				for i in state.units.size():
-					if Geo.distance(state.units[i].position, resumed.state.units[i].position) > 0.00001: failures.append(config.name + ": save continuation diverges")
+					if Geo.distance(state.units[i].position, resumed.state.units[i].position) > 0.00001:
+						failures.append(config.name + ": save continuation diverges")
+						return
 		for unit in state.units:
 			var step := Geo.distance(before[unit.id], unit.position)
 			var radius_now := Geo.distance(unit.position, state.totem.position)
@@ -102,5 +109,5 @@ func run_case(config: Dictionary) -> void:
 	if max_radius > (10.04001 if config.moving else 10.00001): failures.append(config.name + ": command radius exceeded")
 	if longest_outside > 20: failures.append(config.name + ": outside command for over a second")
 	if max_step > 0.75: failures.append(config.name + ": abrupt movement")
-	if longest_stop > 60: failures.append(config.name + ": stuck near enemy for over 3 seconds")
+	if longest_stop < 20: failures.append(config.name + ": civilian never pauses near enemy")
 	if minimum_spacing < 0.85: failures.append(config.name + ": civilians overlap")

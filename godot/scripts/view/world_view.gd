@@ -2,6 +2,7 @@ extends Node3D
 ## Replaceable provisional art. State owns positions, roles, health and quantity.
 
 const AppearanceRandom = preload("res://scripts/simulation/seeded_random.gd")
+const Occlusion = preload("res://scripts/view/sprite_occlusion.gd")
 const DECORATION_VARIANTS := {
 	"grass": ["grass-small", "grass"],
 	"mushroom": ["mushroom-small", "mushroom", "mushroom-big"],
@@ -16,6 +17,8 @@ const COLORS := {
 	"guardian": Color("d27575"), "artisan": Color("a5a5a2"), "mage": Color("a276ff"),
 	"barbarian": Color("bd5d4b"), "sheep": Color("e0d4b8"),
 }
+@export var mage_projectile_scene: PackedScene = preload("res://scenes/world/MageProjectile.tscn")
+@export var hunter_projectile_scene: PackedScene = preload("res://scenes/world/HunterProjectile.tscn")
 @export var minion_scene: PackedScene = preload("res://scenes/actors/CharactersBase.tscn")
 @export var actor_scenes := {
 	"gatherer": preload("res://scenes/actors/Gatherer.tscn"),
@@ -32,7 +35,13 @@ const COLORS := {
 	"twigs": preload("res://scenes/world/Twigs.tscn"),
 	"stone-vein": preload("res://scenes/world/Rock.tscn"),
 	"ruin": preload("res://scenes/world/Spark.tscn"),
-	"berry-bush": preload("res://scenes/world/Bush.tscn"),
+	"berry-bush": preload("res://scenes/world/BerryBush.tscn"),
+}
+@export var tree_scenes := {
+	"tree-1": preload("res://scenes/world/Tree.tscn"),
+	"tree-2": preload("res://scenes/world/Tree2.tscn"),
+	"tree-3": preload("res://scenes/world/Tree3.tscn"),
+	"tree-4": preload("res://scenes/world/Tree4.tscn"),
 }
 @export var large_resource_scenes := {
 	"stone-vein": preload("res://scenes/world/RockLarge.tscn"),
@@ -62,11 +71,19 @@ const COLORS := {
 	"bush": preload("res://scenes/world/DecorationBush.tscn"),
 	"bush-small": preload("res://scenes/world/DecorationBushSmall.tscn"),
 	"bush-big": preload("res://scenes/world/DecorationBushBig.tscn"),
+	"bush-forest": preload("res://scenes/world/DecorationBushForest.tscn"),
+	"bush-forest-big": preload("res://scenes/world/DecorationBushForestBig.tscn"),
 }
 @export var campfire_scene: PackedScene = preload("res://scenes/world/Campfire.tscn")
 @export var corpse_scene: PackedScene = preload("res://scenes/world/Corpse.tscn")
 @export var barbarian_corpse_scene: PackedScene = preload("res://scenes/world/BarbarianCorpse.tscn")
 @export var cloud_scene: PackedScene = preload("res://scenes/world/Cloud.tscn")
+@export var cloud_variants: Array[PackedScene] = [
+	preload("res://scenes/world/Cloud.tscn"),
+	preload("res://scenes/world/Cloud2.tscn"),
+	preload("res://scenes/world/Cloud3.tscn"),
+	preload("res://scenes/world/Cloud4.tscn"),
+]
 @export var heal_effect_scene: PackedScene = preload("res://scenes/world/HealEffect.tscn")
 @export var alert_scene: PackedScene = preload("res://scenes/world/Alert.tscn")
 var _views := {}
@@ -77,13 +94,20 @@ var _alert_player: AudioStreamPlayer
 var _alert_sound: AudioStreamWAV
 var _command_radius := 10.0
 var _totem_position := {"x": 80.0, "y": 80.0}
+var carried_preview: Dictionary = {}
 var _health_pixel_size := 0.05
 var _health_screen_up := Vector3.UP
+var _occlusion := Occlusion.new()
+var _resource_clearances: Array[Vector3] = []
+var _decoration_occluders: Array[Node3D] = []
 
 func setup(state: Dictionary) -> void:
 	for child in get_children():
 		child.free()
 	_views.clear()
+	_decoration_occluders.clear()
+	_resource_clearances.clear()
+	_occlusion = Occlusion.new()
 	_played_alerts.clear()
 	_alert_player = AudioStreamPlayer.new()
 	_alert_player.stream = _make_alert_sound()
@@ -92,11 +116,19 @@ func setup(state: Dictionary) -> void:
 	for biome in state.biomes:
 		var patch := _spawn(biome_scenes[biome.id], {"x": biome.region.x, "y": biome.region.y})
 		patch.scale = Vector3(biome.region.size, 1, biome.region.size)
+	# Include depleted nodes so rain/load does not change decorative placement.
+	for resource in state.resources:
+		var view := _create_resource(resource, state.seed)
+		_resource_clearances.append(Vector3(resource.position.x, resource.position.y, view.decoration_clearance_radius))
+		if resource.amount > 0:
+			_views[resource.id] = view
+		else:
+			view.free()
 	for decoration in state.decorations:
-		_create_decoration(decoration, state.seed)
+		_create_decoration(decoration, state.seed, state.biomes)
 	sync(state)
 
-func _create_decoration(decoration: Dictionary, seed_text: String) -> void:
+func _create_decoration(decoration: Dictionary, seed_text: String, biomes: Array = []) -> void:
 	# Appearance has its own PRNG: changing art never consumes simulation randomness.
 	# Retired decoration types in a loaded world have no visual representation.
 	if not DECORATION_VARIANTS.has(decoration.kind):
@@ -104,11 +136,89 @@ func _create_decoration(decoration: Dictionary, seed_text: String) -> void:
 	var random := AppearanceRandom.new(seed_text + ":" + decoration.id + ":appearance")
 	var variants: Array = DECORATION_VARIANTS[decoration.kind]
 	var key: String = variants[random.next_int(0, variants.size() - 1)]
+	if decoration.get("biome", "") == "forest":
+		if key == "bush":
+			key = "bush-forest"
+		elif key == "bush-big":
+			key = "bush-forest-big"
 	var view := _spawn(decoration_scenes[key], decoration.position)
 	view.scale = Vector3.ONE * decoration.scale
-	var sprite := view.get_node_or_null("Visual/Default/Sprite") as Sprite3D
+	var sprite := view.get_node_or_null("Visual/Default/Sprite") as SpriteBase3D
 	if sprite != null:
 		sprite.flip_h = random.next_int(0, 1) == 1
+	view.set_meta("decoration_id", decoration.id)
+	if not biomes.is_empty():
+		var radius: float = view.decoration_clearance_radius * decoration.scale
+		var point := Vector2(view.position.x, view.position.z)
+		if not _decoration_fits(point, radius):
+			var region: Dictionary = {}
+			for biome in biomes:
+				if biome.instanceId == decoration.get("biomeInstanceId", ""):
+					region = biome.region
+					break
+			var placed := false
+			if not region.is_empty():
+				var placement := AppearanceRandom.new(seed_text + ":" + decoration.id + ":visual-clearance")
+				var limit := maxf(0.0, region.size / 2.0 - maxf(radius, 1.2))
+				for attempt in 12:
+					var angle := placement.next_float(0, TAU)
+					var distance := sqrt(placement.next_float()) * limit
+					var candidate := Vector2(region.x, region.y) + Vector2(cos(angle), sin(angle)) * distance
+					if _decoration_fits(candidate, radius):
+						view.position.x = candidate.x
+						view.position.z = candidate.y
+						placed = true
+						break
+			if not placed:
+				view.free()
+				return
+	if view.has_method("update_holes"):
+		_decoration_occluders.append(view)
+
+func _decoration_fits(point: Vector2, radius: float) -> bool:
+	for footprint in _resource_clearances:
+		if point.distance_squared_to(Vector2(footprint.x, footprint.y)) < pow(radius + footprint.z, 2):
+			return false
+	return true
+
+func update_occlusion(camera: Camera3D, delta: float) -> void:
+	if camera == null or camera.projection != Camera3D.PROJECTION_ORTHOGONAL:
+		return
+	var bodies: Array[PackedVector3Array] = []
+	var body_ids: Array[int] = []
+	for view in _views.values():
+		# Only actor bodies; HP, detection rings and feedback are excluded.
+		if view.get_meta("kind", "") in ["gatherer", "lumberjack", "hunter", "guardian", "artisan", "mage", "barbarian"]:
+			var sprite := view.get_node_or_null("Body/Sprite") as SpriteBase3D
+			if sprite != null:
+				bodies.append(_occlusion.sprite_samples(sprite, camera))
+				body_ids.append(view.get_instance_id())
+	var body_bounds: Array[Rect2] = []
+	for points in bodies:
+		body_bounds.append(_occlusion.projected_bounds(points, camera))
+	for view in _views.values() + _decoration_occluders:
+		if not is_instance_valid(view) or not view.has_method("update_holes"):
+			continue
+		if not view.dither_enabled:
+			continue
+		var sprite: SpriteBase3D = view.canopy_sprite()
+		var targets := {}
+		if sprite != null:
+			var bounds := _occlusion.sprite_bounds(sprite, camera)
+			for index in bodies.size():
+				# Most trees cannot overlap this body. Avoid scanning their pixels.
+				if not bounds.intersects(body_bounds[index]):
+					continue
+				if view.center_on_overlap:
+					# Pick an actual occluded body sample, never transparent atlas padding.
+					var point: Variant = _occlusion.covered_point(sprite, view.canopy_region, bodies[index], camera, body_bounds[index].get_center())
+					if point != null:
+						targets[body_ids[index]] = point
+				elif _occlusion.covers(sprite, view.canopy_region, bodies[index], camera):
+					var center: Vector2 = body_bounds[index].get_center()
+					var depth := bodies[index][0].dot(camera.global_basis.z)
+					targets[body_ids[index]] = camera.global_basis.x * center.x + camera.global_basis.y * center.y + camera.global_basis.z * depth
+		view.update_holes(targets, camera, delta)
 
 func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float = 1.0) -> void:
 	_previous_positions = previous_positions
@@ -160,7 +270,9 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
 		_views[actor.id] = instance
 	var previous: Dictionary = _previous_positions.get(actor.id, actor.position)
 	var point := {"x": lerpf(previous.x, actor.position.x, _alpha), "y": lerpf(previous.y, actor.position.y, _alpha)}
-	if kind == "hunter" and actor.task.kind == "combat":
+	if actor.get("isCarried", false):
+		point = carried_preview.position if carried_preview.get("unitId") == actor.id and carried_preview.get("position") != null else actor.position
+	if kind in ["hunter", "mage"] and actor.task.kind == "combat":
 		var dx: float = point.x - _totem_position.x
 		var dy: float = point.y - _totem_position.y
 		var distance := sqrt(dx * dx + dy * dy)
@@ -210,8 +322,19 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 			if effect.kind == "damage-flash":
 				node.flash(Color("ef5b5b"))
 			elif effect.kind == "attack-lunge":
-				var direction := Vector3(effect.position.x - node.position.x, 0, effect.position.y - node.position.z).normalized()
-				node.lunge(direction, sin(clampf(effect.ageSeconds / effect.durationSeconds, 0, 1) * PI) * 0.2)
+				if node.get_meta("kind", "") in ["mage", "hunter"]:
+					active[effect.id] = true
+					if not _views.has(effect.id):
+						var projectile_scene := mage_projectile_scene if node.get_meta("kind") == "mage" else hunter_projectile_scene
+						_views[effect.id] = _spawn(projectile_scene, effect.position)
+					var origin := node.position + Vector3(0, 0.8, 0)
+					var destination := Vector3(effect.position.x, 0.8, effect.position.y)
+					_views[effect.id].position = origin.lerp(destination, clampf(effect.ageSeconds / effect.durationSeconds, 0, 1))
+					if origin.distance_squared_to(destination) > 1e-8:
+						_views[effect.id].look_at(_views[effect.id].position + destination - origin, Vector3.UP)
+				else:
+					var direction := Vector3(effect.position.x - node.position.x, 0, effect.position.y - node.position.z).normalized()
+					node.lunge(direction, sin(clampf(effect.ageSeconds / effect.durationSeconds, 0, 1) * PI) * 0.2)
 	for alert in state.alerts:
 		active[alert.id] = true
 		if not _views.has(alert.id):
@@ -227,7 +350,9 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 	for cloud in state.weather.clouds:
 		active[cloud.id] = true
 		if not _views.has(cloud.id):
-			_views[cloud.id] = _spawn(cloud_scene, cloud.position)
+			var appearance := AppearanceRandom.new(state.seed + ":" + cloud.id + ":cloud-appearance")
+			var scene := cloud_scene if cloud_variants.is_empty() else cloud_variants[appearance.next_int(0, cloud_variants.size() - 1)]
+			_views[cloud.id] = _spawn(scene, cloud.position)
 		var previous: Dictionary = _previous_positions.get(cloud.id, cloud.position)
 		_views[cloud.id].position = Vector3(lerpf(previous.x, cloud.position.x, _alpha), 0, lerpf(previous.y, cloud.position.y, _alpha))
 		if _views[cloud.id].has_method("present"):
@@ -257,6 +382,13 @@ func _make_alert_sound() -> AudioStreamWAV:
 	_alert_sound.mix_rate = 22050
 	_alert_sound.data = samples
 	return _alert_sound
+
+func carried_screen_offset(camera: Camera3D, unit_id: String) -> Vector2:
+	if not _views.has(unit_id):
+		return Vector2.ZERO
+	var view: Node3D = _views[unit_id]
+	var lifted := view.to_global(Vector3.UP * view.carried_height)
+	return camera.unproject_position(lifted) - camera.unproject_position(view.global_position)
 
 func pick_unit(camera: Camera3D, screen_point: Vector2, units: Array) -> String:
 	var selected := ""
@@ -290,7 +422,11 @@ func pick_unit(camera: Camera3D, screen_point: Vector2, units: Array) -> String:
 
 func _create_resource(resource: Dictionary, seed_text: String) -> Node3D:
 	var scene: PackedScene = resource_scenes[resource.source]
-	if large_resource_scenes.has(resource.source):
+	if resource.source == "tree":
+		var random := AppearanceRandom.new(seed_text + ":" + resource.id + ":tree-appearance")
+		var first := 3 if resource.get("biome", "") == "meadow" else 1
+		scene = tree_scenes["tree-%d" % (first + random.next_int(0, 1))]
+	elif large_resource_scenes.has(resource.source):
 		# Equal visual chances, stable per node and independent of simulation RNG.
 		# Size does not affect tier, amount, yield or interaction radius yet.
 		var random := AppearanceRandom.new(seed_text + ":" + resource.id + ":resource-appearance")

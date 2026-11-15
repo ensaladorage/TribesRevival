@@ -9,10 +9,13 @@ const Move = preload("res://scripts/simulation/minion_movement.gd")
 const Work = preload("res://scripts/simulation/work_system.gd")
 const Idle = preload("res://scripts/simulation/minion_idle.gd")
 const Progression = preload("res://scripts/simulation/progression.gd")
+const Carry = preload("res://scripts/simulation/minion_carry.gd")
+const Conflict = preload("res://scripts/simulation/conflict_system.gd")
 const Survival = preload("res://scripts/simulation/survival_system.gd")
 
 static func apply(state: Dictionary, action: Dictionary) -> void:
 	if action.type == "toggle-pause":
+		Carry.drop_all(state)
 		if state.phase == "playing":
 			state.phase = "paused"
 		elif state.phase == "paused":
@@ -35,8 +38,15 @@ static func apply(state: Dictionary, action: Dictionary) -> void:
 		return
 	var totem: Dictionary = state.totem
 	match action.type:
+		"pick-up-minion":
+			Carry.pick_up(state, action.unitId)
+			Conflict.retarget_enemies(state)
+		"drag-minion":
+			Carry.drag(state, action.unitId, action.position)
+		"drop-minion":
+			Carry.drop(state, action.unitId)
 		"pick-up-totem":
-			if not totem.isCarried:
+			if not totem.isCarried and Carry.held_unit(state) == null:
 				for unit in state.units:
 					unit.erase("postCombatFree")
 				totem.formationStartTick = state.tick

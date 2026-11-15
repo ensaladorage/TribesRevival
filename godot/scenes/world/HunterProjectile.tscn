@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="wood"]
+shading_mode = 0
+albedo_color = Color(0.88, 0.68, 0.34, 1)
+
+[sub_resource type="StandardMaterial3D" id="metal"]
+shading_mode = 0
+albedo_color = Color(0.9, 0.94, 0.98, 1)
+
+[sub_resource type="BoxMesh" id="shaft"]
+size = Vector3(0.06, 0.06, 0.5)
+
+[sub_resource type="CylinderMesh" id="tip"]
+top_radius = 0.0
+bottom_radius = 0.1
+height = 0.2
+radial_segments = 4
+
+[node name="HunterProjectile" type="Node3D"]
+
+[node name="Shaft" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("shaft")
+material_override = SubResource("wood")
+
+[node name="Tip" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0, -0.3)
+rotation = Vector3(-1.5707963, 0, 0)
+cast_shadow = 0
+mesh = SubResource("tip")
+material_override = SubResource("metal")

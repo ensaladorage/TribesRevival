@@ -6,7 +6,6 @@
 [ext_resource type="Script" uid="uid://cv80u7q8csudd" path="res://scripts/view/totem_view.gd" id="script"]
 
 [sub_resource type="ShaderMaterial" id="outline_material"]
-render_priority = 0
 shader = ExtResource("outline_shader")
 shader_parameter/outline_color = Color(0.08627451, 0.10980392, 0.18039216, 1)
 shader_parameter/outline_width = 0.0110000005225

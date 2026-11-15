@@ -2,6 +2,7 @@ class_name TribeSaveRepository
 extends RefCounted
 ## Three local JSON slots. UI owns confirmation; repository touches one slot only.
 
+const Carry = preload("res://scripts/simulation/minion_carry.gd")
 const State = preload("res://scripts/simulation/game_state.gd")
 const SLOT_COUNT := 3
 const SCHEMA_VERSION := 1
@@ -16,6 +17,7 @@ func _init(directory: String = "user://saves") -> void:
 
 static func normalized_state(state: Dictionary) -> Dictionary:
 	var normalized := state.duplicate(true)
+	Carry.drop_all(normalized)
 	normalized.phase = "playing"
 	return normalized
 
@@ -51,6 +53,7 @@ func read_slot(slot: int) -> Dictionary:
 		return {"slot": slot, "status": "invalid", "reason": "incompatible"}
 	if not _matches(parsed.gameState, _template) or not _matches(parsed.get("metadata"), {"savedAt": "", "level": 0, "minionCount": 0}):
 		return {"slot": slot, "status": "invalid", "reason": "corrupt"}
+	Carry.drop_all(parsed.gameState)
 	return {"slot": slot, "status": "valid", "save": parsed}
 
 func save_slot(slot: int, state: Dictionary, saved_at: String = "") -> Dictionary:

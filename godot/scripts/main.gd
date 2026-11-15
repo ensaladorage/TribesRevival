@@ -8,6 +8,16 @@ const HUD = preload("res://scenes/ui/HUD.tscn")
 const Menus = preload("res://scenes/ui/Menus.tscn")
 const Overlay = preload("res://scenes/ui/Overlay.tscn")
 const Saves = preload("res://scripts/persistence/save_repository.gd")
+const TOTEM_REST_HEIGHT := 2.0
+const TOTEM_CARRIED_HEIGHT := 4.6
+@export_group("Cursors")
+@export var arrow_cursor: Texture2D = preload("res://assets/ui/cursors/default.png")
+@export var interact_cursor: Texture2D = preload("res://assets/ui/cursors/interact.png")
+@export var grab_cursor: Texture2D = preload("res://assets/ui/cursors/grab.png")
+@export var arrow_hotspot := Vector2(22, 18)
+@export var interact_hotspot := Vector2(22, 18)
+@export var grab_hotspot := Vector2(32, 32)
+@export_group("")
 @export var placement_scenes := {
 	"gatherer": preload("res://scenes/placement/gatherer.tscn"),
 	"axe": preload("res://scenes/placement/axe.tscn"),
@@ -28,13 +38,20 @@ var held_item := ""
 var held_preview: Node3D
 var drag_position: Variant = null
 var dragging := false
+var dragged_minion_id := ""
+var minion_drag_position: Variant = null
 var debug_visible := false
 var debug_label: Label
 var pause_overlay: ColorRect
+var _cursor_shape := -1
+var carry_cursor: CanvasLayer
+var _carry_cursor_mouse_mode := Input.MOUSE_MODE_VISIBLE
 @onready var camera: Camera3D = $Camera3D
 @onready var totem_view: Node3D = $Totem
 
 func _ready() -> void:
+	carry_cursor = preload("res://scenes/ui/CarryCursor.tscn").instantiate()
+	add_child(carry_cursor)
 	add_child(world_view)
 	world_view.setup(session.state)
 	_create_overlay()
@@ -54,20 +71,25 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if menus.screen == "game":
-		camera.advance(delta, dragging, session.state.totem.position)
+		if dragged_minion_id.is_empty():
+			camera.advance(delta, dragging, session.state.totem.position)
 		if dragging:
 			_queue_drag(get_viewport().get_mouse_position())
+		if not dragged_minion_id.is_empty():
+			_queue_minion_drag(get_viewport().get_mouse_position())
 		if not held_item.is_empty():
 			_update_held_preview()
 		session.advance(delta)
 		if session.state.phase == "defeat":
 			_cancel_placement()
 			_end_drag()
+			_end_minion_drag()
 			session.flush_actions()
 			menus.show_defeat()
 	else:
 		session.accumulator = 0.0
 	_sync_view()
+	world_view.update_occlusion(camera, delta)
 
 func _input(event: InputEvent) -> void:
 	# Receive release even over a Control, matching pointer capture in Babylon.
@@ -78,6 +100,10 @@ func _input(event: InputEvent) -> void:
 			# These HUD buttons have no release action; placement finishes above.
 		elif dragging:
 			_end_drag()
+			get_viewport().set_input_as_handled()
+		elif not dragged_minion_id.is_empty():
+			_queue_minion_drag(event.position)
+			_end_minion_drag()
 			get_viewport().set_input_as_handled()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -92,12 +118,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			camera.adjust_zoom(0.1)
 		elif event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed and session.state.phase == "playing" and not dragging and _hits_totem(event.position):
-				dragging = true
-				drag_position = session.state.totem.position.duplicate()
-				camera.recentering = false
-				session.enqueue({"type": "pick-up-totem"})
-				_queue_drag(event.position)
+			if event.pressed and session.state.phase == "playing" and not dragging and dragged_minion_id.is_empty() and held_item.is_empty():
+				if _hits_totem(event.position):
+					dragging = true
+					drag_position = session.state.totem.position.duplicate()
+					camera.recentering = false
+					session.enqueue({"type": "pick-up-totem"})
+					_queue_drag(event.position)
+				else:
+					_begin_minion_drag(event.position)
 			elif not event.pressed and dragging:
 				_end_drag()
 	elif event is InputEventKey and event.pressed and not event.echo:
@@ -117,7 +146,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and is_node_ready():
+		_update_carry_cursor(false)
 		_end_drag()
+		_end_minion_drag()
+		session.flush_actions()
 		_cancel_placement()
 
 func _hits_totem(screen_point: Vector2) -> bool:
@@ -146,24 +178,104 @@ func _end_drag() -> void:
 	dragging = false
 	camera.recentering = true
 
+func _begin_minion_drag(screen_point: Vector2) -> void:
+	var unit_id: String = world_view.pick_unit(camera, screen_point, session.state.units)
+	if unit_id.is_empty():
+		return
+	dragged_minion_id = unit_id
+	minion_drag_position = Session.Movement.find_entity(session.state.units, unit_id).position.duplicate()
+	camera.recentering = false
+	session.enqueue({"type": "pick-up-minion", "unitId": unit_id})
+	_queue_minion_drag(screen_point)
+
+func _queue_minion_drag(screen_point: Vector2) -> void:
+	# Keep the last map position when crossing HUD or leaving the viewport.
+	if get_viewport().gui_get_hovered_control() != null or not get_viewport().get_visible_rect().has_point(screen_point):
+		return
+	var point: Variant = camera.ground_point(screen_point)
+	if point is Vector3:
+		minion_drag_position = Session.State.clamp_position({"x": point.x, "y": point.z})
+		session.enqueue({"type": "drag-minion", "unitId": dragged_minion_id, "position": minion_drag_position})
+
+func _end_minion_drag() -> void:
+	if dragged_minion_id.is_empty():
+		return
+	session.enqueue({"type": "drop-minion", "unitId": dragged_minion_id})
+	dragged_minion_id = ""
+	minion_drag_position = null
+
 func _sync_view() -> void:
 	hud.visible = menus.screen == "game"
 	$Overlay.visible = menus.screen == "game"
 	hud.update_state(session.state)
+	world_view.carried_preview = {"unitId": dragged_minion_id, "position": minion_drag_position}
 	world_view.sync(session.state, session.previous_positions, session.accumulator / Session.FIXED_DT)
 	var totem: Dictionary = session.state.totem
 	var visual: Dictionary = drag_position if (dragging or totem.isCarried) and drag_position != null else totem.position
-	totem_view.position = Vector3(float(visual.x), 4.6 if dragging or totem.isCarried else 2.0, float(visual.y))
+	totem_view.position = Vector3(float(visual.x), TOTEM_CARRIED_HEIGHT if dragging or totem.isCarried else TOTEM_REST_HEIGHT, float(visual.y))
 	totem_view.present(dragging or totem.isCarried)
 	$TotemShadow.position = Vector3(visual.x, 0.04, visual.y)
 	pause_overlay.visible = false
 	debug_label.text = "Tick %s · %s · velocidad ×%s\nTótem %s, %s" % [Numbers.integer(session.state.tick), session.state.phase, Numbers.integer(session.speed_multiplier), Numbers.integer(totem.position.x), Numbers.integer(totem.position.y)]
-	Input.set_default_cursor_shape(Input.CURSOR_DRAG if dragging or not held_item.is_empty() else Input.CURSOR_ARROW)
+	_update_cursor()
+
+func _cursor_for_point(screen_point: Vector2, over_ui: bool) -> int:
+	if menus.screen != "game" or session.state.phase != "playing":
+		return Input.CURSOR_ARROW
+	if dragging or not dragged_minion_id.is_empty() or not held_item.is_empty():
+		return Input.CURSOR_DRAG
+	if over_ui:
+		return Input.CURSOR_ARROW
+	if _hits_totem(screen_point) or not world_view.pick_unit(camera, screen_point, session.state.units).is_empty():
+		return Input.CURSOR_POINTING_HAND
+	return Input.CURSOR_ARROW
+
+func _update_cursor() -> void:
+	var shape := _cursor_for_point(get_viewport().get_mouse_position(), get_viewport().gui_get_hovered_control() != null)
+	_update_carry_cursor(shape == Input.CURSOR_DRAG and (dragging or not dragged_minion_id.is_empty()))
+	if shape == _cursor_shape:
+		return
+	_cursor_shape = shape
+	var texture := arrow_cursor
+	var hotspot := arrow_hotspot
+	if shape == Input.CURSOR_DRAG:
+		texture = grab_cursor
+		hotspot = grab_hotspot
+	elif shape == Input.CURSOR_POINTING_HAND:
+		texture = interact_cursor
+		hotspot = interact_hotspot
+	# Controls use ARROW too, so carrying stays visible while crossing the HUD.
+	Input.set_custom_mouse_cursor(texture, Input.CURSOR_ARROW, hotspot)
+	Input.set_custom_mouse_cursor(texture, Input.CURSOR_POINTING_HAND, hotspot)
+	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+
+func _update_carry_cursor(active: bool) -> void:
+	var hand: TextureRect = carry_cursor.get_node("Hand")
+	if active:
+		if not hand.visible:
+			_carry_cursor_mouse_mode = Input.mouse_mode
+			Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
+		hand.texture = grab_cursor
+		hand.position = _carry_cursor_position() - grab_hotspot
+	elif hand.visible:
+		Input.mouse_mode = _carry_cursor_mouse_mode
+	hand.visible = active
+
+func _carry_cursor_position() -> Vector2:
+	if dragging:
+		var resting := totem_view.global_position - Vector3.UP * (TOTEM_CARRIED_HEIGHT - TOTEM_REST_HEIGHT)
+		return get_viewport().get_mouse_position() + camera.unproject_position(totem_view.global_position) - camera.unproject_position(resting)
+	return get_viewport().get_mouse_position() + world_view.carried_screen_offset(camera, dragged_minion_id)
+
+func _exit_tree() -> void:
+	if is_instance_valid(carry_cursor) and carry_cursor.get_node("Hand").visible:
+		Input.mouse_mode = _carry_cursor_mouse_mode
 
 func _begin_placement(item: String) -> void:
 	if session.state.phase != "playing" or menus.screen != "game":
 		return
 	_end_drag()
+	_end_minion_drag()
 	_cancel_placement()
 	held_item = item
 	held_preview = placement_scenes[item].instantiate()
@@ -202,6 +314,8 @@ func _replace_state(state: Dictionary) -> void:
 	_cancel_placement()
 	dragging = false
 	drag_position = null
+	dragged_minion_id = ""
+	minion_drag_position = null
 	session.replace_state(state)
 	saved_fingerprint = Saves.fingerprint(session.state)
 	world_view.setup(session.state)
@@ -221,6 +335,7 @@ func _open_pause() -> void:
 		return
 	_cancel_placement()
 	_end_drag()
+	_end_minion_drag()
 	session.flush_actions()
 	if session.state.phase == "playing":
 		Session.Commands.apply(session.state, {"type": "toggle-pause"})
@@ -236,11 +351,14 @@ func _resume_game() -> void:
 func _return_to_main() -> void:
 	_cancel_placement()
 	_end_drag()
+	_end_minion_drag()
 	session.flush_actions()
 	menus.update_slots(saves.list_slots())
 	menus.show_main()
 
 func _save_slot(slot: int) -> void:
+	_end_minion_drag()
+	session.flush_actions()
 	var result := saves.save_slot(slot, session.state)
 	if result.ok:
 		saved_fingerprint = Saves.fingerprint(session.state)

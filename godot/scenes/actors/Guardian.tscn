@@ -44,3 +44,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.059352577, 0)
 [node name="Sprite" parent="Body" parent_id_path=PackedInt32Array(635982024) index="0" unique_id=588141790]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0075502, 0)
 sprite_frames = SubResource("character_frames")
+
+[node name="GroundShadow" parent="." index="5" unique_id=565216423]
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, -0.0423702, 0.099999994, 0.10478115)

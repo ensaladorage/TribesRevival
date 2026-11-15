@@ -110,6 +110,12 @@ del área concreta; sus ejemplos genéricos no sustituyen las reglas del juego.
 
 ## Cierre y validación
 
+Antes de tareas complejas, consultar MemPalace si está disponible y contrastar
+sus recuerdos con los documentos y el código actuales; registrar decisiones
+importantes con sus fuentes, evitando duplicados. Usar Funplay Godot MCP si
+está disponible y facilita la inspección o edición en el editor. Para pruebas
+nuevas, usar GdUnit4 cuando resulte adecuado y conservar los runners existentes.
+
 Para cambios de código/escenas, comprobar análisis de scripts y referencias de
 los recursos afectados, ejecutar las pruebas automatizadas pertinentes disponibles
 y revisar que no cambien mecánicas ajenas a la tarea. Usar los puntos de entrada

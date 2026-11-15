@@ -24,3 +24,4 @@ script = ExtResource("script")
 position = Vector3(0, 0.18, 0)
 mesh = SubResource("mesh1")
 material_override = SubResource("mat1")
+

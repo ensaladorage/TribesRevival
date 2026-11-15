@@ -150,7 +150,7 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
 -   La prioridad de decisión autónoma es `enemigos` > `nodos de recursos` > `drops`. Si no hay enemigos elegibles, se comparan nodos y drops.
     Levantar el tótem interrumpe tareas de recolección, caza y saqueo.
     El combate continúa hasta romper contacto; los minions sin arma
-    huyen hacia la posición actual del tótem.
+    usan en Godot la huida limitada descrita en «IA táctica en Godot».
 -   El rango de detección de recursos y drops usa un multiplicador
     inicial de `1.05` sobre el radio de mando del tótem, medido desde
     cada minion. El render muestra ese rango con un anillo de debug
@@ -190,7 +190,8 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
     inmediatamente al estar dentro, ignorando destinos centrales de guardados
     anteriores. No asigna slots ni necesita migración de GameState v17.
     `formationTarget` solo se usa en seguimiento/formación al mover el tótem;
-    una huida se dirige hacia el tótem respetando su despeje, sin slot asignado.
+    en Godot una huida usa destino fijo y esquivas locales; fuera del mando
+    retorna hasta entrar en él, sin slot asignado.
 -   `minionNavigation.ts` contiene funciones puras de evitación: mínima
     separación 0,94 m, horizonte 0,6 s, candidatos directos y desviados
     ±25/50/75 grados, velocidad normal o mitad y espera cuando no hay paso.
@@ -241,6 +242,43 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
 
 ### Generación determinista del mundo
 
+La presentación usa profundidad normal, sin prioridades por categoría ni
+`no_depth_test`. Recursos y personajes sprite escriben profundidad con Alpha
+Cut Discard; las ramitas y el tótem 3D son opacos, incluido su contorno.
+`WorldView.setup` reserva las huellas de todos los recursos, incluso agotados.
+Las escenas exponen `decoration_clearance_radius`; la decoración aplica su
+escala visual al radio. Solo las piezas que invaden una huella se reubican:
+PRNG separado `semilla:id:visual-clearance`, doce candidatos dentro de su bioma,
+o se omite la instancia. No se cambia el estado ni el PRNG de simulación.
+
+`tree_view.gd` expone una zona de copa normalizada por variante y los tiempos
+150/250/150 ms (apertura/cierre/espera), radio interior 1.15 m y borde 0.5 m.
+Tras sincronizar posiciones interpoladas y tótem, `main` llama a
+`WorldView.update_occlusion`. `sprite_occlusion.gd` comprueba profundidad y
+píxeles opacos de la copa frente a muestras del cuerpo sprite de minions y
+enemigos; excluye el tótem, barras de vida, anillos y márgenes transparentes.
+La proyección corresponde a los billboards y cámara ortográfica actuales.
+Imágenes descomprimidas y muestras de alfa se almacenan en caché de vista.
+Los cuerpos solapados generan centros individuales en espacio de vista para
+`tree_dither.gdshader`: centro descartado, anillo Bayer 4×4 y exterior opaco.
+El shader conserva escritura/test de profundidad y UV de la animación; usa
+un material por instancia y hasta 32 círculos. Al cerrar vuelve al material
+nativo. No se atenúa globalmente el árbol ni se usa mezcla alfa.
+
+-   Godot reserva dos plazas de bosque tras las cuatro clases de bioma
+    obligatorias: el mapa predeterminado mantiene `10` áreas de recursos con
+    un mínimo de `3` bosques. Conserva las tiradas y posiciones de biomas.
+    Cada pradera garantiza madera cuando está activa: si no obtuvo un árbol
+    secundario, añade uno con PRNG independiente `:meadow-trees`, cantidad `1`
+    y rendimiento `2–3`, además de las bayas existentes. Los guardados v17
+    conservan sus arrays; la carga no invoca de nuevo el generador.
+-   `WorldView.tree_scenes` expone cuatro PackedScenes editables. `Tree.tscn`
+    representa la variante 1; `Tree2/3/4.tscn`, las restantes. Usan ocho AtlasTexture
+    y AnimatedSprite3D con bucle `idle` a 10 FPS (100 ms originales), nearest,
+    billboard y apoyo ajustado al borde visible de cada hoja. Un PRNG exclusivo
+    `semilla:ID:tree-appearance` elige 1/2 en bosque y otros biomas, 3/4 en pradera.
+    La apariencia no añade campos al estado ni cambia radios o rendimiento.
+
 -   El blueprint del mundo recibe una semilla textual y genera
     posiciones, radios, cantidades y tipos con un PRNG local; no usa
     `Math.random()`, Babylon.js ni el DOM. Entrega un número
@@ -278,8 +316,12 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
     Se generan `12–18` decoraciones por claro (también el inicial),
     `18–26` por pradera y `16–24` por bosque; ninguna en pedregales/ruinas.
     Se conserva la escala lógica `1.26–1.62` y el margen de colocación.
-    Las ocho variantes Sprite3D editables heredan `DecorationSprite.tscn`,
-    usan AtlasTexture sin márgenes transparentes, nearest y billboard,
+    Las variantes estáticas Sprite3D heredan `DecorationSprite.tscn`.
+    Los arbustos medianos/grandes usan cuatro escenas AnimatedSprite3D editables
+    con ocho celdas 128 × 128 a 10 FPS; 1/2 en praderas y claros, 3/4 en bosques.
+    La selección mantiene tres plazas equiprobables (pequeño, mediano, grande)
+    y las mismas tiradas y reflejo; `SpriteBase3D` permite aplicar el reflejo
+    tanto a sprites estáticos como animados. Todas usan nearest y billboard,
     con el borde inferior apoyado sobre el suelo. La vista elige tamaño
     y reflejo con un PRNG independiente por semilla/ID; no añade datos
     visuales al guardado ni altera el estado. Las flores retiradas no se
@@ -389,4 +431,179 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
 
 ### IA táctica en Godot
 
-`tactical_movement.gd` puntúa destinos locales deterministas según distancia a amenazas, espacio aliado, continuidad y dominio permitido. Los civiles mantienen la tarea de huida dentro del mando; si el tótem los deja fuera, retornan progresivamente. Los bárbaros priorizan combatientes dirigidos contra ellos, conservan el objetivo ante diferencias pequeñas de distancia y realizan maniobras cortas durante parte del enfriamiento si hay varios atacantes. Se reutilizan navegación, daño y temporizadores existentes. La simulación no depende del renderizado y el formato de guardado permanece en versión 17.
+La selección de tareas armadas precede a la resolución de intención enemiga.
+`_barbarian_target` comparte las prioridades existentes; se resuelve una vez
+antes de decidir la respuesta civil y se conserva hasta actuar ese tick.
+Primero devuelve el `targetUnitId` actual si existe, tiene salud positiva y
+sigue dentro de los 15 m de persecución, salvo el relevo del cazador descrito
+abajo. La distancia interviene al adquirir un objetivo nuevo. No usa el margen
+anterior de 0,8 m para cambiar de combatiente. Transformar al objetivo no
+cambia su ID ni libera el foco; muerte/desaparición o salida de alcance sí.
+El ID existente conserva ese foco al guardar/cargar, sin campos adicionales.
+Excepción por impacto en `_attack`: con daño positivo y bárbaro superviviente,
+si su presa actual no puede combatir y el autor del golpe sí, asigna al autor
+como `targetUnitId`. No cambia por proximidad, daño cero ni golpes posteriores
+contra un bárbaro que ya está centrado en un combatiente cuerpo a cuerpo.
+Excepción para cazadores: si la presa es `hunter`, un atacante cuerpo a cuerpo
+en los 15 m puede relevarla sin esperar un impacto. Al adquirir foco, los
+atacantes cuerpo a cuerpo preceden a los demás; dentro de cada grupo se
+conservan distancia e ID estable. `Combat.is_melee` clasifica por alcance de
+ataque hasta el alcance cuerpo a cuerpo del bárbaro, incluyendo clases futuras.
+Un impacto cuerpo a cuerpo también puede transferir el foco desde un cazador.
+Solo un enemigo vivo con `targetUnitId == unit.id` activa `flee`. Al dejar
+de ser objetivo se limpia el episodio. Sin persecución, `avoid-combat` aparta
+al civil del radio de 3 m de un enemigo dirigido a un combatiente, a velocidad
+normal y sin pausas de huida, solo cuando no tiene trabajo. `choose_work_task`
+comparte la selección existente con el conflicto: trabajo disponible y tareas
+`gather`/`collect-drop`/`loot-corpse` tienen prioridad sobre apartarse incluso
+dentro del área de combate, siempre que ningún enemigo persiga al civil.
+Se conservan las prioridades y reservas de cadáver/nodo/drop. El cambio de
+tarea no modifica el mundo ni el formato obligatorio v17. El tick utilizado
+para la semilla de drops se convierte a entero para conservar sus posiciones
+tras cargar JSON durante un trabajo en curso.
+
+`tactical_movement.gd` conserva una memoria opcional `unit.fleeMemory`, separada
+de `navigation`: fase `escape`/`pause`/`dodge`, destino, ancla local, pausa y
+tiempo de desplazamiento restantes, distancia recorrida, tiempo bloqueado, contador
+de ciclo y suspensión por seguimiento. La elección prueba hasta 32 puntos
+aleatorios entre 4 m y el borde del mando; exige ruta válida y distancia
+de al menos 3 m respecto a la unidad. El PRNG usa semilla, ID, tick inicial
+del episodio y ciclo enteros; tras la pausa limita el destino a 8 m de la unidad.
+El destino inicial no cambia con el perseguidor. Tras llegar o acumular 1 s
+sin avance, alterna pausas deterministas de 2–4 s y desplazamientos de hasta 8 m/1,6 s. Tras cada pausa evalúa nuevos
+destinos aunque no mejoren la seguridad actual; ya no hay zona local fija.
+La pausa depende de semilla, ID y contador convertido a entero al formar la
+semilla para conservar el resultado tras serialización JSON.
+
+`conflict_system.gd` prepara la decisión y ejecuta la fase. `minion_movement.gd`
+limita rutas y separación al mando, publica reposo con
+velocidad cero y mantiene las colisiones. Fuera del mando suspende la huida
+y retorna hacia una entrada libre, un metro dentro del mando para no apuntar
+a civiles parados en su borde, conservando la pausa. Al reentrar conserva
+el ancla si es válida; si no, la fija en la posición alcanzada. El ancla se conserva como dato compatible, sin restringir el movimiento.
+No concede otra carrera inicial. Cambiar la tarea a una distinta de huida limpia la
+memoria; repetir la tarea o cambiar de perseguidor no la limpia.
+
+El guardado v17 conserva la memoria como datos opcionales; los guardados
+anteriores la inicializan al siguiente episodio/actualización de huida.
+No cambia el esquema obligatorio, el tick fijo ni la independencia del render.
+Los cazadores perseguidos conservan `fleeMemory` entre decisiones armadas y
+usan el mismo `prepare_flee`/`update_flee` que los civiles. Durante una pausa
+no suspendida pueden atacar a su perseguidor dentro de los 5 m con el cooldown
+compartido, sin reservar posiciones de combate ni reiniciar la huida. Al perder
+el foco se limpia la memoria y se reanuda la selección armada habitual.
+Los bárbaros priorizan atacantes al adquirir objetivo, conservan el foco y
+maniobras cortas bajo presión de varios combatientes.
+Su dirección de persecución rodea el despeje del tótem cuando el segmento
+directo lo cruza, con alternativa hacia el interior del mapa en sus bordes.
+Esto evita que un civil parado al otro lado del tótem sea inalcanzable;
+no cambia velocidad, daño ni alcance del bárbaro.
+
+La huida incorpora el tótem como obstáculo con despeje 2,02 m y puntos de
+rodeo a 2,42 m. La navegación admite radios opcionales por obstáculo, con
+los valores anteriores como defecto para otros cuerpos. Tanto los tramos
+de ruta como los pasos efectivos excluyen ese despeje; la separación tampoco
+puede empujar al fugitivo dentro. Si el jugador mueve el tótem encima de una
+unidad, se permite salir progresivamente sin teletransporte.
+
+### Composiciones visuales de nubes — Godot
+
+`WorldView.cloud_variants` contiene cuatro PackedScenes (Cloud, Cloud2–4),
+seleccionadas con PRNG exclusivo `semilla:id:cloud-appearance`. Cada composición
+incluye una grande, entre una y dos medianas y entre una y tres pequeñas; heredan de CloudBase, que
+comparte el adaptador weather_view y Rain. Sustituyen las esferas provisionales.
+La interpolación y `present(cloud)` conservan su contrato. Las piezas son solo
+presentación: la simulación y los guardados mantienen una nube lógica por grupo.
+
+### Altura visual y sombra de nubes
+
+Clouds aplica un desplazamiento vertical cloud_height − 13.4 (altura central
+predeterminada 15), sin modificar las posiciones relativas de los sprites ni
+el estado lógico. Los veinte sprites usan Discard 0.5. GroundShadow queda en
+la raíz a 0.08 m, por encima de la superficie de bioma de 0.07 m: PlaneMesh
+14 × 9, shader elíptico suave unshaded, alfa máximo 0.12, depth test normal y
+sin escritura de profundidad. Tamaño/color/opacidad editables en recursos.
+La lluvia recorre desde cloud_height − 1.2 hasta 0.9 a rain_speed × 11.3 m/s;
+se adapta el período de reciclaje, no la velocidad ni las fases meteorológicas.
+
+### Coste de oclusión visual — 2026-11-13
+
+WorldView calcula una caja proyectada conservadora para cada cuerpo una vez por
+actualización. Solo evalúa píxeles de copa contra cuerpos cuyas cajas se solapan
+con el rectángulo proyectado del árbol. Las cajas tienen margen para incluir
+contactos y muestras aisladas. sprite_samples reutiliza rectángulo, transformación
+y ejes de cámara por cuerpo, sin consultarlos por cada muestra. Se mantienen
+las muestras originales, los controles de alfa/profundidad y los tiempos de fundido.
+
+### Oclusión de arbustos decorativos
+
+WorldView conserva una lista de instancias decorativas con update_holes, añadidas
+solo tras aceptar su colocación y vaciada al reconstruir. Comparte muestras de
+cuerpos y descarte por cajas con los árboles. Las cinco variantes de arbustos
+usan tree_view con radios reducidos y center_on_overlap; las otras decoraciones
+y bayas mantienen su presentación. No se modifica el estado lógico.
+
+### Ataque básico del mago
+
+`combat_rules.gd` define mage (daño 2, alcance 3, cooldown 2.5). `is_ranged`
+clasifica por alcance para compartir reservas, límites de mando y huida con el
+cazador; la caza sigue restringida a hunter. La simulación resuelve el daño al
+atacar, como los ataques existentes. WorldView interpreta attack-lunge del mago
+como un proyectil visual editable (MageProjectile.tscn) durante el impulso de
+0.22 s. El vuelo no gobierna impactos ni modifica el esquema de guardado.
+
+### Interpolación al reaparecer
+
+TribeSession captura posiciones previas solo de entidades vivas (las entidades
+sin isAlive conservan su comportamiento). Un bárbaro/animal que reaparece no
+hereda la posición de su muerte: WorldView usa la posición actual cuando no
+hay origen previo. Desde el siguiente tick vuelve la interpolación normal.
+No altera temporizadores, spawn, estado persistido ni movimiento lógico.
+
+
+### Reposicionamiento manual de minions — Godot
+
+`minion_carry.gd` aplica las acciones semánticas `pick-up-minion` (`unitId`),
+`drag-minion` (`unitId`, `position`) y `drop-minion` (`unitId`). El campo opcional
+`unit.isCarried` solo existe durante la recogida; no modifica el esquema 1 ni
+GameState v17. La exclusión mutua con el tótem se comprueba en simulación.
+
+La recogida libera la tarea/navegación y vuelve a seleccionar los objetivos
+bárbaros sin avanzar el tiempo. Combate, llamadas, navegación, separación, daño,
+enfriamientos y curación excluyen al portado. El bloqueo restante del impulso de
+ataque también se congela; su daño ya resuelto se conserva. Al depositarlo se
+marca `postCombatFree` para evitar exigir una formación antigua, y se elige idle
+local o retorno al mando. El retorno causado por `minion-dropped` no inicia
+combate/caza ni acepta llamadas de trabajo antes de entrar en el mando; si pasa
+a ser perseguido, se aplica la huida existente.
+
+La colocación enumera proyecciones e intersecciones de los círculos de despeje
+(tótem y personajes vivos) con los bordes del mapa. Escoge el candidato válido
+más cercano, con desempate por coordenadas; no empuja a otros cuerpos ni usa
+geometría visual como fuente de verdad.
+
+`main` conserva la última posición de mapa al cruzar UI o abandonar la ventana.
+No avanza la cámara durante el arrastre. `actor_view` eleva solo la presentación,
+con `carried_height` exportado y `MinionCarryMarker.tscn` editable. La vista usa el
+cursor sin interpolar mientras está levantado; las posiciones lógicas siguen
+entrando por acciones al tick fijo.
+
+Durante transporte, `CarryCursor.tscn` muestra la mano en una capa GUI que
+ignora el ratón. `main` desplaza esa imagen por la proyección en pantalla de
+la elevación visual del objeto, actualizada con la cámara. El puntero lógico
+conserva su posición para arrastre y suelta. El cursor nativo se oculta mientras
+se dibuja la mano elevada y se restaura al terminar o perder el foco.
+
+La normalización de guardado deposita los portados sobre una copia. La lectura
+también limpia ese estado transitorio si está presente; los guardados anteriores
+sin el campo opcional conservan su funcionamiento.
+
+
+### Límite de destino en llamadas de recursos — Godot
+
+`dispatch_resource_call` filtra los nodos respecto al tótem antes de elegir un
+receptor: distancia al cuadrado menor o igual a `(commandRadius * 1.05)^2`.
+Se conserva además la comprobación de visibilidad desde el emisor con ese
+mismo radio. El margen sigue al radio de mando actual, sin constante absoluta
+nueva ni campos persistidos. La restricción afecta a avisos de nodos de recursos;
+no modifica detección directa, llamadas de combate/caza ni tareas ya iniciadas.

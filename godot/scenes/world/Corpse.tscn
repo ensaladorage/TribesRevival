@@ -77,3 +77,4 @@ animation = &"death"
 autoplay = "death"
 frame = 6
 frame_progress = 1.0
+

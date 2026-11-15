@@ -1,0 +1,100 @@
+[gd_scene format=3 uid="uid://buby3wn0f1fi0"]
+
+[ext_resource type="PackedScene" path="res://scenes/world/CloudBase.tscn" id="base"]
+[ext_resource type="Texture2D" uid="uid://raq3ak0qgwj8" path="res://assets/environment/Clound bug 2.png" id="Large2"]
+[ext_resource type="Texture2D" uid="uid://buxmoaxqny8k" path="res://assets/environment/Cloud medium 1.png" id="Medium1"]
+[ext_resource type="Texture2D" uid="uid://bbtuoihimytc6" path="res://assets/environment/Cloud medium 2.png" id="Medium2"]
+[ext_resource type="Texture2D" uid="uid://bfunq2j7wngs7" path="res://assets/environment/Cloud small 1.png" id="Small1"]
+[ext_resource type="Texture2D" uid="uid://digjkqdyr2lpo" path="res://assets/environment/Cloud small 2.png" id="Small2"]
+
+[node name="Cloud" unique_id=1964609590 instance=ExtResource("base")]
+
+[node name="Clouds" parent="Visual/Default" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="Large2" type="Sprite3D" parent="Visual/Default/Clouds" index="0" unique_id=1751232685]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.4, 0)
+cast_shadow = 0
+pixel_size = 0.022
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+texture = ExtResource("Large2")
+
+[node name="Medium2" type="Sprite3D" parent="Visual/Default/Clouds" index="1" unique_id=271249772]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 13.7, -2)
+cast_shadow = 0
+pixel_size = 0.022
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+texture = ExtResource("Medium2")
+
+[node name="Medium1" type="Sprite3D" parent="Visual/Default/Clouds" index="2" unique_id=188762330]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 13.1, 0.5)
+cast_shadow = 0
+pixel_size = 0.022
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+texture = ExtResource("Medium1")
+
+[node name="Small1" type="Sprite3D" parent="Visual/Default/Clouds" index="3" unique_id=1712648454]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 12.8, 2)
+cast_shadow = 0
+pixel_size = 0.022
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+texture = ExtResource("Small1")
+
+[node name="Small2" type="Sprite3D" parent="Visual/Default/Clouds" index="4" unique_id=179425501]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 13.9, -4)
+cast_shadow = 0
+pixel_size = 0.022
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+texture = ExtResource("Small2")
+
+[node name="Small3" type="Sprite3D" parent="Visual/Default/Clouds" index="5" unique_id=1353536289]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 13.4, -1.5)
+cast_shadow = 0
+pixel_size = 0.022
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+texture = ExtResource("Small2")
+
+[node name="Rain0" parent="Visual/Default/Rain" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.65, 5, 0)
+
+[node name="Rain1" parent="Visual/Default/Rain" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.366954, 5, 2.1683238)
+
+[node name="Rain2" parent="Visual/Default/Rain" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4170207, 5, -4.7517357)
+
+[node name="Rain3" parent="Visual/Default/Rain" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0039241, 5, 1.3094412)
+
+[node name="Rain4" parent="Visual/Default/Rain" index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1609304, 5, -0.55912405)
+
+[node name="Rain5" parent="Visual/Default/Rain" index="5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0247126, 5, -2.5601928)
+
+[node name="Rain6" parent="Visual/Default/Rain" index="6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4283471, 5, 1.5934299)
+
+[node name="Rain7" parent="Visual/Default/Rain" index="7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4795115, 5, -2.8487093)
+
+[node name="Rain8" parent="Visual/Default/Rain" index="8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4805627, 5, 1.6362942)
+
+[node name="Rain9" parent="Visual/Default/Rain" index="9"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5251702, 5, 0.6295681)
+
+[node name="GroundShadow" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)

@@ -9,9 +9,12 @@ const State = preload("res://scripts/simulation/game_state.gd")
 const Geo = preload("res://scripts/simulation/geometry.gd")
 const Random = preload("res://scripts/simulation/seeded_random.gd")
 const Economy = preload("res://scripts/simulation/economy.gd")
+const Combat = preload("res://scripts/simulation/combat_rules.gd")
 const Progression = preload("res://scripts/simulation/progression.gd")
 
 static func set_task(unit: Dictionary, task: Dictionary) -> void:
+	if task.kind != "flee":
+		unit.erase("fleeMemory")
 	var entry_speed := 0.0
 	if task.kind == "combat" and unit.task.kind != "combat" and unit.state == "follow-totem":
 		entry_speed = Geo.length(unit.get("navigation", {}).get("velocity", {"x": 0.0, "y": 0.0}))
@@ -30,6 +33,8 @@ static func set_task(unit: Dictionary, task: Dictionary) -> void:
 	if task.kind in ["gather", "collect-drop"] and task.targetResourceId != unit.cancelledTargetId:
 		unit.cancelledTargetId = null
 	unit.state = {"gather": "seeking-task", "collect-drop": "collecting-drop", "combat": "combat", "flee": "fleeing", "loot-corpse": "looting-corpse", "hunt": "hunting", "return-to-totem": "returning-to-totem"}.get(task.kind, "idle")
+	if task.kind == "avoid-combat":
+		unit.state = "avoiding-combat"
 
 static func reserved_targets(state: Dictionary, unit: Dictionary, kind: String) -> Array:
 	var result: Array = []
@@ -48,10 +53,17 @@ static func _sort_nearest(candidates: Array, point: Dictionary) -> void:
 		return difference < 0 if difference != 0 else a.id < b.id)
 
 static func dispatch_resource_call(state: Dictionary, caller: Dictionary) -> bool:
+	if caller.get("isCarried", false):
+		return false
 	var radius_squared: float = pow(maxf(state.totem.commandRadius, 0) * 1.05, 2)
 	var reserved := reserved_targets(state, caller, "gather")
 	var nearby: Array = []
 	for resource in state.resources:
+		var totem_dx: float = resource.position.x - state.totem.position.x
+		var totem_dy: float = resource.position.y - state.totem.position.y
+		# Shared sightings cannot send responders beyond the totem's work area.
+		if totem_dx * totem_dx + totem_dy * totem_dy > radius_squared:
+			continue
 		var dx: float = resource.position.x - caller.position.x
 		var dy: float = resource.position.y - caller.position.y
 		if resource.amount > 0 and not Rules.can_gather(caller.role, resource, state.toolLevels) and resource.id != caller.cancelledTargetId and not (caller.task.kind == "gather" and caller.task.targetResourceId == resource.id) and resource.id not in reserved and dx * dx + dy * dy <= radius_squared:
@@ -60,7 +72,7 @@ static func dispatch_resource_call(state: Dictionary, caller: Dictionary) -> boo
 	for resource in nearby:
 		var responders: Array = []
 		for candidate in state.units:
-			if candidate.id != caller.id and candidate.task.kind in ["idle", "return-to-totem"] and Rules.total_amount(candidate.cargo.amounts) == 0 and candidate.cancelledTargetId != resource.id and Rules.can_gather(candidate.role, resource, state.toolLevels):
+			if candidate.id != caller.id and not candidate.get("isCarried", false) and not Move.returning_after_drop(state, candidate) and candidate.task.kind in ["idle", "return-to-totem"] and Rules.total_amount(candidate.cargo.amounts) == 0 and candidate.cancelledTargetId != resource.id and Rules.can_gather(candidate.role, resource, state.toolLevels):
 				responders.append(candidate)
 		_sort_nearest(responders, resource.position)
 		if not responders.is_empty():
@@ -71,7 +83,7 @@ static func dispatch_resource_call(state: Dictionary, caller: Dictionary) -> boo
 static func drop_resource(state: Dictionary, point: Dictionary, unit_id: String, source_id: Variant, resource_type: String, amount: float) -> void:
 	for index in maxi(int(floor(amount)), 0):
 		var source_text: String = str(source_id) if source_id != null else "free"
-		var random := Random.new("%s:drop:%s:%s:%s:%s" % [state.seed, state.tick, unit_id, source_text, resource_type])
+		var random := Random.new("%s:drop:%s:%s:%s:%s" % [state.seed, int(state.tick), unit_id, source_text, resource_type])
 		var angle := random.next_float(0, PI * 2.0) + index * 2.399963229728653
 		var position := State.clamp_position({"x": point.x + cos(angle) * 1.5, "y": point.y + sin(angle) * 1.5})
 		state.drops.append({"id": "drop-%05d" % state.nextDropId, "type": resource_type, "sourceNodeId": source_id, "position": position, "amount": 1})
@@ -115,26 +127,28 @@ static func gather_duration(state: Dictionary, resource: Dictionary) -> float:
 	var tool := "axe" if resource.type == "wood" else "hammer" if resource.type == "stone" else ""
 	return base / Economy.gather_speed_multiplier(tool, state.toolLevels[tool]) if not tool.is_empty() else base
 
+static func choose_work_task(state: Dictionary, unit: Dictionary) -> Dictionary:
+	var gather_task := Rules.choose_gather_task({"role": unit.role, "unitPosition": unit.position, "totemPosition": state.totem.position, "commandRadius": state.totem.commandRadius, "cargo": unit.cargo, "resources": state.resources, "toolLevels": state.toolLevels, "reservedTargetIds": reserved_targets(state, unit, "gather"), "excludedTargetId": unit.cancelledTargetId})
+	var corpse_task: Variant = _corpse_task(state, unit)
+	if corpse_task != null:
+		return corpse_task
+	if gather_task.kind == "gather":
+		return gather_task
+	var drop_task := Rules.choose_drop_task({"unitPosition": unit.position, "drops": state.drops, "commandRadius": state.totem.commandRadius, "reservedTargetIds": reserved_targets(state, unit, "collect-drop"), "excludedTargetId": unit.cancelledTargetId})
+	if drop_task.kind == "collect-drop":
+		return drop_task
+	return gather_task
+
 static func update_unit(state: Dictionary, unit: Dictionary, delta: float, frame: Dictionary) -> void:
-	if unit.role == "hunter" and unit.attackLockRemainingSeconds > 0:
+	if Combat.is_ranged(unit.role, state.toolLevels.sword) and unit.attackLockRemainingSeconds > 0:
 		return
 	if unit.task.kind == "idle":
 		if Rules.total_amount(unit.cargo.amounts) > 0:
 			drop_cargo(state, unit, unit.position, null)
 			return
-		var gather_task := Rules.choose_gather_task({"role": unit.role, "unitPosition": unit.position, "totemPosition": state.totem.position, "commandRadius": state.totem.commandRadius, "cargo": unit.cargo, "resources": state.resources, "toolLevels": state.toolLevels, "reservedTargetIds": reserved_targets(state, unit, "gather"), "excludedTargetId": unit.cancelledTargetId})
-		var corpse_task: Variant = _corpse_task(state, unit)
-		if corpse_task != null:
-			set_task(unit, corpse_task)
-			return
-		if gather_task.kind == "gather":
-			set_task(unit, gather_task)
-			return
-		var drop_task := Rules.choose_drop_task({"unitPosition": unit.position, "drops": state.drops, "commandRadius": state.totem.commandRadius, "reservedTargetIds": reserved_targets(state, unit, "collect-drop"), "excludedTargetId": unit.cancelledTargetId})
-		if drop_task.kind == "collect-drop":
-			set_task(unit, drop_task)
-			return
-		set_task(unit, gather_task)
+		var task := choose_work_task(state, unit)
+		set_task(unit, task)
+		if task.kind != "idle": return
 		if not Idle.within_range(unit.position, Move.area(state)):
 			set_task(unit, return_task(state, unit, "no-valid-resource"))
 		else:
@@ -211,7 +225,9 @@ static func update_tribe(state: Dictionary, delta: float, frame: Dictionary) -> 
 	var all_in_formation := true
 	for index in state.units.size():
 		var unit: Dictionary = state.units[index]
-		if unit.task.kind in ["combat", "flee", "hunt"]:
+		if unit.get("isCarried", false):
+			continue
+		if unit.task.kind in ["combat", "flee", "hunt", "avoid-combat"]:
 			if state.totem.isCarried:
 				all_in_formation = false
 			continue

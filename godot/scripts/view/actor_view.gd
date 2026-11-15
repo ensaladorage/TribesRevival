@@ -14,8 +14,10 @@ extends Node3D
 			$Body/Sprite.modulate = value
 @export var health_screen_margin_pixels := 18.0
 @export var show_health := true
+@export var carried_height := 2.6
 var _health_position := Vector3.ZERO
 var _rest_position := Vector3.ZERO
+var _carried := false
 
 func _ready() -> void:
 	_rest_position = $Body.position
@@ -24,6 +26,11 @@ func _ready() -> void:
 	$Body/Sprite.modulate = visual_tint
 
 func present(actor: Dictionary) -> void:
+	_carried = actor.get("isCarried", false)
+	var marker := get_node_or_null("CarryMarker") as Node3D
+	if marker != null:
+		marker.visible = _carried
+	reset_feedback()
 	var sprite: AnimatedSprite3D = $Body/Sprite
 	var animation := "idle"
 	if actor.get("task", {}).get("kind", "") == "combat":
@@ -37,7 +44,7 @@ func present(actor: Dictionary) -> void:
 			sprite.play(animation)
 
 func reset_feedback() -> void:
-	$Body.position = _rest_position
+	$Body.position = _rest_position + Vector3.UP * (carried_height if _carried else 0.0)
 	$Body/Sprite.modulate = visual_tint
 
 func flash(color: Color) -> void:
@@ -58,5 +65,5 @@ func present_health(actor: Dictionary, _pixel_size: float, _screen_up: Vector3) 
 	$HealthDisplay.visible = show_health and camera != null and not camera.is_position_behind(global_position)
 	if not $HealthDisplay.visible:
 		return
-	var screen := camera.unproject_position(to_global(_health_position)) - Vector2(0, health_screen_margin_pixels)
+	var screen := camera.unproject_position(to_global(_health_position + Vector3.UP * (carried_height if actor.get("isCarried", false) else 0.0))) - Vector2(0, health_screen_margin_pixels)
 	$HealthDisplay.present(int(ceil(maxf(actor.health, 0))), int(ceil(actor.maxHealth)), screen, 1 if actor.get("hasShield", false) else 0)

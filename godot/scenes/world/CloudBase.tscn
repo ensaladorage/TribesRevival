@@ -1,0 +1,223 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/view/weather_view.gd" id="script"]
+
+[ext_resource type="Shader" path="res://shaders/cloud_ground_shadow.gdshader" id="shadow_shader"]
+
+[sub_resource type="ShaderMaterial" id="shadow_material"]
+shader = ExtResource("shadow_shader")
+shader_parameter/shadow_color = Color(0.1, 0.12, 0.16, 1)
+shader_parameter/opacity = 0.12
+shader_parameter/soft_edge = 0.55
+
+[sub_resource type="PlaneMesh" id="shadow_plane"]
+size = Vector2(14, 9)
+
+[sub_resource type="CylinderMesh" id="mesh6"]
+top_radius = 0.0275
+bottom_radius = 0.0275
+height = 0.72
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat6"]
+albedo_color = Color(0.6627450980392157, 0.8470588235294118, 0.9254901960784314, 0.76)
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+emission_enabled = true
+emission = Color(0.32941176470588235, 0.5411764705882353, 0.6274509803921569, 1)
+
+[sub_resource type="CylinderMesh" id="mesh7"]
+top_radius = 0.0275
+bottom_radius = 0.0275
+height = 0.72
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat7"]
+albedo_color = Color(0.6627450980392157, 0.8470588235294118, 0.9254901960784314, 0.76)
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+emission_enabled = true
+emission = Color(0.32941176470588235, 0.5411764705882353, 0.6274509803921569, 1)
+
+[sub_resource type="CylinderMesh" id="mesh8"]
+top_radius = 0.0275
+bottom_radius = 0.0275
+height = 0.72
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat8"]
+albedo_color = Color(0.6627450980392157, 0.8470588235294118, 0.9254901960784314, 0.76)
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+emission_enabled = true
+emission = Color(0.32941176470588235, 0.5411764705882353, 0.6274509803921569, 1)
+
+[sub_resource type="CylinderMesh" id="mesh9"]
+top_radius = 0.0275
+bottom_radius = 0.0275
+height = 0.72
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat9"]
+albedo_color = Color(0.6627450980392157, 0.8470588235294118, 0.9254901960784314, 0.76)
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+emission_enabled = true
+emission = Color(0.32941176470588235, 0.5411764705882353, 0.6274509803921569, 1)
+
+[sub_resource type="CylinderMesh" id="mesh10"]
+top_radius = 0.0275
+bottom_radius = 0.0275
+height = 0.72
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat10"]
+albedo_color = Color(0.6627450980392157, 0.8470588235294118, 0.9254901960784314, 0.76)
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+emission_enabled = true
+emission = Color(0.32941176470588235, 0.5411764705882353, 0.6274509803921569, 1)
+
+[sub_resource type="CylinderMesh" id="mesh11"]
+top_radius = 0.0275
+bottom_radius = 0.0275
+height = 0.72
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat11"]
+albedo_color = Color(0.6627450980392157, 0.8470588235294118, 0.9254901960784314, 0.76)
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+emission_enabled = true
+emission = Color(0.32941176470588235, 0.5411764705882353, 0.6274509803921569, 1)
+
+[sub_resource type="CylinderMesh" id="mesh12"]
+top_radius = 0.0275
+bottom_radius = 0.0275
+height = 0.72
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat12"]
+albedo_color = Color(0.6627450980392157, 0.8470588235294118, 0.9254901960784314, 0.76)
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+emission_enabled = true
+emission = Color(0.32941176470588235, 0.5411764705882353, 0.6274509803921569, 1)
+
+[sub_resource type="CylinderMesh" id="mesh13"]
+top_radius = 0.0275
+bottom_radius = 0.0275
+height = 0.72
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat13"]
+albedo_color = Color(0.6627450980392157, 0.8470588235294118, 0.9254901960784314, 0.76)
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+emission_enabled = true
+emission = Color(0.32941176470588235, 0.5411764705882353, 0.6274509803921569, 1)
+
+[sub_resource type="CylinderMesh" id="mesh14"]
+top_radius = 0.0275
+bottom_radius = 0.0275
+height = 0.72
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat14"]
+albedo_color = Color(0.6627450980392157, 0.8470588235294118, 0.9254901960784314, 0.76)
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+emission_enabled = true
+emission = Color(0.32941176470588235, 0.5411764705882353, 0.6274509803921569, 1)
+
+[sub_resource type="CylinderMesh" id="mesh15"]
+top_radius = 0.0275
+bottom_radius = 0.0275
+height = 0.72
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="mat15"]
+albedo_color = Color(0.6627450980392157, 0.8470588235294118, 0.9254901960784314, 0.76)
+roughness = 1.0
+metallic_specular = 0.0
+transparency = 1
+emission_enabled = true
+emission = Color(0.32941176470588235, 0.5411764705882353, 0.6274509803921569, 1)
+
+[node name="Cloud" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Default" type="Node3D" parent="Visual"]
+
+[node name="Clouds" type="Node3D" parent="Visual/Default"]
+position = Vector3(0, 1.6, 0)
+
+[node name="Rain" type="Node3D" parent="Visual/Default"]
+visible = false
+
+[node name="Rain0" type="MeshInstance3D" parent="Visual/Default/Rain"]
+position = Vector3(1.6500000000000001, 5, 0.0)
+mesh = SubResource("mesh6")
+material_override = SubResource("mat6")
+
+[node name="Rain1" type="MeshInstance3D" parent="Visual/Default/Rain"]
+position = Vector3(-2.3669540986314064, 5, 2.1683238445794917)
+mesh = SubResource("mesh7")
+material_override = SubResource("mat7")
+
+[node name="Rain2" type="MeshInstance3D" parent="Visual/Default/Rain"]
+position = Vector3(0.4170207068998986, 5, -4.751735864925228)
+mesh = SubResource("mesh8")
+material_override = SubResource("mat8")
+
+[node name="Rain3" type="MeshInstance3D" parent="Visual/Default/Rain"]
+position = Vector3(1.0039241206151233, 5, 1.3094412396312984)
+mesh = SubResource("mesh9")
+material_override = SubResource("mat9")
+
+[node name="Rain4" type="MeshInstance3D" parent="Visual/Default/Rain"]
+position = Vector3(-3.1609302878625263, 5, -0.5591240607175905)
+mesh = SubResource("mesh10")
+material_override = SubResource("mat10")
+
+[node name="Rain5" type="MeshInstance3D" parent="Visual/Default/Rain"]
+position = Vector3(4.024712756255134, 5, -2.5601928110275596)
+mesh = SubResource("mesh11")
+material_override = SubResource("mat11")
+
+[node name="Rain6" type="MeshInstance3D" parent="Visual/Default/Rain"]
+position = Vector3(-0.42834710308745616, 5, 1.5934298727200344)
+mesh = SubResource("mesh12")
+material_override = SubResource("mat12")
+
+[node name="Rain7" type="MeshInstance3D" parent="Visual/Default/Rain"]
+position = Vector3(-1.4795115493299151, 5, -2.848709457877267)
+mesh = SubResource("mesh13")
+material_override = SubResource("mat13")
+
+[node name="Rain8" type="MeshInstance3D" parent="Visual/Default/Rain"]
+position = Vector3(4.480562583466043, 5, 1.6362942692694669)
+mesh = SubResource("mesh14")
+material_override = SubResource("mat14")
+
+[node name="Rain9" type="MeshInstance3D" parent="Visual/Default/Rain"]
+position = Vector3(-1.525170167627378, 5, 0.6295680739836449)
+mesh = SubResource("mesh15")
+material_override = SubResource("mat15")
+
+[node name="GroundShadow" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.08, 0)
+cast_shadow = 0
+mesh = SubResource("shadow_plane")
+material_override = SubResource("shadow_material")

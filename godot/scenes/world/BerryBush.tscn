@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://c2mgbxotxu53q"]
+
+[ext_resource type="PackedScene" uid="uid://bft582aur8gpc" path="res://scenes/world/TotemShadow.tscn" id="ground_shadow"]
+[ext_resource type="Script" uid="uid://biv35anr462ct" path="res://scripts/view/world_element.gd" id="script"]
+[ext_resource type="Texture2D" uid="uid://tlxqrr0uasuq" path="res://assets/resources/bush node.png" id="texture"]
+
+[sub_resource type="AtlasTexture" id="atlas"]
+atlas = ExtResource("texture")
+region = Rect2(0, 0, 64, 64)
+
+[node name="BerryBush" type="Node3D" unique_id=2103918272]
+script = ExtResource("script")
+decoration_clearance_radius = 1.4
+
+[node name="Visual" type="Node3D" parent="." unique_id=349050296]
+
+[node name="Default" type="Node3D" parent="Visual" unique_id=1120788959]
+
+[node name="Sprite" type="Sprite3D" parent="Visual/Default" unique_id=1570657593]
+transform = Transform3D(1.1086504, 0, 0, 0, 1.1086504, 0, 0, 0, 1.1086504, 0, 0.6666873, 0)
+cast_shadow = 0
+pixel_size = 0.04
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+texture = SubResource("atlas")
+
+[node name="GroundShadow" parent="Visual/Default" unique_id=276761647 instance=ExtResource("ground_shadow")]
+transform = Transform3D(0.4838483, 0, 0, 0, 0.5555406, 0, 0, 0, 0.5041185, -0.33917335, 0.02, -0.31897452)

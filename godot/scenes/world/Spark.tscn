@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dmmsad6kqkp5y"]
 
 [ext_resource type="PackedScene" path="res://scenes/world/ResourceSprite.tscn" id="base"]
+[ext_resource type="PackedScene" uid="uid://bft582aur8gpc" path="res://scenes/world/TotemShadow.tscn" id="ground_shadow"]
 [ext_resource type="Texture2D" uid="uid://cgb1rm5y76l7" path="res://assets/resources/sparks node small.png" id="texture"]
 
 [sub_resource type="AtlasTexture" id="atlas"]
@@ -14,3 +15,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06422813, 0)
 offset = Vector2(0, 15.5)
 pixel_size = 0.0375
 texture = SubResource("atlas")
+
+[node name="GroundShadow" parent="Visual/Default" index="1" unique_id=490247475 instance=ExtResource("ground_shadow")]
+transform = Transform3D(0.32295927, 0, 0, 0, 0.33691427, 0, 0, 0, 0.3074898, -0.38597918, 0.02, -0.35232046)

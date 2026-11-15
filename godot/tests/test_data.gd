@@ -2,6 +2,7 @@ extends SceneTree
 ## Cross-language data parity. No scene rendering, simulation steps, or input.
 
 const Random = preload("res://scripts/simulation/seeded_random.gd")
+const Catalog = preload("res://scripts/simulation/world_catalog.gd")
 const State = preload("res://scripts/simulation/game_state.gd")
 const Economy = preload("res://scripts/simulation/economy.gd")
 const Progression = preload("res://scripts/simulation/progression.gd")
@@ -31,12 +32,16 @@ func _initialize() -> void:
 			_equal(random.next_uint(), expected, "PRNG: " + sample.seed)
 	for expected in reference.initialStates:
 		var actual := State.create_initial(expected.seed)
-		# Godot now uses the requested sprite vegetation; the Babylon fixture
-		# remains unchanged. Its other initial data must still match exactly.
+		# Approved Godot world generation differs; dedicated suites cover these fields.
+		# Preserve the immutable Babylon fixture and compare all other initial data.
+		_equal(Catalog.create_rabbits(expected.seed, expected.biomes), expected.animals, "unchanged animal generator on reference biomes")
+		for index in actual.biomes.size():
+			_equal(actual.biomes[index].region, expected.biomes[index].region, "unchanged biome placement: " + expected.seed)
 		var original: Dictionary = expected.duplicate(true)
-		actual.erase("decorations")
-		original.erase("decorations")
-		_equal(actual, original, "initial except Godot decoration: " + expected.seed)
+		for field in ["biomes", "resources", "decorations", "animals"]:
+			actual.erase(field)
+			original.erase(field)
+		_equal(actual, original, "initial except approved Godot world generation: " + expected.seed)
 	_test_economy(reference.economy)
 	_test_transactions()
 	_test_support(reference.support)
@@ -48,7 +53,9 @@ func _initialize() -> void:
 	for sample in reference.durations:
 		_equal(Work.gather_duration({"toolLevels": sample.levels}, sample.node), sample.result, "gather duration")
 	for sample in reference.combat.attacks:
-		_equal(Combat.minion_attack(sample.role, sample.level), sample.result, "attack statistics")
+		# Approved Godot design change: the original mage had no basic attack.
+		var expected_attack: Variant = {"damage": 2.0, "range": 3.0, "cooldownSeconds": 2.5} if sample.role == "mage" else sample.result
+		_equal(Combat.minion_attack(sample.role, sample.level), expected_attack, "attack statistics")
 	for sample in reference.combat.damage:
 		_equal(Combat.deal_damage(sample.source, sample.target, {"health": 4, "maxHealth": 4}, sample.amount), sample.result, "damage rule")
 	for sample in reference.combat.heal:

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://464b8bn3nr7f"]
 
 [ext_resource type="Texture2D" uid="uid://b6pwkm7ohxya1" path="res://assets/animals/sheep.png" id="2_eq1ne"]
+[ext_resource type="PackedScene" uid="uid://bft582aur8gpc" path="res://scenes/world/TotemShadow.tscn" id="2_mgk8e"]
 [ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/CharactersBase.tscn" id="base"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_xtlbp"]
@@ -31,9 +32,13 @@ show_health = false
 [node name="Body" parent="." index="0" unique_id=635982024]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.0029436112, 0)
 
-[node name="Sprite" parent="Body" index="0" unique_id=588141790]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.79264987, 0)
+[node name="TotemShadow" parent="Body" index="0" unique_id=1671596345 instance=ExtResource("2_mgk8e")]
+transform = Transform3D(0.2882062, 0, 0, 0, 0.2882062, 0, 0, 0, 0.2882062, -0.13030414, 0, -0.09766064)
+
+[node name="Sprite" parent="Body" index="1" unique_id=588141790]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4719015, 0)
 modulate = Color(0.8784314, 0.83137256, 0.72156864, 1)
+alpha_cut = 1
 sprite_frames = SubResource("SpriteFrames_xtlbp")
 
 [node name="Selection" parent="." index="1" unique_id=1553720391]
@@ -48,4 +53,6 @@ visible = false
 
 [node name="DetectionRange" parent="." index="3" unique_id=656574462]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.43885937, 0)
+
+[node name="GroundShadow" parent="."]
 visible = false

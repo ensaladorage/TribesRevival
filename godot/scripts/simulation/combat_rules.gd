@@ -16,8 +16,17 @@ const ATTACKS := {
 	"guardian": {"damage": 2.0, "range": 1.0, "cooldownSeconds": 1.5},
 	"lumberjack": {"damage": 1.5, "range": 1.0, "cooldownSeconds": 2.0},
 	"hunter": {"damage": 1.0, "range": 5.0, "cooldownSeconds": 1.3},
+	"mage": {"damage": 2.0, "range": 3.0, "cooldownSeconds": 2.5},
 }
 const ANIMAL_ATTACK := {"damage": 1.0, "range": 5.0, "cooldownSeconds": 1.3}
+
+static func is_ranged(role: String, sword_level: int) -> bool:
+	var attack: Variant = minion_attack(role, sword_level)
+	return attack != null and attack.range > BARBARIAN_ATTACK_RANGE
+
+static func is_melee(role: String, sword_level: int) -> bool:
+	var attack: Variant = minion_attack(role, sword_level)
+	return attack != null and attack.range <= BARBARIAN_ATTACK_RANGE
 
 static func minion_attack(role: String, sword_level: int) -> Variant:
 	if not ATTACKS.has(role):

@@ -1,14 +1,26 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://rn11x1egt8cg"]
 
 [ext_resource type="PackedScene" path="res://scenes/world/DecorationSprite.tscn" id="base"]
-[ext_resource type="Texture2D" path="res://assets/environment/Bush small.png" id="texture"]
+[ext_resource type="Script" uid="uid://dvg23j3gbsgnf" path="res://scripts/view/tree_view.gd" id="dither_script"]
+[ext_resource type="Texture2D" uid="uid://bl1awufmc7ycw" path="res://assets/environment/Bush small.png" id="texture"]
 
 [sub_resource type="AtlasTexture" id="atlas"]
 atlas = ExtResource("texture")
 region = Rect2(16, 21, 31, 22)
 
-[node name="DecorationBushSmall" instance=ExtResource("base")]
+[node name="DecorationBushSmall" unique_id=1851989125 instance=ExtResource("base")]
+script = ExtResource("dither_script")
+canopy_region = Rect2(0, 0, 1, 1)
+center_on_overlap = true
+hole_radius = 0.05
+dither_edge_width = 0.05
+dither_pixel_size = 1.0
+fade_out_seconds = 0.15
+fade_in_seconds = 0.25
+restore_delay_seconds = 0.15
 
 [node name="Sprite" parent="Visual/Default" index="0"]
-offset = Vector2(0, 11.0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+offset = Vector2(0, 11)
 texture = SubResource("atlas")
+

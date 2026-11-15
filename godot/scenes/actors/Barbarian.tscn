@@ -22,7 +22,7 @@ visual_scale = Vector3(1.1, 1.1, 1.1)
 transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0, 0)
 
 [node name="Sprite" parent="Body" index="0" unique_id=588141790]
-transform = Transform3D(0.7500001, 0, 0, 0, 0.7500001, 0, 0, 0, 0.7500001, 0.13278386, 1.1788496, 0)
+transform = Transform3D(0.75000024, 0, 0, 0, 0.75000024, 0, 0, 0, 0.75000024, 0.14446002, 1.184688, 0)
 sprite_frames = SubResource("SpriteFrames_ct6id")
 
 [node name="Health" parent="." index="2" unique_id=1752847821]
@@ -31,3 +31,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5397754, 0)
 [node name="HealthDisplay" parent="." index="4" unique_id=375189917]
 enemy = true
 pip_size = Vector2(7, 7)
+
+[node name="GroundShadow" parent="." index="5" unique_id=565216423]
+transform = Transform3D(0.2999999, 0, 0, 0, 0.2999999, 0, 0, 0, 0.2999999, -0.15566163, 0.0016873227, 0)

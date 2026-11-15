@@ -12,3 +12,4 @@ region = Rect2(21, 20, 26, 27)
 [node name="Sprite" parent="Visual/Default" index="0"]
 offset = Vector2(0, 13.5)
 texture = SubResource("atlas")
+

@@ -1,0 +1,93 @@
+[gd_scene format=3 uid="uid://bfaak6kvqiha8"]
+
+[ext_resource type="Script" path="res://scripts/view/tree_view.gd" id="script"]
+[ext_resource type="Texture2D" uid="uid://8m8udh3xdujo" path="res://assets/environment/Bushe4.png" id="sheet"]
+
+[sub_resource type="AtlasTexture" id="frame_0"]
+atlas = ExtResource("sheet")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_1"]
+atlas = ExtResource("sheet")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_2"]
+atlas = ExtResource("sheet")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_3"]
+atlas = ExtResource("sheet")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_4"]
+atlas = ExtResource("sheet")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_5"]
+atlas = ExtResource("sheet")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_6"]
+atlas = ExtResource("sheet")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="frame_7"]
+atlas = ExtResource("sheet")
+region = Rect2(896, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="frames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_5")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_6")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_7")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 3.0
+}]
+
+[node name="DecorationBushForestBig" type="Node3D" unique_id=1980261315]
+script = ExtResource("script")
+canopy_region = Rect2(0, 0, 1, 1)
+center_on_overlap = true
+hole_radius = 0.6
+dither_edge_width = 0.5
+dither_pixel_size = 1.0
+
+[node name="Visual" type="Node3D" parent="." unique_id=1633934386]
+
+[node name="Default" type="Node3D" parent="Visual" unique_id=710251907]
+
+[node name="Sprite" type="AnimatedSprite3D" parent="Visual/Default" unique_id=871802084]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+cast_shadow = 0
+offset = Vector2(0, 13)
+pixel_size = 0.0231
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+sprite_frames = SubResource("frames")
+animation = &"idle"
+autoplay = "idle"
+

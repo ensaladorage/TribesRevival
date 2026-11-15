@@ -64,6 +64,11 @@ static func _attack(state: Dictionary, unit: Dictionary, target: Dictionary, sta
 	target.health = result.health
 	if kind == "barbarian" and result.damageApplied > 0:
 		Survival.add_effect(state, "damage-flash", target.id, target.position, 0.3)
+		var prey: Variant = Move.find_entity(state.units, target.targetUnitId)
+		if not result.defeated and prey != null and (Combat.minion_attack(prey.role, state.toolLevels.sword) == null or (Combat.is_ranged(prey.role, state.toolLevels.sword) and Combat.is_melee(unit.role, state.toolLevels.sword))) and Combat.minion_attack(unit.role, state.toolLevels.sword) != null:
+			# Only a landed hit can pull a barbarian off civilian prey.
+			# Melee can also relieve ranged prey; a melee focus stays stable.
+			target.targetUnitId = unit.id
 	if result.defeated:
 		if kind == "barbarian":
 			_defeat_barbarian(state, target)
@@ -142,7 +147,7 @@ static func _reserve_combat(state: Dictionary, frame: Dictionary) -> void:
 		var descriptors: Array = []
 		for unit in attackers:
 			var memory: Dictionary = unit.get("navigation", {})
-			descriptors.append({"id": unit.id, "position": unit.position, "range": Combat.minion_attack(unit.role, state.toolLevels.sword).range, "ranged": unit.role == "hunter", "offset": memory.get("combatOffset") if memory.get("combatTargetId") == target.id else null})
+			descriptors.append({"id": unit.id, "position": unit.position, "range": Combat.minion_attack(unit.role, state.toolLevels.sword).range, "ranged": Combat.is_ranged(unit.role, state.toolLevels.sword), "offset": memory.get("combatOffset") if memory.get("combatTargetId") == target.id else null})
 		var allowed := func(attacker: Dictionary, point: Dictionary) -> bool:
 			if point.x < 2 or point.y < 2 or point.x > 158 or point.y > 158 or Geo.distance(point, state.totem.position) < 2.02:
 				return false
@@ -165,6 +170,8 @@ static func _move_barbarian(state: Dictionary, barbarian: Dictionary, destinatio
 	var zero := {"x": 0.0, "y": 0.0}
 	var neighbors: Array = []
 	for unit in state.units:
+		if unit.get("isCarried", false):
+			continue
 		var origin: Dictionary = frame.origins.get(unit.id, unit.position)
 		var velocity: Dictionary = frame.reservations.get(unit.id, {}).get("tickVelocity", zero)
 		neighbors.append({"id": unit.id, "position": origin, "velocity": velocity, "tickVelocity": velocity, "stopAfterSeconds": frame.deltaSeconds, "fixed": true, "priority": 4})
@@ -172,8 +179,25 @@ static func _move_barbarian(state: Dictionary, barbarian: Dictionary, destinatio
 		if other.isAlive and other.id != barbarian.id:
 			neighbors.append({"id": other.id, "position": other.position, "velocity": zero, "tickVelocity": zero, "stopAfterSeconds": 0.0, "fixed": true, "priority": 4})
 	var safe_destination := Move.outside_totem(destination, state.totem.position, barbarian.id)
+	var steering_destination := safe_destination
+	# Unlike minions, barbarians cannot cross the totem's clearance. Local
+	# +/-75 degree avoidance alone stalls on its near side: steer around it.
+	if not Nav.segment_is_clear(barbarian.position, safe_destination, [{"position": state.totem.position}], Move.TOTEM_CLEARANCE):
+		var center: Dictionary = state.totem.position
+		var angle := atan2(barbarian.position.y - center.y, barbarian.position.x - center.x)
+		var origin_angle := angle
+		if Geo.distance(barbarian.position, center) >= Move.TOTEM_CLEARANCE + 0.05:
+			var target_angle := atan2(safe_destination.y - center.y, safe_destination.x - center.x)
+			var turn := wrapf(target_angle - angle, -PI, PI)
+			angle += (1.0 if turn >= 0 else -1.0) * PI / 4.0
+		var radius := Move.TOTEM_CLEARANCE + 0.4
+		for candidate_angle in [angle, origin_angle - (angle - origin_angle), origin_angle + PI / 2.0, origin_angle - PI / 2.0]:
+			var point := {"x": center.x + cos(candidate_angle) * radius, "y": center.y + sin(candidate_angle) * radius}
+			if point.x >= 2 and point.y >= 2 and point.x <= 158 and point.y <= 158:
+				steering_destination = point
+				break
 	var minimum_clearance := minf(Move.TOTEM_CLEARANCE, Geo.distance(barbarian.position, state.totem.position))
-	var input := {"agent": {"id": barbarian.id, "position": barbarian.position, "velocity": zero, "tickVelocity": zero, "stopAfterSeconds": 0.0, "fixed": false, "priority": 2}, "destination": safe_destination, "speed": distance / frame.deltaSeconds, "deltaSeconds": frame.deltaSeconds, "neighbors": neighbors}
+	var input := {"agent": {"id": barbarian.id, "position": barbarian.position, "velocity": zero, "tickVelocity": zero, "stopAfterSeconds": 0.0, "fixed": false, "priority": 2}, "destination": steering_destination, "speed": distance / frame.deltaSeconds, "deltaSeconds": frame.deltaSeconds, "neighbors": neighbors}
 	var result := Nav.choose_step(input, func(point): return point.x >= 2 and point.y >= 2 and point.x <= 158 and point.y <= 158 and Geo.distance(point, state.totem.position) >= minimum_clearance - 1e-8)
 	barbarian.position.merge(result.position, true)
 	return Geo.distance(barbarian.position, safe_destination) <= 0.08
@@ -183,15 +207,17 @@ static func update(state: Dictionary, delta: float, frame: Dictionary) -> void:
 	var moving: bool = state.totem.isCarried or state.totem.moving
 	var units: Array = []
 	for unit in state.units:
-		units.append({"id": unit.id, "position": unit.position, "currentKind": unit.task.kind, "currentTargetId": unit.task.get("targetEntityId"), "available": unit.task.kind in ["idle", "return-to-totem"] and Rules.total_amount(unit.cargo.amounts) == 0, "canFight": Combat.minion_attack(unit.role, state.toolLevels.sword) != null, "canHunt": unit.role == "hunter"})
+		if unit.get("isCarried", false):
+			continue
+		units.append({"id": unit.id, "position": unit.position, "currentKind": unit.task.kind, "currentTargetId": unit.task.get("targetEntityId"), "available": not Move.returning_after_drop(state, unit) and unit.task.kind in ["idle", "return-to-totem"] and Rules.total_amount(unit.cargo.amounts) == 0, "canFight": Combat.minion_attack(unit.role, state.toolLevels.sword) != null, "canHunt": unit.role == "hunter", "ranged": Combat.is_ranged(unit.role, state.toolLevels.sword), "attackRange": Combat.minion_attack(unit.role, state.toolLevels.sword).range if Combat.is_ranged(unit.role, state.toolLevels.sword) else 0.0})
 	var entities: Array = []
 	for entity in state.barbarians + state.animals:
 		entities.append({"id": entity.id, "position": entity.position, "isAlive": entity.isAlive, "kind": "hunt" if entity.has("kind") else "combat"})
-	var calls: Dictionary = {} if moving else Awareness.choose_calls(units, entities, 18, maxf(state.totem.commandRadius, 0) * 1.05, func(unit, entity): return entity.kind != "combat" or not unit.canHunt or Geo.distance(entity.position, state.totem.position) <= minf(state.totem.commandRadius, 10.0) + Slots.position_radius(Combat.minion_attack("hunter", state.toolLevels.sword).range, true))
+	var calls: Dictionary = {} if moving else Awareness.choose_calls(units, entities, 18, maxf(state.totem.commandRadius, 0) * 1.05, func(unit, entity): return entity.kind != "combat" or not unit.ranged or Geo.distance(entity.position, state.totem.position) <= minf(state.totem.commandRadius, 10.0) + Slots.position_radius(unit.attackRange, true))
 	for barbarian in state.barbarians:
 		if not barbarian.isAlive:
 			continue
-		var detected: Array = state.units.filter(func(unit): return Geo.distance(unit.position, barbarian.position) <= 18.0)
+		var detected: Array = state.units.filter(func(unit): return not unit.get("isCarried", false) and Geo.distance(unit.position, barbarian.position) <= 18.0)
 		detected.sort_custom(func(a, b): return a.id < b.id)
 		if detected.is_empty():
 			barbarian.alertedUnitIds = []
@@ -208,12 +234,16 @@ static func update(state: Dictionary, delta: float, frame: Dictionary) -> void:
 				barbarian.alertedUnitIds.append(barbarian_key)
 				Survival.record_alert(state, "barbarian", barbarian.id, barbarian.position, false)
 	for unit in state.units:
+		if unit.get("isCarried", false):
+			continue
 		var stats: Variant = Combat.minion_attack(unit.role, state.toolLevels.sword)
+		if Move.returning_after_drop(state, unit):
+			continue
 		if stats == null:
-			var civilian_threat: Variant = _nearest(unit.position, state.barbarians, 15.0)
-			if civilian_threat != null:
-				Work.set_task(unit, _entity_task("flee", "threat-nearby", civilian_threat.id))
-				continue
+			continue # Resolve armed responses and enemy intent before civilian decisions.
+		if Combat.is_ranged(unit.role, state.toolLevels.sword) and state.barbarians.any(func(enemy): return enemy.isAlive and enemy.targetUnitId == unit.id and Geo.distance(unit.position, enemy.position) <= Combat.BARBARIAN_DETECTION_RADIUS):
+			continue # Preserve the same flee episode until enemy intent is resolved.
+		unit.erase("fleeMemory")
 		var following: bool = state.totem.isCarried or (state.totem.moving and not unit.get("postCombatFree", false))
 		if following:
 			# The fighter's leash takes priority even if the enemy is still in range
@@ -262,13 +292,46 @@ static func update(state: Dictionary, delta: float, frame: Dictionary) -> void:
 				continue
 		if unit.task.kind == "hunt":
 			Work.set_task(unit, Rules.idle_task())
+	retarget_enemies(state)
+	for unit in state.units:
+		if unit.get("isCarried", false):
+			continue
+		if not Combat.is_ranged(unit.role, state.toolLevels.sword) and Combat.minion_attack(unit.role, state.toolLevels.sword) != null:
+			continue
+		var pursuers: Array = state.barbarians.filter(func(enemy): return enemy.isAlive and enemy.targetUnitId == unit.id)
+		var pursuer: Variant = _nearest(unit.position, pursuers, INF)
+		if pursuer != null:
+			Work.set_task(unit, _entity_task("flee", "pursued", pursuer.id))
+			Tactics.prepare_flee(state, unit)
+			continue
+		if Move.returning_after_drop(state, unit):
+			continue
+		if unit.task.kind == "flee" or (unit.task.kind == "avoid-combat" and (moving or Tactics.combat_area_clear(state, unit.position))):
+			Work.set_task(unit, Rules.idle_task("combat-ended"))
+		if Combat.is_ranged(unit.role, state.toolLevels.sword):
+			continue # Unpursued hunters keep their ranged combat/hunting tasks.
+		if not moving and unit.task.kind in ["idle", "avoid-combat"] and Rules.total_amount(unit.cargo.amounts) == 0 and not Tactics.combat_area_clear(state, unit.position):
+			var work_task := Work.choose_work_task(state, unit)
+			if work_task.kind != "idle": Work.set_task(unit, work_task)
+		if not moving and unit.task.kind not in ["gather", "collect-drop", "loot-corpse"] and not Tactics.combat_area_clear(state, unit.position):
+			var goal := Tactics.avoid_combat_goal(state, unit)
+			Work.set_task(unit, {"kind": "avoid-combat", "cause": "combat-area", "targetResourceId": null, "destination": goal})
 	_reserve_combat(state, frame)
 	for unit in state.units:
+		if unit.get("isCarried", false):
+			continue
 		if unit.attackLockRemainingSeconds > 0:
 			continue
 		if unit.task.kind == "flee":
-			unit.task.destination = Tactics.flee_goal(state, unit)
-			Move.move_towards(state, unit, unit.task.destination, 10.0 * delta, frame)
+			Tactics.update_flee(state, unit, delta, frame)
+			if Combat.is_ranged(unit.role, state.toolLevels.sword) and unit.fleeMemory.phase == "pause" and not unit.fleeMemory.suspended and unit.attackCooldownRemainingSeconds <= 1e-9:
+				var target: Variant = _living(state.barbarians, unit.task.get("targetEntityId"))
+				var stats: Dictionary = Combat.minion_attack(unit.role, state.toolLevels.sword)
+				if target != null and Geo.distance(unit.position, target.position) <= stats.range:
+					_attack(state, unit, target, stats, "barbarian")
+			continue
+		if unit.task.kind == "avoid-combat":
+			Move.move_towards(state, unit, unit.task.destination, Move.UNIT_SPEED * delta, frame)
 			continue
 		if unit.task.kind == "combat":
 			var combat_speed := Move.combat_speed(unit)
@@ -297,7 +360,7 @@ static func update(state: Dictionary, delta: float, frame: Dictionary) -> void:
 			var slot: Dictionary = frame.combatPositions.get(unit.id, unit.position)
 			if Geo.distance(unit.position, slot) > 0.025:
 				Move.move_towards(state, unit, slot, combat_speed * delta, frame)
-			if Geo.distance(unit.position, slot) <= 0.15 and Geo.distance(unit.position, target.position) <= stats.range + 1e-6 and (unit.role != "hunter" or Geo.distance(unit.position, target.position) >= stats.range - 0.6) and unit.attackCooldownRemainingSeconds <= 1e-9:
+			if Geo.distance(unit.position, slot) <= 0.15 and Geo.distance(unit.position, target.position) <= stats.range + 1e-6 and (not Combat.is_ranged(unit.role, state.toolLevels.sword) or Geo.distance(unit.position, target.position) >= stats.range - 0.6) and unit.attackCooldownRemainingSeconds <= 1e-9:
 				_attack(state, unit, target, stats, "barbarian")
 			continue
 		if unit.task.kind == "hunt":
@@ -311,15 +374,33 @@ static func update(state: Dictionary, delta: float, frame: Dictionary) -> void:
 				_attack(state, unit, target, Combat.ANIMAL_ATTACK, "animal")
 	for barbarian in state.barbarians:
 		if barbarian.isAlive:
-			_update_barbarian(state, barbarian, delta, frame)
+			_update_barbarian(state, barbarian, delta, frame, true)
 
-static func _update_barbarian(state: Dictionary, barbarian: Dictionary, delta: float, frame: Dictionary) -> void:
-	var had_target: bool = barbarian.targetUnitId != null
-	var threats := Tactics.attackers(state, barbarian)
-	var target: Variant = threats[0] if not threats.is_empty() else _nearest(barbarian.position, state.units, 15.0, false)
+static func retarget_enemies(state: Dictionary) -> void:
+	for barbarian in state.barbarians:
+		if barbarian.isAlive:
+			var target: Variant = _barbarian_target(state, barbarian)
+			if barbarian.targetUnitId != null and target == null:
+				barbarian.returningToSpawn = true
+			barbarian.targetUnitId = target.id if target != null else null
+
+static func _barbarian_target(state: Dictionary, barbarian: Dictionary) -> Variant:
+	# Prefer engaged melee fighters without bouncing between equivalent targets.
 	var current: Variant = Move.find_entity(state.units, barbarian.targetUnitId)
-	if current != null and current in threats and Geo.distance(current.position, barbarian.position) <= Geo.distance(target.position, barbarian.position) + 0.8:
-		target = current
+	var threats := Tactics.attackers(state, barbarian)
+	var melee: Array = threats.filter(func(unit): return Combat.is_melee(unit.role, state.toolLevels.sword))
+	if current != null and not current.get("isCarried", false) and current.health > 0 and Geo.distance(current.position, barbarian.position) <= Combat.BARBARIAN_DETECTION_RADIUS:
+		if Combat.is_ranged(current.role, state.toolLevels.sword) and not melee.is_empty():
+			return melee[0]
+		return current
+	if not melee.is_empty():
+		return melee[0]
+	return threats[0] if not threats.is_empty() else _nearest(barbarian.position, state.units.filter(func(unit): return unit.health > 0 and not unit.get("isCarried", false)), Combat.BARBARIAN_DETECTION_RADIUS, false)
+
+static func _update_barbarian(state: Dictionary, barbarian: Dictionary, delta: float, frame: Dictionary, intent_selected: bool = false) -> void:
+	var had_target: bool = barbarian.targetUnitId != null or barbarian.returningToSpawn
+	var target: Variant = Move.find_entity(state.units, barbarian.targetUnitId) if intent_selected else _barbarian_target(state, barbarian)
+	var threats := Tactics.attackers(state, barbarian)
 	barbarian.targetUnitId = target.id if target != null else null
 	if target != null:
 		barbarian.returningToSpawn = false

@@ -40,7 +40,7 @@ static func segment_is_clear(start: Dictionary, end: Dictionary, obstacles: Arra
 		var time := clampf(-(dx * velocity.x + dy * velocity.y) / (denominator if denominator != 0 else 1.0), 0.0, 1.0)
 		var x: float = dx + velocity.x * time
 		var y: float = dy + velocity.y * time
-		if sqrt(x * x + y * y) < minf(clearance, initial) - 1e-7:
+		if sqrt(x * x + y * y) < minf(float(obstacle.get("clearance", clearance)), initial) - 1e-7:
 			return false
 	return true
 
@@ -66,16 +66,16 @@ static func plan_route(start: Dictionary, goal: Dictionary, obstacles: Array, is
 	# Every generated graph point is >=1.02 m from obstacles, so no remaining
 	# edge can end at a goal inside the 0.96 m clearance circle.
 	for obstacle in ordered:
-		if Geo.distance(goal, obstacle.position) < 0.96 - 1e-7:
+		if Geo.distance(goal, obstacle.position) < float(obstacle.get("clearance", 0.96)) - 1e-7:
 			return []
 	var points: Array = [start, goal]
 	for obstacle in ordered:
 		for index in 12:
 			var angle := index * PI / 6.0
-			var point := {"x": obstacle.position.x + cos(angle) * 1.2, "y": obstacle.position.y + sin(angle) * 1.2}
+			var point := {"x": obstacle.position.x + cos(angle) * float(obstacle.get("waypointRadius", 1.2)), "y": obstacle.position.y + sin(angle) * float(obstacle.get("waypointRadius", 1.2))}
 			var valid: bool = is_allowed.call(point)
 			for other in ordered:
-				if Geo.distance(point, other.position) < 1.02:
+				if Geo.distance(point, other.position) < float(other.get("clearance", 1.02)):
 					valid = false
 			if valid:
 				points.append(point)

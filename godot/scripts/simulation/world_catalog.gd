@@ -70,6 +70,9 @@ static func create_biomes(seed_text: String, config: Dictionary = HITO_3) -> Arr
 		var biome := "clearing"
 		if is_resource:
 			biome = RESOURCE_BIOMES[resource_index] if resource_index < RESOURCE_BIOMES.size() else RESOURCE_BIOMES[random.next_int(0, RESOURCE_BIOMES.size() - 1)]
+			# Reserve two extra forest slots after the four mandatory resource types.
+			if resource_index in [4, 5]:
+				biome = "forest"
 		var selected: Dictionary = {}
 		if index == 0:
 			selected = {"x": 80, "y": 80, "radius": minf(maxf(config.startingBiomeRadius, 2), radius_min - 0.1)}
@@ -136,6 +139,21 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 			if resource_type == "wood":
 				node.yieldAmount = tree_random.next_int(2, 3)
 			nodes.append(node)
+	# Separate stream: guaranteeing meadow wood never consumes resource randomness.
+	var meadow_random := Random.new(seed_text + ":meadow-trees")
+	if "wood" in active:
+		for biome in biomes:
+			if biome.id != "meadow" or biome.isDecorativeOnly:
+				continue
+			if nodes.any(func(node): return node.biomeInstanceId == biome.instanceId and node.source == "tree"):
+				continue
+			var point := _outside_start(meadow_random, {"x": biome.region.x, "y": biome.region.y}, biome.region.size / 2.0, maxf(config.startingResourceExclusionRadius, 0))
+			nodes.append({
+				"id": "resource-%03d" % (nodes.size() + 1), "type": "wood", "source": "tree",
+				"biome": biome.id, "biomeInstanceId": biome.instanceId, "isSecondary": true,
+				"interactionRadius": RADII.wood, "position": point, "amount": 1, "maxAmount": 1,
+				"gatherRate": 1, "tier": 1, "yieldAmount": meadow_random.next_int(2, 3),
+			})
 	var clearings: Array = biomes.filter(func(biome): return biome.id == "clearing")
 	if clearings.is_empty():
 		return nodes
