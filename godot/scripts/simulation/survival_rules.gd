@@ -21,6 +21,17 @@ static func count_role(units: Array, role: String) -> int:
 			count += 1
 	return count
 
+static func sacrifice_block_reason(units: Array, unit_id: String) -> String:
+	if units.size() <= 1:
+		return "Es el último minion de la tribu"
+	for unit in units:
+		if unit.id != unit_id and unit.role in ["gatherer", "hunter"]:
+			return ""
+	for unit in units:
+		if unit.id == unit_id and unit.role in ["gatherer", "hunter"]:
+			return "Es la última fuente de comida de la tribu"
+	return ""
+
 static func can_convert_last_gatherer(units: Array) -> bool:
 	return count_role(units, "gatherer") > 1 or count_role(units, "hunter") > 0
 

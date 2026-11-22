@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b6ep158c4231t"]
 
 [ext_resource type="PackedScene" path="res://scenes/world/ResourceSprite.tscn" id="base"]
-[ext_resource type="PackedScene" uid="uid://bft582aur8gpc" path="res://scenes/world/TotemShadow.tscn" id="ground_shadow"]
+[ext_resource type="PackedScene" path="res://scenes/world/ResourceShadow.tscn" id="ground_shadow"]
 [ext_resource type="Texture2D" uid="uid://badb8pbtx7oo8" path="res://assets/resources/stone node big.png" id="texture"]
 
 [sub_resource type="AtlasTexture" id="atlas"]
@@ -11,9 +11,10 @@ region = Rect2(7, 17, 50, 36)
 [node name="RockLarge" unique_id=440701751 instance=ExtResource("base")]
 
 [node name="Sprite" parent="Visual/Default" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06496461, 0)
-offset = Vector2(0, 18)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11, 0)
+offset = Vector2(0, 15)
 texture = SubResource("atlas")
 
 [node name="GroundShadow" parent="Visual/Default" index="1" unique_id=1686988564 instance=ExtResource("ground_shadow")]
-transform = Transform3D(0.5214526, 0, 0, 0, 0.45453322, 0, 0, 0, 0.4783161, -0.59745526, 0.062155724, -0.49891275)
+position = Vector3(-0.06, 0.065, -0.275)
+scale = Vector3(0.98, 1, 0.55)

@@ -21,6 +21,6 @@ script = ExtResource("script")
 [node name="Default" type="Node3D" parent="Visual" unique_id=1704537497]
 
 [node name="Shadow" type="MeshInstance3D" parent="Visual/Default" unique_id=284435460]
-transform = Transform3D(1.0421333, 0, 0, 0, 1, 0, 0, 0, 1.0421333, 0.56987023, 0.18824244, 0.42224002)
+transform = Transform3D(0.94075495, 0, 0, 0, 0.75263983, 0.23228444, 0, -0.19584575, 0.89267457, 0.6282494, 0.52454233, 0.66706777)
 material_override = SubResource("mat1")
 mesh = SubResource("mesh1")

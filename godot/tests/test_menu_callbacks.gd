@@ -32,6 +32,7 @@ func _run() -> void:
 
 	_press("Tutorial", "tutorial")
 	_press("Volver", "main")
+	_press("Jugar", "play")
 	_press("Cargar", "slots")
 	_check(_button("Slot 1").disabled, "Empty load slot stays disabled")
 	_press("Slot 2", "game", false)
@@ -101,7 +102,7 @@ func _test_escape() -> void:
 			menus.handle_escape()
 			_check(menus.screen == "slots" and menus.origin == from_screen and menus.slot_mode == mode, "Escape cancels %s back to original slots (%s)" % [confirmation, from_screen])
 			menus.handle_escape()
-			_check(menus.screen == from_screen, "Escape from slots returns to origin")
+			_check(menus.screen == ("play" if from_screen == "main" else from_screen), "Escape from slots returns to origin")
 		menus.show_slots("save", from_screen, _slots())
 		menus.show_message("Resultado")
 		menus.handle_escape()

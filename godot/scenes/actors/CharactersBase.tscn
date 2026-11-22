@@ -5,8 +5,6 @@
 [ext_resource type="Script" uid="uid://cfgalpovwpwp6" path="res://scripts/view/actor_view.gd" id="script"]
 [ext_resource type="Texture2D" uid="uid://dhpsnpll13opv" path="res://assets/ui/icon-minion.png" id="texture"]
 
-[ext_resource type="PackedScene" path="res://scenes/world/MinionCarryMarker.tscn" id="carry_marker"]
-
 [sub_resource type="SpriteFrames" id="frames"]
 animations = [{
 "frames": [{
@@ -94,5 +92,3 @@ mesh = SubResource("ring")
 
 [node name="GroundShadow" parent="." unique_id=565216423 instance=ExtResource("actor_shadow")]
 transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0.1, 0)
-
-[node name="CarryMarker" parent="." instance=ExtResource("carry_marker")]

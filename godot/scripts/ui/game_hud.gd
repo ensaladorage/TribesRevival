@@ -32,7 +32,16 @@ var _disabled_styles := {}
 @export var upgrades_toggle: Button
 @export var technology_points: Label
 
+@onready var sacrifice_target: Button = $Layout/Sacrifice
+
+func show_sacrifice_target(carrying: bool, reason: String) -> void:
+	sacrifice_target.visible = carrying
+	sacrifice_target.disabled = not reason.is_empty()
+	_update_button_appearance(sacrifice_target)
+	sacrifice_target.tooltip_text = "Sacrificar por %s de comida" % Numbers.integer(1) if reason.is_empty() else reason
+
 func _ready() -> void:
+	_prepare_button_icon(sacrifice_target)
 	# Scenes own layout, icons and styles; metadata binds semantic actions.
 	technology_toggle.pressed.connect(func(): _toggle_panel("Tecnologías"))
 	upgrades_toggle.pressed.connect(func(): _toggle_panel("Mejoras"))

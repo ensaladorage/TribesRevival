@@ -1,5 +1,6 @@
 extends SceneTree
 const Session = preload("res://scripts/simulation/game_session.gd")
+const TerrainView = preload("res://scripts/view/terrain_projection.gd")
 const World = preload("res://scenes/WorldView.tscn")
 var failures: Array[String] = []
 func _initialize() -> void:
@@ -19,7 +20,6 @@ func run() -> void:
 	state.animals = [sheep]
 	for actor in [enemy, sheep]:
 		actor.position = {"x": 15.0, "y": 145.0}
-		actor.spawnPosition = {"x": 130.0, "y": 25.0}
 		actor.isAlive = false
 		actor.health = 0.0
 		actor.respawnRemainingSeconds = 0.10
@@ -38,7 +38,7 @@ func run() -> void:
 		world.sync(state, session.previous_positions, alpha)
 		for actor in [enemy, sheep]:
 			check(actor.isAlive and actor.spawnCycle == 1, "Actual respawn completed")
-			var expected := Vector3(actor.position.x, 0, actor.position.y)
+			var expected := TerrainView.world(actor.position, state.terrain)
 			check(world._views[actor.id].position.is_equal_approx(expected), "Respawn appears at current location for every render frame")
 	# Subsequent living movement must still interpolate normally.
 	session.advance(0.05)
@@ -48,7 +48,7 @@ func run() -> void:
 	world.sync(state, session.previous_positions, 0.5)
 	for actor in [enemy, sheep]:
 		var previous: Dictionary = session.previous_positions[actor.id]
-		var expected := Vector3(lerpf(previous.x, actor.position.x, 0.5), 0, lerpf(previous.y, actor.position.y, 0.5))
+		var expected := TerrainView.world({"x": lerpf(previous.x, actor.position.x, 0.5), "y": lerpf(previous.y, actor.position.y, 0.5)}, state.terrain)
 		check(world._views[actor.id].position.is_equal_approx(expected), "Living movement remains interpolated")
 	world.free()
 	for failure in failures: push_error(failure)

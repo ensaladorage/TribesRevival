@@ -36,7 +36,7 @@ func _run() -> void:
 	main.session.flush_actions()
 	main._sync_view()
 	await process_frame
-	var screen: Vector2 = main.camera.unproject_position(Vector3(85, 0.8, 80))
+	var screen: Vector2 = main.camera.unproject_position(main.TerrainView.world(unit.position,main.session.state.terrain) + Vector3.UP * 0.8)
 	_check(main._cursor_for_point(screen, false) == Input.CURSOR_POINTING_HAND, "Hovering a minion must show interact")
 	_check(main._cursor_for_point(screen, true) == Input.CURSOR_ARROW, "HUD must use arrow when empty handed")
 	_mouse(screen, true)
@@ -44,13 +44,13 @@ func _run() -> void:
 	_check(main.dragged_minion_id == unit.id and unit.get("isCarried", false), "Left press must lift the selected minion")
 	_check(main._cursor_for_point(screen, true) == Input.CURSOR_DRAG, "Carrying over HUD must keep grab")
 	var focus: Vector3 = main.camera.focus
-	var destination: Vector2 = main.camera.unproject_position(Vector3(88, 0, 84))
+	var destination: Vector2 = main.camera.unproject_position(main.TerrainView.world({"x":88,"y":84},main.session.state.terrain))
 	main._queue_minion_drag(destination)
 	main.session.flush_actions()
 	main._sync_view()
 	_check(main.camera.focus == focus and not main.camera.recentering, "Minion drag must leave camera fixed")
 	var view: Node3D = main.world_view._views[unit.id]
-	_check(view.get_node("Body").position.y > 2 and view.get_node("CarryMarker").visible, "Scene must present raised body and ground marker")
+	_check(view.get_node("Body").position.y > 2, "Scene must present raised body")
 	_check_carry_cursor(main, view.carried_height)
 	var expected: Dictionary = unit.position.duplicate()
 	_mouse(destination, false)
@@ -58,7 +58,7 @@ func _run() -> void:
 	main._sync_view()
 	_check(main.dragged_minion_id.is_empty() and not unit.get("isCarried", false), "Mouse release must drop the minion")
 	_check(main.session.Movement.Geo.distance(unit.position, expected) < 0.001, "Release must use cursor position")
-	_check(not view.get_node("CarryMarker").visible, "Drop must hide ground marker")
+	_check(not view.has_node("CarryMarker"), "Dragged minion must have no ground marker")
 	_check(not main.carry_cursor.get_node("Hand").visible and Input.mouse_mode == Input.MOUSE_MODE_VISIBLE, "Drop must restore native cursor")
 	# Use a real Control that consumes input to verify release capture over UI.
 	var blocker := Button.new()
@@ -69,7 +69,7 @@ func _run() -> void:
 		main._resume_game()
 		main.session.flush_actions()
 		main._sync_view()
-		screen = main.camera.unproject_position(Vector3(unit.position.x, 0.8, unit.position.y))
+		screen = main.camera.unproject_position(main.TerrainView.world(unit.position,main.session.state.terrain) + Vector3.UP * 0.8)
 		_mouse(screen, true)
 		main.session.flush_actions()
 		_check(unit.get("isCarried", false), "Must lift before interruption: " + interruption)
@@ -102,6 +102,29 @@ func _run() -> void:
 	main.held_item = ""
 	main._open_pause()
 	_check(main._cursor_for_point(totem_screen, false) == Input.CURSOR_ARROW, "Pause menu must show arrow")
+	main._resume_game()
+	main._sync_view()
+	var skull: Button = main.hud.sacrifice_target
+	var skull_point := skull.get_global_rect().get_center()
+	_check(not skull.visible, "Skull hidden with empty hand")
+	main.session.state.units[1].role = "hunter"
+	for count in [2, 1]:
+		var carried: Dictionary = main.session.state.units[0]
+		screen = main.camera.unproject_position(main.TerrainView.world(carried.position,main.session.state.terrain) + Vector3.UP * 0.8)
+		main._begin_minion_drag(screen)
+		main.session.flush_actions()
+		main._sync_view()
+		_check(skull.visible and skull.disabled == (count == 1), "Skull availability reflects living tribe")
+		var food := int(main.session.state.inventory.amounts.food)
+		var body: Rect2 = main.world_view.carried_body_rect(main.camera, carried.id, carried.position)
+		var feet: Vector2 = main.camera.unproject_position(main.TerrainView.world(carried.position,main.session.state.terrain))
+		_mouse(skull_point - (body.get_center() - feet), false)
+		main.session.flush_actions()
+		main._sync_view()
+		if count == 1:
+			_check(main.session.Movement.Idle.within_range(carried.position, main.session.Movement.area(main.session.state)), "Rejected sacrifice must land inside command range")
+		_check(main.session.state.units.size() == 1 and not skull.visible, "Release resolves drag and protects last unit")
+		_check(main.session.state.inventory.amounts.food == food + (1 if count == 2 else 0), "Reward only for successful sacrifice")
 	main.free()
 	for failure in failures:
 		push_error(failure)

@@ -7,6 +7,7 @@ const ROLES := ["gatherer", "lumberjack", "hunter", "guardian", "artisan", "mage
 
 func _session(role: String = "guardian") -> RefCounted:
 	var session := Session.new("carry-regression")
+	session.state.terrain = preload("res://tests/support/flat_terrain.gd").rows()
 	session.state.units = [Session.State.create_unit("rescued", role, {"x": 85.0, "y": 80.0})]
 	session.state.resources = []
 	session.state.barbarians = []
@@ -163,6 +164,22 @@ func test_pickup_releases_work_and_discards_partial_progress() -> void:
 	assert_int(session.state.drops.size()).is_equal(0)
 	assert_float(float(session.state.progression.experience)).is_equal(0.0)
 
+func test_off_center_drop_stays_beside_blocker_at_fractional_positions() -> void:
+	var session := _session()
+	var state: Dictionary = session.state
+	var unit: Dictionary = state.units[0]
+	var ally := Session.State.create_unit("blocker", "guardian", {"x": 137.37, "y": 145.81})
+	state.units.append(ally)
+	state.totem.position = {"x": 112.31, "y": 125.87}
+	for blocker in [ally, state.totem]:
+		var radius: float = Carry.Move.TOTEM_CLEARANCE if blocker == state.totem else Carry.Move.Nav.MINIMUM_SEPARATION
+		for index in 36:
+			var angle := TAU * index / 36.0
+			var requested := {"x": blocker.position.x + 0.3 * cos(angle), "y": blocker.position.y + 0.3 * sin(angle)}
+			var landed := Carry.drop_position(state, unit, requested)
+			assert_float(Carry.Move.Geo.distance(requested, landed)).is_equal_approx(radius - 0.3, 0.0001)
+			assert_float(Carry.Move.Geo.distance(blocker.position, landed)).is_equal_approx(radius, 0.0001)
+
 func test_nearest_free_drop_respects_bodies_totem_edges_and_determinism() -> void:
 	var session := _session()
 	var unit: Dictionary = session.state.units[0]
@@ -261,3 +278,50 @@ func test_resource_calls_respect_totem_radius_and_five_percent_margin() -> void:
 			var accepted := Session.Work.dispatch_resource_call(session.state, caller)
 			assert_bool(accepted).is_equal(offset <= 0.0)
 			assert_bool(ally.task.get("targetResourceId") == "boundary-tree").is_equal(offset <= 0.0)
+
+func test_sacrifice_is_atomic_and_persists() -> void:
+	var session := _session()
+	session.state.units.append(Session.State.create_unit("other", "guardian", {"x": 90, "y": 80}))
+	var food := int(session.state.inventory.amounts.food)
+	_action(session, "pick-up-minion")
+	_action(session, "sacrifice-minion", null, "other")
+	assert_int(session.state.units.size()).is_equal(2)
+	_action(session, "sacrifice-minion")
+	_action(session, "sacrifice-minion")
+	var directory := "user://sacrifice-tests-%s" % Time.get_ticks_usec()
+	var saves := Saves.new(directory)
+	assert_bool(saves.save_slot(1, session.state).ok).is_true()
+	var loaded: Dictionary = saves.read_slot(1).save.gameState
+	assert_int(loaded.units.size()).is_equal(1)
+	assert_str(loaded.units[0].id).is_equal("other")
+	assert_int(int(loaded.inventory.amounts.food)).is_equal(food + 1)
+	assert_int(loaded.corpses.size()).is_equal(0)
+	saves.delete_slot(1)
+	DirAccess.remove_absolute(directory)
+
+func test_sacrifice_protects_the_only_food_producer() -> void:
+	for role in ["gatherer", "hunter"]:
+		var session := _session(role)
+		session.state.units.append(Session.State.create_unit("guard", "guardian", {"x": 90, "y": 80}))
+		var food := int(session.state.inventory.amounts.food)
+		_action(session, "pick-up-minion")
+		_action(session, "drag-minion", {"x": 140, "y": 80})
+		_action(session, "sacrifice-minion")
+		var landed: Dictionary = session.state.units[0].position
+		# The guard occupies the nearest boundary point. Land beside it on the same edge.
+		assert_float(Session.Movement.Geo.distance(landed, session.state.totem.position)).is_equal_approx(10.0, 0.001)
+		assert_float(Session.Movement.Geo.distance(landed, session.state.units[1].position)).is_equal_approx(Session.Movement.Nav.MINIMUM_SEPARATION, 0.001)
+		assert_int(session.state.units.size()).is_equal(2)
+		assert_int(int(session.state.inventory.amounts.food)).is_equal(food)
+		assert_bool(Carry.held_unit(session.state) == null).is_true()
+
+func test_rejected_sacrifice_starts_interpolation_at_landing_point() -> void:
+	var session := _session("gatherer")
+	_action(session, "pick-up-minion")
+	_action(session, "drag-minion", {"x": 140.0, "y": 80.0})
+	session.enqueue({"type": "sacrifice-minion", "unitId": "rescued"})
+	session.advance(Session.FIXED_DT)
+	var origin: Dictionary = session.previous_positions["rescued"]
+	assert_float(float(origin.x)).is_equal_approx(90.0, 0.001)
+	assert_float(float(origin.y)).is_equal_approx(80.0, 0.001)
+	assert_bool(Carry.held_unit(session.state) == null).is_true()

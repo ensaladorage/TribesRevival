@@ -2,6 +2,7 @@ class_name TribeMinionMovement
 extends RefCounted
 ## Shared movement, reservations, idle and spacing. Simulation data only.
 
+const Terrain = preload("res://scripts/simulation/island_terrain.gd")
 const Geo = preload("res://scripts/simulation/geometry.gd")
 const Nav = preload("res://scripts/simulation/navigation.gd")
 const Idle = preload("res://scripts/simulation/minion_idle.gd")
@@ -81,6 +82,7 @@ static func formation_motion(state: Dictionary, index: int) -> Dictionary:
 	offset += Vector2(sin(phase_x + seconds * TAU / period_x), sin(phase_y + seconds * TAU / period_y)) * (FOLLOW_WANDER / sqrt(2.0)) * blend
 	var target := {"x": state.totem.position.x + cos(angle) * FORMATION_RADIUS + offset.x, "y": state.totem.position.y + sin(angle) * FORMATION_RADIUS + offset.y}
 	# Preserve the follow speed ceiling; each unit eases into its own destination.
+	target = Terrain.nearest(state.get("terrain",[]),target)
 	var minimum_speed := 0.3 if state.totem.isCarried else 6.0
 	return {"target": target, "speed": minf(FOLLOW_SPEED, maxf(minimum_speed, Geo.distance(unit.position, target) * response))}
 
@@ -218,6 +220,9 @@ static func move_towards(state: Dictionary, unit: Dictionary, destination: Dicti
 	if not unit.has("navigation"):
 		unit.navigation = Nav.create_state(safe)
 	var memory: Dictionary = unit.navigation
+	var rows: Array = state.get("terrain",[])
+	var final_goal := Terrain.nearest(rows,safe)
+	safe = Terrain.waypoint(rows,unit.position,final_goal,memory)
 	var others := neighbors(state, unit, frame)
 	var is_allowed := func(point: Dictionary) -> bool:
 		if point.x < 2 or point.y < 2 or point.x > 158 or point.y > 158:
@@ -256,7 +261,7 @@ static func move_towards(state: Dictionary, unit: Dictionary, destination: Dicti
 		result = {"position": unit.position.duplicate(), "velocity": {"x": 0.0, "y": 0.0}, "blocked": true}
 	else:
 		var step_allowed := func(point: Dictionary) -> bool:
-			return is_allowed.call(point) and (unit.task.kind != "flee" or Nav.segment_is_clear(unit.position, point, [flee_totem_obstacle(state)], TOTEM_CLEARANCE))
+			return Terrain.clear(rows,unit.position,point) and is_allowed.call(point) and (unit.task.kind != "flee" or Nav.segment_is_clear(unit.position, point, [flee_totem_obstacle(state)], TOTEM_CLEARANCE))
 		result = Nav.choose_step({"agent": moving_agent, "destination": waypoint, "speed": distance / maxf(frame.deltaSeconds, 1e-8), "deltaSeconds": frame.deltaSeconds, "neighbors": others, "previousVelocity": memory.velocity, "preferredSide": memory.side}, step_allowed)
 	var forward := Geo.velocity_towards(unit.position, waypoint, 1)
 	var turn: float = forward.x * result.velocity.y - forward.y * result.velocity.x
@@ -284,7 +289,7 @@ static func move_towards(state: Dictionary, unit: Dictionary, destination: Dicti
 	frame.reservations[unit.id] = reservation
 	if memory.blockedSeconds >= 1.2 and unit.task.kind == "idle":
 		cancel_idle(unit)
-	return Geo.distance(unit.position, safe) <= FORMATION_TOLERANCE
+	return Geo.distance(unit.position, final_goal) <= FORMATION_TOLERANCE
 
 static func update_idle(state: Dictionary, unit: Dictionary, delta: float, frame: Dictionary) -> void:
 	# A pursuer can switch targets while the civil is crossing the totem.
@@ -364,6 +369,9 @@ static func resolve_spacing(state: Dictionary) -> void:
 	units.sort_custom(func(a, b): return a.id < b.id)
 	var barbarians: Array = state.barbarians.filter(func(barbarian): return barbarian.isAlive)
 	barbarians.sort_custom(func(a, b): return a.id < b.id)
+	var before := {}
+	for actor in units + barbarians:
+		before[actor.id] = actor.position.duplicate()
 	for unit in units:
 		_constrain(state, unit, flee_limits)
 	for pass_index in 8:
@@ -385,3 +393,6 @@ static func resolve_spacing(state: Dictionary) -> void:
 				_separate_pair(barbarians[first_index].position, barbarians[second_index].position, Nav.MINIMUM_SEPARATION, barbarians[first_index].id + ":" + barbarians[second_index].id)
 	for unit in units:
 		_constrain(state, unit, flee_limits)
+	for actor in units + barbarians:
+		if actor.position != before[actor.id] and not Terrain.clear(state.get("terrain",[]),before[actor.id],actor.position):
+			actor.position = before[actor.id]

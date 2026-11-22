@@ -11,6 +11,7 @@ signal delete_requested(slot: int)
 
 @export var page_scenes := {
 	"main": preload("res://scenes/ui/MainMenu.tscn"),
+	"play": preload("res://scenes/ui/PlayMenu.tscn"),
 	"tutorial": preload("res://scenes/ui/TutorialMenu.tscn"),
 	"pause": preload("res://scenes/ui/PauseMenu.tscn"),
 	"defeat": preload("res://scenes/ui/DefeatMenu.tscn"),
@@ -55,15 +56,26 @@ func show_main() -> void:
 	screen = "main"
 	origin = "main"
 	_clear("Tribes Revival", true)
-	_connect_button("Play", func(): new_game_requested.emit())
+	_connect_button("Play", show_play)
 	_connect_button("Tutorial", show_tutorial)
-	_connect_button("Load", func(): show_slots("load", "main", _slots))
 	_connect_button("Quit", func(): get_tree().quit())
+
+func show_play() -> void:
+	screen = "play"
+	origin = "main"
+	_clear("Tribes Revival", true)
+	_refresh_play_load()
+	_connect_button("NewGame", func(): new_game_requested.emit())
+	_connect_button("Load", func(): show_slots("load", "main", _slots))
+	_connect_button("Back", show_main)
+
+func _refresh_play_load() -> void:
+	_content.get_node("Actions/Load").visible = _slots.any(func(slot): return slot.status == "valid")
 
 func show_tutorial() -> void:
 	screen = "tutorial"
 	_clear("Cómo jugar", true)
-	_connect_button("Play", func(): new_game_requested.emit())
+	_connect_button("Play", show_play)
 	_connect_button("Back", show_main)
 
 func show_pause() -> void:
@@ -104,6 +116,8 @@ func update_slots(slots: Array) -> void:
 	_slots = slots
 	if screen == "slots":
 		show_slots(slot_mode, origin, slots)
+	elif screen == "play":
+		_refresh_play_load()
 
 func show_slots(mode: String, from_screen: String, slots: Array) -> void:
 	screen = "slots"
@@ -134,7 +148,13 @@ func show_slots(mode: String, from_screen: String, slots: Array) -> void:
 		delete.tooltip_text = "Eliminar slot %s" % Numbers.integer(slot.slot)
 		delete.visible = slot.status != "empty"
 		delete.pressed.connect(func(): _confirm_delete(slot.slot))
-	_connect_button("Back", show_pause if origin == "pause" else show_main)
+	_connect_button("Back", _back_from_slots)
+
+func _back_from_slots() -> void:
+	if origin == "pause":
+		show_pause()
+	else:
+		show_play()
 
 func _confirm_delete(slot: int) -> void:
 	_confirmation_return_screen = "slots"
@@ -160,15 +180,11 @@ func show_message(message: String) -> void:
 func handle_escape() -> void:
 	match screen:
 		"pause": resume_requested.emit()
-		"tutorial": show_main()
+		"tutorial", "play": show_main()
 		"confirmation":
 			if _confirmation_return_screen == "slots":
 				show_slots(slot_mode, origin, _slots)
 			else:
 				show_pause()
 		"message": show_slots(slot_mode, origin, _slots)
-		"slots":
-			if origin == "pause":
-				show_pause()
-			else:
-				show_main()
+		"slots": _back_from_slots()

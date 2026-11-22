@@ -10,9 +10,23 @@ func _initialize() -> void:
 func _run() -> void:
 	var menus := preload("res://scenes/ui/Menus.tscn").instantiate()
 	root.add_child(menus)
+	await _check_page(menus._content)
+	menus.update_slots([{"status": "valid"}])
+	menus.show_play()
+	await _check_page(menus._content)
+	menus.free()
+	for failure in failures:
+		push_error(failure)
+	if failures.is_empty():
+		print("PASS menu hit areas: %s checks; native hover and clicks" % checks)
+	quit(0 if failures.is_empty() else 1)
+
+func _check_page(page: Control) -> void:
 	await process_frame
 	await process_frame
-	for button: Button in menus._content.find_children("*", "Button", true, false):
+	for button: Button in page.find_children("*", "Button", true, false):
+		if not button.is_visible_in_tree():
+			continue
 		for connection in button.pressed.get_connections():
 			button.pressed.disconnect(connection.callable)
 		var clicks := [0]
@@ -43,9 +57,3 @@ func _run() -> void:
 			checks += 1
 			if clicks[0] != before + 1:
 				failures.append("%s must click at %s" % [button.name, point])
-	menus.free()
-	for failure in failures:
-		push_error(failure)
-	if failures.is_empty():
-		print("PASS main menu hit areas: %s checks; native hover and clicks" % checks)
-	quit(0 if failures.is_empty() else 1)

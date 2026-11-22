@@ -9,6 +9,8 @@ const DECORATION_VARIANTS := {
 	"bush": ["bush-small", "bush", "bush-big"],
 }
 
+const Footprint = preload("res://scripts/simulation/biome_footprint.gd")
+
 const COLORS := {
 	"food": Color("d95c5c"), "wood": Color("9a6b43"), "stone": Color("c2c2bd"),
 	"spark": Color("d79aff"), "gold": Color("e6bf5b"), "twigs": Color("79502f"),
@@ -56,12 +58,17 @@ const COLORS := {
 }
 @export var biome_scenes := {
 	"clearing": preload("res://scenes/world/BiomeClearing.tscn"),
+	"mountain": preload("res://scenes/world/BiomeMountain.tscn"),
 	"meadow": preload("res://scenes/world/BiomeMeadow.tscn"),
 	"forest": preload("res://scenes/world/BiomeForest.tscn"),
 	"rocky": preload("res://scenes/world/BiomeRocky.tscn"),
 	"ruins": preload("res://scenes/world/BiomeRuins.tscn"),
 	"great-fire": preload("res://scenes/world/BiomeGreatFire.tscn"),
 }
+@export var water_rock_scenes: Array[PackedScene] = [
+	preload("res://scenes/world/WaterRock1.tscn"), preload("res://scenes/world/WaterRock2.tscn"),
+	preload("res://scenes/world/WaterRock3.tscn"), preload("res://scenes/world/WaterRock4.tscn"),
+]
 @export var decoration_scenes := {
 	"grass": preload("res://scenes/world/Grass.tscn"),
 	"grass-small": preload("res://scenes/world/GrassSmall.tscn"),
@@ -101,6 +108,10 @@ var _occlusion := Occlusion.new()
 var _resource_clearances: Array[Vector3] = []
 var _decoration_occluders: Array[Node3D] = []
 
+const TerrainView = preload("res://scripts/view/terrain_projection.gd")
+const IslandSurface = preload("res://scenes/world/IslandSurface.tscn")
+var _terrain: Array = []
+
 func setup(state: Dictionary) -> void:
 	for child in get_children():
 		child.free()
@@ -113,9 +124,10 @@ func setup(state: Dictionary) -> void:
 	_alert_player.stream = _make_alert_sound()
 	_alert_player.volume_db = 0
 	add_child(_alert_player)
-	for biome in state.biomes:
-		var patch := _spawn(biome_scenes[biome.id], {"x": biome.region.x, "y": biome.region.y})
-		patch.scale = Vector3(biome.region.size, 1, biome.region.size)
+	_terrain = state.terrain
+	var surface := IslandSurface.instantiate()
+	add_child(surface)
+	surface.build(state)
 	# Include depleted nodes so rain/load does not change decorative placement.
 	for resource in state.resources:
 		var view := _create_resource(resource, state.seed)
@@ -125,7 +137,14 @@ func setup(state: Dictionary) -> void:
 		else:
 			view.free()
 	for decoration in state.decorations:
-		_create_decoration(decoration, state.seed, state.biomes)
+		if decoration.kind == "water-rock":
+			var random := AppearanceRandom.new(state.seed + ":" + decoration.id)
+			var rock := _spawn(water_rock_scenes[random.next_int(0,water_rock_scenes.size()-1)],decoration.position) as AnimatedSprite3D
+			# Lift the billboard clear of the water plane without shifting its projected centre.
+			rock.position += Vector3(0,0.65,0.65 / tan(TerrainView.PITCH))
+			rock.set_frame_and_progress(random.next_int(0,rock.sprite_frames.get_frame_count("default")-1),0.0)
+		else:
+			_create_decoration(decoration, state.seed, state.biomes)
 	sync(state)
 
 func _create_decoration(decoration: Dictionary, seed_text: String, biomes: Array = []) -> void:
@@ -147,9 +166,9 @@ func _create_decoration(decoration: Dictionary, seed_text: String, biomes: Array
 	if sprite != null:
 		sprite.flip_h = random.next_int(0, 1) == 1
 	view.set_meta("decoration_id", decoration.id)
-	if not biomes.is_empty():
+	if not biomes.is_empty() and not decoration.get("grouped",false):
 		var radius: float = view.decoration_clearance_radius * decoration.scale
-		var point := Vector2(view.position.x, view.position.z)
+		var point := Vector2(decoration.position.x, decoration.position.y)
 		if not _decoration_fits(point, radius):
 			var region: Dictionary = {}
 			for biome in biomes:
@@ -159,14 +178,11 @@ func _create_decoration(decoration: Dictionary, seed_text: String, biomes: Array
 			var placed := false
 			if not region.is_empty():
 				var placement := AppearanceRandom.new(seed_text + ":" + decoration.id + ":visual-clearance")
-				var limit := maxf(0.0, region.size / 2.0 - maxf(radius, 1.2))
 				for attempt in 12:
-					var angle := placement.next_float(0, TAU)
-					var distance := sqrt(placement.next_float()) * limit
-					var candidate := Vector2(region.x, region.y) + Vector2(cos(angle), sin(angle)) * distance
+					var sample := Footprint.sample(region, placement, region.get("spawnCells",region.cells))
+					var candidate := Vector2(sample.x, sample.y)
 					if _decoration_fits(candidate, radius):
-						view.position.x = candidate.x
-						view.position.z = candidate.y
+						view.position = TerrainView.world(sample,_terrain)
 						placed = true
 						break
 			if not placed:
@@ -272,14 +288,7 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
 	var point := {"x": lerpf(previous.x, actor.position.x, _alpha), "y": lerpf(previous.y, actor.position.y, _alpha)}
 	if actor.get("isCarried", false):
 		point = carried_preview.position if carried_preview.get("unitId") == actor.id and carried_preview.get("position") != null else actor.position
-	if kind in ["hunter", "mage"] and actor.task.kind == "combat":
-		var dx: float = point.x - _totem_position.x
-		var dy: float = point.y - _totem_position.y
-		var distance := sqrt(dx * dx + dy * dy)
-		var radius := minf(_command_radius, 10.0)
-		if distance > radius and distance > 1e-8:
-			point = {"x": clampf(_totem_position.x + dx / distance * radius, 2, 158), "y": clampf(_totem_position.y + dy / distance * radius, 2, 158)}
-	_views[actor.id].position = Vector3(point.x, 0, point.y)
+	_views[actor.id].position = TerrainView.world(point,_terrain)
 	var node: Node3D = _views[actor.id]
 	if node.has_node("DetectionRange"):
 		var radius := maxf(_command_radius, 0) * 1.05
@@ -310,11 +319,11 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 			active[effect.id] = true
 			if not _views.has(effect.id):
 				_views[effect.id] = _spawn(heal_effect_scene, effect.position)
-			var point: Dictionary = effect.position
+			var point := TerrainView.world(effect.position, _terrain)
 			if _views.has(effect.targetId):
 				# Match the visible actor, including interpolation between simulation ticks.
 				var target: Node3D = _views[effect.targetId]
-				point = {"x": target.position.x, "y": target.position.z}
+				point = target.position
 			if _views[effect.id].has_method("present"):
 				_views[effect.id].present(effect, point)
 		elif _views.has(effect.targetId) and _views[effect.targetId].has_method("flash"):
@@ -328,18 +337,19 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 						var projectile_scene := mage_projectile_scene if node.get_meta("kind") == "mage" else hunter_projectile_scene
 						_views[effect.id] = _spawn(projectile_scene, effect.position)
 					var origin := node.position + Vector3(0, 0.8, 0)
-					var destination := Vector3(effect.position.x, 0.8, effect.position.y)
+					var destination := TerrainView.world(effect.position,_terrain) + Vector3.UP * 0.8
 					_views[effect.id].position = origin.lerp(destination, clampf(effect.ageSeconds / effect.durationSeconds, 0, 1))
 					if origin.distance_squared_to(destination) > 1e-8:
 						_views[effect.id].look_at(_views[effect.id].position + destination - origin, Vector3.UP)
 				else:
-					var direction := Vector3(effect.position.x - node.position.x, 0, effect.position.y - node.position.z).normalized()
+					var direction := TerrainView.world(effect.position, _terrain) - node.position
+					direction = Vector3(direction.x, 0, direction.z).normalized()
 					node.lunge(direction, sin(clampf(effect.ageSeconds / effect.durationSeconds, 0, 1) * PI) * 0.2)
 	for alert in state.alerts:
 		active[alert.id] = true
 		if not _views.has(alert.id):
 			_views[alert.id] = _spawn(alert_scene, alert.position)
-		var point := Vector3(alert.position.x, 0, alert.position.y)
+		var point := TerrainView.world(alert.position,_terrain)
 		if _views.has(alert.detectorId):
 			point = _views[alert.detectorId].position
 		if _views[alert.id].has_method("present"):
@@ -354,7 +364,7 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 			var scene := cloud_scene if cloud_variants.is_empty() else cloud_variants[appearance.next_int(0, cloud_variants.size() - 1)]
 			_views[cloud.id] = _spawn(scene, cloud.position)
 		var previous: Dictionary = _previous_positions.get(cloud.id, cloud.position)
-		_views[cloud.id].position = Vector3(lerpf(previous.x, cloud.position.x, _alpha), 0, lerpf(previous.y, cloud.position.y, _alpha))
+		_views[cloud.id].position = TerrainView.world({"x":lerpf(previous.x, cloud.position.x, _alpha), "y":lerpf(previous.y, cloud.position.y, _alpha)},_terrain)
 		if _views[cloud.id].has_method("present"):
 			_views[cloud.id].present(cloud)
 
@@ -382,6 +392,18 @@ func _make_alert_sound() -> AudioStreamWAV:
 	_alert_sound.mix_rate = 22050
 	_alert_sound.data = samples
 	return _alert_sound
+
+func carried_body_rect(camera: Camera3D, unit_id: String, ground: Dictionary) -> Rect2:
+	var view: Node3D = _views[unit_id]
+	var shape: CollisionShape3D = view.get_node("Selection/Shape")
+	var half: Vector3 = shape.shape.size * 0.5
+	var lift: Vector3 = (TerrainView.world(ground,_terrain) + Vector3.UP * view.carried_height) - view.global_position
+	var bounds := Rect2(camera.unproject_position(shape.global_position + lift), Vector2.ZERO)
+	for x in [-half.x, half.x]:
+		for y in [-half.y, half.y]:
+			for z in [-half.z, half.z]:
+				bounds = bounds.expand(camera.unproject_position(shape.to_global(Vector3(x, y, z)) + lift))
+	return bounds
 
 func carried_screen_offset(camera: Camera3D, unit_id: String) -> Vector2:
 	if not _views.has(unit_id):
@@ -436,6 +458,6 @@ func _create_resource(resource: Dictionary, seed_text: String) -> Node3D:
 
 func _spawn(scene: PackedScene, point: Dictionary) -> Node3D:
 	var node := scene.instantiate() as Node3D
-	node.position = Vector3(point.x, 0, point.y)
+	node.position = TerrainView.world(point,_terrain)
 	add_child(node)
 	return node

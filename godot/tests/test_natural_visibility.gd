@@ -19,11 +19,11 @@ func _run() -> void:
 		for child in world.get_children():
 			if not child.has_meta("decoration_id"):
 				continue
-			var point := Vector2(child.position.x, child.position.z)
+			var point := Vector2(child.position.x, child.position.z / world.TerrainView.DEPTH_SCALE)
 			_check(world._decoration_fits(point, child.decoration_clearance_radius * child.scale.x), "Decoration clears all resource footprints")
 			var source: Dictionary = state.decorations.filter(func(d): return d.id == child.get_meta("decoration_id"))[0]
 			var biome: Dictionary = state.biomes.filter(func(b): return b.instanceId == source.biomeInstanceId)[0]
-			_check(point.distance_to(Vector2(biome.region.x, biome.region.y)) <= biome.region.size / 2.0, "Relocated decoration remains in its biome")
+			_check(world.Footprint.contains(biome.region, point), "Relocated decoration remains in its biome")
 		world.setup(JSON.parse_string(original))
 		_check(first == _layout(world), "Same layout after save and rebuild")
 		_check(original == JSON.stringify(state), "Presentation leaves state untouched")
@@ -35,7 +35,7 @@ func _run() -> void:
 		world._resource_clearances.clear()
 		world._resource_clearances.append(Vector3(0, 0, 100))
 		var before := world.get_child_count()
-		world._create_decoration({"id": "blocked", "kind": "bush", "biome": "forest", "biomeInstanceId": "tiny", "position": {"x": 0, "y": 0}, "scale": 1.4}, "blocked", [{"instanceId": "tiny", "region": {"x": 0, "y": 0, "size": 4}}])
+		world._create_decoration({"id": "blocked", "kind": "bush", "biome": "forest", "biomeInstanceId": "tiny", "position": {"x": 0, "y": 0}, "scale": 1.4}, "blocked", [{"instanceId": "tiny", "region": {"x": 0, "y": 0, "size": 4, "cells": [{"x": 0, "y": 0}]}}])
 		_check(world.get_child_count() == before, "No placement after twelve candidates omits decoration")
 		world.free()
 	_test_occlusion()

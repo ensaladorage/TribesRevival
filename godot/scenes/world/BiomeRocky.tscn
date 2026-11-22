@@ -1,27 +1,31 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
-
-[sub_resource type="CylinderMesh" id="mesh1"]
-top_radius = 0.5
-bottom_radius = 0.5
-height = 0.06
-radial_segments = 32
-
-[sub_resource type="StandardMaterial3D" id="mat1"]
-albedo_color = Color(0.4666666666666667, 0.45098039215686275, 0.41568627450980394, 1)
-roughness = 1.0
-metallic_specular = 0.0
+[ext_resource type="Script" path="res://scripts/view/biome_ground.gd" id="script"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/norte_oeste.tres" id="tile0"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/norte_centro.tres" id="tile1"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/norte_este.tres" id="tile2"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/norte_estrecho.tres" id="tile3"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/interior_oeste.tres" id="tile4"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/interior_centro.tres" id="tile5"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/interior_este.tres" id="tile6"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/interior_estrecho.tres" id="tile7"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/sur_oeste.tres" id="tile8"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/sur_centro.tres" id="tile9"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/sur_este.tres" id="tile10"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/sur_estrecho.tres" id="tile11"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/franja_oeste.tres" id="tile12"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/franja_centro.tres" id="tile13"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/franja_este.tres" id="tile14"]
+[ext_resource type="AtlasTexture" path="res://assets/biomes/recortes/pedregal/suelo/franja_estrecho.tres" id="tile15"]
 
 [node name="BiomeRocky" type="Node3D"]
 script = ExtResource("script")
+ground_tiles = Array[AtlasTexture]([ExtResource("tile0"), ExtResource("tile1"), ExtResource("tile2"), ExtResource("tile3"), ExtResource("tile4"), ExtResource("tile5"), ExtResource("tile6"), ExtResource("tile7"), ExtResource("tile8"), ExtResource("tile9"), ExtResource("tile10"), ExtResource("tile11"), ExtResource("tile12"), ExtResource("tile13"), ExtResource("tile14"), ExtResource("tile15")])
 
 [node name="Visual" type="Node3D" parent="."]
 
 [node name="Default" type="Node3D" parent="Visual"]
 
 [node name="Patch" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.04, 0)
-mesh = SubResource("mesh1")
-material_override = SubResource("mat1")
-
+position = Vector3(0, 0.03, 0)
+cast_shadow = 0

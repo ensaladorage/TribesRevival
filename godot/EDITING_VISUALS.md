@@ -9,6 +9,30 @@ Inspector se configura en `CanvasItem > Texture > Filter`; conservar Nearest
 o la herencia, sin sobrescribirlo con Linear. Los Sprite3D/AnimatedSprite3D
 configuran Nearest por separado en sus escenas, incluido el fuego de la hoguera.
 
+## Suelo modular de los biomas
+
+Abrir `scenes/world/TerrainReference.tscn` y pulsar **F6** para ver la costa,
+tres alturas, escaleras y una pared que termina sobre tierra y agua.
+Para cambiar la apariencia del mundo jugable, abrir `IslandSurface.tscn`
+y editar **Palettes**, **Cliff**, **Shadow** o **Foam** en el Inspector.
+El material de **Ground** en `main.tscn` contiene la textura de agua.
+
+Cada pieza de 64 × 64 px cubre 1,5 m. El atlas se selecciona por bioma,
+altura, vecinos cardinales y orientación de las escaleras. El pedregal usa
+la plataforma y las paredes de `Tilemap_Pegregal.png`. Sobre el agua utiliza el remate costero de la lámina de montaña.
+La espuma y la sombra ocupan tres tiles de ancho y están centradas en su
+celda. La espuma va sobre el agua y la sombra bajo la plataforma. Los
+fotogramas de espuma se leen de izquierda a derecha en `Water Foam.png`.
+
+Los recortes individuales siguen disponibles en `assets/biomes/recortes/`
+como recursos AtlasTexture. Las escenas `Biome*.tscn` permiten inspeccionar
+las piezas planas aisladas. La composición de las tres alturas en partida la
+construye `IslandSurface` a partir de la cuadrícula de simulación.
+
+Las rocas costeras se editan en las cuatro escenas WaterRock. Cada una usa
+ocho cuadros de 128 × 128 a 10 FPS. La posición lógica se guarda junto a las
+decoraciones y la vista aplica la elevación necesaria sobre el plano del agua.
+
 ## Personajes
 
 1. Abrir `scenes/actors/CharactersBase.tscn`.
@@ -252,8 +276,7 @@ anterior: velocidad física de caída = rain_speed × 11.3 m/s.
 
 En CloudBase, GroundShadow es un plano horizontal independiente del contenedor
 Clouds. Mesh > Size controla el tamaño (14 × 9); el ShaderMaterial expone
-shadow_color, opacity (máximo 0.12) y soft_edge. Su altura es 0.08 m porque los
-biomas llegan a 0.07 m; a 0.06 quedaría enterrado. Respeta profundidad, no escribe
+shadow_color, opacity (máximo 0.12) y soft_edge. Su altura es 0.08 m y el suelo modular del bioma está a 0.03 m. Respeta profundidad, no escribe
 en ella y no usa prioridades. La sombra sigue la posición horizontal del grupo.
 
 ### Sombra de minions y enemigos
@@ -281,9 +304,7 @@ recorte activo y se omiten sus comprobaciones de oclusión.
 
 ### Sombras de recursos recolectables
 
-Piedras, Brillo, bayas y ramitas usan `Visual/Default/GroundShadow`, instancia
-de `TotemShadow.tscn` ajustable en posición y escala. Los árboles conservan
-sus sombras propias. Las decoraciones no tienen sombra.
+Los diez modelos recolectables comparten `ResourceShadow.tscn` bajo `Visual/Default`. La posición y escala de cada instancia definen su huella sobre el suelo. El offset vertical del sprite sitúa la última fila visible de la textura en el punto de apoyo. Los árboles conservan ese punto en los ocho fotogramas.
 
 ### Disparo básico del mago
 
@@ -303,9 +324,5 @@ impulso de ataque existente.
 ## Minion levantado
 
 En `scenes/actors/CharactersBase.tscn`, la raíz expone `carried_height` para la
-altura visual al arrastrar. `CarryMarker` instancia
-`scenes/world/MinionCarryMarker.tscn`: su mesh, material y altura sobre el suelo
-se editan en esa escena. Las variantes heredan ambos ajustes. El cuerpo sube,
-la sombra y el marcador permanecen en el suelo y la barra de vida acompaña la
-altura visual. Ninguno de estos ajustes altera la colocación ni las distancias
-lógicas. El marcador se oculta automáticamente al depositar la unidad.
+altura visual al arrastrar. Las variantes heredan este ajuste. La sombra
+permanece en el suelo y la barra de vida acompaña al cuerpo elevado.

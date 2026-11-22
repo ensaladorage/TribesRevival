@@ -1,6 +1,7 @@
 extends Node3D
 ## Godot entry point. Input produces semantic actions; nodes only read state.
 
+const TerrainView = preload("res://scripts/view/terrain_projection.gd")
 const Session = preload("res://scripts/simulation/game_session.gd")
 const Numbers = preload("res://scripts/ui/player_numbers.gd")
 const WorldView = preload("res://scripts/view/world_view.gd")
@@ -44,6 +45,7 @@ var debug_visible := false
 var debug_label: Label
 var pause_overlay: ColorRect
 var _cursor_shape := -1
+var _landing_valid := true
 var carry_cursor: CanvasLayer
 var _carry_cursor_mouse_mode := Input.MOUSE_MODE_VISIBLE
 @onready var camera: Camera3D = $Camera3D
@@ -53,6 +55,7 @@ func _ready() -> void:
 	carry_cursor = preload("res://scenes/ui/CarryCursor.tscn").instantiate()
 	add_child(carry_cursor)
 	add_child(world_view)
+	camera.terrain = session.state.terrain
 	world_view.setup(session.state)
 	_create_overlay()
 	add_child(hud)
@@ -102,8 +105,13 @@ func _input(event: InputEvent) -> void:
 			_end_drag()
 			get_viewport().set_input_as_handled()
 		elif not dragged_minion_id.is_empty():
-			_queue_minion_drag(event.position)
-			_end_minion_drag()
+			if _minion_over_sacrifice(event.position):
+				var hit: Variant = camera.ground_point(event.position)
+				session.enqueue({"type":"drag-minion","unitId":dragged_minion_id,"position":_carry_preview_at(event.position),"surfaceValid":hit is Vector3 and hit.y >= 0})
+				_end_minion_drag(true)
+			else:
+				_queue_minion_drag(event.position)
+				_end_minion_drag()
 			get_viewport().set_input_as_handled()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -160,15 +168,16 @@ func _hits_totem(screen_point: Vector2) -> bool:
 func _queue_drag(screen_point: Vector2) -> void:
 	var point: Variant = camera.ground_point(screen_point)
 	if point is Vector3:
-		var position: Dictionary = Session.State.clamp_position({"x": point.x, "y": point.z})
+		var position: Dictionary = Session.State.clamp_position(TerrainView.logical(point))
 		if drag_position != null:
 			var dx: float = position.x - drag_position.x
 			var dy: float = position.y - drag_position.y
 			var distance := sqrt(dx * dx + dy * dy)
-			if distance <= 0.001:
+			if distance <= 0.001 and _landing_valid == (point.y >= 0 and TerrainView.T.fits(session.state.terrain,position,1.0,true)):
 				return
 		drag_position = position
-		session.enqueue({"type": "drag-totem", "position": position})
+		_landing_valid = point.y >= 0 and TerrainView.T.fits(session.state.terrain,position,1.0,true)
+		session.enqueue({"type": "drag-totem", "position": position, "surfaceValid": point.y >= 0})
 
 func _end_drag() -> void:
 	if not dragging:
@@ -194,13 +203,26 @@ func _queue_minion_drag(screen_point: Vector2) -> void:
 		return
 	var point: Variant = camera.ground_point(screen_point)
 	if point is Vector3:
-		minion_drag_position = Session.State.clamp_position({"x": point.x, "y": point.z})
-		session.enqueue({"type": "drag-minion", "unitId": dragged_minion_id, "position": minion_drag_position})
+		minion_drag_position = Session.State.clamp_position(TerrainView.logical(point))
+		_landing_valid = point.y >= 0 and TerrainView.T.fits(session.state.terrain,minion_drag_position,0.32,true)
+		session.enqueue({"type": "drag-minion", "unitId": dragged_minion_id, "position": minion_drag_position, "surfaceValid": point.y >= 0})
 
-func _end_minion_drag() -> void:
+func _carry_preview_at(screen: Vector2) -> Dictionary:
+	var ground: Variant = camera.ground_point(screen)
+	if ground is Vector3:
+		return Session.State.clamp_position(TerrainView.logical(ground))
+	return minion_drag_position
+
+func _minion_over_sacrifice(screen: Vector2) -> bool:
+	if dragged_minion_id.is_empty() or not hud.sacrifice_target.is_visible_in_tree() or not get_viewport().get_visible_rect().has_point(screen):
+		return false
+	var body: Rect2 = world_view.carried_body_rect(camera, dragged_minion_id, _carry_preview_at(screen))
+	return hud.sacrifice_target.get_global_rect().intersects(body)
+
+func _end_minion_drag(sacrifice: bool = false) -> void:
 	if dragged_minion_id.is_empty():
 		return
-	session.enqueue({"type": "drop-minion", "unitId": dragged_minion_id})
+	session.enqueue({"type": "sacrifice-minion" if sacrifice else "drop-minion", "unitId": dragged_minion_id})
 	dragged_minion_id = ""
 	minion_drag_position = null
 
@@ -208,13 +230,15 @@ func _sync_view() -> void:
 	hud.visible = menus.screen == "game"
 	$Overlay.visible = menus.screen == "game"
 	hud.update_state(session.state)
-	world_view.carried_preview = {"unitId": dragged_minion_id, "position": minion_drag_position}
+	hud.show_sacrifice_target(not dragged_minion_id.is_empty(), Session.Commands.Rules.sacrifice_block_reason(session.state.units, dragged_minion_id))
+	hud.sacrifice_target.set_pressed_no_signal(_minion_over_sacrifice(get_viewport().get_mouse_position()) and not hud.sacrifice_target.disabled)
+	world_view.carried_preview = {"unitId": dragged_minion_id, "position": _carry_preview_at(get_viewport().get_mouse_position()) if not dragged_minion_id.is_empty() else null}
 	world_view.sync(session.state, session.previous_positions, session.accumulator / Session.FIXED_DT)
 	var totem: Dictionary = session.state.totem
 	var visual: Dictionary = drag_position if (dragging or totem.isCarried) and drag_position != null else totem.position
-	totem_view.position = Vector3(float(visual.x), TOTEM_CARRIED_HEIGHT if dragging or totem.isCarried else TOTEM_REST_HEIGHT, float(visual.y))
+	totem_view.position = TerrainView.world(visual,session.state.terrain) + Vector3.UP * (TOTEM_CARRIED_HEIGHT if dragging or totem.isCarried else TOTEM_REST_HEIGHT)
 	totem_view.present(dragging or totem.isCarried)
-	$TotemShadow.position = Vector3(visual.x, 0.04, visual.y)
+	$TotemShadow.position = TerrainView.world(visual,session.state.terrain) + Vector3.UP * 0.04
 	pause_overlay.visible = false
 	debug_label.text = "Tick %s · %s · velocidad ×%s\nTótem %s, %s" % [Numbers.integer(session.state.tick), session.state.phase, Numbers.integer(session.speed_multiplier), Numbers.integer(totem.position.x), Numbers.integer(totem.position.y)]
 	_update_cursor()
@@ -222,6 +246,8 @@ func _sync_view() -> void:
 func _cursor_for_point(screen_point: Vector2, over_ui: bool) -> int:
 	if menus.screen != "game" or session.state.phase != "playing":
 		return Input.CURSOR_ARROW
+	if held_item in ["gatherer","campfire"] and not over_ui and not _landing_valid:
+		return Input.CURSOR_FORBIDDEN
 	if dragging or not dragged_minion_id.is_empty() or not held_item.is_empty():
 		return Input.CURSOR_DRAG
 	if over_ui:
@@ -247,7 +273,7 @@ func _update_cursor() -> void:
 	# Controls use ARROW too, so carrying stays visible while crossing the HUD.
 	Input.set_custom_mouse_cursor(texture, Input.CURSOR_ARROW, hotspot)
 	Input.set_custom_mouse_cursor(texture, Input.CURSOR_POINTING_HAND, hotspot)
-	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+	Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN if shape == Input.CURSOR_FORBIDDEN else Input.CURSOR_ARROW)
 
 func _update_carry_cursor(active: bool) -> void:
 	var hand: TextureRect = carry_cursor.get_node("Hand")
@@ -255,6 +281,7 @@ func _update_carry_cursor(active: bool) -> void:
 		if not hand.visible:
 			_carry_cursor_mouse_mode = Input.mouse_mode
 			Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
+		hand.modulate = Color.WHITE if _landing_valid or get_viewport().gui_get_hovered_control() != null else Color(1,0.3,0.25)
 		hand.texture = grab_cursor
 		hand.position = _carry_cursor_position() - grab_hotspot
 	elif hand.visible:
@@ -285,7 +312,10 @@ func _begin_placement(item: String) -> void:
 func _update_held_preview() -> void:
 	var point: Variant = camera.ground_point(get_viewport().get_mouse_position())
 	if point is Vector3:
-		# Preview follows the raw cursor. Recruitment projection happens on release.
+		var p := TerrainView.logical(point)
+		_landing_valid = point.y >= 0 and TerrainView.T.fits(session.state.terrain,p,0.9 if held_item == "campfire" else 0.32,true)
+		if held_item == "gatherer":
+			_landing_valid = _landing_valid and TerrainView.T.fits(session.state.terrain,Session.Movement.project_within(p,session.state.totem.position,15),0.32,true)
 		held_preview.position = point + Vector3(0, 1.2, 0)
 
 func _finish_placement() -> void:
@@ -293,7 +323,10 @@ func _finish_placement() -> void:
 		var screen_point := get_viewport().get_mouse_position()
 		var point: Variant = camera.ground_point(screen_point)
 		if held_item in ["gatherer", "campfire"] and point is Vector3:
-			session.enqueue({"type": "recruit-gatherer" if held_item == "gatherer" else "place-campfire", "position": {"x": point.x, "y": point.z}})
+			if point.y < 0:
+				_cancel_placement()
+				return
+			session.enqueue({"type": "recruit-gatherer" if held_item == "gatherer" else "place-campfire", "position": TerrainView.logical(point)})
 		else:
 			var unit_id: String = world_view.pick_unit(camera, screen_point, session.state.units)
 			if not unit_id.is_empty():
@@ -306,8 +339,10 @@ func _cancel_placement() -> void:
 		held_preview.free()
 	held_preview = null
 
-func _new_game() -> void:
-	_replace_state(Session.State.create_initial())
+func _new_game(seed_text: String = "") -> void:
+	if seed_text.is_empty():
+		seed_text = Crypto.new().generate_random_bytes(8).hex_encode()
+	_replace_state(Session.State.create_initial(seed_text))
 	menus.show_game()
 
 func _replace_state(state: Dictionary) -> void:
@@ -318,8 +353,9 @@ func _replace_state(state: Dictionary) -> void:
 	minion_drag_position = null
 	session.replace_state(state)
 	saved_fingerprint = Saves.fingerprint(session.state)
+	camera.terrain = session.state.terrain
 	world_view.setup(session.state)
-	camera.focus = Vector3(state.totem.position.x, 0, state.totem.position.y)
+	camera.focus = TerrainView.world(state.totem.position,state.terrain)
 	camera.recentering = false
 	camera.zoom_min = 0.5
 	camera.zoom_max = 1.0

@@ -73,4 +73,11 @@ func advance(frame_seconds: float) -> void:
 		steps += 1
 
 func _apply_action(action: Dictionary) -> void:
+	if action.type == "sacrifice-minion":
+		var held: Variant = Commands.Carry.held_unit(state)
+		Commands.apply(state, action)
+		if held != null and held.id == action.unitId and not held.get("isCarried", false):
+			# A rejected sacrifice relocates instantly. Ground movement starts here.
+			previous_positions[held.id] = held.position.duplicate()
+		return
 	Commands.apply(state, action)

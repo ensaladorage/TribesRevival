@@ -86,6 +86,8 @@ static func drop_resource(state: Dictionary, point: Dictionary, unit_id: String,
 		var random := Random.new("%s:drop:%s:%s:%s:%s" % [state.seed, int(state.tick), unit_id, source_text, resource_type])
 		var angle := random.next_float(0, PI * 2.0) + index * 2.399963229728653
 		var position := State.clamp_position({"x": point.x + cos(angle) * 1.5, "y": point.y + sin(angle) * 1.5})
+		if not Move.Terrain.clear(state.get("terrain",[]),point,position) or not Move.Terrain.fits(state.get("terrain",[]),position,0.32,true):
+			position = Move.Terrain.nearest(state.get("terrain",[]),point,0.32,true)
 		state.drops.append({"id": "drop-%05d" % state.nextDropId, "type": resource_type, "sourceNodeId": source_id, "position": position, "amount": 1})
 		state.nextDropId += 1
 
@@ -179,7 +181,14 @@ static func update_unit(state: Dictionary, unit: Dictionary, delta: float, frame
 			else:
 				set_task(unit, Rules.idle_task("resource-depleted"))
 			return
-		if not Move.move_towards(state, unit, Move.resource_approach(unit.position, resource), Move.UNIT_SPEED * delta, frame):
+		var approach := Move.resource_approach(unit.position,resource)
+		if not Move.Terrain.clear(state.get("terrain",[]),approach,resource.position):
+			approach = resource.position
+		if not Move.Terrain.fits(state.get("terrain",[]),approach):
+			unit.cancelledTargetId = resource.id
+			set_task(unit,Rules.idle_task("no-valid-resource"))
+			return
+		if not Move.move_towards(state, unit, approach, Move.UNIT_SPEED * delta, frame):
 			unit.state = "seeking-task"
 			return
 		unit.state = "gathering"

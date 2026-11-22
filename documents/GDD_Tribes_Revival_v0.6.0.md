@@ -5,7 +5,7 @@
 **Versión:** 0.6.0
 **Plataforma objetivo:** navegador de escritorio
 **Modo:** juego local para un jugador
-**Presentación:** supervivencia y estrategia ligera en mundo 3D con cámara isométrica
+**Presentación:** supervivencia y estrategia ligera en mundo 3D con cámara ortográfica elevada
 **Relación con Wanderers.io:** inspiración mecánica; mundo, economía, nomenclatura y recursos propios.
 
 ## Cómo leer este documento
@@ -19,7 +19,7 @@ Las etiquetas `[DECISIÓN DE DISEÑO]`, `[PROPUESTO]` e `[INFERIDO]` distinguen 
 ## 1. Visión del producto
 **Tribes Revival** es un juego 3D de supervivencia y estrategia ligera.
 El jugador guía una pequeña comunidad mediante un tótem que puede
-desplazar por un mundo isométrico. Las unidades no se controlan una por
+desplazar por un archipiélago. Las unidades no se controlan una por
 una de forma constante: interpretan la posición del tótem, el estado de
 la tribu y las oportunidades del entorno. Como intervención puntual, el jugador
 puede levantar un minion para reorganizarlo o rescatarlo del combate.
@@ -32,7 +32,7 @@ La fantasía principal es actuar como guía de una comunidad viva:
     cuevas; la condición de victoria todavía no está definida.
 ### Experiencia objetivo de una partida inicial
 Una partida inicial de referencia de 15–25 minutos con:
--   cámara ortográfica isométrica;
+-   cámara ortográfica elevada, con el norte arriba;
 -   terreno 3D navegable;
 -   tótem arrastrable;
 -   dos unidades autónomas;
@@ -105,7 +105,7 @@ Mover tótem → explorar → detectar recursos o amenaza
 ## 4. Cámara y presentación 3D
 ### Cámara
 `[DECISIÓN DE DISEÑO]`
--   cámara ortográfica isométrica;
+-   cámara ortográfica elevada, con el norte arriba;
 -   ángulo horizontal: 45°;
 -   inclinación: 35°;
 -   seguimiento suave del tótem;
@@ -125,7 +125,7 @@ recursos y amenazas, sin perder la legibilidad de las unidades.
 -   radio de peligro: 18 metros;
 -   radio de formación inicial: 4 metros, para mantener los minions
     visibles alrededor del tótem;
-`[DECISIÓN DE DISEÑO]` El mundo jugable será circular. Para pruebas de escala y navegación puede utilizarse un área de referencia de `160 × 160 metros`; una expansión posterior podrá distribuir el mundo en chunks alrededor del círculo.
+`[DECISIÓN DE DISEÑO]` La envolvente de referencia del archipiélago será circular. El límite jugable sigue la costa de sus islas. Para pruebas de escala y navegación puede utilizarse un área de referencia de `160 × 160 metros`; una expansión posterior podrá distribuir el mundo en chunks alrededor del círculo.
 ### Estilo 3D inicial
 El primer prototipo usará geometría simple, colores planos, sombras
 suaves y materiales sin texturas complejas. El aspecto final podrá
@@ -213,9 +213,13 @@ dirección del arrastre.
 - Al pasar sobre el HUD o salir de la ventana se conserva el último punto del
   mapa. Soltar sobre el HUD, pausar o perder el foco deposita allí al minion,
   ajustando la posición si hace falta. Los guardados lo conservan en el suelo.
-- La presentación muestra el cuerpo elevado y un marcador en el suelo. En un
+- La presentación muestra el cuerpo elevado. En un
   solapamiento de selección, el tótem conserva su prioridad; entre minions se
   elige el más cercano a la cámara.
+
+### Sacrificio de minions
+
+Mientras se sostiene un minion aparece una calavera en el lateral derecho del HUD. Al soltarlo sobre ella, desaparece y la tribu obtiene una unidad de comida. El icono usa el sprite del cadáver y acepta la suelta cuando el cuerpo elevado del minion se superpone a él. Si es el último minion vivo o su sacrificio elimina la última fuente de comida (recolector o cazador), la calavera aparece desactivada y al soltarlo se coloca automáticamente en el punto libre del radio de mando más cercano al lugar de suelta. Pasar por encima de la calavera permite seguir arrastrándolo.
 
 ## 6. Tótem y formación
 ``` ts
@@ -396,56 +400,61 @@ trabajo, combate y huida conservan sus objetivos y prioridades actuales.
 -   pradera: arbustos con bayas y árboles recolectables;
 -   bosque: árboles;
 -   pedregal: piedras;
--   ruinas: Brillo.
+-   ruinas: Brillo;
+-   montaña: piedras, árboles y arbustos de bayas.
 El `Claro` es una zona de relleno visual y no forma parte del total de
 biomas de recursos. Puede haber tantos claros como necesite el mapa. El
 área inicial donde aparece el tótem y la tribu es siempre un `Claro`;
 nunca contiene un bioma de recursos.
-El mapa final será circular. Su contenido se distribuirá mediante una
+En el exterior, cada bioma ocupa una mancha irregular de piezas de suelo
+conectadas por sus lados. Los recursos y la vegetación se colocan dentro de esa
+misma mancha. El agua delimita la tierra jugable. Los istmos unen la isla inicial con el resto
+del archipiélago. El terreno tiene tres alturas. Claro, pradera, bosque, ruinas y montaña
+pueden ocupar cualquiera de ellas. El pedregal aparece a partir del nivel 2.
+Cada terraza contrasta con los biomas vecinos del nivel superior e inferior.
+Las cimas de nivel 3 conservan una franja transitable de nivel 2 alrededor.
+Una pared termina con roca seca sobre tierra o con remate de agua sobre el mar.
+
+Los minions, bárbaros y animales caminan por tierra. Solo las escaleras
+comunican alturas. Las ovejas recorren su pradera de origen y reaparecen allí.
+Un golpe cuerpo a cuerpo requiere un paso libre hasta el objetivo. Los ataques
+a distancia conservan su alcance entre alturas. Al arrastrar el tótem o un
+minion se puede sobrevolar el mar. Si se suelta sobre agua, pared o escalera,
+aterriza en la última posición válida. Las hogueras y el reclutamiento también
+requieren suelo con espacio suficiente.
+
+El archipiélago final se distribuirá dentro de esa envolvente. Su contenido se distribuirá mediante una
 semilla: regiones verdes de distintos tamaños, cantidades y
 combinaciones de recursos. Las zonas pequeñas pueden ser solo
 decoración; las regiones principales de una partida serán
-aproximadamente `20`, sin contar esas manchas menores. La generación debe producir un mapa circular con regiones principales y manchas decorativas pequeñas, sin solapamientos.
-Distribución prevista:
--   claros pequeños: vegetación decorativa y relleno del mapa. Su
-    distribución usa pesos de `60 %` césped, `25 %` arbustos decorativos
-    y `15 %` setas, con un máximo de `2` setas por instancia de bioma;
--   praderas: arbustos con bayas y al menos un árbol recolectable;
--   bosques: nodos de recursos con silueta de árbol y vegetación
-    decorativa de suelo. La vegetación usa pesos de `58 %` césped,
-    `27 %` arbustos decorativos y `15 %` setas, con un máximo de `2` setas por
-    instancia;
--   pedregales: nodos de piedra con sprites pequeños y grandes;
--   ruinas: nodos de Brillo con sprites de cristales pequeños y grandes.
-Los tamaños de piedra y Brillo se distribuyen de forma variada y determinista.
-Por ahora solo cambia su apariencia; sus rendimientos distintos se definirán
-más adelante. Las piedras de nivel 2 siguen pendientes y no se generan.
-Los arbustos decorativos medianos y grandes usan animaciones sencillas: hojas
-`1` y `2` en praderas y claros, `3` y `4` en bosques. El reparto conserva
-tres posibilidades equiprobables: pequeño estático y dos variantes animadas.
-El césped permanece estático.
-La vegetación decorativa usa sprites de césped, setas y arbustos con
-varios tamaños y una distribución abundante en bosques, claros y praderas,
-incluido el claro inicial. Las praderas usan los mismos pesos que los claros.
-El límite de setas prevalece sobre su peso; las plazas restantes se reparten
-entre césped y arbustos. Se eliminan las flores y los modelos 3D provisionales
-de esta vegetación. Los arbustos decorativos no sustituyen a los nodos de bayas
-recolectables. El multiplicador lógico de escala se conserva de `1.26` a `1.62`;
-el aspecto y los tamaños se ajustan en las escenas de presentación. La selección
-y colocación se mantienen deterministas mediante la semilla del mapa; esta
-decoración es visual y no interactuable.
+aproximadamente `20`, sin contar esas manchas menores. Cada celda de tierra pertenece a una única región.
+Las islas y mesetas tienen bordes predominantemente rectos y esquinas
+recortadas. Las terrazas elevadas tienen como referencia una huella de al
+menos 4 × 4 piezas y como máximo 12 × 10. Los pasos por tierra y las entradas
+a las escaleras permanecen despejados.
+
+- Los bosques forman pinares de 5 a 8 árboles recolectables.
+- Las praderas combinan bayas y 2 a 4 árboles recolectables, normalmente agrupados.
+- Los pedregales concentran de 4 a 6 nodos de piedra de distintos tamaños.
+- Las ruinas contienen cristales de Brillo. Las montañas pueden contener rocas,
+  árboles y arbustos de bayas.
+
+Los claros, las praderas y los bosques tienen grupos de 2 o 3 arbustos, manchas
+de césped y setas ocasionales de distintos tamaños. El agua junto a las costas
+tiene rocas animadas que actúan como decoración. La semilla determina todas
+estas posiciones. El rendimiento de cada nodo de piedra y de Brillo es común
+a sus distintos tamaños visuales. Las futuras vetas de grado 2 siguen pendientes.
+
 Ningún área de bioma puede superponerse con otra, incluidos los `Claros`
 decorativos y el `Claro` inicial. Cuando el recurso de un bioma está
-activo, cada área genera entre `1` y `3` nodos: al menos uno es del
+activo, las zonas de montaña y ruinas generan entre `1` y `3` nodos: al menos uno es del
 recurso propio del bioma y los restantes tienen una alta probabilidad de
 ser también propios, aunque pueden pertenecer a otro bioma. Esta regla
 queda preparada para activar nuevos recursos progresivamente.
-En los mapas nuevos de Godot, los `10` biomas de recursos incluyen al menos
+En los mapas nuevos de Godot, los biomas de recursos incluyen al menos
 `3` bosques. Los árboles usan sprites animados: variantes `1` y `2` en bosques,
 y `3` y `4` en praderas, con elección equiprobable estable por semilla y nodo.
 Los árboles secundarios de otros biomas usan las variantes `1` y `2`.
-Cada pradera conserva sus bayas y garantiza al menos un árbol; si el reparto
-normal de `1–3` nodos no incluye madera, se añade un nodo de árbol adicional.
 Las reglas y rendimientos de tala son comunes a todas las variantes. Los mundos
 guardados conservan su distribución y recursos al cargarse.
 
@@ -834,6 +843,11 @@ La compatibilidad entre versiones antiguas y nuevas es un objetivo de una
 fase avanzada. En la fase actual se da por funcional el flujo de guardar y
 cargar la versión vigente; no se exige ampliar ni probar migraciones entre
 versiones hasta que se reactive ese trabajo en el roadmap.
+
+Desde el menú principal o el tutorial, Jugar abre las opciones Nueva Partida y, si hay al
+menos un guardado válido, Cargar. Nueva Partida inicia el juego directamente
+con cualquier número de slots ocupados. El jugador elige el slot cuando
+solicita guardar desde la pausa. Cargar abre la selección de slots.
 
 Cada slot ocupado ofrece una opción para eliminar la partida. Antes de borrarla, el juego solicita confirmación explícita; cancelar conserva el guardado y confirmar elimina solo el slot seleccionado. Los slots vacíos no muestran la opción de borrado.
 

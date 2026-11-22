@@ -1,5 +1,77 @@
 # IMPLEMENTATION_STATUS --- Tribes Revival
 
+## Costas rectas y recursos agrupados — 2026-11-22
+
+- Las partidas nuevas generan costas e istmos rectos y terrazas de tamaño
+  acotado. Los bosques agrupan 5 a 8 pinos recolectables, las praderas
+  2 a 4 árboles y los pedregales 4 a 6 nodos de piedra.
+- Arbustos y césped aparecen en grupos. Las setas son ocasionales y las
+  cuatro variantes de roca animada quedan sobre el agua. Las escenas de
+  las rocas permiten editar sus ocho cuadros a 10 FPS.
+- Pasaron 23 casos GdUnit4, las comprobaciones de terreno y recursos en
+  64 semillas y las de decoración en 32. También se verificaron rutas
+  entre alturas, recolección y carga del formato 4 con registros de
+  decoración previos y nuevos. Se revisaron capturas de tres semillas
+  en Godot. Queda pendiente una partida manual completa.
+
+## Terrazas de tres alturas y tilesets revisados — 2026-11-21
+
+- El formato de guardado 4 conserva los tiles cubiertos de cada bioma y la
+  superficie transitable. Las parcelas altas tienen contraste local, las cimas
+  están rodeadas de una terraza intermedia y montaña permite piedra, madera y bayas.
+- El catálogo contiene 296 AtlasTexture. Las pruebas de cobertura incluyen
+  los PNG actuales y las seis escenas de bioma. La comprobación geométrica
+  de la escena de referencia verifica un tile de base cubierto y las dos
+  filas del atlas en una misma pared que cruza la orilla.
+- Verificados en Godot 4.7.2 la importación sin caché, el arranque, los 23 casos
+  GdUnit4, la generación en 64 semillas, las rutas de ida y vuelta hasta la cima,
+  guardado/carga, arrastre, visibilidad y decoración. Se revisaron capturas de
+  la escena de referencia y de una partida. Queda pendiente una partida manual completa.
+
+## Apoyo visual de los recursos — 2026-11-21
+
+Los diez modelos recolectables tienen el apoyo del sprite ajustado a la cámara y una sombra horizontal editable por variante. Se compararon capturas de la escena principal en ambas alturas con sustituciones temporales de atlas por referencias de terreno sin resolver. Se capturaron los ocho fotogramas de cada árbol.
+
+## Archipiélago jugable de dos alturas — 2026-11-21
+
+- Las partidas nuevas generan una isla inicial, istmos y cinco mesetas. Los
+  cinco biomas conservan su identidad. El terreno bajo es verde y el pedregal,
+  las ruinas y los nodos de piedra y Brillo solo aparecen en el nivel superior.
+  El guardado local usa el esquema 3 con archivos propios. Los archivos del
+  esquema 2 se conservan en disco y quedan fuera de la lista de partidas actuales.
+- El tótem y los minions recuperan su último aterrizaje válido al soltarlos sobre
+  agua o paredes. Las unidades navegan por las escaleras y las ovejas patrullan
+  y reaparecen en su pradera. La escena TerrainReference permite revisar el
+  desnivel y la selección de superficies con F6.
+- El catálogo contiene 332 recortes, incluidos el agua y 16 fotogramas de espuma.
+  Se inspeccionaron capturas del archipiélago generado y de la escena de
+  referencia en Godot 4.7.2 Compatibility. La comparación de fotogramas
+  mostró movimiento en la espuma y sombra visible bajo el acantilado.
+- Pasaron los 23 casos de GdUnit4, las comprobaciones de recursos en 64 semillas,
+  decoración en 32 y visibilidad en ocho. La prueba de rutas trasladó la tribu
+  entre alturas en el bucle de partida, recorrió escaleras con un bárbaro y
+  comprobó el combate, la patrulla de ovejas, la reaparición y el puntero.
+  También pasaron guardado/carga, arrastre, colocación y comportamiento
+  táctico. Queda pendiente una sesión completa jugada manualmente.
+
+## Suelo modular de los cinco biomas — 2026-11-20
+
+- Claro, pradera, bosque, pedregal y ruinas usan huellas conexas de celdas
+  de 1,5 m. La generación y la recolocación visual de vegetación utilizan la
+  misma huella que el suelo. Los recursos funcionales respetan la exclusión
+  inicial del tótem. Las ovejas patrullan dentro de sus praderas. Los slots del esquema 2 guardan las celdas y sus recursos.
+- Disponibles 315 recortes AtlasTexture, incluidas las piezas agrupadas,
+  las variantes de color, las piezas elevadas y la sombra. Las escenas activas
+  usan exclusivamente las 16 piezas planas del bioma correspondiente.
+- Godot 4.7.2 completó 23 de 23 casos GdUnit4. Las pruebas de recursos cubrieron
+  64 semillas, las de decoración 32 y las de recolocación ocho. Pasaron paridad
+  de datos, guardado/carga y flujo del menú. La prueba de atlas verificó la
+  cobertura de los píxeles visibles de todas las fuentes.
+- Se revisó la composición de bosque en el editor y se inspeccionaron capturas
+  de los cinco biomas a tamaños de cámara 36 y 18. Pasaron las pruebas gráficas
+  de sombras de nubes y oclusión de árboles. Queda pendiente el recorrido
+  interactivo de una partida completa.
+
 
 ## Límite del tótem para aceptar avisos de recursos — 2026-11-15
 
@@ -997,3 +1069,43 @@ manualmente solo porque Codex haya escrito el código.
 - Godot 4.7.2 headless pasa las 40 comprobaciones de hover y clic de
   `test_main_menu_hit_areas.gd` en las cuatro esquinas y el borde inferior de
   cada botón. Pendiente observación visual en ventana.
+
+## Suelta sobre entidades — 2026-11-19
+
+Corregido el rechazo por redondeo de posiciones libres junto al cursor en minion_carry.gd. La prueba reprodujo el salto antes de la corrección. Pasan las 18 pruebas GdUnit y las 33 comprobaciones de entrada. Pendiente revisión manual en partida.
+
+## Presentación del arrastre
+
+Retirado el círculo amarillo de las escenas de minions. Pasan las 33 comprobaciones de entrada y estructura de test_minion_drag_input.gd. Pendiente comprobación visual en partida.
+
+## Sacrificio desde el HUD
+
+Implementada la calavera contextual con protección del último minion y recompensa de una comida. Pasan 19 pruebas GdUnit y 40 comprobaciones de entrada y escena.
+
+El sacrificio usa el fotograma final del cadáver de minion y detecta el solapamiento de su cuerpo elevado. HUD y simulación protegen al último productor de comida. Pasan 20 pruebas GdUnit y 40 comprobaciones de entrada.
+
+La suelta sobre la calavera desactivada se resuelve en simulación colocando al minion protegido dentro del mando. Verificado con 20 pruebas GdUnit y 41 comprobaciones de entrada y escena.
+
+La calavera de sacrificio usa la variante en escala de grises del HUD al deshabilitarse. Pasan las 41 comprobaciones de entrada y escena. Pendiente revisión visual.
+
+El sacrificio rechazado actualiza el origen de interpolación del minion en el mismo tick de la recolocación. Pasan las 21 pruebas GdUnit y 41 comprobaciones de entrada y escena. Validación automática.
+
+## Submenú Jugar
+
+- El menú principal muestra Jugar, Tutorial y Salir. Jugar abre una escena
+  editable con Nueva Partida, Cargar cuando hay un guardado válido y Volver.
+- En Godot 4.7.2 pasa `test_play_menu_flow.gd` con guardados aislados.
+  Verifica el inicio con los tres slots ocupados sin alterarlos, la carga,
+  el borrado y los retornos de menú. Pasan también las 60 comprobaciones de
+  puntero y clic de `test_main_menu_hit_areas.gd` en ventana a 960 × 540.
+  Se revisó una captura del submenú a esa resolución.
+
+- El submenú hereda la escena principal. La prueba de flujo confirma en
+  ventana a 960 × 540 que mantiene el título y su posición, y que el panel
+  conserva sus dimensiones con y sin guardados. También confirma que
+  Jugar desde el tutorial abre el submenú. Pasan las 60 comprobaciones
+  de puntero y clic.
+
+- Retirado el foco automático de Nueva Partida. La prueba de flujo reproduce
+  el fallo antes de la corrección y confirma que Jugar y la selección de slots
+  se abren sin foco. Pasan las 60 comprobaciones de puntero y clic en ventana.

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cgcix0wjxagld"]
 
-[ext_resource type="PackedScene" uid="uid://bft582aur8gpc" path="res://scenes/world/TotemShadow.tscn" id="3_lj7qr"]
+[ext_resource type="PackedScene" path="res://scenes/world/ResourceShadow.tscn" id="3_lj7qr"]
 [ext_resource type="Script" uid="uid://dvg23j3gbsgnf" path="res://scripts/view/tree_view.gd" id="script"]
 [ext_resource type="Texture2D" uid="uid://dwiiaxld1vhti" path="res://assets/resources/Tree3.png" id="sheet"]
 
@@ -79,12 +79,12 @@ decoration_clearance_radius = 1.2
 [node name="Default" type="Node3D" parent="Visual" unique_id=688078369]
 
 [node name="TotemShadow" parent="Visual/Default" unique_id=1671596345 instance=ExtResource("3_lj7qr")]
-transform = Transform3D(0.43514043, 0, 0, 0, 0.43514043, 0, 0, 0, 0.43514043, -0.39866042, 0.009676397, -0.3893299)
+transform = Transform3D(0.873564, 0, 0, 0, 0.873564, 0, 0, 0, 0.873564, -0.038279235, 0.065, -0.22492027)
 
 [node name="Sprite" type="AnimatedSprite3D" parent="Visual/Default" unique_id=954656654]
-transform = Transform3D(1.9044261, 0, 0, 0, 1.9044261, 0, 0, 0, 1.9044261, 0, 0.1315381, 0)
+transform = Transform3D(1.9044261, 0, 0, 0, 1.9044261, 0, 0, 0, 1.9044261, 0, 0.11, 0)
 cast_shadow = 0
-offset = Vector2(0, 68)
+offset = Vector2(0, 74)
 pixel_size = 0.02
 billboard = 1
 alpha_cut = 1

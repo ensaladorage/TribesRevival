@@ -57,6 +57,8 @@ static func _defeat_barbarian(state: Dictionary, barbarian: Dictionary) -> void:
 	state.barbarianCorpses.append({"id": "corpse-%s-%s" % [barbarian.id, barbarian.spawnCycle], "barbarianId": barbarian.id, "position": barbarian.position.duplicate(), "loot": loot})
 
 static func _attack(state: Dictionary, unit: Dictionary, target: Dictionary, stats: Dictionary, kind: String) -> bool:
+	if not Combat.is_ranged(unit.role,state.toolLevels.sword) and not Move.Terrain.clear(state.get("terrain",[]),unit.position,target.position):
+		return false
 	unit.attackCooldownRemainingSeconds = stats.cooldownSeconds
 	unit.attackLockRemainingSeconds = 0.22
 	Survival.add_effect(state, "attack-lunge", unit.id, target.position, 0.22)
@@ -103,6 +105,11 @@ static func _update_respawns_and_fauna(state: Dictionary, delta: float) -> void:
 		barbarian.alertSoundedThisEncounter = false
 		barbarian.spawnCycle += 1
 	for animal in state.animals:
+		var region: Dictionary = {}
+		for biome in state.biomes:
+			if biome.instanceId == animal.get("homeBiomeId",""):
+				region = biome.region
+				break
 		if not animal.isAlive:
 			animal.respawnRemainingSeconds = maxf(animal.respawnRemainingSeconds - delta, 0)
 			if animal.respawnRemainingSeconds < 1e-9:
@@ -112,12 +119,30 @@ static func _update_respawns_and_fauna(state: Dictionary, delta: float) -> void:
 			animal.isAlive = true
 			animal.health = animal.maxHealth
 			animal.position = animal.spawnPosition.duplicate()
-			animal.patrolTarget = _patrol_point(state.seed, animal.id, animal.spawnCycle + 1, animal.spawnCycle + 1, animal.homeCenter, animal.homeRadius)
+			animal.patrolTarget = _animal_target(state,animal,region,animal.spawnCycle + 1,animal.spawnCycle + 1)
+			animal.erase("terrainRoute")
 			animal.spawnCycle += 1
 			continue
 		if Geo.distance(animal.position, animal.patrolTarget) <= 0.2:
-			animal.patrolTarget = _patrol_point(state.seed, animal.id, animal.spawnCycle, state.tick, animal.homeCenter, animal.homeRadius)
-		Weather.move_point(animal.position, animal.patrolTarget, 1.2 * delta)
+			animal.patrolTarget = _animal_target(state,animal,region,animal.spawnCycle,state.tick)
+		if region.is_empty():
+			Weather.move_point(animal.position, animal.patrolTarget, 1.2 * delta)
+			continue
+		var rows := Move.Terrain.meadow_rows(region, state.terrain)
+		var goal := Move.Terrain.waypoint(rows, animal.position, animal.patrolTarget, animal)
+		var next: Dictionary = animal.position.duplicate()
+		Weather.move_point(next, goal, 1.2 * delta)
+		if next != animal.position and Move.Terrain.clear(rows, animal.position, next):
+			animal.position = next
+		else:
+			animal.erase("terrainRoute")
+			animal.patrolTarget = animal.position.duplicate()
+
+static func _animal_target(state: Dictionary, animal: Dictionary, region: Dictionary, cycle: int, step: int) -> Dictionary:
+	if region.is_empty():
+		return _patrol_point(state.seed,animal.id,cycle,step,animal.homeCenter,animal.homeRadius)
+	var random := Random.new("%s:%s:patrol:%d:%d" % [state.seed,animal.id,cycle,step])
+	return State.Catalog.Footprint.sample(region,random,region.spawnCells)
 
 static func _choose_combat_target(state: Dictionary, unit: Dictionary) -> Variant:
 	var current: Variant = _living(state.barbarians, unit.task.get("targetEntityId"))
@@ -151,6 +176,8 @@ static func _reserve_combat(state: Dictionary, frame: Dictionary) -> void:
 		var allowed := func(attacker: Dictionary, point: Dictionary) -> bool:
 			if point.x < 2 or point.y < 2 or point.x > 158 or point.y > 158 or Geo.distance(point, state.totem.position) < 2.02:
 				return false
+			if not Move.Terrain.fits(state.get("terrain",[]),point) or (not attacker.ranged and not Move.Terrain.clear(state.get("terrain",[]),point,target.position)):
+				return false
 			if attacker.ranged and Geo.distance(point, state.totem.position) > minf(state.totem.commandRadius, 10.0):
 				return false
 			for other in state.barbarians:
@@ -179,10 +206,12 @@ static func _move_barbarian(state: Dictionary, barbarian: Dictionary, destinatio
 		if other.isAlive and other.id != barbarian.id:
 			neighbors.append({"id": other.id, "position": other.position, "velocity": zero, "tickVelocity": zero, "stopAfterSeconds": 0.0, "fixed": true, "priority": 4})
 	var safe_destination := Move.outside_totem(destination, state.totem.position, barbarian.id)
-	var steering_destination := safe_destination
+	var rows: Array = state.get("terrain",[])
+	safe_destination = Move.Terrain.nearest(rows,safe_destination)
+	var steering_destination := Move.Terrain.waypoint(rows,barbarian.position,safe_destination,barbarian)
 	# Unlike minions, barbarians cannot cross the totem's clearance. Local
 	# +/-75 degree avoidance alone stalls on its near side: steer around it.
-	if not Nav.segment_is_clear(barbarian.position, safe_destination, [{"position": state.totem.position}], Move.TOTEM_CLEARANCE):
+	if not Nav.segment_is_clear(barbarian.position, steering_destination, [{"position": state.totem.position}], Move.TOTEM_CLEARANCE):
 		var center: Dictionary = state.totem.position
 		var angle := atan2(barbarian.position.y - center.y, barbarian.position.x - center.x)
 		var origin_angle := angle
@@ -198,7 +227,7 @@ static func _move_barbarian(state: Dictionary, barbarian: Dictionary, destinatio
 				break
 	var minimum_clearance := minf(Move.TOTEM_CLEARANCE, Geo.distance(barbarian.position, state.totem.position))
 	var input := {"agent": {"id": barbarian.id, "position": barbarian.position, "velocity": zero, "tickVelocity": zero, "stopAfterSeconds": 0.0, "fixed": false, "priority": 2}, "destination": steering_destination, "speed": distance / frame.deltaSeconds, "deltaSeconds": frame.deltaSeconds, "neighbors": neighbors}
-	var result := Nav.choose_step(input, func(point): return point.x >= 2 and point.y >= 2 and point.x <= 158 and point.y <= 158 and Geo.distance(point, state.totem.position) >= minimum_clearance - 1e-8)
+	var result := Nav.choose_step(input, func(point): return Move.Terrain.clear(rows,barbarian.position,point) and point.x >= 2 and point.y >= 2 and point.x <= 158 and point.y <= 158 and Geo.distance(point, state.totem.position) >= minimum_clearance - 1e-8)
 	barbarian.position.merge(result.position, true)
 	return Geo.distance(barbarian.position, safe_destination) <= 0.08
 
@@ -406,10 +435,12 @@ static func _update_barbarian(state: Dictionary, barbarian: Dictionary, delta: f
 		barbarian.returningToSpawn = false
 		if threats.size() >= 2 and barbarian.attackProgressSeconds >= 0.22 and barbarian.attackProgressSeconds < 0.75:
 			_move_barbarian(state, barbarian, Tactics.reposition_goal(state, barbarian, target, threats), 7.0 * delta, frame)
+		elif not Move.Terrain.clear(state.get("terrain",[]),barbarian.position,target.position):
+			_move_barbarian(state,barbarian,target.position,7.0 * delta,frame)
 		elif Geo.distance(barbarian.position, target.position) > 1.2:
 			_move_barbarian(state, barbarian, Move.approach(barbarian.position, target.position, 1.2), 7.0 * delta, frame)
 		barbarian.attackProgressSeconds = minf(barbarian.attackProgressSeconds + delta, 2.5)
-		if Geo.distance(barbarian.position, target.position) <= 1.2 + 1e-6 and barbarian.attackProgressSeconds + 1e-9 >= 2.5:
+		if Geo.distance(barbarian.position, target.position) <= 1.2 + 1e-6 and Move.Terrain.clear(state.get("terrain",[]),barbarian.position,target.position) and barbarian.attackProgressSeconds + 1e-9 >= 2.5:
 			barbarian.attackProgressSeconds = 0.0
 			Survival.add_effect(state, "attack-lunge", barbarian.id, target.position, 0.22)
 			Survival.damage_unit(state, target.id, 1.0, "barbarian")

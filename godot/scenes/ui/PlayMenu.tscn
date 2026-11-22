@@ -1,0 +1,36 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/MainMenu.tscn" id="main"]
+
+[node name="PlayMenu" instance=ExtResource("main")]
+
+[node name="Play" parent="Actions" index="0"]
+visible = false
+
+[node name="Tutorial" parent="Actions" index="1"]
+visible = false
+
+[node name="Quit" parent="Actions" index="2"]
+visible = false
+
+[node name="NewGame" type="Button" parent="Actions" index="3"]
+custom_minimum_size = Vector2(270, 42)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"TribesMenuButton"
+text = "Nueva Partida"
+
+[node name="Load" type="Button" parent="Actions" index="4"]
+visible = false
+custom_minimum_size = Vector2(270, 42)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"TribesMenuButton"
+text = "Cargar"
+
+[node name="Back" type="Button" parent="Actions" index="5"]
+custom_minimum_size = Vector2(270, 42)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"TribesMenuButton"
+text = "Volver"

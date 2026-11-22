@@ -3,13 +3,16 @@ extends Camera3D
 
 const BASE_VIEW_HEIGHT := 72.0
 const CAMERA_DISTANCE := 120.0
-const YAW := PI / 4.0
-const PITCH := 35.0 * PI / 180.0
+const TerrainView = preload("res://scripts/view/terrain_projection.gd")
+const T = TerrainView.T
+var terrain: Array = []
+const YAW := 0.0
+const PITCH := TerrainView.PITCH
 const EDGE_MARGIN := 72.0
 const EDGE_SCROLL_SPEED := 32.0
 const RECENTER_SPEED := 4.5
 
-var focus := Vector3(80, 0, 80)
+var focus := Vector3(80, 0, 80 * TerrainView.DEPTH_SCALE)
 var zoom := 0.5
 var zoom_min := 0.5
 var zoom_max := 1.0
@@ -25,13 +28,26 @@ func adjust_zoom(amount: float) -> void:
 	size = BASE_VIEW_HEIGHT * zoom
 
 func ground_point(screen_point: Vector2) -> Variant:
-	return Plane(Vector3.UP, 0).intersects_ray(project_ray_origin(screen_point), project_ray_normal(screen_point))
+	var origin := project_ray_origin(screen_point)
+	var direction := project_ray_normal(screen_point)
+	var low: Vector3 = Plane(Vector3.UP,0).intersects_ray(origin,direction)
+	var high: Vector3 = Plane(Vector3.UP,TerrainView.RISE).intersects_ray(origin,direction)
+	var summit: Vector3 = Plane(Vector3.UP,2 * TerrainView.RISE).intersects_ray(origin,direction)
+	for sample in [summit,high,low]:
+		var p := TerrainView.logical(sample)
+		var height := TerrainView.RISE * T.fraction(terrain,p)
+		var hit: Vector3 = Plane(Vector3.UP,height).intersects_ray(origin,direction)
+		var actual := TerrainView.logical(hit)
+		if T.cell(actual) == T.cell(p) and T.code(terrain,T.cell(p)) != T.SEA:
+			return hit
+	low.y = -1.0
+	return low
 
 func advance(seconds: float, dragging: bool, totem_position: Dictionary) -> void:
 	if dragging:
 		_scroll_at_edge(seconds)
 	elif recentering:
-		var target := Vector3(float(totem_position.x), 0, float(totem_position.y))
+		var target := TerrainView.world(totem_position,terrain)
 		focus = focus.lerp(target, minf(seconds * RECENTER_SPEED, 1.0))
 		if focus.distance_squared_to(target) < 0.01:
 			focus = target
@@ -65,4 +81,4 @@ func _scroll_at_edge(seconds: float) -> void:
 	if movement.length_squared() > 0:
 		focus += movement.normalized() * EDGE_SCROLL_SPEED * seconds
 		focus.x = clampf(focus.x, 0, 160)
-		focus.z = clampf(focus.z, 0, 160)
+		focus.z = clampf(focus.z, 0, 160 * TerrainView.DEPTH_SCALE)

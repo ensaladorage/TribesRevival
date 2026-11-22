@@ -3,36 +3,27 @@ extends RefCounted
 ## Pure procedural data. No nodes or Godot global RNG; Godot vegetation replaces the legacy decoration.
 
 const Random = preload("res://scripts/simulation/seeded_random.gd")
-const RESOURCE_BIOMES := ["meadow", "forest", "rocky", "ruins"]
+const Footprint = preload("res://scripts/simulation/biome_footprint.gd")
+const Islands = preload("res://scripts/simulation/island_generator.gd")
+const Terrain = preload("res://scripts/simulation/island_terrain.gd")
 const RESOURCE_TYPES := ["food", "wood", "stone", "spark"]
 const DEFINITIONS := {
 	"clearing": ["Claro", 1.0, ["wood"], ""],
 	"meadow": ["Pradera", 1.0, ["food"], "food"],
+	"mountain": ["Montaña", 1.0, ["stone","wood","food"], "stone"],
 	"forest": ["Bosque", 0.8, ["wood"], "wood"],
 	"rocky": ["Pedregal", 0.65, ["stone"], "stone"],
 	"ruins": ["Ruinas", 0.75, ["spark"], "spark"],
 	"great-fire": ["Gran Hoguera", 1.0, [], ""], # Legacy data only; no victory.
 }
 const HITO_3 := {
-	"totalBiomes": 10, "minRadius": 7.0, "maxRadius": 11.0,
-	"minimumBiomeGap": 0.5, "maxPlacementAttempts": 320,
 	"minResourceNodesPerBiome": 1, "maxResourceNodesPerBiome": 3,
 	"secondaryChance": 0.38, "secondaryAmountMultiplier": 0.4,
-	"worldPadding": 4.0, "startingBiomeRadius": 5.0,
-	"startingResourceExclusionRadius": 12.0, "decorativeBiomeCount": 12,
-	"decorativeBiomeMinRadius": 3.0, "decorativeBiomeMaxRadius": 5.0,
+	"startingResourceExclusionRadius": 12.0,
 	"activeResourceTypes": RESOURCE_TYPES,
 }
 const SOURCES := {"food": "berry-bush", "wood": "tree", "stone": "stone-vein", "spark": "ruin"}
 const RADII := {"food": 1.45, "wood": 1.35, "stone": 1.35, "spark": 1.3}
-const DECORATIONS := {
-	"clearing": [12, 18, [["grass", 60], ["bush", 25], ["mushroom", 15]]],
-	"meadow": [18, 26, [["grass", 60], ["bush", 25], ["mushroom", 15]]],
-	"forest": [16, 24, [["grass", 58], ["bush", 27], ["mushroom", 15]]],
-	"rocky": [0, 0, []], "ruins": [0, 0, []],
-	"great-fire": [0, 0, []],
-}
-
 static func _round_position(value: float) -> float:
 	return floor(value * 100.0 + 0.5) / 100.0
 
@@ -46,64 +37,17 @@ static func point_in_circle(random: Random, center: Dictionary, radius: float, i
 	var distance := sqrt(random.next_float(inner_radius * inner_radius, radius * radius))
 	return {"x": _round_position(center.x + cos(angle) * distance), "y": _round_position(center.y + sin(angle) * distance)}
 
-static func _outside_start(random: Random, center: Dictionary, radius: float, exclusion: float) -> Dictionary:
-	var point := point_in_circle(random, center, radius)
-	for attempt in 64:
-		if _distance(point, {"x": 80, "y": 80}) >= exclusion:
-			return point
-		point = point_in_circle(random, center, radius)
-	return point
+static func _world(seed_text: String) -> Dictionary:
+	var world := Islands.generate(seed_text)
+	for biome in world.biomes:
+		var definition: Array = DEFINITIONS[biome.id]
+		biome.displayName = definition[0]
+		biome.movementMultiplier = definition[1]
+		biome.visibleResourceTypes = definition[2].duplicate()
+	return world
 
-static func create_biomes(seed_text: String, config: Dictionary = HITO_3) -> Array:
-	var random := Random.new(seed_text + ":biomes")
-	var resource_count := maxi(int(ceil(config.totalBiomes)), RESOURCE_BIOMES.size())
-	var decorative_count := maxi(int(floor(config.decorativeBiomeCount)), 0)
-	var radius_min := maxf(config.minRadius, 2)
-	var radius_max := maxf(config.maxRadius, radius_min)
-	var padding := maxf(config.worldPadding, 0)
-	var gap := maxf(config.minimumBiomeGap, 0)
-	var placed: Array = []
-	var biomes: Array = []
-	for index in resource_count + decorative_count + 1:
-		var resource_index := index - 1
-		var is_resource := resource_index >= 0 and resource_index < resource_count
-		var biome := "clearing"
-		if is_resource:
-			biome = RESOURCE_BIOMES[resource_index] if resource_index < RESOURCE_BIOMES.size() else RESOURCE_BIOMES[random.next_int(0, RESOURCE_BIOMES.size() - 1)]
-			# Reserve two extra forest slots after the four mandatory resource types.
-			if resource_index in [4, 5]:
-				biome = "forest"
-		var selected: Dictionary = {}
-		if index == 0:
-			selected = {"x": 80, "y": 80, "radius": minf(maxf(config.startingBiomeRadius, 2), radius_min - 0.1)}
-		else:
-			for attempt in maxi(config.maxPlacementAttempts, 1):
-				var radius: float
-				if not is_resource:
-					radius = random.next_float(maxf(config.decorativeBiomeMinRadius, 2), maxf(maxf(config.decorativeBiomeMaxRadius, config.decorativeBiomeMinRadius), 2))
-				else:
-					radius = random.next_float(radius_min, radius_max)
-				var candidate := {"x": random.next_float(padding + radius, 160 - padding - radius), "y": random.next_float(padding + radius, 160 - padding - radius), "radius": radius}
-				var valid := true
-				for other in placed:
-					if _distance(candidate, other) + 0.0001 < candidate.radius + other.radius + gap:
-						valid = false
-						break
-				if valid:
-					selected = candidate
-					break
-		if selected.is_empty():
-			push_error("Unable to place biome without overlap: " + biome)
-			return []
-		placed.append(selected)
-		biomes.append({
-			"id": biome, "instanceId": "biome-%02d" % (index + 1),
-			"isDecorativeOnly": not is_resource,
-			"displayName": DEFINITIONS[biome][0], "movementMultiplier": DEFINITIONS[biome][1],
-			"visibleResourceTypes": DEFINITIONS[biome][2].duplicate(),
-			"region": {"x": _round_position(clampf(selected.x, padding + selected.radius, 160 - padding - selected.radius)), "y": _round_position(clampf(selected.y, padding + selected.radius, 160 - padding - selected.radius)), "size": _round_position(selected.radius * 2), "shape": "circle"},
-		})
-	return biomes
+static func create_biomes(seed_text: String) -> Array:
+	return _world(seed_text).biomes
 
 static func create_resources(seed_text: String, biomes: Array, config: Dictionary = HITO_3) -> Array:
 	var random := Random.new(seed_text + ":resources")
@@ -122,14 +66,39 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 			continue
 		var secondary := active.duplicate()
 		secondary.erase(primary)
+		if biome.id == "mountain":
+			secondary = active.filter(func(t): return t in ["wood","food"])
+		elif biome.level == 1:
+			secondary.erase("stone")
+			secondary.erase("spark")
 		var minimum := maxi(0, int(floor(config.minResourceNodesPerBiome)))
 		var count := random.next_int(minimum, maxi(minimum, int(floor(config.maxResourceNodesPerBiome))))
+		var types: Array = []
 		for index in count:
-			var is_secondary: bool = not secondary.is_empty() and index > 0 and random.next_float() < config.secondaryChance
-			var resource_type: String = secondary[random.next_int(0, secondary.size() - 1)] if is_secondary else primary
-			var primary_amount := random.next_int(1, 1)
-			var amount := maxi(1, int(floor(primary_amount * clampf(config.secondaryAmountMultiplier, 0, 0.99)))) if is_secondary else primary_amount
-			var point := _outside_start(random, {"x": biome.region.x, "y": biome.region.y}, biome.region.size / 2.0, maxf(config.startingResourceExclusionRadius, 0))
+			var extra: bool = index > 0 and not secondary.is_empty() and random.next_float() < config.secondaryChance
+			types.append(secondary[random.next_int(0,secondary.size()-1)] if extra else primary)
+		if biome.id == "forest":
+			types.clear()
+			for index in random.next_int(5,8): types.append("wood")
+		elif biome.id == "rocky":
+			types.clear()
+			for index in random.next_int(4,6): types.append("stone")
+		elif biome.id == "meadow" and "wood" in active:
+			types = types.filter(func(t): return t != "wood")
+			for index in random.next_int(2,4): types.append("wood")
+		var cells := Footprint.eligible(biome.region, config.startingResourceExclusionRadius).duplicate()
+		_shuffle(cells, random)
+		var cluster := Vector2.INF
+		for index in types.size():
+			var resource_type: String = types[index]
+			var is_secondary := resource_type != primary
+			var amount := 1
+			var isolated: bool = biome.id == "meadow" and resource_type == "wood" and index == types.size()-1 and random.next_int(0,3) == 0
+			var point := _resource_point(biome.region,cells,nodes,cluster,isolated)
+			if point.is_empty():
+				break
+			if not cluster.is_finite() or (biome.id == "forest" and index == 4 and types.size() >= 7):
+				cluster = Vector2(point.x,point.y)
 			var node := {
 				"id": "resource-%03d" % (nodes.size() + 1), "type": resource_type,
 				"source": SOURCES[resource_type], "biome": biome.id, "biomeInstanceId": biome.instanceId,
@@ -139,21 +108,6 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 			if resource_type == "wood":
 				node.yieldAmount = tree_random.next_int(2, 3)
 			nodes.append(node)
-	# Separate stream: guaranteeing meadow wood never consumes resource randomness.
-	var meadow_random := Random.new(seed_text + ":meadow-trees")
-	if "wood" in active:
-		for biome in biomes:
-			if biome.id != "meadow" or biome.isDecorativeOnly:
-				continue
-			if nodes.any(func(node): return node.biomeInstanceId == biome.instanceId and node.source == "tree"):
-				continue
-			var point := _outside_start(meadow_random, {"x": biome.region.x, "y": biome.region.y}, biome.region.size / 2.0, maxf(config.startingResourceExclusionRadius, 0))
-			nodes.append({
-				"id": "resource-%03d" % (nodes.size() + 1), "type": "wood", "source": "tree",
-				"biome": biome.id, "biomeInstanceId": biome.instanceId, "isSecondary": true,
-				"interactionRadius": RADII.wood, "position": point, "amount": 1, "maxAmount": 1,
-				"gatherRate": 1, "tier": 1, "yieldAmount": meadow_random.next_int(2, 3),
-			})
 	var clearings: Array = biomes.filter(func(biome): return biome.id == "clearing")
 	if clearings.is_empty():
 		return nodes
@@ -167,8 +121,7 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 	var twig_clearings: Array = [starting]
 	twig_clearings.append_array(others.slice(0, maxi(int(ceil(clearings.size() * 0.5)) - 1, 0)))
 	for biome in twig_clearings:
-		var maximum_offset := maxf(biome.region.size / 2.0 - 0.8, 0.75)
-		var point := point_in_circle(twig_random, {"x": biome.region.x, "y": biome.region.y}, maximum_offset, minf(1, maximum_offset * 0.5))
+		var point := Footprint.sample(biome.region, twig_random, biome.region.spawnCells)
 		nodes.append({
 			"id": "resource-%03d" % (nodes.size() + 1), "type": "wood", "source": "twigs",
 			"biome": biome.id, "biomeInstanceId": biome.instanceId, "isSecondary": true,
@@ -177,6 +130,25 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 		})
 	return nodes
 
+static func _resource_point(region: Dictionary, cells: Array, nodes: Array, cluster: Vector2, isolated: bool) -> Dictionary:
+	var best := Vector2.INF
+	var best_index := -1
+	var best_distance := INF
+	for i in cells.size():
+		var point := Footprint.center(region,cells[i])
+		if nodes.any(func(node): return point.distance_squared_to(Vector2(node.position.x,node.position.y)) < 2.2):
+			continue
+		var distance := point.distance_squared_to(cluster) if cluster.is_finite() else 0.0
+		var score := -distance if isolated else distance
+		if score < best_distance:
+			best_index = i
+			best = point
+			best_distance = score
+	if best_index < 0:
+		return {}
+	cells.remove_at(best_index)
+	return {"x":best.x,"y":best.y}
+
 static func _shuffle(values: Array, random: Random) -> void:
 	for index in range(values.size() - 1, 0, -1):
 		var swap_index := random.next_int(0, index)
@@ -184,13 +156,15 @@ static func _shuffle(values: Array, random: Random) -> void:
 		values[index] = values[swap_index]
 		values[swap_index] = temporary
 
-static func create_barbarians(seed_text: String) -> Array:
+static func create_barbarians(seed_text: String, terrain: Array = []) -> Array:
 	var random := Random.new(seed_text + ":barbarian-spawns")
 	var spawns: Array = []
 	for index in 5:
 		var position: Dictionary = {}
 		for attempt in 500:
 			var candidate := {"x": _round_position(random.next_float(10, 150)), "y": _round_position(random.next_float(10, 150))}
+			if not Terrain.fits(terrain, candidate, 0.7, true):
+				continue
 			var valid := _distance(candidate, {"x": 80, "y": 80}) >= 24
 			for other in spawns:
 				if _distance(candidate, other) < 18:
@@ -225,64 +199,99 @@ static func create_rabbits(seed_text: String, biomes: Array) -> Array:
 		var biome: Dictionary = meadows[index % meadows.size()]
 		var center := {"x": biome.region.x, "y": biome.region.y}
 		var radius := maxf(biome.region.size / 2.0 - 0.8, 0.5)
-		var point := point_in_circle(random, center, radius)
-		rabbits.append({
+		var use_cells: bool = biome.region.has("spawnCells")
+		var point := Footprint.sample(biome.region, random, biome.region.spawnCells) if use_cells else point_in_circle(random, center, radius)
+		var target := Footprint.sample(biome.region, random, biome.region.spawnCells) if use_cells else point_in_circle(random, center, radius)
+		var animal := {
 			"id": "rabbit-%02d" % (index + 1), "kind": "rabbit", "position": point,
 			"spawnPosition": point.duplicate(), "homeCenter": center, "homeRadius": radius,
-			"patrolTarget": point_in_circle(random, center, radius), "health": 2, "maxHealth": 2,
+			"patrolTarget": target, "health": 2, "maxHealth": 2,
 			"isAlive": true, "respawnRemainingSeconds": 0, "attackProgressSeconds": 0, "spawnCycle": 0,
-		})
+		}
+		if use_cells:
+			animal.homeBiomeId = biome.instanceId
+		rabbits.append(animal)
+
 	return rabbits
 
-static func _decoration_kinds(count: int, distribution: Array, random: Random) -> Array:
-	var allocations: Array = []
-	var total_weight := 0.0
-	for entry in distribution:
-		total_weight += entry[1]
-	var remaining := count
-	for entry in distribution:
-		var exact: float = count * entry[1] / total_weight
-		var assigned := int(floor(exact))
-		if entry[0] == "mushroom":
-			assigned = mini(assigned, 2)
-		allocations.append({"kind": entry[0], "count": assigned, "remainder": exact - assigned})
-		remaining -= assigned
-	while remaining > 0:
-		var best: Dictionary = {}
-		for entry in allocations:
-			if entry.kind == "mushroom" and entry.count >= 2:
-				continue
-			if best.is_empty() or entry.remainder > best.remainder:
-				best = entry
-		if best.is_empty():
-			break
-		best.count += 1
-		best.remainder = 0
-		remaining -= 1
-	var kinds: Array = []
-	for entry in allocations:
-		for index in entry.count:
-			kinds.append(entry.kind)
-	_shuffle(kinds, random)
-	return kinds
-
-static func create_decorations(seed_text: String, biomes: Array) -> Array:
-	var random := Random.new(seed_text + ":decorations")
+static func create_decorations(seed_text: String, biomes: Array, resources: Array = [], terrain: Array = []) -> Array:
+	var random := Random.new(seed_text + ":decoration-groups")
 	var decorations: Array = []
+	var reserved: Array[Vector2] = []
 	for biome in biomes:
-		var rule: Array = DECORATIONS[biome.id]
-		var count := random.next_int(rule[0], rule[1])
-		var radius := maxf(biome.region.size / 2.0 - 1.2, 0)
-		for kind in _decoration_kinds(count, rule[2], random):
-			var decoration := {
-				"id": "decoration-%03d" % (decorations.size() + 1), "kind": kind,
-				"biome": biome.id, "biomeInstanceId": biome.instanceId,
-				"position": point_in_circle(random, {"x": biome.region.x, "y": biome.region.y}, radius, minf(1.5, radius)),
-				"scale": _round_position(random.next_float(1.26, 1.62)),
-			}
-			decorations.append(decoration)
+		if biome.id not in ["clearing","meadow","forest"]: continue
+		var region: Dictionary = biome.region
+		var cells: Array = region.spawnCells.duplicate()
+		_shuffle(cells,random)
+		_place_group(decorations,reserved,resources,biome,cells,"bush",random.next_int(2,3),1.05)
+		_place_group(decorations,reserved,resources,biome,cells,"grass",random.next_int(3,5),0.8)
+		if random.next_float() < 0.24:
+			_place_group(decorations,reserved,resources,biome,cells,"mushroom",1,0.6)
+	if not terrain.is_empty():
+		_place_water_rocks(decorations, terrain, Random.new(seed_text + ":water-rocks"))
 	return decorations
 
+static func _place_group(result: Array, reserved: Array[Vector2], resources: Array, biome: Dictionary,
+		cells: Array, kind: String, count: int, spacing: float) -> void:
+	var region: Dictionary = biome.region
+	var allowed := {}
+	var origin := Terrain.cell(region)
+	for cell in cells:
+		allowed[origin + Vector2i(cell.x,cell.y)] = true
+	for cell in cells:
+		var center := Footprint.center(region,cell)
+		var group: Array[Vector2] = []
+		for index in count:
+			var offset := Vector2.ZERO if index == 0 else Vector2.from_angle(TAU * index / count) * spacing
+			var point := center + offset
+			if not allowed.has(Terrain.cell({"x":point.x,"y":point.y})) or point.distance_to(Footprint.START) < 4.0:
+				break
+			if reserved.any(func(p): return point.distance_to(p) < 1.15):
+				break
+			if resources.any(func(n): return point.distance_to(Vector2(n.position.x,n.position.y)) < 2.5):
+				break
+			group.append(point)
+		if group.size() != count: continue
+		for point in group:
+			_append_decoration(result,point,kind,biome.id,biome.instanceId)
+		reserved.append_array(group)
+		return
+
+static func _append_decoration(result: Array, point: Vector2, kind: String, biome: String, instance_id: String) -> void:
+	result.append({"id":"grouped-%03d" % result.size(),"kind":kind,"biome":biome,
+		"biomeInstanceId":instance_id,"position":{"x":point.x,"y":point.y},"scale":1.0,"grouped":true})
+
+static func _place_water_rocks(result: Array, terrain: Array, random: Random) -> void:
+	var candidates: Array[Vector2i] = []
+	for y in range(4,Terrain.SIZE-4):
+		for x in range(4,Terrain.SIZE-4):
+			var cell := Vector2i(x,y)
+			if not Terrain.DIRS.any(func(d): return Terrain.code(terrain,cell+d*4) != Terrain.SEA): continue
+			var clear := true
+			for dx in range(-1,2):
+				for dy in range(-2,3):
+					if Terrain.code(terrain,cell+Vector2i(dx,dy)) != Terrain.SEA: clear = false
+			if clear:
+				candidates.append(cell)
+	_shuffle(candidates,random)
+	var anchors: Array[Vector2i] = []
+	for cell in candidates:
+		if anchors.any(func(p): return cell.distance_to(p) < 9.0): continue
+		anchors.append(cell)
+		var point := Terrain.center(cell)
+		_append_decoration(result,Vector2(point.x,point.y),"water-rock","","")
+		if anchors.size() % 3 == 0:
+			for direction in Terrain.DIRS:
+				var neighbour: Vector2i = cell + direction*2
+				if neighbour in candidates:
+					point = Terrain.center(neighbour)
+					_append_decoration(result,Vector2(point.x,point.y),"water-rock","","")
+					break
+		if anchors.size() >= 12: break
+
 static func create_blueprint(seed_text: String) -> Dictionary:
-	var biomes := create_biomes(seed_text)
-	return {"seed": seed_text, "biomes": biomes, "resources": create_resources(seed_text, biomes), "decorations": create_decorations(seed_text, biomes)}
+	var world := _world(seed_text)
+	var biomes: Array = world.biomes
+	var resources := create_resources(seed_text,biomes)
+	return {"seed":seed_text,"terrain":world.terrain,"biomes":biomes,"resources":resources,
+		"decorations":create_decorations(seed_text,biomes,resources,world.terrain)}

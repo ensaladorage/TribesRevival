@@ -8,6 +8,12 @@
 [ext_resource type="Theme" uid="uid://7p6o3q1xyxtp" path="res://themes/TribesTheme.tres" id="theme"]
 [ext_resource type="PackedScene" uid="uid://h7xm76175hkk" path="res://scenes/ui/UpgradesPanel.tscn" id="UpgradesPanel"]
 
+[ext_resource type="Texture2D" path="res://assets/characters/Dead_Minion_Spritesheet.png" id="skull"]
+
+[sub_resource type="AtlasTexture" id="corpse_icon"]
+atlas = ExtResource("skull")
+region = Rect2(808, 53, 50, 50)
+
 [sub_resource type="StyleBoxFlat" id="xp_background"]
 bg_color = Color(0.09, 0.075, 0.12, 0.95)
 border_width_left = 1
@@ -143,3 +149,22 @@ theme_override_styles/background = SubResource("xp_background")
 theme_override_styles/fill = SubResource("xp_fill")
 max_value = 12.0
 show_percentage = false
+
+[node name="Sacrifice" type="Button" parent="Layout"]
+visible = false
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -68.0
+offset_top = -112.0
+offset_right = -16.0
+offset_bottom = -60.0
+focus_mode = 0
+texture_filter = 1
+theme_override_colors/icon_pressed_color = Color(1, 0.78, 0.45, 1)
+theme_override_colors/icon_disabled_color = Color(0.55, 0.55, 0.55, 0.75)
+toggle_mode = true
+icon = SubResource("corpse_icon")
+expand_icon = true
+icon_alignment = 1

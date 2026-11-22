@@ -107,6 +107,7 @@ func scenario(combat: bool) -> Dictionary:
 
 func check_decisions() -> void:
 	var session = Session.new("decisions")
+	session.state.terrain = preload("res://tests/support/flat_terrain.gd").rows()
 	var state: Dictionary = session.state
 	state.resources = []
 	state.animals = []

@@ -13,24 +13,35 @@ func _initialize() -> void:
 func _run() -> void:
 	for index in 32:
 		var seed_text := "sprite-decoration-%s" % index
-		var biomes := Catalog.create_biomes(seed_text)
-		var decorations := Catalog.create_decorations(seed_text, biomes)
-		_check(decorations == Catalog.create_decorations(seed_text, biomes), "Repeatable generation")
+		var blueprint := Catalog.create_blueprint(seed_text)
+		var biomes: Array = blueprint.biomes
+		var decorations: Array = blueprint.decorations
+		_check(decorations == Catalog.create_decorations(seed_text, biomes,blueprint.resources,blueprint.terrain), "Repeatable generation")
+		var water: Array = decorations.filter(func(entry): return entry.kind == "water-rock")
+		_check(water.size() >= 8 and water.size() <= 16,"Sparse coastal rocks")
+		for rock in water:
+			var cell := Catalog.Terrain.cell(rock.position)
+			for offset in [Vector2i.ZERO,Vector2i.LEFT,Vector2i.RIGHT,Vector2i.UP,Vector2i.DOWN]:
+				_check(Catalog.Terrain.code(blueprint.terrain,cell+offset) == Catalog.Terrain.SEA,"Rock has water clearance")
 		for biome in biomes:
 			var entries: Array = decorations.filter(func(item): return item.biomeInstanceId == biome.instanceId)
 			if biome.id not in ["clearing", "forest", "meadow"]:
 				_check(entries.is_empty(), "No vegetation in rocky/ruins")
 				continue
-			var limits: Array = {"clearing": [12, 18], "forest": [16, 24], "meadow": [18, 26]}[biome.id]
-			_check(entries.size() >= limits[0] and entries.size() <= limits[1], "Biome density including starting clearing")
+			for kind in ["bush","grass"]:
+				var group: Array = entries.filter(func(entry): return entry.kind == kind)
+				if group.is_empty(): continue
+				_check(group.size() in ([2,3] if kind == "bush" else [3,4,5]),"Cluster size")
+				for entry in group:
+					_check(Catalog._distance(entry.position,group[0].position) <= 1.06,"Cluster stays together")
 			var mushrooms := 0
 			for entry in entries:
 				_check(entry.kind in ["grass", "mushroom", "bush"], "Only current vegetation kinds")
 				_check(not entry.has("flowerColor"), "No retired flower data")
 				mushrooms += int(entry.kind == "mushroom")
-				var distance := Vector2(entry.position.x - biome.region.x, entry.position.y - biome.region.y).length()
-				_check(distance <= biome.region.size / 2.0 - 1.2 + 0.01, "Vegetation stays inside biome margin")
-			_check(mushrooms <= 2, "At most two mushrooms even at increased density")
+				var point := Vector2(entry.position.x, entry.position.y)
+				_check(Catalog.Footprint.contains(biome.region, point), "Vegetation inside biome tiles")
+			_check(mushrooms <= 1 and entries.size() <= 9, "Sparse decoration")
 	_test_views()
 	for failure in failures.slice(0, 20):
 		push_error(failure)
@@ -48,7 +59,11 @@ func _test_views() -> void:
 	var textures := {}
 	for item in first:
 		textures[item.texture] = true
-	_check(textures.size() == 10, "All ten supplied vegetation variants represented")
+	_check(textures.size() >= 5, "Vegetation variants represented")
+	var rocks := world.get_children().filter(func(child): return child is AnimatedSprite3D)
+	_check(rocks.size() == state.decorations.filter(func(item): return item.kind == "water-rock").size(),"All saved water rocks have a view")
+	for rock: AnimatedSprite3D in rocks:
+		_check(rock.is_playing() and rock.sprite_frames.get_frame_count("default") == 8,"Eight-frame coastal animation")
 	world.setup(state)
 	_check(first == _appearance(world), "Stable texture, size and flip on rebuild")
 	_check(original == JSON.stringify(state), "Presentation does not mutate state")

@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/view/terrain_reference.gd" id="ref"]
+[ext_resource type="PackedScene" path="res://scenes/world/IslandSurface.tscn" id="surface"]
+[ext_resource type="Script" path="res://scripts/view/isometric_camera.gd" id="camera"]
+[ext_resource type="PackedScene" path="res://scenes/world/Totem3D.tscn" id="totem"]
+[ext_resource type="PackedScene" path="res://scenes/actors/Gatherer.tscn" id="minion"]
+[ext_resource type="PackedScene" path="res://scenes/actors/Sheep.tscn" id="sheep"]
+[ext_resource type="Texture2D" path="res://assets/biomes/Tileset/Water Background color.png" id="water"]
+
+[sub_resource type="StandardMaterial3D" id="sea"]
+shading_mode = 0
+albedo_texture = ExtResource("water")
+
+[sub_resource type="PlaneMesh" id="plane"]
+size = Vector2(1000,1000)
+material = SubResource("sea")
+
+[node name="TerrainReference" type="Node3D"]
+script = ExtResource("ref")
+
+[node name="Water" type="MeshInstance3D" parent="."]
+position = Vector3(80,-0.01,90)
+mesh = SubResource("plane")
+
+[node name="Surface" parent="." instance=ExtResource("surface")]
+
+[node name="Camera" type="Camera3D" parent="."]
+current = true
+script = ExtResource("camera")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-1.2,0,0)
+
+[node name="Totem" parent="." instance=ExtResource("totem")]
+[node name="Minion" parent="." instance=ExtResource("minion")]
+[node name="Sheep" parent="." instance=ExtResource("sheep")]

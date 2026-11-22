@@ -14,11 +14,33 @@ guardar y cargar durante el desarrollo de sistemas que dependan de ello.
 
 ### Tests automáticos
 
-#### Área de los botones del menú principal
+#### Terreno, recursos y decoración
+
+- Verificar cobertura de los recortes, agua y espuma, además de los dos
+  acabados de acantilado en la escena de referencia.
+- En 64 semillas comprobar determinismo, conectividad, contraste y tamaño
+  de terrazas, pertenencia de recursos y densidades de árboles y piedras.
+- Verificar que las manchas de vegetación respetan las huellas de recursos,
+  que el grupo conserva su forma al cargar y que las rocas quedan sobre agua
+  y reproducen sus ocho fotogramas. Revisar varias semillas en Godot.
+- Probar en el bucle de partida el traslado del tótem, las rutas por escalera,
+  la recolección, y la persistencia de terreno, nodos y decoración.
+
+#### Menú principal y submenú Jugar
 
 - `test_main_menu_hit_areas.gd` envía movimiento y clic reales del sistema GUI
-  en las cuatro esquinas interiores y centro inferior de Jugar, Tutorial,
-  Cargar y Salir. Comprueba el Control bajo el puntero y la señal pressed.
+  en las cuatro esquinas interiores y el centro inferior de los botones del
+  menú principal y del submenú Jugar con un guardado disponible.
+  Comprueba el Control bajo el puntero y la señal pressed.
+- `test_play_menu_flow.gd` comprueba la visibilidad de Cargar con cero a tres
+  guardados válidos y con un guardado inválido, el inicio de una partida con
+  los tres slots ocupados, la conservación de los guardados, la carga real,
+  el regreso con Volver o Esc y el borrado del último guardado válido.
+- El mismo test comprueba que Jugar desde el tutorial abre el submenú y que
+  el título, su posición y el tamaño del panel coinciden con los del menú
+  principal, haya o no guardados válidos.
+- El test comprueba también que ningún botón recibe el foco al abrir Jugar
+  desde el menú principal o el tutorial, ni al abrir la selección de slots.
 - Revisar en ventana el resaltado y la alineación del cursor en esos bordes.
 
 #### Cursores de interacción
@@ -57,8 +79,7 @@ guardar y cargar durante el desarrollo de sistemas que dependan de ello.
   reparto por bioma, variedad y estabilidad tras JSON, sin mutar estado.
 - Tala real de un árbol de pradera, duración base, drops individuales,
   desaparición al agotarse y reaparición por lluvia con la misma variante.
-- Guardado/carga aislado de un mundo v17 de referencia: biomas y recursos
-  intactos, presentación sin mutación. Sin ampliar la matriz de migraciones.
+- Guardar y cargar un mundo modular del esquema actual. Comparar celdas y recursos y comprobar que la presentación conserva los datos.
 - Capturas renderizadas de bosque/pradera a tamaños de cámara 36 y 18, y
   composición de las cuatro variantes. Pendiente recorrido manual con minions
   para valorar oclusión en movimiento y ajustes de Inspector.
@@ -496,3 +517,13 @@ por `1.05`, con dos radios de mando diferentes. La regresión de arrastre simula
 cuatro segundos después de depositar al emisor lejos: el aliado no recibe el
 objetivo remoto ni abandona el mando. Validar manualmente el mismo escenario y
 un aviso válido junto al borde del área de trabajo del tótem.
+
+La regresión de colocación prueba 36 direcciones de suelta sobre el tótem y sobre otro minion en posiciones fraccionarias. Comprueba la distancia al cursor y el despeje respecto al cuerpo ocupado.
+
+Al sacrificar, verificar la visibilidad y el resaltado de la calavera, la suelta sobre ella y la protección del último minion. Comprobar el saldo y población al recargar y ante acciones duplicadas.
+
+Sacrificio: verificar soltar con el cuerpo elevado sobre la calavera, y comprobar por separado el bloqueo del único recolector y del único cazador sin otras fuentes de comida.
+
+Verificar un sacrificio rechazado lejos del mando con un aliado ocupando el punto de entrada más cercano. El minion debe quedar dentro del mando junto al aliado, respetando la separación y el saldo de comida.
+
+Al rechazar un sacrificio, comprobar que el origen de interpolación del primer tick en el suelo coincide con el punto de aterrizaje junto al tótem.

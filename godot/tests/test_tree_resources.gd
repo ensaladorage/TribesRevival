@@ -14,27 +14,76 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 func _run() -> void:
+	var fallback := Catalog.Islands._layout(Catalog.Random.new(Catalog.Islands.FALLBACK_SEED))
+	_check(not fallback.is_empty(),"Deterministic fallback layout")
+	var layouts := {}
 	for index in 64:
 		var seed_text := "tree-biomes-%d" % index
 		var blueprint := Catalog.create_blueprint(seed_text)
+		_check(blueprint.biomes.any(func(b): return b.level == 3),"Third height exists")
+		var layers: Array[Dictionary] = [{},{},{}]
+		layouts[hash(blueprint.terrain)] = true
 		_check(blueprint == Catalog.create_blueprint(seed_text), "Repeatable blueprint")
-		_check(blueprint.biomes.filter(func(b): return not b.isDecorativeOnly).size() == 10, "Ten resource biomes")
+		_check(blueprint.biomes.filter(func(b): return not b.isDecorativeOnly).size() >= 6, "Functional biomes on terraces")
 		_check(blueprint.biomes.filter(func(b): return b.id == "forest").size() >= 3, "At least three forests")
+		var meadows: Array = blueprint.biomes.filter(func(b): return b.id == "meadow")
+		var animals := Catalog.create_rabbits(seed_text, blueprint.biomes)
+		for animal_index in animals.size():
+			var animal: Dictionary = animals[animal_index]
+			var region: Dictionary = meadows[animal_index % meadows.size()].region
+			for point: Dictionary in [animal.spawnPosition, animal.patrolTarget]:
+				_check(Catalog.Footprint.contains(region, Vector2(point.x, point.y)), "Sheep inside meadow")
+			_check(animal.homeBiomeId == meadows[animal_index % meadows.size()].instanceId,"Sheep keeps its native meadow")
 		var ids := {}
 		for node in blueprint.resources:
 			_check(not ids.has(node.id), "Unique resource IDs")
 			ids[node.id] = true
 			var biome: Dictionary = blueprint.biomes.filter(func(b): return b.instanceId == node.biomeInstanceId)[0]
-			_check(Vector2(node.position.x - biome.region.x, node.position.y - biome.region.y).length() <= biome.region.size / 2.0 + 0.02, "Resources inside biome")
+			var point := Vector2(node.position.x, node.position.y)
+			_check(Catalog.Footprint.contains(biome.region, point), "Resources inside biome tiles")
+			if node.type in ["spark","stone"]:
+				_check(biome.level >= 2 or biome.id in ["mountain","ruins"],"Low mineral in its native biome")
+			if not biome.isDecorativeOnly:
+				_check(point.distance_to(Vector2(80, 80)) >= 12.0, "Starting resource exclusion")
 		for biome in blueprint.biomes:
+			var rule: Array = {"forest":["wood",5,8],"meadow":["wood",2,4],"rocky":["stone",4,6]}.get(biome.id,[])
+			if not rule.is_empty():
+				var nodes: Array = blueprint.resources.filter(func(n): return n.biomeInstanceId == biome.instanceId and n.type == rule[0])
+				_check(nodes.size() >= rule[1] and nodes.size() <= rule[2],"Resource density by biome")
+			if biome.level > 1:
+				var rect := Rect2i()
+				for tile in biome.region.cells + biome.region.get("covered",[]):
+					var location := Vector2i(tile.x,tile.y)
+					rect = Rect2i(location,Vector2i.ZERO) if rect == Rect2i() else rect.expand(location)
+				var size := rect.size + Vector2i.ONE
+				_check(size.x >= 4 and size.y >= 4 and size.x <= 12 and size.y <= 10,"Playable terrace within tile bounds")
+		var occupied := {}
+		for biome in blueprint.biomes:
+			_check_connected(biome.region)
 			if biome.id == "meadow":
 				var nodes: Array = blueprint.resources.filter(func(n): return n.biomeInstanceId == biome.instanceId)
 				_check(nodes.any(func(n): return n.source == "tree"), "Meadow has wood")
 				_check(nodes.any(func(n): return n.source == "berry-bush"), "Meadow retains berries")
-			for other in blueprint.biomes:
-				if other.instanceId == biome.instanceId:
-					continue
-				_check(Vector2(biome.region.x - other.region.x, biome.region.y - other.region.y).length() + 0.02 >= (biome.region.size + other.region.size) / 2.0 + 0.5, "No biome overlap")
+			var origin := Catalog.Terrain.cell(biome.region)
+			for entry in biome.region.cells + biome.region.get("covered",[]):
+				layers[int(biome.level)-1][origin+Vector2i(entry.x,entry.y)] = biome.id
+			for entry in biome.region.cells:
+				var c := origin + Vector2i(entry.x,entry.y)
+				_check(not occupied.has(c),"Single biome per world cell")
+				occupied[c] = true
+			if biome.id == "rocky":
+				_check(biome.level >= 2,"Rocky biome on plateau")
+
+		for layer in [1,2]:
+			for c: Vector2i in layers[layer]:
+				for direction in Catalog.Terrain.DIRS:
+					var n: Vector2i = c + direction
+					if layers[layer].has(n): continue
+					if layer == 2: _check(layers[1].has(n),"Visible middle terrace")
+					if layers[layer-1].has(n):
+						_check(Catalog.Islands.contrasts(layers[layer][c],layers[layer-1][n]),"Contrasting adjoining terraces")
+
+	_check(layouts.size() > 1, "Different seeds vary the geography")
 	var world := World.instantiate()
 	root.add_child(world)
 	var variants := {}
@@ -96,21 +145,45 @@ func _test_lifecycle(world: Node3D) -> void:
 	_check(world._views.has(tree.id) and world._views[tree.id].scene_file_path == path, "Rain restores identical tree appearance")
 
 func _test_saved_world(world: Node3D) -> void:
-	var reference: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/typescript_reference.json"))
-	var old: Dictionary = reference.initialStates[0].duplicate(true)
+	var original := State.create_initial("saved-tile-world")
+	var expected: Dictionary = JSON.parse_string(JSON.stringify(original, "", false, true))
 	var directory := "user://tree-save-check-%d" % OS.get_process_id()
 	var repository := Saves.new(directory)
-	_check(repository.save_slot(1, old).ok, "Existing v17 world saves")
+	_check(repository.save_slot(1, original).ok, "Tiled world saves")
 	var result := repository.read_slot(1)
-	_check(result.status == "valid", "Existing v17 world loads")
+	_check(result.status == "valid", "Tiled world loads")
 	if result.status == "valid":
 		var restored: Dictionary = result.save.gameState
-		_check(restored.biomes == old.biomes and restored.resources == old.resources, "Saved map never regenerated")
+		_check(restored.terrain == expected.terrain and restored.biomes == expected.biomes and restored.resources == expected.resources and restored.decorations == expected.decorations, "Saved map never regenerated")
 		var before := JSON.stringify(restored)
 		world.setup(restored)
 		_check(before == JSON.stringify(restored), "Loaded world presentation does not mutate save")
+	# Version 4 worlds from before grouped decoration lack this optional field.
+	original.decorations = original.decorations.filter(func(item): return item.kind != "water-rock")
+	for item in original.decorations:
+		item.erase("grouped")
+	_check(repository.save_slot(2,original).ok,"Save legacy-shaped world")
+	var legacy := repository.read_slot(2)
+	_check(legacy.status == "valid" and legacy.save.gameState.decorations == JSON.parse_string(JSON.stringify(original.decorations,"",false,true)),"Existing decorations load without regeneration")
+	repository.delete_slot(2)
 	repository.delete_slot(1)
 	DirAccess.remove_absolute(directory)
+
+func _check_connected(region: Dictionary) -> void:
+	var remaining := {}
+	for cell in region.cells:
+		var coord := Vector2i(cell.x, cell.y)
+		remaining[coord] = true
+		var corner := (Vector2(coord.abs()) + Vector2.ONE * 0.5) * Catalog.Footprint.TILE_SIZE
+		_check(corner.length() <= region.size / 2.0 + 0.01, "Tile within placement envelope")
+	var pending: Array[Vector2i] = [Vector2i.ZERO]
+	_check(remaining.erase(Vector2i.ZERO), "Biome includes its center")
+	while not pending.is_empty():
+		var coord: Vector2i = pending.pop_back()
+		for direction: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+			if remaining.erase(coord + direction):
+				pending.append(coord + direction)
+	_check(remaining.is_empty(), "All tiles connected by edges")
 
 func _check(condition: bool, message: String) -> void:
 	checks += 1

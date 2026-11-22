@@ -40,6 +40,7 @@ text = "Tribes Revival"
 horizontal_alignment = 1
 
 [node name="Actions" type="VBoxContainer" parent="." unique_id=731113583]
+custom_minimum_size = Vector2(0, 146)
 layout_mode = 2
 theme_override_constants/separation = 10
 
@@ -56,13 +57,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme_type_variation = &"TribesMenuButton"
 text = "Tutorial"
-
-[node name="Load" type="Button" parent="Actions" unique_id=309539041]
-custom_minimum_size = Vector2(270, 42)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_type_variation = &"TribesMenuButton"
-text = "Cargar"
 
 [node name="Quit" type="Button" parent="Actions" unique_id=83592291]
 custom_minimum_size = Vector2(270, 42)

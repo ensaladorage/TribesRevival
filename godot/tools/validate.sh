@@ -21,6 +21,7 @@ run_checked() {
 run_checked import --editor --import
 run_checked structure --script res://tools/validate_project.gd
 run_checked respawn-interpolation --script res://tests/test_respawn_interpolation.gd
+run_checked island-routes --script res://tests/test_island_routes.gd
 run_checked tree-resources --script res://tests/test_tree_resources.gd
 run_checked cloud-visuals --script res://tests/test_cloud_visuals.gd
 run_checked bush-occlusion --script res://tests/test_bush_occlusion.gd

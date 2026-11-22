@@ -1,0 +1,8 @@
+[gd_resource type="AtlasTexture" format=3 uid="uid://lr1lrk6gnobf"]
+
+[ext_resource type="Texture2D" uid="uid://fiowstedd18c" path="res://assets/biomes/Tileset/Tilemap Ruinas.png" id="atlas"]
+
+[resource]
+atlas = ExtResource("atlas")
+region = Rect2(64, 128, 64, 64)
+filter_clip = true

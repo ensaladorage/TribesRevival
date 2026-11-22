@@ -1,0 +1,8 @@
+[gd_resource type="AtlasTexture" format=3 uid="uid://csrs3287ewfjh"]
+
+[ext_resource type="Texture2D" uid="uid://bs4fef20t4sgf" path="res://assets/biomes/Tileset/Tilemap_Bosque.png" id="atlas"]
+
+[resource]
+atlas = ExtResource("atlas")
+region = Rect2(64, 192, 64, 64)
+filter_clip = true

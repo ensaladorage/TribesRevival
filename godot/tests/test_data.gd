@@ -35,10 +35,8 @@ func _initialize() -> void:
 		# Approved Godot world generation differs; dedicated suites cover these fields.
 		# Preserve the immutable Babylon fixture and compare all other initial data.
 		_equal(Catalog.create_rabbits(expected.seed, expected.biomes), expected.animals, "unchanged animal generator on reference biomes")
-		for index in actual.biomes.size():
-			_equal(actual.biomes[index].region, expected.biomes[index].region, "unchanged biome placement: " + expected.seed)
 		var original: Dictionary = expected.duplicate(true)
-		for field in ["biomes", "resources", "decorations", "animals"]:
+		for field in ["biomes", "resources", "decorations", "animals","barbarians","terrain"]:
 			actual.erase(field)
 			original.erase(field)
 		_equal(actual, original, "initial except approved Godot world generation: " + expected.seed)
@@ -171,6 +169,7 @@ func _test_current_save() -> void:
 func _test_purchases(samples: Array) -> void:
 	for sample in samples:
 		var state := State.create_initial()
+		state.terrain = preload("res://tests/support/flat_terrain.gd").rows()
 		state.inventory.amounts = sample.setup.get("amounts", {"food": 100, "wood": 100, "stone": 100, "spark": 100, "gold": 100}).duplicate()
 		state.progression.unlockedTechnologies = sample.setup.get("technologies", []).duplicate()
 		if sample.setup.has("secondRole"):

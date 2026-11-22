@@ -1,0 +1,8 @@
+[gd_resource type="AtlasTexture" format=3 uid="uid://c2vwcbh6wsiqf"]
+
+[ext_resource type="Texture2D" uid="uid://cfqkmu3vmmxr2" path="res://assets/biomes/Tileset/Tilemap Pradera.png" id="atlas"]
+
+[resource]
+atlas = ExtResource("atlas")
+region = Rect2(192, 128, 64, 64)
+filter_clip = true

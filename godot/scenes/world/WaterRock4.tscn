@@ -1,0 +1,60 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/biomes/Rocks_04.png" id="sheet"]
+
+[sub_resource type="AtlasTexture" id="frame0"]
+atlas = ExtResource("sheet")
+region = Rect2(0, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="frame1"]
+atlas = ExtResource("sheet")
+region = Rect2(128, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="frame2"]
+atlas = ExtResource("sheet")
+region = Rect2(256, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="frame3"]
+atlas = ExtResource("sheet")
+region = Rect2(384, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="frame4"]
+atlas = ExtResource("sheet")
+region = Rect2(512, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="frame5"]
+atlas = ExtResource("sheet")
+region = Rect2(640, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="frame6"]
+atlas = ExtResource("sheet")
+region = Rect2(768, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="frame7"]
+atlas = ExtResource("sheet")
+region = Rect2(896, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="SpriteFrames" id="animation"]
+animations = [{
+"frames": [{"duration": 1.0, "texture": SubResource("frame0")}, {"duration": 1.0, "texture": SubResource("frame1")}, {"duration": 1.0, "texture": SubResource("frame2")}, {"duration": 1.0, "texture": SubResource("frame3")}, {"duration": 1.0, "texture": SubResource("frame4")}, {"duration": 1.0, "texture": SubResource("frame5")}, {"duration": 1.0, "texture": SubResource("frame6")}, {"duration": 1.0, "texture": SubResource("frame7")}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[node name="WaterRock" type="AnimatedSprite3D"]
+sprite_frames = SubResource("animation")
+autoplay = "default"
+billboard = 1
+pixel_size = 0.0234375
+texture_filter = 0
+shaded = false
+cast_shadow = 0

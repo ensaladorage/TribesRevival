@@ -247,9 +247,9 @@ La presentación usa profundidad normal, sin prioridades por categoría ni
 Cut Discard; las ramitas y el tótem 3D son opacos, incluido su contorno.
 `WorldView.setup` reserva las huellas de todos los recursos, incluso agotados.
 Las escenas exponen `decoration_clearance_radius`; la decoración aplica su
-escala visual al radio. Solo las piezas que invaden una huella se reubican:
+escala visual al radio. Las piezas de partidas previas que invaden una huella pueden reubicarse.
 PRNG separado `semilla:id:visual-clearance`, doce candidatos dentro de su bioma,
-o se omite la instancia. No se cambia el estado ni el PRNG de simulación.
+o se omite la instancia. Las nuevas agrupaciones ya están validadas en la generación y la vista conserva sus posiciones.
 
 `tree_view.gd` expone una zona de copa normalizada por variante y los tiempos
 150/250/150 ms (apertura/cierre/espera), radio interior 1.15 m y borde 0.5 m.
@@ -292,15 +292,26 @@ nativo. No se atenúa globalmente el árbol ni se usa mezcla alfa.
     simulación, dentro de un radio cercano al nodo, para variar la
     presentación sin romper el determinismo.
 
--   La configuración de mundo puede generar `10` áreas de recursos para
-    facilitar las pruebas y añade el `Claro` inicial más `12` claros
-    decorativos independientes y no superpuestos. Los claros pueden
-    quedar muy próximos a otros biomas, siempre que sus círculos no se
-    toquen. La referencia de diseño del mapa final apunta a unas 20
-    regiones principales. La colocación rechaza cualquier solapamiento
-    entre áreas de bioma, incluidos los claros y las áreas del mismo
-    tipo. El suelo base permanece gris y cada región superpone un color
-    de bioma. Los claros pueden incluir nodos funcionales de ramitas: al
+-   En Godot, la configuración actual distribuye las regiones entre la isla inicial, los istmos, cinco mesetas y sus cimas. Cada celda visible de
+    1,5 m tiene un propietario. La cuadrícula lógica de 105 × 105 guarda agua,
+    los tres niveles y la dirección de cada escalera con su altura de partida. El generador verifica la
+    conectividad por pasos legales desde el claro inicial antes de colocar
+    recursos. Si un trazado falla, prueba otras variantes deterministas y
+    dispone de una composición de reserva. Los recursos funcionales respetan
+    la exclusión inicial de 12 m.
+-   Una partida nueva elige una semilla y el esquema de archivo 4 conserva
+    esa semilla, las filas transitables y las celdas visibles y cubiertas de cada bioma. El render reconstruye cada capa por separado. El remate de pared depende del suelo en su pie. Al cargar
+    se recupera la topología guardada. El grafo A* se deriva de las filas.
+    Cada paso del agente y las correcciones de separación comprueban el
+    segmento y la holgura con el terreno. La fauna consulta una máscara
+    restringida a su pradera. La misma geometría valida los aterrizajes.
+-   La cámara ortográfica mira al norte con 60° de inclinación. La proyección
+    compensa la profundidad para presentar tiles cuadrados. El desnivel
+    aparente mide un tile. La malla agrupa las piezas por material y el
+    puntero distingue superficies altas, bajas y escaleras. La espuma usa
+    16 fotogramas de 192 × 192 a 10 FPS, con fase estable por celda costera.
+    Las sombras de las plataformas se dibujan sobre el plano inferior.
+-   Los claros pueden incluir nodos funcionales de ramitas: al
     menos la mitad de los claros generados tienen uno y el claro inicial
     siempre tiene uno. Los arbustos de las `Praderas` crean nodos
     funcionales de bayas; las ramitas son recolectables por cualquier
@@ -308,24 +319,14 @@ nativo. No se atenúa globalmente el árbol ni se usa mezcla alfa.
     `lumberjack`; las piedras y las ruinas luminosas quedan preparadas
     pero no son asignables a los roles jugables actuales. El diseño de mundo incorpora bárbaros, conejos, oro, drops de comida de origen cárnico y combate automático. Los recursos se representan únicamente mediante
     sus nodos activos: los decorados antiguos de árboles, rocas y ruinas
-    ya no se generan. En Godot, la vegetación decorativa de césped, setas
-    y arbustos no es interactuable. Usa pesos `60/25/15` para
-    césped/arbustos/setas en claros y praderas, y `58/27/15` en bosques.
-    El límite de `2` setas por instancia se aplica también al reparto
-    inicial entero, antes de asignar las plazas sobrantes a otros tipos.
-    Se generan `12–18` decoraciones por claro (también el inicial),
-    `18–26` por pradera y `16–24` por bosque; ninguna en pedregales/ruinas.
-    Se conserva la escala lógica `1.26–1.62` y el margen de colocación.
-    Las variantes estáticas Sprite3D heredan `DecorationSprite.tscn`.
-    Los arbustos medianos/grandes usan cuatro escenas AnimatedSprite3D editables
-    con ocho celdas 128 × 128 a 10 FPS; 1/2 en praderas y claros, 3/4 en bosques.
-    La selección mantiene tres plazas equiprobables (pequeño, mediano, grande)
-    y las mismas tiradas y reflejo; `SpriteBase3D` permite aplicar el reflejo
-    tanto a sprites estáticos como animados. Todas usan nearest y billboard,
-    con el borde inferior apoyado sobre el suelo. La vista elige tamaño
-    y reflejo con un PRNG independiente por semilla/ID; no añade datos
-    visuales al guardado ni altera el estado. Las flores retiradas no se
-    representan si aparecen en datos cargados; sus escenas se eliminan.
+    ya no se generan. En Godot se colocan primero los recursos agrupados y
+    después se buscan huecos para grupos completos de arbustos o césped. Los
+    candidatos respetan márgenes respecto a recursos, otros grupos y escaleras.
+    Una región verde admite hasta una seta. Las rocas costeras se buscan en
+    agua con margen para la animación y se dibujan con cuatro escenas editables
+    de ocho fotogramas a 10 FPS. El esquema 4 acepta la marca opcional de
+    colocación agrupada. Las decoraciones existentes conservan su lógica de
+    presentación al cargar.
 
 -   La distribución se mantiene como blueprint aislado para que la
     futura generación circular pueda sustituir al contenedor provisional
@@ -520,7 +521,7 @@ presentación: la simulación y los guardados mantienen una nube lógica por gru
 Clouds aplica un desplazamiento vertical cloud_height − 13.4 (altura central
 predeterminada 15), sin modificar las posiciones relativas de los sprites ni
 el estado lógico. Los veinte sprites usan Discard 0.5. GroundShadow queda en
-la raíz a 0.08 m, por encima de la superficie de bioma de 0.07 m: PlaneMesh
+la raíz a 0.08 m, por encima de la superficie modular de 0.03 m: PlaneMesh
 14 × 9, shader elíptico suave unshaded, alfa máximo 0.12, depth test normal y
 sin escritura de profundidad. Tamaño/color/opacidad editables en recursos.
 La lluvia recorre desde cloud_height − 1.2 hasta 0.9 a rain_speed × 11.3 m/s;
@@ -584,7 +585,7 @@ geometría visual como fuente de verdad.
 
 `main` conserva la última posición de mapa al cruzar UI o abandonar la ventana.
 No avanza la cámara durante el arrastre. `actor_view` eleva solo la presentación,
-con `carried_height` exportado y `MinionCarryMarker.tscn` editable. La vista usa el
+con `carried_height` exportado. La vista usa el
 cursor sin interpolar mientras está levantado; las posiciones lógicas siguen
 entrando por acciones al tick fijo.
 

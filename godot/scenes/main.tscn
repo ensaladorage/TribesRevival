@@ -6,12 +6,15 @@
 [ext_resource type="PackedScene" uid="uid://bft582aur8gpc" path="res://scenes/world/TotemShadow.tscn" id="shadow"]
 [ext_resource type="PackedScene" uid="uid://6nf0pjkqq1m1" path="res://scenes/world/Totem3D.tscn" id="totem"]
 
+[ext_resource type="Texture2D" path="res://assets/biomes/Tileset/Water Background color.png" id="water"]
+
 [sub_resource type="StandardMaterial3D" id="Material_ground"]
-albedo_color = Color(0.466667, 0.482353, 0.490196, 1)
+albedo_texture = ExtResource("water")
+shading_mode = 0
 metallic_specular = 0.0
 
 [sub_resource type="PlaneMesh" id="Plane_ground"]
-size = Vector2(160, 160)
+size = Vector2(1000, 1000)
 
 [sub_resource type="Environment" id="environment"]
 background_mode = 1
@@ -50,7 +53,7 @@ far = 1000.0
 script = ExtResource("2_camera")
 
 [node name="Grid" parent="." unique_id=1135127415 instance=ExtResource("grid")]
+visible = false
 
 [node name="TotemShadow" parent="." unique_id=1805306938 instance=ExtResource("shadow")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 80, 0.04, 80)
-

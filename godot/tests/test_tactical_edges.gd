@@ -27,6 +27,7 @@ func _initialize() -> void:
 	quit(1 if not failures.is_empty() else 0)
 func run_case(config: Dictionary) -> void:
 	var session = Session.new("tactical-edges")
+	session.state.terrain = preload("res://tests/support/flat_terrain.gd").rows()
 	var state: Dictionary = session.state
 	state.resources = []
 	state.animals = []

@@ -27,9 +27,6 @@ func _ready() -> void:
 
 func present(actor: Dictionary) -> void:
 	_carried = actor.get("isCarried", false)
-	var marker := get_node_or_null("CarryMarker") as Node3D
-	if marker != null:
-		marker.visible = _carried
 	reset_feedback()
 	var sprite: AnimatedSprite3D = $Body/Sprite
 	var animation := "idle"

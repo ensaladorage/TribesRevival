@@ -42,7 +42,15 @@ static func apply(state: Dictionary, action: Dictionary) -> void:
 			Carry.pick_up(state, action.unitId)
 			Conflict.retarget_enemies(state)
 		"drag-minion":
-			Carry.drag(state, action.unitId, action.position)
+			Carry.drag(state, action.unitId, action.position, action.get("surfaceValid",true))
+		"sacrifice-minion":
+			var unit: Variant = Carry.held_unit(state)
+			if unit != null and unit.id == action.unitId:
+				if Rules.sacrifice_block_reason(state.units, unit.id).is_empty():
+					state.units.erase(unit)
+					state.inventory.amounts.food += 1
+				else:
+					Carry.drop(state, unit.id, true)
 		"drop-minion":
 			Carry.drop(state, action.unitId)
 		"pick-up-totem":
@@ -51,6 +59,7 @@ static func apply(state: Dictionary, action: Dictionary) -> void:
 					unit.erase("postCombatFree")
 				totem.formationStartTick = state.tick
 				totem.erase("formationStopTick")
+				totem.lastLanding = totem.position.duplicate()
 				totem.isCarried = true
 				totem.moving = false
 				totem.destination = null
@@ -58,9 +67,13 @@ static func apply(state: Dictionary, action: Dictionary) -> void:
 		"drag-totem":
 			if totem.isCarried:
 				totem.position = State.clamp_position(action.position)
+				if action.get("surfaceValid",true) and Move.Terrain.fits(state.get("terrain",[]),totem.position,1.0,true):
+					totem.lastLanding = totem.position.duplicate()
 				totem.dragTarget = totem.position.duplicate()
 		"drop-totem":
 			if totem.isCarried:
+				totem.position = totem.get("lastLanding",totem.position)
+				totem.erase("lastLanding")
 				totem.formationStopTick = state.tick
 				totem.isCarried = false
 				totem.moving = true
@@ -69,17 +82,22 @@ static func apply(state: Dictionary, action: Dictionary) -> void:
 		"damage-unit":
 			Survival.damage_unit(state, action.unitId, action.amount, action.sourceKind)
 		"place-campfire":
+			if not Move.Terrain.fits(state.get("terrain",[]),action.position,0.9,true):
+				return
 			if state.campfires.size() >= 2 or state.inventory.amounts.wood < 2:
 				return
 			state.inventory.amounts.wood -= 2
 			state.campfires.append({"id": "campfire-%02d" % state.nextCampfireId, "position": State.clamp_position(action.position), "healingRadius": 15.0, "remainingLifetimeSeconds": 120.0})
 			state.nextCampfireId += 1
 		"recruit-gatherer":
+			var spawn := Move.project_within(action.position,totem.position,15)
+			if not Move.Terrain.fits(state.get("terrain",[]),action.position,0.32,true) or not Move.Terrain.fits(state.get("terrain",[]),spawn,0.32,true):
+				return
 			var cost := Economy.recruitment_cost(state.units.size())
 			if state.units.size() >= Economy.MAX_PLAYABLE_MINIONS or not Economy.spend(state.inventory.amounts, cost):
 				return
 			state.purchaseCounts.gatherer += 1
-			var unit := State.create_unit("unit-gatherer-%02d" % (state.purchaseCounts.gatherer + 1), "gatherer", Move.project_within(action.position, totem.position, 15))
+			var unit := State.create_unit("unit-gatherer-%02d" % (state.purchaseCounts.gatherer + 1), "gatherer", spawn)
 			state.units.append(unit)
 			Work.set_task(unit, Rules.idle_task("action-complete") if Idle.within_range(unit.position, Move.area(state)) else Work.return_task(state, unit, "action-complete"))
 		"upgrade-tool":

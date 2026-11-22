@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://da6a52yaij0lc"]
 
 [ext_resource type="Texture2D" uid="uid://dsokpicbek0f6" path="res://assets/resources/sticks node.png" id="2_ehc3w"]
-[ext_resource type="PackedScene" uid="uid://bft582aur8gpc" path="res://scenes/world/TotemShadow.tscn" id="ground_shadow"]
+[ext_resource type="PackedScene" path="res://scenes/world/ResourceShadow.tscn" id="ground_shadow"]
 [ext_resource type="Script" uid="uid://biv35anr462ct" path="res://scripts/view/world_element.gd" id="script"]
 
 [sub_resource type="StandardMaterial3D" id="mat1"]
@@ -103,7 +103,8 @@ decoration_clearance_radius = 1.0
 [node name="Default" type="Node3D" parent="Visual" unique_id=252850885]
 
 [node name="Sticks" type="Sprite3D" parent="Visual/Default" unique_id=1501984673]
-transform = Transform3D(2.6910748, 0, 0, 0, 2.6910748, 0, 0, 0, 2.6910748, 0, 0.6393745, 0)
+transform = Transform3D(2.6910748, 0, 0, 0, 2.6910748, 0, 0, 0, 2.6910748, 0, 0.11, 0)
+offset = Vector2(0, 20)
 billboard = 1
 texture_filter = 0
 texture = ExtResource("2_ehc3w")
@@ -163,4 +164,5 @@ material_override = SubResource("mat9")
 mesh = SubResource("mesh9")
 
 [node name="GroundShadow" parent="Visual/Default" unique_id=915825248 instance=ExtResource("ground_shadow")]
-transform = Transform3D(0.36529705, 0, 0, 0, 0.43831432, 0, 0, 0, 0.36529705, -0.27519417, 0.021011665, -0.26953882)
+position = Vector3(-0.06, 0.065, -0.165)
+scale = Vector3(0.63, 1, 0.33)

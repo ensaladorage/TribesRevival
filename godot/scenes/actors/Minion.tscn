@@ -6,8 +6,6 @@
 
 [ext_resource type="PackedScene" path="res://scenes/world/TotemShadow.tscn" id="actor_shadow"]
 
-[ext_resource type="PackedScene" path="res://scenes/world/MinionCarryMarker.tscn" id="carry_marker"]
-
 [sub_resource type="SpriteFrames" id="frames"]
 animations = [{
 "frames": [{
@@ -96,5 +94,3 @@ mesh = SubResource("ring")
 position = Vector3(0, 0.1, 0)
 scale = Vector3(0.32, 1, 0.26)
 visual_offset = Vector3(-0.56987023, -0.18824244, -0.42224002)
-
-[node name="CarryMarker" parent="." instance=ExtResource("carry_marker")]

@@ -5,7 +5,7 @@ extends RefCounted
 const Carry = preload("res://scripts/simulation/minion_carry.gd")
 const State = preload("res://scripts/simulation/game_state.gd")
 const SLOT_COUNT := 3
-const SCHEMA_VERSION := 1
+const SCHEMA_VERSION := 4
 var _directory: String
 var _template: Dictionary
 
@@ -14,10 +14,20 @@ func _init(directory: String = "user://saves") -> void:
 	_template = State.create_initial()
 	# Resource yield and unit navigation are optional in the current schema.
 	_template.resources[0].erase("yieldAmount")
+	if not _template.decorations.is_empty():
+		_template.decorations[0].erase("grouped")
 
 static func normalized_state(state: Dictionary) -> Dictionary:
 	var normalized := state.duplicate(true)
 	Carry.drop_all(normalized)
+	if normalized.totem.get("isCarried",false) and normalized.totem.has("lastLanding"):
+		normalized.totem.moving = true
+		normalized.totem.formationStopTick = normalized.tick
+		normalized.totem.destination = null
+		normalized.totem.position = normalized.totem.lastLanding
+		normalized.totem.erase("lastLanding")
+		normalized.totem.isCarried = false
+		normalized.totem.dragTarget = null
 	normalized.phase = "playing"
 	return normalized
 
@@ -31,7 +41,7 @@ func list_slots() -> Array:
 	return slots
 
 func _path(slot: int) -> String:
-	return _directory.path_join("tribes-revival.save.v1.slot.%s.json" % slot)
+	return _directory.path_join("tribes-revival.save.v%d.slot.%d.json" % [SCHEMA_VERSION, slot])
 
 func read_slot(slot: int) -> Dictionary:
 	if slot < 1 or slot > SLOT_COUNT:

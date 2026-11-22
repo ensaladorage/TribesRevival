@@ -30,6 +30,7 @@ func _initialize() -> void:
 
 func fixture(role: String = "gatherer") -> RefCounted:
 	var session := Session.new("civil-flee-regression")
+	session.state.terrain = preload("res://tests/support/flat_terrain.gd").rows()
 	var state: Dictionary = session.state
 	state.resources = []
 	state.animals = []
@@ -133,6 +134,8 @@ func check_save_continuation(state: Dictionary, phase: String) -> void:
 		return
 	var original := Session.new("unused")
 	original.replace_state(state)
+	if original.state.totem.isCarried:
+		Commands.apply(original.state, {"type": "drop-totem"})
 	var restored := Session.new("unused")
 	restored.replace_state(read.save.gameState)
 	saves.delete_slot(1)
