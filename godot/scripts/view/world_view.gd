@@ -68,6 +68,8 @@ const COLORS := {
 @export var water_rock_scenes: Array[PackedScene] = [
 	preload("res://scenes/world/WaterRock1.tscn"), preload("res://scenes/world/WaterRock2.tscn"),
 	preload("res://scenes/world/WaterRock3.tscn"), preload("res://scenes/world/WaterRock4.tscn"),
+	preload("res://scenes/world/WaterRock5.tscn"), preload("res://scenes/world/WaterRock6.tscn"),
+	preload("res://scenes/world/WaterRock7.tscn"), preload("res://scenes/world/WaterRock8.tscn"),
 ]
 @export var decoration_scenes := {
 	"grass": preload("res://scenes/world/Grass.tscn"),
@@ -96,6 +98,7 @@ const COLORS := {
 var _views := {}
 var _previous_positions := {}
 var _alpha := 1.0
+var _hunter_render_tick := 0.0
 var _played_alerts := {}
 var _alert_player: AudioStreamPlayer
 var _alert_sound: AudioStreamWAV
@@ -108,6 +111,8 @@ var _occlusion := Occlusion.new()
 var _resource_clearances: Array[Vector3] = []
 var _decoration_occluders: Array[Node3D] = []
 
+const HunterImpactScene = preload("res://scenes/world/HunterImpact.tscn")
+const HunterImpactDust = preload("res://assets/vfx/hunter_impact_dust.png")
 const TerrainView = preload("res://scripts/view/terrain_projection.gd")
 const IslandSurface = preload("res://scenes/world/IslandSurface.tscn")
 var _terrain: Array = []
@@ -116,6 +121,7 @@ func setup(state: Dictionary) -> void:
 	for child in get_children():
 		child.free()
 	_views.clear()
+	_hunter_render_tick = state.tick
 	_decoration_occluders.clear()
 	_resource_clearances.clear()
 	_occlusion = Occlusion.new()
@@ -250,13 +256,16 @@ func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float =
 	_totem_position = state.totem.position
 	var active := {}
 	for unit in state.units:
-		_sync_actor(unit, unit.role, active)
+		_sync_actor(unit, unit.role, active, camera)
 	for barbarian in state.barbarians:
 		if barbarian.isAlive:
-			_sync_actor(barbarian, "barbarian", active)
+			_sync_actor(barbarian, "barbarian", active, camera)
 	for animal in state.animals:
 		if animal.isAlive:
-			_sync_actor(animal, "sheep", active)
+			var cycle: Dictionary = animal.get("grazingCycle", {})
+			# At 20 ticks per second each 10 FPS grazing frame lasts two ticks.
+			var graze_frame := floori((state.tick - cycle.startTick) * 0.5) if cycle.get("phase") == "graze" else -1
+			_sync_actor(animal, "sheep", active, camera, graze_frame)
 	for resource in state.resources:
 		if resource.amount > 0:
 			active[resource.id] = true
@@ -273,7 +282,7 @@ func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float =
 			_views[id].free()
 			_views.erase(id)
 
-func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
+func _sync_actor(actor: Dictionary, kind: String, active: Dictionary, camera: Camera3D, graze_frame: int = -1) -> void:
 	active[actor.id] = true
 	if _views.has(actor.id) and _views[actor.id].get_meta("kind") != kind:
 		_views[actor.id].free()
@@ -294,7 +303,12 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary) -> void:
 		var radius := maxf(_command_radius, 0) * 1.05
 		node.get_node("DetectionRange").scale = Vector3(radius, 1, radius)
 	node.present_health(actor, _health_pixel_size, _health_screen_up)
-	node.present(actor)
+	var displacement := Vector2(actor.position.x - previous.x, actor.position.y - previous.y)
+	var horizontal := 0.0
+	if camera != null:
+		var world_motion := Vector3(displacement.x, 0.0, displacement.y * TerrainView.DEPTH_SCALE)
+		horizontal = world_motion.dot(camera.global_basis.x)
+	node.present(actor, displacement.length_squared() > 1e-8, horizontal, graze_frame)
 
 func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 	for campfire in state.campfires:
@@ -315,7 +329,9 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 		if actor_view.has_method("reset_feedback"):
 			actor_view.reset_feedback()
 	for effect in state.effects:
-		if effect.kind == "heal-crosses":
+		if effect.kind in ["hunter-impact", "hunter-miss"]:
+			_present_hunter_impact(effect, active)
+		elif effect.kind == "heal-crosses":
 			active[effect.id] = true
 			if not _views.has(effect.id):
 				_views[effect.id] = _spawn(heal_effect_scene, effect.position)
@@ -331,11 +347,15 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 			if effect.kind == "damage-flash":
 				node.flash(Color("ef5b5b"))
 			elif effect.kind == "attack-lunge":
-				if node.get_meta("kind", "") in ["mage", "hunter"]:
+				var kind: String = node.get_meta("kind", "")
+				if kind == "hunter":
+					continue
+				if node.has_method("present_attack"):
+					node.present_attack(effect.id)
+				if kind == "mage":
 					active[effect.id] = true
 					if not _views.has(effect.id):
-						var projectile_scene := mage_projectile_scene if node.get_meta("kind") == "mage" else hunter_projectile_scene
-						_views[effect.id] = _spawn(projectile_scene, effect.position)
+						_views[effect.id] = _spawn(mage_projectile_scene, effect.position)
 					var origin := node.position + Vector3(0, 0.8, 0)
 					var destination := TerrainView.world(effect.position,_terrain) + Vector3.UP * 0.8
 					_views[effect.id].position = origin.lerp(destination, clampf(effect.ageSeconds / effect.durationSeconds, 0, 1))
@@ -345,6 +365,7 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 					var direction := TerrainView.world(effect.position, _terrain) - node.position
 					direction = Vector3(direction.x, 0, direction.z).normalized()
 					node.lunge(direction, sin(clampf(effect.ageSeconds / effect.durationSeconds, 0, 1) * PI) * 0.2)
+	_present_hunter_shots(state, active)
 	for alert in state.alerts:
 		active[alert.id] = true
 		if not _views.has(alert.id):
@@ -367,6 +388,83 @@ func _sync_survival_views(state: Dictionary, active: Dictionary) -> void:
 		_views[cloud.id].position = TerrainView.world({"x":lerpf(previous.x, cloud.position.x, _alpha), "y":lerpf(previous.y, cloud.position.y, _alpha)},_terrain)
 		if _views[cloud.id].has_method("present"):
 			_views[cloud.id].present(cloud)
+
+func _present_hunter_shots(state: Dictionary, active: Dictionary) -> void:
+	if state.phase == "playing":
+		_hunter_render_tick = state.tick + clampf(_alpha, 0.0, 0.999999)
+	else:
+		_hunter_render_tick = clampf(_hunter_render_tick, state.tick, state.tick + 1.0)
+	var render_tick := _hunter_render_tick
+	var camera := get_viewport().get_camera_3d()
+	for shot: Dictionary in state.get("hunterShots", []):
+		var aim := TerrainView.world(shot.aim, _terrain)
+		var hunter: Node3D = _views.get(shot.hunterId)
+		if active.has(shot.hunterId) and hunter.get_meta("kind", "") == "hunter" and hunter.has_method("present_hunter_draw"):
+			var horizontal := (aim - hunter.position).dot(camera.global_basis.x) if camera != null else 0.0
+			var clip_frame: float = 5.0 * (render_tick - shot.startTick) / (shot.releaseTick - shot.startTick)
+			hunter.present_hunter_draw(clip_frame, horizontal)
+		if not shot.has("origin") or render_tick >= shot.impactTick:
+			continue
+		active[shot.id] = true
+		if not _views.has(shot.id):
+			var projectile := _spawn(hunter_projectile_scene, shot.origin)
+			var source: Node3D = hunter if active.has(shot.hunterId) and hunter.get_meta("kind", "") == "hunter" else null
+			var launch := _hunter_arrow_launch(source, projectile.position, aim, camera)
+			projectile.set_meta("launch_transform", launch)
+			_views[shot.id] = projectile
+		var arrow: Node3D = _views[shot.id]
+		var launch: Transform3D = arrow.get_meta("launch_transform")
+		var origin := launch.origin
+		var destination := aim + Vector3.UP * 0.8
+		var direction := destination - origin
+		var progress: float = clampf((render_tick - shot.releaseTick) / (shot.impactTick - shot.releaseTick), 0.0, 1.0)
+		var tip_offset := direction.limit_length(0.45)
+		arrow.position = origin.lerp(destination - tip_offset, progress)
+		var axes := camera.global_basis if camera != null else Basis.IDENTITY
+		var launch_angle := atan2(launch.basis.x.dot(axes.y), launch.basis.x.dot(axes.x))
+		var flight_angle := atan2(direction.dot(axes.y), direction.dot(axes.x))
+		var alignment := smoothstep(0.0, 0.4, progress)
+		var angle := lerp_angle(launch_angle, flight_angle, alignment)
+		if camera != null:
+			# Keep the arrow in front of the bow while their sprites overlap.
+			arrow.global_position += axes.z * (0.06 * (1.0 - alignment))
+		arrow.global_basis = axes.rotated(axes.z, angle)
+
+func _hunter_arrow_launch(hunter: Node3D, ground: Vector3, aim: Vector3, camera: Camera3D) -> Transform3D:
+	var axes := camera.global_basis if camera != null else Basis.IDENTITY
+	var facing := -1.0 if (aim - ground).dot(axes.x) < 0.0 else 1.0
+	var socket := Vector3(0.6084676, 1.2244949, 0.0)
+	var angle := deg_to_rad(30.0)
+	if hunter != null:
+		var marker := hunter.get_node_or_null("Body/Sprite/ArrowSpawn") as Marker3D
+		if marker != null:
+			var sprite := marker.get_parent() as Node3D
+			ground += sprite.global_position - hunter.global_position
+			socket = marker.position * sprite.global_basis.get_scale().abs()
+			angle = marker.rotation.z
+	socket.x *= facing
+	return Transform3D(axes.rotated(axes.z, PI - angle if facing < 0.0 else angle), ground + axes * socket)
+
+func _present_hunter_impact(effect: Dictionary, active: Dictionary) -> void:
+	active[effect.id] = true
+	var hit: bool = effect.kind == "hunter-impact"
+	if not _views.has(effect.id):
+		var marker := _spawn(HunterImpactScene, effect.position) as Sprite3D
+		marker.position.y += 0.8 if hit else 0.12
+		if not hit:
+			marker.texture = HunterImpactDust
+			marker.hframes = 8
+		_views[effect.id] = marker
+	var marker: Sprite3D = _views[effect.id]
+	var progress: float = clampf(effect.ageSeconds / effect.durationSeconds, 0.0, 1.0)
+	if hit:
+		var target: Node3D = _views.get(effect.targetId)
+		if active.has(effect.targetId) and target.has_method("flash"):
+			target.flash(Color("ef5b5b"))
+		marker.scale = Vector3.ONE * lerpf(0.55, 1.0, progress)
+	else:
+		marker.frame = mini(floori(progress * marker.hframes), marker.hframes - 1)
+	marker.modulate.a = 1.0 - progress
 
 func _make_alert_sound() -> AudioStreamWAV:
 	if _alert_sound != null:

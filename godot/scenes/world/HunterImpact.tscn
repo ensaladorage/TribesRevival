@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/vfx/hunter_impact_sparks.png" id="sparks"]
+
+[sub_resource type="AtlasTexture" id="burst"]
+atlas = ExtResource("sparks")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[node name="HunterImpact" type="Sprite3D"]
+billboard = 1
+pixel_size = 0.0125
+texture_filter = 0
+texture = SubResource("burst")

@@ -3,6 +3,9 @@ extends RefCounted
 
 const Random = preload("res://scripts/simulation/seeded_random.gd")
 const Geo = preload("res://scripts/simulation/geometry.gd")
+const CLOUD_INTERVAL_SECONDS := 30.0
+const CLOUDS_PER_RAIN_EVENT := 3
+const CLOUD_SPEED := 2.5
 const TARGET_TYPES := ["clearing", "meadow", "forest"]
 
 static func _choose_target(state: Dictionary, cloud_index: int) -> Variant:
@@ -30,8 +33,21 @@ static func _choose_target(state: Dictionary, cloud_index: int) -> Variant:
 static func _spawn(state: Dictionary) -> void:
 	var index: int = state.weather.nextCloudIndex
 	state.weather.nextCloudIndex += 1
-	var target: Variant = _choose_target(state, index)
+	var target: Variant = null
+	if index > 0 and index % CLOUDS_PER_RAIN_EVENT == 0:
+		var rain_index := floori(float(index) / CLOUDS_PER_RAIN_EVENT) - 1
+		target = _choose_target(state, rain_index)
 	if target == null:
+		var offset := Random.new("%s:dry-cloud:%s" % [state.seed, index]).next_float(-18.0, 18.0)
+		var entry := 96.0 if index == 0 else 176.0
+		state.weather.clouds.append({
+			"id": "weather-cloud-%03d" % (index + 1),
+			"position": {"x": entry + offset, "y": entry},
+			"targetBiomeInstanceId": null,
+			"phase": "passing",
+			"phaseElapsedSeconds": 0.0,
+			"rainRemainingSeconds": 0.0,
+		})
 		return
 	state.weather.clouds.append({"id": "weather-cloud-%03d" % (index + 1), "position": {"x": target.region.x + sqrt(0.5) * 64.0, "y": target.region.y + sqrt(0.5) * 64.0}, "targetBiomeInstanceId": target.instanceId, "phase": "approaching", "phaseElapsedSeconds": 0.0, "rainRemainingSeconds": 0.0})
 
@@ -45,6 +61,9 @@ static func move_point(point: Dictionary, destination: Dictionary, maximum: floa
 	return false
 
 static func _advance_cloud(state: Dictionary, cloud: Dictionary, delta: float) -> bool:
+	if cloud.phase == "passing":
+		var point: Dictionary = cloud.position
+		return not move_point(point, {"x": point.x - point.y - 48.0, "y": -48.0}, CLOUD_SPEED * delta)
 	var target: Variant = null
 	for biome in state.biomes:
 		if biome.instanceId == cloud.targetBiomeInstanceId:
@@ -54,7 +73,7 @@ static func _advance_cloud(state: Dictionary, cloud: Dictionary, delta: float) -
 		return false
 	var center := {"x": target.region.x, "y": target.region.y}
 	if cloud.phase == "approaching":
-		if move_point(cloud.position, center, 2.5 * delta):
+		if move_point(cloud.position, center, CLOUD_SPEED * delta):
 			cloud.phase = "raining"
 			cloud.phaseElapsedSeconds = 0.0
 			cloud.rainRemainingSeconds = 6.0
@@ -72,7 +91,7 @@ static func _advance_cloud(state: Dictionary, cloud: Dictionary, delta: float) -
 			cloud.phase = "departing"
 			cloud.phaseElapsedSeconds = 0.0
 		return true
-	return not move_point(cloud.position, {"x": center.x - sqrt(0.5) * 180.0, "y": center.y - sqrt(0.5) * 180.0}, 2.5 * delta)
+	return not move_point(cloud.position, {"x": center.x - sqrt(0.5) * 180.0, "y": center.y - sqrt(0.5) * 180.0}, CLOUD_SPEED * delta)
 
 static func update(state: Dictionary, delta: float) -> void:
 	if not is_finite(delta) or delta <= 0:
@@ -80,7 +99,7 @@ static func update(state: Dictionary, delta: float) -> void:
 	state.weather.nextCloudInSeconds -= delta
 	while state.weather.nextCloudInSeconds <= 1e-9:
 		_spawn(state)
-		state.weather.nextCloudInSeconds += 30.0
+		state.weather.nextCloudInSeconds += CLOUD_INTERVAL_SECONDS
 	for index in range(state.weather.clouds.size() - 1, -1, -1):
 		if not _advance_cloud(state, state.weather.clouds[index], delta):
 			state.weather.clouds.remove_at(index)

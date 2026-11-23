@@ -43,7 +43,7 @@ static func create_initial(seed_text: String = DEFAULT_SEED) -> Dictionary:
 		"terrain": blueprint.terrain, "biomes": blueprint.biomes, "resources": blueprint.resources, "decorations": blueprint.decorations,
 		"drops": [], "nextDropId": 1, "campfires": [], "nextCampfireId": 1,
 		"inventory": {"amounts": empty_amounts()}, "effects": [], "nextEffectId": 1,
-		"alerts": [], "nextAlertId": 1, "weather": {"nextCloudInSeconds": 30, "nextCloudIndex": 0, "clouds": []},
+		"alerts": [], "nextAlertId": 1, "weather": {"nextCloudInSeconds": 0, "nextCloudIndex": 0, "clouds": []},
 	}
 
 static func clamp_position(point: Dictionary) -> Dictionary:

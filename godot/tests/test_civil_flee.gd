@@ -306,8 +306,21 @@ func check_hit_redirects_civilian_pursuit() -> void:
 		enemy.health = 100.0
 		enemy.targetUnitId = civil.id
 		Session.Conflict._attack(state, fighter, enemy, {"damage": 0.0, "cooldownSeconds": 1.0}, "barbarian")
+		if role == "hunter":
+			var harmless: Dictionary = state.hunterShots[0]
+			state.tick = harmless.releaseTick
+			Session.Conflict.update_hunter_shots(state)
+			state.tick = harmless.impactTick
+			Session.Conflict.update_hunter_shots(state)
 		if enemy.targetUnitId != civil.id: failures.append("Zero damage redirects pursuit")
 		Session.Conflict._attack(state, fighter, enemy, Move.Combat.minion_attack(role, 0), "barbarian")
+		if role == "hunter":
+			var rescue: Dictionary = state.hunterShots.back()
+			state.tick = rescue.releaseTick
+			Session.Conflict.update_hunter_shots(state)
+			if enemy.targetUnitId != civil.id: failures.append("Arrow in flight redirects pursuit before impact")
+			state.tick = rescue.impactTick
+			Session.Conflict.update_hunter_shots(state)
 		if enemy.targetUnitId != fighter.id: failures.append(role + ": landed hit fails to rescue civil")
 		var second := State.create_unit("second-fighter", "guardian", {"x": 85.0, "y": 81.0})
 		state.units.append(second)

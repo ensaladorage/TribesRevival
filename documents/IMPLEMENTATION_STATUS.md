@@ -1,5 +1,100 @@
 # IMPLEMENTATION_STATUS --- Tribes Revival
 
+## Grupos de rocas acuáticas
+
+- La generación reparte las rocas costeras en grupos de dos a cinco con
+  un mínimo de dos casillas entre rocas. Se mantiene el triple del total
+  base en las 32 semillas comparadas, con 45–48 rocas por mapa.
+- Se revisaron dos costas a dos niveles de zoom en Compatibility.
+
+## Mayor densidad de rocas acuáticas
+
+- Ocho variantes de roca costera con animación a 10 FPS. Los mapas nuevos
+  triplican el total del generador anterior. Los guardados conservan sus
+  posiciones y cantidades.
+- En 32 semillas se verificaron 45–48 rocas por mapa, el triple exacto y
+  las posiciones anteriores intactas. Pasaron 46 957 comprobaciones de
+  decoración. Se revisaron dos costas a dos niveles de zoom en Compatibility.
+
+## Posición de salida de la flecha
+
+- El Cazador usa el marcador editable `Body/Sprite/ArrowSpawn` para
+  colocar la salida sobre el arco. El desplazamiento lateral se refleja
+  según el sentido del tiro. La salida se revisó en Compatibility.
+  La rotación Z del marcador define el ángulo inicial de la flecha.
+  La transición al ángulo de vuelo se verificó en Compatibility.
+
+## Animaciones y pastoreo de las ovejas
+
+- La oveja usa clips de reposo, movimiento y pastoreo a 10 FPS.
+  Alterna patrulla, reposo y pastoreo mediante el reloj de simulación.
+  Retoma su destino al acabar y guarda la fase en curso.
+- Pasan 1024 comprobaciones de animación, incluidas pausa, velocidad
+  acelerada, guardado, reaparición e impacto del Cazador mientras pasta.
+
+## Disparo del Cazador sincronizado con el impacto
+
+- El reloj fijo coordina el sexto fotograma, la salida, el vuelo y el
+  impacto. Los objetivos pueden esquivar la flecha al salir del punto
+  fijado. Los aciertos muestran un destello y los fallos levantan polvo.
+- Pasan las pruebas de disparo y de guardado con una flecha en vuelo.
+  Revisado en Compatibility un acierto a velocidad normal y un fallo
+  a velocidad triple. Persiste la diferencia conocida de ocho destinos
+  de recolección en `test_data.gd`.
+
+## Orientación de los sprites en pantalla
+
+- Minions, bárbaros y ovejas orientan el cuerpo según su desplazamiento
+  horizontal en pantalla y conservan la orientación al detenerse o ser
+  transportados. El cambio de sentido conserva el fotograma.
+- Pasan 970 comprobaciones de animación, las pruebas de arrastre y
+  visibilidad y la prueba de oclusión con el cuerpo reflejado en Compatibility.
+  Revisadas capturas del Cazador y la oveja en ambos sentidos.
+
+## Disparo del Cazador
+
+- La flecha visual sale en el sexto fotograma y usa el sprite propio del
+  Cazador con Nearest. Pasan 957 comprobaciones de animación, incluida la
+  salida de una sola flecha y su retirada al terminar el vuelo.
+
+## Retorno a reposo de los minions
+
+- La vista activa la carrera según el desplazamiento entre ticks. Al detenerse,
+  el minion vuelve a reposo aunque navegación conserve su última velocidad.
+  Pasan 953 comprobaciones de animación, el arrastre y la interpolación de reaparición.
+
+## Animaciones de unidades y recursos de campamento — 2026-11-22
+
+- Recolector, Cazador, Guardián, Leñador, Artesana y Mago usan SpriteFrames
+  editables a 10 FPS. Los ataques del Guardián, Cazador, Mago y
+  Leñador se reproducen una vez por evento de combate. El Leñador reutiliza
+  el gesto de hacha. El Mago rojo usa la lámina `Attack.png`
+  que trae el lote actual.
+- Preparadas dos escenas rojas adicionales, nueve unidades negras y ocho
+  edificios negros para colocar desde el editor. Los 87 PNG del lote
+  se reimportaron con Lossless y sin mipmaps. Las escenas nuevas usan Nearest.
+- En Godot 4.7.2 pasan 951 comprobaciones de animación e importación, 2644
+  de visibilidad y las pruebas de profundidad y oclusión con Compatibility.
+  Se revisaron capturas de las seis clases y se verificó la selección mediante
+  rayos a dos tamaños de cámara. Pasan 41 comprobaciones de selección y
+  arrastre. Queda el recorrido interactivo en partida.
+- `test_data.gd` devuelve ocho diferencias de destino de recolección. Se
+  reprodujeron con los mismos valores en una copia que solo contiene la
+  simulación y sus pruebas.
+
+## Relieve del archipiélago — 2026-11-22
+
+- Nueva partida y Reiniciar generan islas y biomas de huella rectangular con
+  recortes desiguales. El claro queda llano y las cimas se reparten entre
+  mesetas distintas alrededor de la isla inicial.
+- En Godot 4.7.2, las 64 semillas probadas produjeron mapas distintos y
+  repetibles, con 7–8 mesetas, 3–4 cimas y aproximadamente un 80 % de tierra
+  de nivel 1. Se verificaron las rutas por escaleras a cada altura, el viaje
+  de ida y vuelta en simulación y la decoración en otras pruebas de 32 semillas.
+- La carga de una partida del generador anterior conservó sus cinco mesetas,
+  biomas, recursos y decoración. Se revisaron las capturas de las semillas
+  `tree-biomes-0`, `tree-biomes-1` y `tree-biomes-2`.
+
 ## Costas rectas y recursos agrupados — 2026-11-22
 
 - Las partidas nuevas generan costas e istmos rectos y terrazas de tamaño
@@ -1109,3 +1204,15 @@ El sacrificio rechazado actualiza el origen de interpolación del minion en el m
 - Retirado el foco automático de Nueva Partida. La prueba de flujo reproduce
   el fallo antes de la corrección y confirma que Jugar y la selección de slots
   se abren sin foco. Pasan las 60 comprobaciones de puntero y clic en ventana.
+
+La simulación selecciona recursos y objetivos enemigos según la conectividad del terreno. El cruce compartido de escaleras y la salida tras cancelar una tarea se comprobaron con test_island_routes.gd en Godot 4.7.2 headless. Pendiente la comprobación visual.
+
+Los mapas nuevos generan una escalera de dos casillas contiguas por meseta y por cima. Las pruebas headless de Godot 4.7.2 verificaron la geometría en 64 semillas y el cruce simultáneo de dos minions en sentidos opuestos. Los terrenos guardados conservan su distribución.
+
+Arrastre del tótem por el borde. En una reproducción de 200 ticks con la semilla drag-edge-profile, el percentil 95 de la simulación pasó de 29 a 11 ms tras optimizar las consultas de terreno y límites de formación. Pasaron las pruebas headless de rutas, combate táctico, bordes y huida civil.
+
+La generación mezcla biomas en islas de nivel 1 e incorpora una pradera de inicio con exactamente un arbusto de bayas, un árbol recolectable y dos ovejas. Verificadas 64 semillas con test_tree_resources.gd y recorridos y patrullas con test_island_routes.gd.
+
+Las nubes cruzan el mapa desde el inicio con nuevas entradas cada 30 segundos. La lluvia que repone comida y madera se programa cada 90 segundos y los bárbaros reaparecen a los 180 segundos. Pasaron las pruebas de cadencia, guardado, nubes e interpolación de reaparición en Godot 4.7.2. La paridad histórica reporta ocho diferencias de coordenadas de trabajo en la selección de recolección.
+
+Las ovejas reaparecen en su punto de origen 90 segundos después de ser cazadas. Verificado con la prueba de temporizadores y la de interpolación de reaparición en Godot 4.7.2.

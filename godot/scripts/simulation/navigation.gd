@@ -44,23 +44,25 @@ static func segment_is_clear(start: Dictionary, end: Dictionary, obstacles: Arra
 			return false
 	return true
 
-static func _edge_allowed(first: Dictionary, second: Dictionary, obstacles: Array, is_allowed: Callable) -> bool:
+static func _edge_allowed(first: Dictionary, second: Dictionary, obstacles: Array, is_allowed: Callable, convex_bounds: bool) -> bool:
 	if not segment_is_clear(first, second, obstacles):
 		return false
+	if convex_bounds and is_allowed.call(first):
+		return is_allowed.call(second)
 	var samples := maxi(1, int(ceil(Geo.distance(first, second) / 0.4)))
 	for step in range(1, samples + 1):
 		if not is_allowed.call({"x": first.x + (second.x - first.x) * step / samples, "y": first.y + (second.y - first.y) * step / samples}):
 			return false
 	return true
 
-static func plan_route(start: Dictionary, goal: Dictionary, obstacles: Array, is_allowed: Callable) -> Array:
+static func plan_route(start: Dictionary, goal: Dictionary, obstacles: Array, is_allowed: Callable, convex_bounds: bool = false) -> Array:
 	# Every route must end at goal. Formation offsets can put it outside the
 	# world near its border; building the visibility graph cannot make it valid.
 	if not is_allowed.call(goal):
 		return []
 	var ordered := obstacles.duplicate()
 	ordered.sort_custom(func(a, b): return a.id < b.id)
-	if _edge_allowed(start, goal, ordered, is_allowed):
+	if _edge_allowed(start, goal, ordered, is_allowed, convex_bounds):
 		return [goal.duplicate()]
 	# The start may overlap an obstacle and escape directly (tested above).
 	# Every generated graph point is >=1.02 m from obstacles, so no remaining
@@ -106,7 +108,7 @@ static func plan_route(start: Dictionary, goal: Dictionary, obstacles: Array, is
 			if visited.has(index):
 				continue
 			var cost: float = costs[current] + Geo.distance(points[index], points[current])
-			if cost < costs[index] - 1e-7 and _edge_allowed(points[current], points[index], ordered, is_allowed):
+			if cost < costs[index] - 1e-7 and _edge_allowed(points[current], points[index], ordered, is_allowed, convex_bounds):
 				costs[index] = cost
 				previous[index] = current
 	return []

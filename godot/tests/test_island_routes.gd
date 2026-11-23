@@ -73,6 +73,9 @@ func _run() -> void:
 		if Session.Conflict._move_barbarian(state,enemy,enemy_goal,0.35,frame): break
 		check(T.clear(rows,prev,enemy.position),"Enemy crossed blocked edge")
 	check(Session.Movement.Geo.distance(enemy.position,enemy_goal) < 0.2,"Enemy descended and crossed the causeway")
+	_check_stair_save()
+	_check_stair_traffic()
+	_check_wide_stair()
 	_check_live_trip_and_fauna()
 	var ref := preload("res://scenes/world/TerrainReference.tscn").instantiate()
 	root.add_child(ref)
@@ -178,3 +181,159 @@ func _check_wall_tiles(surface: MeshInstance3D) -> void:
 			ends[cell.x] = floori(uv.y*material.albedo_texture.get_height()/64)
 	check(buried,"Missing base tile below plateau")
 	check(ends.get(52) == 4 and ends.get(55) == 5,"One cliff must switch from dry row to water row at its shoreline")
+
+func _check_stair_traffic() -> void:
+	var state := Session.new("stair-traffic").state
+	var rows := []
+	for y in T.SIZE:
+		rows.append("1".repeat(50) + (">" if y == 50 else "2") + "2".repeat(54))
+	state.terrain = rows
+	state.barbarians = []
+	state.animals = []
+	state.totem.position = T.center(Vector2i(40,40))
+	var a: Dictionary = state.units[0]
+	var b: Dictionary = state.units[1]
+	var west := T.center(Vector2i(47,50))
+	var east := T.center(Vector2i(53,50))
+	a.position = west.duplicate()
+	b.position = east.duplicate()
+	for actor in [a,b]:
+		actor.task.kind = "return-to-totem"
+	for tick in 160:
+		state.tick = tick
+		var frame := Session.Movement.create_frame(state, 0.05)
+		Session.Movement.move_towards(state,a,east,0.2,frame)
+		Session.Movement.move_towards(state,b,west,0.2,frame)
+		check(Session.Movement.Geo.distance(a.position,b.position) >= 0.9,"Stair users overlapped")
+	check(Session.Movement.Geo.distance(a.position,east) < 0.1 and Session.Movement.Geo.distance(b.position,west) < 0.1,"Opposing walkers cleared stair")
+	var enemy: Dictionary = Session.new("mixed-traffic").state.barbarians[0]
+	state.barbarians = [enemy]
+	state.units = [a]
+	a.position = west.duplicate()
+	enemy.position = east.duplicate()
+	for tick in 160:
+		state.tick += 1
+		var frame := Session.Movement.create_frame(state, 0.05)
+		Session.Movement.move_towards(state,a,east,0.2,frame)
+		Session.Conflict._move_barbarian(state,enemy,west,0.2,frame)
+		check(Session.Movement.Geo.distance(a.position,enemy.position) >= 0.9,"Mixed stair traffic overlapped")
+	check(Session.Movement.Geo.distance(a.position,east) < 0.1 and Session.Movement.Geo.distance(enemy.position,west) < 0.1,"Enemy and minion cleared stair")
+	state.barbarians = []
+	state.units = [a,b]
+	a.position = west.duplicate()
+	b.position = T.center(Vector2i(46,50))
+	for tick in 160:
+		state.tick += 1
+		var frame := Session.Movement.create_frame(state, 0.05)
+		Session.Movement.move_towards(state,a,east,0.2,frame)
+		Session.Movement.move_towards(state,b,T.center(Vector2i(52,50)),0.2,frame)
+		check(Session.Movement.Geo.distance(a.position,b.position) >= 0.9,"Following stair users overlapped")
+	check(T.cell(a.position).x == 53 and T.cell(b.position).x == 52,"Both followers cleared stair")
+	var start := T.center(Vector2i(49,44))
+	var cliff := T.center(Vector2i(50,44))
+	var near := T.center(Vector2i(46,44))
+	var drops := [{"id":"cliff","position":cliff,"amount":1},{"id":"near","position":near,"amount":1}]
+	var task := Session.Work.Rules.choose_drop_task({"terrain":rows,"unitPosition":start,"drops":drops,"commandRadius":12})
+	check(task.targetResourceId == "near","Drop selection accounts for the stair detour")
+	state.units = [a]
+	state.barbarianCorpses = []
+	state.resources = []
+	state.drops = [{"id":"cliff","type":"food","position":cliff,"amount":1}]
+	a.position = start.duplicate()
+	var original_food: float = state.inventory.amounts.food
+	Session.Work.set_task(a, Session.Work.choose_work_task(state,a))
+	for tick in 300:
+		state.tick += 1
+		Session.Work.update_unit(state,a,0.05,Session.Movement.create_frame(state,0.05))
+		if state.drops.is_empty():
+			break
+	check(T.fraction(rows,a.position) == 1 and state.inventory.amounts.food == original_food + 1,"Cliff drop collected once from upper level")
+	a.position = start.duplicate()
+	var node := {"id":"cliff-node","position":cliff,"source":"bush","type":"food","amount":1,"interactionRadius":1.3}
+	state.resources = [node]
+	Session.Work.set_task(a,Session.Work.choose_work_task(state,a))
+	for tick in 300:
+		state.tick += 1
+		Session.Work.update_unit(state,a,0.05,Session.Movement.create_frame(state,0.05))
+		if node.amount == 0:
+			break
+	check(T.fraction(rows,a.position) == 1 and node.amount == 0,"Cliff node harvested from upper level")
+	var sealed := rows.duplicate()
+	sealed[50] = sealed[44]
+	task = Session.Work.Rules.choose_drop_task({"terrain":sealed,"unitPosition":start,"drops":[drops[0]],"commandRadius":12})
+	check(task.kind == "idle","Unreachable drop ignored")
+	a.position = T.center(Vector2i(50,50))
+	a.erase("stairTicket")
+	Session.Work.set_task(a,Session.Work.Rules.idle_task("cancelled"))
+	for tick in 24:
+		state.tick += 1
+		Session.Work.update_unit(state,a,0.05,Session.Movement.create_frame(state,0.05))
+		if not T.ramp(T.code(rows,T.cell(a.position))):
+			break
+	check(not T.ramp(T.code(rows,T.cell(a.position))),"Cancelled worker clears occupied stair without a ticket")
+
+func _check_stair_save() -> void:
+	var state := Session.new("stair-save").state
+	var stairs := Vector2i(-1,-1)
+	for y in state.terrain.size():
+		for x in T.SIZE:
+			var c := Vector2i(x,y)
+			if T.ramp(T.code(state.terrain,c)):
+				stairs = c
+				break
+		if stairs.x >= 0:
+			break
+	var a: Dictionary = state.units[0]
+	var b: Dictionary = state.units[1]
+	a.position = T.center(stairs)
+	b.position = T.center(stairs + Vector2i.RIGHT)
+	var goal := T.center(stairs + Vector2i.LEFT)
+	check(T.stair_waypoint(state,b,goal) != goal,"Loaded occupant has priority without ticket")
+	var directory := "user://stair-check-%d" % OS.get_process_id()
+	var saves := preload("res://scripts/persistence/save_repository.gd").new(directory)
+	check(saves.save_slot(1,state).ok,"Save during stair traffic")
+	var restored := saves.read_slot(1)
+	check(restored.status == "valid","Restore stair traffic")
+	if restored.status == "valid":
+		var copy: Dictionary = restored.save.gameState
+		for replay in [state,copy]:
+			for tick in 12:
+				replay.tick += 1
+				var frame := Session.Movement.create_frame(replay,0.05)
+				Session.Movement.move_towards(replay,replay.units[0],goal,0.15,frame)
+		check(state.units[0].position == copy.units[0].position,"Deterministic stair movement after reload")
+	a.isCarried = true
+	check(T.stair_waypoint(state,b,goal) == goal,"Carried occupant releases stair")
+	saves.delete_slot(1)
+	DirAccess.remove_absolute(directory)
+
+func _check_wide_stair() -> void:
+	var state := Session.new("wide-stair").state
+	var rows := []
+	for y in T.SIZE:
+		rows.append("1".repeat(50) + (">" if y in [50,51] else "2") + "2".repeat(54))
+	state.terrain = rows
+	state.barbarians = []
+	state.animals = []
+	state.totem.position = T.center(Vector2i(40,40))
+	var a: Dictionary = state.units[0]
+	var b: Dictionary = state.units[1]
+	var west := T.center(Vector2i(47,50))
+	var east := T.center(Vector2i(53,51))
+	a.position = west.duplicate()
+	b.position = east.duplicate()
+	var upper := T.center(Vector2i(53,50))
+	var lower := T.center(Vector2i(47,51))
+	for actor in [a,b]:
+		actor.task.kind = "return-to-totem"
+	var simultaneous := false
+	for tick in 120:
+		state.tick = tick
+		var frame := Session.Movement.create_frame(state,0.05)
+		Session.Movement.move_towards(state,a,upper,0.2,frame)
+		Session.Movement.move_towards(state,b,lower,0.2,frame)
+		var first := T.cell(a.position)
+		var second := T.cell(b.position)
+		simultaneous = simultaneous or (first.x == 50 and second.x == 50 and first.y != second.y)
+		check(Session.Movement.Geo.distance(a.position,b.position) >= 0.9,"Opposing traffic overlapped on wide stair")
+	check(simultaneous and T.cell(a.position).x == 53 and T.cell(b.position).x == 47,"Opposing traffic crossed the wide stair simultaneously")

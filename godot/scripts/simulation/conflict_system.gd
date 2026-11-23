@@ -46,7 +46,7 @@ static func _defeat_barbarian(state: Dictionary, barbarian: Dictionary) -> void:
 	Progression.award_experience(state.progression, 5)
 	barbarian.health = 0.0
 	barbarian.isAlive = false
-	barbarian.respawnRemainingSeconds = 60.0
+	barbarian.respawnRemainingSeconds = 180.0
 	barbarian.targetUnitId = null
 	state.alerts = state.alerts.filter(func(alert): return alert.detectorKind != "barbarian" or alert.detectorId != barbarian.id)
 	var random := Random.new("%s:barbarian-loot:%s:%s" % [state.seed, barbarian.id, barbarian.spawnCycle])
@@ -56,18 +56,47 @@ static func _defeat_barbarian(state: Dictionary, barbarian: Dictionary) -> void:
 	loot.wood = random.next_int(0, 1)
 	state.barbarianCorpses.append({"id": "corpse-%s-%s" % [barbarian.id, barbarian.spawnCycle], "barbarianId": barbarian.id, "position": barbarian.position.duplicate(), "loot": loot})
 
+# At 20 Hz the sixth frame of the 10 FPS draw starts after ten ticks.
+const HUNTER_DRAW_TICKS := 10
+const HUNTER_FLIGHT_TICKS := 5
+const HUNTER_ATTACK_TICKS := 16
+const HUNTER_HIT_RADIUS := 0.47
+
 static func _attack(state: Dictionary, unit: Dictionary, target: Dictionary, stats: Dictionary, kind: String) -> bool:
 	if not Combat.is_ranged(unit.role,state.toolLevels.sword) and not Move.Terrain.clear(state.get("terrain",[]),unit.position,target.position):
 		return false
 	unit.attackCooldownRemainingSeconds = stats.cooldownSeconds
+	if unit.role == "hunter":
+		# Hold the archer in place while drawing the bow.
+		unit.attackLockRemainingSeconds = 0.5
+		if not state.has("hunterShots"):
+			state.hunterShots = []
+		var release_tick: int = int(state.tick) + HUNTER_DRAW_TICKS
+		state.hunterShots.append({
+			"id": "hunter-shot-%d" % state.nextEffectId,
+			"hunterId": unit.id,
+			"targetId": target.id,
+			"targetKind": kind,
+			"targetSpawnCycle": target.spawnCycle,
+			"damage": stats.damage,
+			"startTick": state.tick,
+			"releaseTick": release_tick,
+			"impactTick": release_tick + HUNTER_FLIGHT_TICKS,
+			"aim": target.position.duplicate(),
+		})
+		state.nextEffectId += 1
+		return false
 	unit.attackLockRemainingSeconds = 0.22
 	Survival.add_effect(state, "attack-lunge", unit.id, target.position, 0.22)
-	var result := Combat.deal_damage("minion", kind, target, stats.damage)
+	return _apply_attack_damage(state, unit, target, stats.damage, kind)
+
+static func _apply_attack_damage(state: Dictionary, unit: Variant, target: Dictionary, damage: float, kind: String) -> bool:
+	var result := Combat.deal_damage("minion", kind, target, damage)
 	target.health = result.health
 	if kind == "barbarian" and result.damageApplied > 0:
 		Survival.add_effect(state, "damage-flash", target.id, target.position, 0.3)
 		var prey: Variant = Move.find_entity(state.units, target.targetUnitId)
-		if not result.defeated and prey != null and (Combat.minion_attack(prey.role, state.toolLevels.sword) == null or (Combat.is_ranged(prey.role, state.toolLevels.sword) and Combat.is_melee(unit.role, state.toolLevels.sword))) and Combat.minion_attack(unit.role, state.toolLevels.sword) != null:
+		if unit != null and unit.health > 0 and not unit.get("isCarried", false) and not result.defeated and prey != null and (Combat.minion_attack(prey.role, state.toolLevels.sword) == null or (Combat.is_ranged(prey.role, state.toolLevels.sword) and Combat.is_melee(unit.role, state.toolLevels.sword))) and Combat.minion_attack(unit.role, state.toolLevels.sword) != null:
 			# Only a landed hit can pull a barbarian off civilian prey.
 			# Melee can also relieve ranged prey; a melee focus stays stable.
 			target.targetUnitId = unit.id
@@ -78,10 +107,64 @@ static func _attack(state: Dictionary, unit: Dictionary, target: Dictionary, sta
 			Progression.award_experience(state.progression, 3)
 			target.health = 0.0
 			target.isAlive = false
-			target.respawnRemainingSeconds = 30.0
+			target.respawnRemainingSeconds = 90.0
 			var random := Random.new("%s:rabbit-loot:%s:%s" % [state.seed, target.id, target.spawnCycle])
 			Work.drop_resource(state, target.position, target.id, target.id, "food", random.next_int(1, 2))
 	return result.defeated
+
+static func update_hunter_shots(state: Dictionary) -> void:
+	if not state.has("hunterShots"):
+		return
+	var pending: Array = []
+	for shot: Dictionary in state.hunterShots:
+		if state.tick >= shot.startTick + HUNTER_ATTACK_TICKS:
+			continue
+		if shot.get("resolved", false):
+			pending.append(shot)
+			continue
+		var hunter: Variant = Move.find_entity(state.units, shot.hunterId)
+		var candidates: Array = state.animals if shot.targetKind == "animal" else state.barbarians
+		var target: Variant = _living(candidates, shot.targetId)
+		if target != null and target.spawnCycle != shot.targetSpawnCycle:
+			target = null
+		if not shot.has("origin"):
+			if hunter == null or hunter.health <= 0 or hunter.role != "hunter" or hunter.get("isCarried", false) or target == null:
+				continue
+			shot.aim = target.position.duplicate()
+			if state.tick >= shot.releaseTick:
+				shot.origin = hunter.position.duplicate()
+		if state.tick >= shot.impactTick:
+			var hit: bool = target != null and Geo.distance(target.position, shot.aim) <= HUNTER_HIT_RADIUS
+			if hit:
+				_apply_attack_damage(state, hunter, target, shot.damage, shot.targetKind)
+			Survival.add_effect(state, "hunter-impact" if hit else "hunter-miss", shot.targetId, shot.aim, 0.3)
+			shot.resolved = true
+		pending.append(shot)
+	if pending.is_empty():
+		state.erase("hunterShots")
+	else:
+		state.hunterShots = pending
+
+const SHEEP_PATROL_TICKS := 160
+const SHEEP_REST_TICKS := 20
+const SHEEP_GRAZE_TICKS := 24
+
+static func _sheep_is_patrolling(state: Dictionary, animal: Dictionary) -> bool:
+	var tick: int = state.tick
+	if not animal.has("grazingCycle"):
+		var random := Random.new("%s:%s:grazing:%d" % [state.seed, animal.id, animal.spawnCycle])
+		animal.grazingCycle = {"phase": "patrol", "startTick": tick, "nextTick": tick + SHEEP_PATROL_TICKS + random.next_int(0, 20)}
+	var cycle: Dictionary = animal.grazingCycle
+	if tick >= cycle.nextTick:
+		match cycle.phase:
+			"patrol":
+				cycle = {"phase": "rest", "startTick": tick, "nextTick": tick + SHEEP_REST_TICKS}
+			"rest":
+				cycle = {"phase": "graze", "startTick": tick, "nextTick": tick + SHEEP_GRAZE_TICKS}
+			"graze":
+				cycle = {"phase": "patrol", "startTick": tick, "nextTick": tick + SHEEP_PATROL_TICKS}
+		animal.grazingCycle = cycle
+	return cycle.phase == "patrol"
 
 static func _update_respawns_and_fauna(state: Dictionary, delta: float) -> void:
 	for barbarian in state.barbarians:
@@ -122,6 +205,9 @@ static func _update_respawns_and_fauna(state: Dictionary, delta: float) -> void:
 			animal.patrolTarget = _animal_target(state,animal,region,animal.spawnCycle + 1,animal.spawnCycle + 1)
 			animal.erase("terrainRoute")
 			animal.spawnCycle += 1
+			animal.erase("grazingCycle")
+			continue
+		if not _sheep_is_patrolling(state, animal):
 			continue
 		if Geo.distance(animal.position, animal.patrolTarget) <= 0.2:
 			animal.patrolTarget = _animal_target(state,animal,region,animal.spawnCycle,state.tick)
@@ -209,6 +295,7 @@ static func _move_barbarian(state: Dictionary, barbarian: Dictionary, destinatio
 	var rows: Array = state.get("terrain",[])
 	safe_destination = Move.Terrain.nearest(rows,safe_destination)
 	var steering_destination := Move.Terrain.waypoint(rows,barbarian.position,safe_destination,barbarian)
+	steering_destination = Move.Terrain.stair_waypoint(state, barbarian, steering_destination)
 	# Unlike minions, barbarians cannot cross the totem's clearance. Local
 	# +/-75 degree avoidance alone stalls on its near side: steer around it.
 	if not Nav.segment_is_clear(barbarian.position, steering_destination, [{"position": state.totem.position}], Move.TOTEM_CLEARANCE):
@@ -417,14 +504,18 @@ static func _barbarian_target(state: Dictionary, barbarian: Dictionary) -> Varia
 	# Prefer engaged melee fighters without bouncing between equivalent targets.
 	var current: Variant = Move.find_entity(state.units, barbarian.targetUnitId)
 	var threats := Tactics.attackers(state, barbarian)
+	var rows: Array = state.get("terrain", [])
+	var reachable := func(unit: Dictionary) -> bool:
+		return is_finite(Move.Terrain.route_length(rows, barbarian.position, unit.position))
+	threats = threats.filter(reachable)
 	var melee: Array = threats.filter(func(unit): return Combat.is_melee(unit.role, state.toolLevels.sword))
-	if current != null and not current.get("isCarried", false) and current.health > 0 and Geo.distance(current.position, barbarian.position) <= Combat.BARBARIAN_DETECTION_RADIUS:
+	if current != null and not current.get("isCarried", false) and current.health > 0 and reachable.call(current) and Geo.distance(current.position, barbarian.position) <= Combat.BARBARIAN_DETECTION_RADIUS:
 		if Combat.is_ranged(current.role, state.toolLevels.sword) and not melee.is_empty():
 			return melee[0]
 		return current
 	if not melee.is_empty():
 		return melee[0]
-	return threats[0] if not threats.is_empty() else _nearest(barbarian.position, state.units.filter(func(unit): return unit.health > 0 and not unit.get("isCarried", false)), Combat.BARBARIAN_DETECTION_RADIUS, false)
+	return threats[0] if not threats.is_empty() else _nearest(barbarian.position, state.units.filter(func(unit): return unit.health > 0 and not unit.get("isCarried", false) and Geo.distance(unit.position, barbarian.position) <= Combat.BARBARIAN_DETECTION_RADIUS and reachable.call(unit)), Combat.BARBARIAN_DETECTION_RADIUS, false)
 
 static func _update_barbarian(state: Dictionary, barbarian: Dictionary, delta: float, frame: Dictionary, intent_selected: bool = false) -> void:
 	var had_target: bool = barbarian.targetUnitId != null or barbarian.returningToSpawn

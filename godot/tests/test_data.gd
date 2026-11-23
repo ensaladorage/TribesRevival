@@ -39,6 +39,8 @@ func _initialize() -> void:
 		for field in ["biomes", "resources", "decorations", "animals","barbarians","terrain"]:
 			actual.erase(field)
 			original.erase(field)
+		_equal(actual.weather.nextCloudInSeconds, 0, "First cloud starts immediately in Godot")
+		original.weather.nextCloudInSeconds = 0
 		_equal(actual, original, "initial except approved Godot world generation: " + expected.seed)
 	_test_economy(reference.economy)
 	_test_transactions()

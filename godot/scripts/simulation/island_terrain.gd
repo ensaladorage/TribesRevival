@@ -89,6 +89,30 @@ static func _cross(rows: Array, a: Vector2i, b: Vector2i) -> bool:
 		return edge(rows, a, horizontal) and edge(rows, horizontal, b) and edge(rows, a, vertical) and edge(rows, vertical, b)
 	return edge(rows, a, b)
 
+# A step shorter than a tile can enter a uniform land cell from any neighbour.
+# Cache this property because the terrain rows are immutable for a saved world.
+static var _uniform_worlds: Array = []
+
+static func _uniform_cache(rows: Array) -> Dictionary:
+	for world in _uniform_worlds:
+		if is_same(world.rows, rows):
+			return world.cells
+	var cells := {}
+	_uniform_worlds.append({"rows":rows,"cells":cells})
+	if _uniform_worlds.size() > 4:
+		_uniform_worlds.pop_front()
+	return cells
+
+static func _uniform_land(rows: Array, c: Vector2i) -> bool:
+	var kind := code(rows,c)
+	if kind == SEA or ramp(kind):
+		return false
+	for y in range(c.y-1,c.y+2):
+		for x in range(c.x-1,c.x+2):
+			if code(rows,Vector2i(x,y)) != kind:
+				return false
+	return true
+
 static func clear(rows: Array, a: Dictionary, b: Dictionary, radius: float = 0.32) -> bool:
 	if rows.is_empty():
 		return true
@@ -96,11 +120,17 @@ static func clear(rows: Array, a: Dictionary, b: Dictionary, radius: float = 0.3
 	var end := Vector2(b.x, b.y)
 	var steps := maxi(1, ceili(start.distance_to(end) / 0.3))
 	var previous := cell(a)
+	var uniform := _uniform_cache(rows)
 	for i in range(1, steps + 1):
 		var v := start.lerp(end, float(i) / steps)
-		var p := {"x": v.x, "y": v.y}
-		var c := cell(p)
-		if not _cross(rows, previous, c) or not fits(rows, p, radius):
+		var c := Vector2i(((v - Vector2.ONE * ORIGIN) / TILE).round())
+		if radius <= TILE * 0.5:
+			if not uniform.has(c):
+				uniform[c] = _uniform_land(rows,c)
+			if uniform[c]:
+				previous = c
+				continue
+		if not _cross(rows, previous, c) or not fits(rows, {"x":v.x,"y":v.y}, radius):
 			return false
 		previous = c
 	return true
@@ -125,6 +155,46 @@ static func graph(rows: Array) -> AStar2D:
 				if edge(rows,c,n):
 					grid.connect_points(id,n.y * SIZE + n.x)
 	return grid
+
+static func route_length(rows: Array, start: Dictionary, goal: Dictionary) -> float:
+	var origin := Vector2(start.x, start.y)
+	var end := Vector2(goal.x, goal.y)
+	if clear(rows, start, goal):
+		return origin.distance_to(end)
+	var grid := graph(rows)
+	var a := cell(start)
+	var b := cell(goal)
+	var first := a.y * SIZE + a.x
+	var last := b.y * SIZE + b.x
+	if not grid.has_point(first) or not grid.has_point(last) or not fits(rows, goal):
+		return INF
+	var path := grid.get_id_path(first, last)
+	if path.is_empty():
+		return INF
+	return origin.distance_to(Vector2(a) * TILE + Vector2.ONE * ORIGIN) + (path.size()-1) * TILE + end.distance_to(Vector2(b) * TILE + Vector2.ONE * ORIGIN)
+
+static func work_position(rows: Array, origin: Dictionary, target: Dictionary) -> Dictionary:
+	var point: Dictionary = target.position
+	if not target.has("interactionRadius"):
+		return point
+	var radius := maxf(target.interactionRadius, 0.1)
+	var direction := Vector2(origin.x-point.x, origin.y-point.y).normalized()
+	if direction == Vector2.ZERO:
+		direction = Vector2.RIGHT
+	var best := {}
+	var shortest := INF
+	for i in 8:
+		var offset := direction.rotated(i * TAU / 8) * radius
+		var candidate := {"x":point.x+offset.x,"y":point.y+offset.y}
+		if not fits(rows,candidate) or not clear(rows,candidate,point,0.0):
+			continue
+		if i == 0 and clear(rows,origin,candidate):
+			return candidate
+		var cost := route_length(rows,origin,candidate)
+		if cost < shortest:
+			best = candidate
+			shortest = cost
+	return best
 
 static func nearest(rows: Array, p: Dictionary, radius: float = 0.32, placement: bool = false) -> Dictionary:
 	if fits(rows, p, radius, placement):
@@ -176,6 +246,49 @@ static func waypoint(rows: Array, start: Dictionary, goal: Dictionary, memory: D
 		memory.erase("terrainRoute")
 		return start
 	return result
+
+## Approach tickets last only while an actor is actively heading for this stair.
+static func stair_waypoint(state: Dictionary, actor: Dictionary, goal: Dictionary) -> Dictionary:
+	var rows: Array = state.get("terrain", [])
+	if rows.is_empty():
+		return goal
+	var pos: Dictionary = actor.position
+	var start := Vector2(pos.x, pos.y)
+	var delta := Vector2(goal.x, goal.y) - start
+	var stairs := Vector2i(-1,-1)
+	for i in range(1 + ceili(minf(delta.length(), TILE * 2.5) / 0.35)):
+		var sample := start + delta.limit_length(i * 0.35)
+		var c := cell({"x":sample.x,"y":sample.y})
+		if ramp(code(rows,c)):
+			stairs = c
+			break
+	if stairs.x < 0:
+		actor.erase("stairTicket")
+		return goal
+	var key := stairs.y * SIZE + stairs.x
+	var ticket: Dictionary = actor.get("stairTicket", {})
+	if ticket.get("key",-1) != key or ticket.get("seen",-2) < state.tick - 1:
+		ticket = {"key":key,"arrival":state.tick}
+		actor.stairTicket = ticket
+	ticket.seen = state.tick
+	if absf(delta.x) > 0.01:
+		ticket.exitDirection = int(signf(delta.x))
+	if cell(pos) == stairs:
+		return goal
+	for other in state.units + state.barbarians:
+		if other.id == actor.id or other.get("isCarried",false) or not other.get("isAlive",true):
+			continue
+		var theirs: Dictionary = other.get("stairTicket",{})
+		var ahead: bool = theirs.get("key",-1) == key and theirs.get("seen",-2) >= state.tick-1 and (theirs.arrival < ticket.arrival or (theirs.arrival == ticket.arrival and other.id < actor.id))
+		if not ahead and cell(other.position) != stairs:
+			continue
+		var landing := stairs + Vector2i.LEFT if pos.x < center(stairs).x else stairs + Vector2i.RIGHT
+		for offset: Vector2i in [Vector2i.UP, Vector2i.DOWN, landing-stairs]:
+			var bay := center(landing + offset)
+			if clear(rows,pos,bay):
+				return bay
+		return pos
+	return goal
 
 static func meadow_rows(region: Dictionary, terrain: Array) -> Array:
 	for entry in _meadows:

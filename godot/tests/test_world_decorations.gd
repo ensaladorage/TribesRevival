@@ -18,11 +18,18 @@ func _run() -> void:
 		var decorations: Array = blueprint.decorations
 		_check(decorations == Catalog.create_decorations(seed_text, biomes,blueprint.resources,blueprint.terrain), "Repeatable generation")
 		var water: Array = decorations.filter(func(entry): return entry.kind == "water-rock")
-		_check(water.size() >= 8 and water.size() <= 16,"Sparse coastal rocks")
+		_check(water.size() >= 24 and water.size() <= 48 and water.size() % 3 == 0, "Tripled coastal rock population")
+		var occupied: Array[Vector2i] = []
 		for rock in water:
 			var cell := Catalog.Terrain.cell(rock.position)
-			for offset in [Vector2i.ZERO,Vector2i.LEFT,Vector2i.RIGHT,Vector2i.UP,Vector2i.DOWN]:
-				_check(Catalog.Terrain.code(blueprint.terrain,cell+offset) == Catalog.Terrain.SEA,"Rock has water clearance")
+			_check(not occupied.any(func(other): return cell.distance_squared_to(other) < 4.0),
+				"Rock cells are unique and at least two cells apart")
+			occupied.append(cell)
+			for dx in range(-1, 2):
+				for dy in range(-2, 3):
+					_check(Catalog.Terrain.code(blueprint.terrain, cell + Vector2i(dx, dy)) == Catalog.Terrain.SEA,
+						"Rock has water clearance")
+		_check_water_groups(occupied)
 		for biome in biomes:
 			var entries: Array = decorations.filter(func(item): return item.biomeInstanceId == biome.instanceId)
 			if biome.id not in ["clearing", "forest", "meadow"]:
@@ -48,6 +55,26 @@ func _run() -> void:
 	print("%s decoration: %d checks, 32 seeds, scene integration; no gameplay ticks" % ["PASS" if failures.is_empty() else "FAIL", checks])
 	quit(0 if failures.is_empty() else 1)
 
+func _check_water_groups(cells: Array[Vector2i]) -> void:
+	var remaining := cells.duplicate()
+	var sizes := {}
+	var solitary := 0
+	while not remaining.is_empty():
+		var group: Array[Vector2i] = [remaining.pop_back()]
+		var index := 0
+		while index < group.size():
+			for candidate in range(remaining.size() - 1, -1, -1):
+				if group[index].distance_squared_to(remaining[candidate]) <= 16.0:
+					group.append(remaining[candidate])
+					remaining.remove_at(candidate)
+			index += 1
+		_check(group.size() <= 5, "Coastal groups do not merge")
+		sizes[group.size()] = true
+		solitary += int(group.size() == 1)
+	for size in range(2, 6):
+		_check(sizes.has(size), "Coastal layout includes groups of size %d" % size)
+	_check(solitary <= 2, "Most rocks belong to discernible groups")
+
 func _test_views() -> void:
 	var state := State.create_initial()
 	var original := JSON.stringify(state)
@@ -63,7 +90,20 @@ func _test_views() -> void:
 	var rocks := world.get_children().filter(func(child): return child is AnimatedSprite3D)
 	_check(rocks.size() == state.decorations.filter(func(item): return item.kind == "water-rock").size(),"All saved water rocks have a view")
 	for rock: AnimatedSprite3D in rocks:
-		_check(rock.is_playing() and rock.sprite_frames.get_frame_count("default") == 8,"Eight-frame coastal animation")
+		_check(rock.is_playing(), "Coastal rocks animate automatically")
+	_check(world.water_rock_scenes.size() == 8, "Eight coastal rock scenes")
+	for index in world.water_rock_scenes.size():
+		var rock := world.water_rock_scenes[index].instantiate() as AnimatedSprite3D
+		var frames := rock.sprite_frames
+		var count := 8 if index < 4 else 16
+		var cell_size := 128 if index < 4 else 64
+		_check(frames.get_frame_count("default") == count and frames.get_animation_loop("default")
+			and frames.get_animation_speed("default") == 10.0, "Rock uses the expected atlas timing")
+		_check(rock.texture_filter == BaseMaterial3D.TEXTURE_FILTER_NEAREST, "Rock uses Nearest")
+		for frame in count:
+			var atlas := frames.get_frame_texture("default", frame) as AtlasTexture
+			_check(atlas.region == Rect2(frame * cell_size, 0, cell_size, cell_size), "Rock atlas frame is correctly sliced")
+		rock.free()
 	world.setup(state)
 	_check(first == _appearance(world), "Stable texture, size and flip on rebuild")
 	_check(original == JSON.stringify(state), "Presentation does not mutate state")
@@ -96,6 +136,17 @@ func _test_views() -> void:
 		_check(sampled.size() == 3, "Both animated choices and small bush represented")
 	world.setup(JSON.parse_string(original))
 	_check(first == _appearance(world), "Stable appearance after save JSON")
+	var legacy: Dictionary = JSON.parse_string(original)
+	var removed := 0
+	for index in range(legacy.decorations.size() - 1, -1, -1):
+		if removed == rocks.size() * 2 / 3:
+			break
+		if legacy.decorations[index].kind == "water-rock":
+			legacy.decorations.remove_at(index)
+			removed += 1
+	world.setup(legacy)
+	var legacy_rocks := world.get_children().filter(func(child): return child is AnimatedSprite3D)
+	_check(legacy_rocks.size() == rocks.size() / 3, "Loading a sparse map preserves its saved rock count")
 	world.free()
 
 func _appearance(world: Node3D) -> Array:

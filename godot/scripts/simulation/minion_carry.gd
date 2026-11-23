@@ -25,6 +25,13 @@ static func pick_up(state: Dictionary, unit_id: String) -> void:
 	unit.lastLanding = unit.position.duplicate()
 	unit.isCarried = true
 	unit.state = "carried"
+	# Cancel the draw when picked up. Released arrows resolve independently.
+	if state.has("hunterShots"):
+		var remaining: Array = state.hunterShots.filter(func(shot): return shot.hunterId != unit_id or shot.has("origin"))
+		if remaining.is_empty():
+			state.erase("hunterShots")
+		else:
+			state.hunterShots = remaining
 	# The hit was already resolved; remove only its remaining visual feedback.
 	state.effects = state.effects.filter(func(effect): return effect.targetId != unit_id or effect.kind not in ["attack-lunge", "heal-crosses"])
 	state.alerts = state.alerts.filter(func(alert): return alert.detectorKind != "minion" or alert.detectorId != unit_id)

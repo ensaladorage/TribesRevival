@@ -292,13 +292,13 @@ nativo. No se atenúa globalmente el árbol ni se usa mezcla alfa.
     simulación, dentro de un radio cercano al nodo, para variar la
     presentación sin romper el determinismo.
 
--   En Godot, la configuración actual distribuye las regiones entre la isla inicial, los istmos, cinco mesetas y sus cimas. Cada celda visible de
+-   En Godot, el generador reparte las islas alrededor del claro inicial en siete u ocho sectores. Pinta los istmos antes de las huellas rectangulares de tierra y asigna una meseta a cada sector. Distribuye tres o cuatro cimas a intervalos alrededor del claro y conserva una franja de meseta a su alrededor. Cada celda visible de
     1,5 m tiene un propietario. La cuadrícula lógica de 105 × 105 guarda agua,
     los tres niveles y la dirección de cada escalera con su altura de partida. El generador verifica la
     conectividad por pasos legales desde el claro inicial antes de colocar
     recursos. Si un trazado falla, prueba otras variantes deterministas y
     dispone de una composición de reserva. Los recursos funcionales respetan
-    la exclusión inicial de 12 m.
+    la exclusión inicial de 12 m, salvo en la pradera inicial, donde se reservan 3 m alrededor del tótem. Las manchas bajas se asignan antes de comprobar conectividad y elegir las paletas de las terrazas.
 -   Una partida nueva elige una semilla y el esquema de archivo 4 conserva
     esa semilla, las filas transitables y las celdas visibles y cubiertas de cada bioma. El render reconstruye cada capa por separado. El remate de pared depende del suelo en su pie. Al cargar
     se recupera la topología guardada. El grafo A* se deriva de las filas.
@@ -323,10 +323,13 @@ nativo. No se atenúa globalmente el árbol ni se usa mezcla alfa.
     después se buscan huecos para grupos completos de arbustos o césped. Los
     candidatos respetan márgenes respecto a recursos, otros grupos y escaleras.
     Una región verde admite hasta una seta. Las rocas costeras se buscan en
-    agua con margen para la animación y se dibujan con cuatro escenas editables
-    de ocho fotogramas a 10 FPS. El esquema 4 acepta la marca opcional de
-    colocación agrupada. Las decoraciones existentes conservan su lógica de
-    presentación al cargar.
+    agua con margen para la animación. El algoritmo base determina el
+    presupuesto, que se triplica y se reparte en grupos de dos a cinco.
+    Cada roca queda al menos a dos casillas de las demás. Los grupos
+    quedan separados entre sí por más de cuatro casillas.
+    La vista elige entre ocho escenas editables a 10 FPS. El esquema 4 acepta
+    la marca opcional de colocación agrupada. Al cargar se leen las posiciones
+    guardadas y la vista aplica el catálogo de apariencias actual.
 
 -   La distribución se mantiene como blueprint aislado para que la
     futura generación circular pueda sustituir al contenedor provisional
@@ -508,6 +511,8 @@ puede empujar al fugitivo dentro. Si el jugador mueve el tótem encima de una
 unidad, se permite salir progresivamente sin teletransporte.
 
 ### Composiciones visuales de nubes — Godot
+
+En Godot se mantienen los contadores de aparición y el estado de cada nube en el guardado. Las nubes secas cruzan el mapa sin detenerse y la secuencia de biomas objetivo avanza con las nubes de lluvia. Los nuevos ciclos de reaparición de bárbaros duran 180 segundos. Las partidas guardadas recuperan los temporizadores de reaparición en curso.
 
 `WorldView.cloud_variants` contiene cuatro PackedScenes (Cloud, Cloud2–4),
 seleccionadas con PRNG exclusivo `semilla:id:cloud-appearance`. Cada composición

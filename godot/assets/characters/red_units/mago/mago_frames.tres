@@ -1,0 +1,191 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://crigqnicl00as"]
+
+[ext_resource type="Texture2D" uid="uid://c5wtvia33eclo" path="res://assets/characters/red_units/mago/mago_attack.png" id="attack"]
+[ext_resource type="Texture2D" uid="uid://k2edub5ip2ko" path="res://assets/characters/red_units/mago/mago_idle.png" id="idle"]
+[ext_resource type="Texture2D" uid="uid://ceetpm5lekh3c" path="res://assets/characters/red_units/mago/mago_move.png" id="move"]
+
+[sub_resource type="AtlasTexture" id="attack_00"]
+atlas = ExtResource("attack")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_01"]
+atlas = ExtResource("attack")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_02"]
+atlas = ExtResource("attack")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_03"]
+atlas = ExtResource("attack")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_04"]
+atlas = ExtResource("attack")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_05"]
+atlas = ExtResource("attack")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_06"]
+atlas = ExtResource("attack")
+region = Rect2(1152, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_07"]
+atlas = ExtResource("attack")
+region = Rect2(1344, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_08"]
+atlas = ExtResource("attack")
+region = Rect2(1536, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_09"]
+atlas = ExtResource("attack")
+region = Rect2(1728, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_10"]
+atlas = ExtResource("attack")
+region = Rect2(1920, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_00"]
+atlas = ExtResource("idle")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_01"]
+atlas = ExtResource("idle")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_02"]
+atlas = ExtResource("idle")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_03"]
+atlas = ExtResource("idle")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_04"]
+atlas = ExtResource("idle")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_05"]
+atlas = ExtResource("idle")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_00"]
+atlas = ExtResource("move")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_01"]
+atlas = ExtResource("move")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_02"]
+atlas = ExtResource("move")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_03"]
+atlas = ExtResource("move")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("attack_00")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_01")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_02")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_03")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_04")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_05")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_06")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_07")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_08")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_09")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_10")
+}],
+"loop": 0,
+"name": &"attack",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("idle_00")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_01")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_02")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_03")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_04")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_05")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("move_00")
+}, {
+"duration": 1.0,
+"texture": SubResource("move_01")
+}, {
+"duration": 1.0,
+"texture": SubResource("move_02")
+}, {
+"duration": 1.0,
+"texture": SubResource("move_03")
+}],
+"loop": 1,
+"name": &"move",
+"speed": 10.0
+}]

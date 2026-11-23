@@ -20,9 +20,18 @@ guardar y cargar durante el desarrollo de sistemas que dependan de ello.
   acabados de acantilado en la escena de referencia.
 - En 64 semillas comprobar determinismo, conectividad, contraste y tamaño
   de terrazas, pertenencia de recursos y densidades de árboles y piedras.
+- Contar 7–8 mesetas y 3–4 cimas por mapa, comprobar el claro llano,
+  la mayoría de suelo de nivel 1 y la ruta por escaleras desde el claro
+  hasta cada altura. Revisar las siluetas en capturas de tres semillas.
+- Abrir un mapa guardado antes del ajuste y comparar terreno, biomas,
+  recursos y decoración. Comprobar ambas entradas del generador, desde
+  Nueva partida y desde Reiniciar tras la derrota.
 - Verificar que las manchas de vegetación respetan las huellas de recursos,
-  que el grupo conserva su forma al cargar y que las rocas quedan sobre agua
-  y reproducen sus ocho fotogramas. Revisar varias semillas en Godot.
+  que el grupo conserva su forma al cargar y que las rocas quedan sobre agua.
+  En 32 semillas, comparar el total de rocas con el generador anterior y
+  comprobar el triple, posiciones únicas y separación mínima. Verificar
+  grupos de dos a cinco y agua libre entre ellos. Revisar los bucles de
+  8 o 16 fotogramas y la espuma a dos zooms.
 - Probar en el bucle de partida el traslado del tótem, las rutas por escalera,
   la recolección, y la persistencia de terreno, nodos y decoración.
 
@@ -53,6 +62,35 @@ guardar y cargar durante el desarrollo de sistemas que dependan de ello.
 - El test de arrastre verifica la elevación proyectada de la mano para minion
   y tótem con dos tamaños ortográficos y la restauración del cursor al soltar.
   Revisar visualmente seguimiento, zoom y pérdida de foco durante transporte.
+
+#### Animaciones de unidades y recursos de campamento
+
+- Para las ovejas, revisar los clips de reposo, movimiento y pastoreo.
+  Comprobar las transiciones, que la pausa conserve el destino, que se
+  pueda cazar durante el pastoreo y que reaparecer reinicie el ciclo.
+  Probar pausa, velocidad acelerada y carga a mitad del pastoreo.
+- Comprobar orientación horizontal en minion, bárbaro y oveja. Verificar
+  conservación del fotograma al girar y de la orientación en reposo, en
+  transporte y con desplazamiento vertical. Revisar oclusión al reflejar el cuerpo.
+- Verificar que la flecha del Cazador sale una vez en el sexto fotograma,
+  usa su textura con Nearest y desaparece en el mismo tick en que se
+  aplica el daño. Comprobar pausa y velocidad acelerada.
+- Verificar esquiva, cambios de salud y baja letal al llegar, cancelación
+  al interrumpir la preparación y continuidad si el tirador desaparece
+  tras soltar. Guardar y cargar con una flecha en vuelo y comprobar que
+  el impacto se resuelve una sola vez.
+- Verificar que un paseo en estado de reposo reproduce carrera mientras hay
+  desplazamiento y vuelve a reposo al detenerse con velocidad de navegación residual.
+- Ejecutar `test_unit_animations.gd` en Godot headless. Verifica la importación
+  sin pérdida, sin mipmaps y sin conversión VRAM, los recortes en orden a
+  10 FPS, el filtro Nearest y la carga de escenas. Comprueba los cambios de
+  escena por clase, los bucles de carrera y trabajo, un ataque por evento y
+  el regreso al movimiento después del ataque.
+- En Compatibility, revisar la nitidez, el apoyo al suelo, la escala y el
+  indicador de salud de las seis clases a tamaños ortográficos 18 y 36.
+  Comprobar selección, transporte y transparencia al cruzar una copa.
+- Instanciar unidades y edificios negros desde sus carpetas de escenas.
+  Previsualizar los clips direccionales del Lancero en Sprite Frames.
 
 #### Profundidad natural, separación y transparencia
 
@@ -527,3 +565,13 @@ Sacrificio: verificar soltar con el cuerpo elevado sobre la calavera, y comproba
 Verificar un sacrificio rechazado lejos del mando con un aliado ocupando el punto de entrada más cercano. El minion debe quedar dentro del mando junto al aliado, respetando la separación y el saldo de comida.
 
 Al rechazar un sacrificio, comprobar que el origen de interpolación del primer tick en el suelo coincide con el punto de aterrizaje junto al tótem.
+
+La prueba headless test_island_routes.gd cubre la recogida y el trabajo junto al borde superior, el descarte de drops aislados, la elección por recorrido y el cruce de escaleras por minions y bárbaros en ambos sentidos.
+
+En 64 semillas, la prueba test_tree_resources.gd comprueba que cada meseta y cada cima tengan una escalera de dos casillas contiguas, cada una con acceso por ambos extremos.
+
+La prueba test_island_routes.gd verifica que dos minions atraviesen una escalera de doble anchura simultáneamente en sentidos opuestos, manteniendo la separación.
+
+En 64 semillas, comprobar dos ovejas residentes en la pradera inicial y exactamente un árbol y un arbusto de bayas dentro de los 10 m iniciales, además del contraste en los bordes de las terrazas.
+
+La prueba test_tree_resources.gd verifica el paso de nubes secas desde el inicio, la recuperación de nodos agotados solo con lluvia, la separación de 90 segundos entre nubes de lluvia, la reaparición de bárbaros a los 180 segundos y de ovejas a los 90 segundos y el guardado de nubes en tránsito.

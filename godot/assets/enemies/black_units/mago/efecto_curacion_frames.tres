@@ -1,0 +1,78 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/mago/mago_efecto_curacion.png" id="efecto_curacion"]
+
+[sub_resource type="AtlasTexture" id="efecto_curacion_00"]
+atlas = ExtResource("efecto_curacion")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="efecto_curacion_01"]
+atlas = ExtResource("efecto_curacion")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="efecto_curacion_02"]
+atlas = ExtResource("efecto_curacion")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="efecto_curacion_03"]
+atlas = ExtResource("efecto_curacion")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="efecto_curacion_04"]
+atlas = ExtResource("efecto_curacion")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="efecto_curacion_05"]
+atlas = ExtResource("efecto_curacion")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="efecto_curacion_06"]
+atlas = ExtResource("efecto_curacion")
+region = Rect2(1152, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="efecto_curacion_07"]
+atlas = ExtResource("efecto_curacion")
+region = Rect2(1344, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="efecto_curacion_08"]
+atlas = ExtResource("efecto_curacion")
+region = Rect2(1536, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="efecto_curacion_09"]
+atlas = ExtResource("efecto_curacion")
+region = Rect2(1728, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="efecto_curacion_10"]
+atlas = ExtResource("efecto_curacion")
+region = Rect2(1920, 0, 192, 192)
+filter_clip = true
+
+[resource]
+animations = [{
+"frames": [
+{"duration": 1.0, "texture": SubResource("efecto_curacion_00")},
+{"duration": 1.0, "texture": SubResource("efecto_curacion_01")},
+{"duration": 1.0, "texture": SubResource("efecto_curacion_02")},
+{"duration": 1.0, "texture": SubResource("efecto_curacion_03")},
+{"duration": 1.0, "texture": SubResource("efecto_curacion_04")},
+{"duration": 1.0, "texture": SubResource("efecto_curacion_05")},
+{"duration": 1.0, "texture": SubResource("efecto_curacion_06")},
+{"duration": 1.0, "texture": SubResource("efecto_curacion_07")},
+{"duration": 1.0, "texture": SubResource("efecto_curacion_08")},
+{"duration": 1.0, "texture": SubResource("efecto_curacion_09")},
+{"duration": 1.0, "texture": SubResource("efecto_curacion_10")}
+],
+"loop": 0,
+"name": &"efecto_curacion",
+"speed": 10.0
+}]

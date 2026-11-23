@@ -1,7 +1,6 @@
 # Editar la presentación desde Godot
 
-Abrir `project.godot` en Godot 4.7.2. Los personajes usan imágenes de un solo fotograma por estado; no son animaciones definitivas.
-No hace falta modificar la simulación para sustituirlos.
+Abrir `project.godot` en Godot 4.7.2. Las seis clases jugables usan animaciones a 10 FPS. Se pueden sustituir sus recursos desde el Inspector.
 
 El filtro 2D predeterminado del proyecto es Nearest, también para los iconos
 del HUD, menús, tooltips y controles nuevos que hereden el filtro. En el
@@ -29,25 +28,39 @@ como recursos AtlasTexture. Las escenas `Biome*.tscn` permiten inspeccionar
 las piezas planas aisladas. La composición de las tres alturas en partida la
 construye `IslandSurface` a partir de la cuadrícula de simulación.
 
-Las rocas costeras se editan en las cuatro escenas WaterRock. Cada una usa
-ocho cuadros de 128 × 128 a 10 FPS. La posición lógica se guarda junto a las
-decoraciones y la vista aplica la elevación necesaria sobre el plano del agua.
+Las rocas costeras se editan en `WaterRock1.tscn` a `WaterRock8.tscn`.
+Las cuatro primeras usan ocho cuadros de 128 × 128 y las otras cuatro
+usan dieciséis cuadros de 64 × 64. Todas se reproducen a 10 FPS.
+Ajustar `offset` en el sprite para alinear la espuma con el agua.
+La posición lógica se guarda junto a las decoraciones.
 
 ## Personajes
 
-1. Abrir `scenes/actors/CharactersBase.tscn`.
-2. Seleccionar `Body/Sprite` (`AnimatedSprite3D`), abrir `Sprite Frames` y
-   sustituir las imágenes de `idle`, `move`, `work` y `attack`. Se pueden añadir
-   frames y cambiar su velocidad desde ese mismo recurso.
-3. Cambiar `pixel_size`, escala/posición del sprite o `visual_scale` y
-   `visual_tint` en la raíz. El filtro nearest conserva los bordes de pixel art.
-4. Las seis clases heredan esta escena. Abrir `Mage.tscn`, `Guardian.tscn`, etc.
-   para editar su tinte o sobrescribir sus SpriteFrames. La base se
-   comparte mientras una variante no sobrescriba esa propiedad.
-   Las herramientas, armas y escudos no tienen sprites o meshes separados en
-   los minions; su aspecto formará parte del sprite de cada clase.
-5. `Barbarian.tscn` y `Sheep.tscn` son variantes de presentación independientes;
-   la oveja usa su sprite propio y el bárbaro conserva el icono provisional.
+La oveja usa `assets/animals/sheep_frames.tres` desde
+`scenes/actors/Sheep.tscn`. El ciclo de fauna reproduce `graze` una vez,
+a 10 FPS. Mantener 12 fotogramas para cubrir la pausa de pastoreo.
+
+1. Abrir la escena de la clase en `scenes/actors/`. Recolector, Cazador,
+   Guardián, Leñador, Artesana y Mago heredan `CharactersBase.tscn`.
+   Seleccionar `Body/Sprite > Sprite Frames` para editar su recurso.
+2. Las láminas rojas están en `assets/characters/red_units/` y las negras
+   en `assets/enemies/black_units/`. Cada clip usa recortes `AtlasTexture`
+   ordenados de izquierda a derecha, a 10 FPS. Las celdas son de 192 × 192 px
+   salvo las de Lancero, de 320 × 320 px.
+3. Ajustar el apoyo mediante `offset` en el sprite y la escala mediante
+   `pixel_size` o `visual_scale`. Conservar Lossless, mipmaps desactivados
+   y detección 3D desactivada en Import. Usar Nearest en el nodo del sprite.
+4. `idle`, `move` y `work` son reposo, carrera y trabajo. Las clases sin
+   `work` usan reposo al quedarse quietas. Cada evento de ataque reproduce
+   `attack` una vez en Guardián, Cazador, Mago y Leñador. El Leñador usa
+   el mismo gesto de hacha para trabajar y combatir. El segundo ataque y
+   la guardia del Guardián se pueden previsualizar en Sprite Frames.
+5. Las escenas rojas de Pícaro y Minero están en `scenes/actors/red_units/`.
+   Arrastrar las escenas de `scenes/actors/black_units/` y
+   `scenes/world/black_buildings/` a una escena 3D para montar un campamento.
+   Las variantes negras de carga, los clips direccionales del Lancero, la
+   flecha y el efecto de curación negro están junto a sus láminas.
+   Los edificios rojos están importados en `assets/buildings/red_buildings/`.
 
 `Selection/Shape` es la caja editable del picking de equipo. La separación y
 navegación lógica conservan sus radios originales: cambiar la apariencia o esa
@@ -313,12 +326,21 @@ WorldView expone `mage_projectile_scene`, por defecto
 provisional. WorldView lo desplaza hacia el punto de ataque durante el impulso
 existente; daño, alcance y cadencia pertenecen a la simulación.
 
-### Flecha provisional del cazador
+### Disparo del Cazador
 
-WorldView expone `hunter_projectile_scene`, que usa
-`scenes/world/HunterProjectile.tscn`. Shaft y Tip definen la flecha editable,
-orientada hacia -Z. Se muestra tanto al combatir como al cazar, durante el
-impulso de ataque existente.
+WorldView expone `hunter_projectile_scene`, que apunta a
+`scenes/world/HunterProjectile.tscn`. El sprite mira hacia su eje X local.
+El reloj de simulación coloca la salida al inicio del sexto fotograma
+de `attack` y muestra el destello o polvo al llegar. Al editar el clip,
+conservar la suelta en el sexto fotograma para mantener la sincronía.
+La escena `HunterImpact.tscn` permite ajustar el aspecto del destello.
+Para mover la salida de la flecha, abrir `Hunter.tscn` y seleccionar
+`Body/Sprite/ArrowSpawn`. Ajustar X e Y en **Transform > Position**.
+X separa la salida del centro hacia el arco y se refleja automáticamente
+al disparar a la izquierda. Y ajusta la altura.
+Para ajustar el ángulo inicial, usar **Transform > Rotation > Z** en el
+mismo marcador. El valor inicial es 30°. Después de soltar, la flecha
+gira suavemente hacia su trayectoria.
 
 
 ## Minion levantado

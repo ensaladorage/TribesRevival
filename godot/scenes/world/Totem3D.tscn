@@ -22,4 +22,4 @@ script = ExtResource("script")
 model_material = SubResource("StandardMaterial3D_06hfm")
 
 [node name="3D Totem" parent="." unique_id=1940209137 instance=ExtResource("3_5ox35")]
-transform = Transform3D(6.774149, 0, 2.992646, -1.4575962, 6.4679465, 3.2994149, -2.613683, -3.6070385, 5.9163322, 0.6260197, -1.9835594, 0.51296955)
+transform = Transform3D(4.9542823, 0, 2.1886754, -1.0660149, 4.730341, 2.4130313, -1.9115204, -2.638012, 4.326917, 0.6260197, -1.9835594, 0.51296955)

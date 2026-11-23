@@ -172,7 +172,7 @@ static func agent(state: Dictionary, unit: Dictionary, frame: Dictionary) -> Dic
 	elif unit.task.kind == "gather":
 		var resource: Variant = find_entity(state.resources, unit.task.targetResourceId)
 		if resource != null:
-			destination = resource_approach(point, resource)
+			destination = unit.task.destination if unit.task.destination != null else resource_approach(point, resource)
 	elif unit.task.kind == "collect-drop":
 		var drop: Variant = find_entity(state.drops, unit.task.targetResourceId)
 		if drop != null:
@@ -214,6 +214,8 @@ static func neighbors(state: Dictionary, unit: Dictionary, frame: Dictionary) ->
 
 static func move_towards(state: Dictionary, unit: Dictionary, destination: Dictionary, distance: float, frame: Dictionary) -> bool:
 	var safe := outside_totem(destination, state.totem.position, unit.id)
+	if unit.task.kind in ["collect-drop", "gather"]:
+		safe = destination
 	var moving_agent := agent(state, unit, frame).duplicate()
 	moving_agent.position = unit.position.duplicate()
 	moving_agent.fixed = false
@@ -223,14 +225,16 @@ static func move_towards(state: Dictionary, unit: Dictionary, destination: Dicti
 	var rows: Array = state.get("terrain",[])
 	var final_goal := Terrain.nearest(rows,safe)
 	safe = Terrain.waypoint(rows,unit.position,final_goal,memory)
+	safe = Terrain.stair_waypoint(state, unit, safe)
 	var others := neighbors(state, unit, frame)
+	var leaving_stair := Terrain.ramp(Terrain.code(rows, Terrain.cell(unit.position)))
 	var is_allowed := func(point: Dictionary) -> bool:
 		if point.x < 2 or point.y < 2 or point.x > 158 or point.y > 158:
 			return false
 		if unit.task.kind in ["flee", "avoid-combat"]:
 			if not flee_point_allowed(state, unit, point):
 				return false
-		if not state.totem.isCarried and (not state.totem.moving or unit.get("postCombatFree", false)) and unit.task.kind == "idle":
+		if not state.totem.isCarried and (not state.totem.moving or unit.get("postCombatFree", false)) and unit.task.kind == "idle" and not leaving_stair:
 			if not Idle.within_range(point, area(state)):
 				return false
 			if Geo.distance(point, state.totem.position) < minf(Geo.distance(unit.position, state.totem.position), TOTEM_CLEARANCE) - 1e-8:
@@ -248,9 +252,11 @@ static func move_towards(state: Dictionary, unit: Dictionary, destination: Dicti
 	var obstacles: Array = others.filter(func(other): return other.fixed or memory.blockedSeconds >= 0.3)
 	if unit.task.kind == "flee":
 		obstacles.append(flee_totem_obstacle(state))
+	# While following a carried totem the only local constraint is the world rectangle.
+	var convex_bounds: bool = state.totem.isCarried and unit.task.kind not in ["combat","flee","avoid-combat"]
 	var next: Dictionary = memory.waypoints[0] if not memory.waypoints.is_empty() else safe
 	if memory.replanSeconds <= 0 and (memory.waypoints.is_empty() or not Nav.segment_is_clear(unit.position, next, obstacles, 0.96)):
-		memory.waypoints = Nav.plan_route(unit.position, safe, obstacles, is_allowed)
+		memory.waypoints = Nav.plan_route(unit.position, safe, obstacles, is_allowed, convex_bounds)
 		memory.replanSeconds = 0.6
 	if memory.waypoints.size() == 1:
 		memory.waypoints[0] = safe.duplicate()
@@ -276,7 +282,7 @@ static func move_towards(state: Dictionary, unit: Dictionary, destination: Dicti
 	if memory.blockedSeconds >= 0.3 and memory.replanSeconds <= 0:
 		var blockers := others.duplicate()
 		if unit.task.kind == "flee": blockers.append(flee_totem_obstacle(state))
-		memory.waypoints = Nav.plan_route(unit.position, safe, blockers, is_allowed)
+		memory.waypoints = Nav.plan_route(unit.position, safe, blockers, is_allowed, convex_bounds)
 		memory.side = 0
 		memory.replanSeconds = 0.6
 	unit.position.merge(result.position, true)

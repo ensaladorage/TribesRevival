@@ -1,34 +1,18 @@
 [gd_scene format=3 uid="uid://bksyyjcx2g4nu"]
 
 [ext_resource type="PackedScene" uid="uid://do706uinsf8u0" path="res://scenes/actors/CharactersBase.tscn" id="base"]
-
-[ext_resource type="Texture2D" path="res://assets/characters/Mage Minion.png" id="character_texture"]
-
-[sub_resource type="SpriteFrames" id="character_frames"]
-animations = [{
-"frames": [{"duration": 1.0, "texture": ExtResource("character_texture")}],
-"loop": true,
-"name": &"attack",
-"speed": 5.0
-}, {
-"frames": [{"duration": 1.0, "texture": ExtResource("character_texture")}],
-"loop": true,
-"name": &"idle",
-"speed": 5.0
-}, {
-"frames": [{"duration": 1.0, "texture": ExtResource("character_texture")}],
-"loop": true,
-"name": &"move",
-"speed": 5.0
-}, {
-"frames": [{"duration": 1.0, "texture": ExtResource("character_texture")}],
-"loop": true,
-"name": &"work",
-"speed": 5.0
-}]
+[ext_resource type="SpriteFrames" uid="uid://crigqnicl00as" path="res://assets/characters/red_units/mago/mago_frames.tres" id="character_frames"]
 
 [node name="Mage" unique_id=2145638211 instance=ExtResource("base")]
+use_attack_events = true
 
 [node name="Sprite" parent="Body" parent_id_path=PackedInt32Array(635982024) index="0" unique_id=588141790]
-sprite_frames = SubResource("character_frames")
-animation = &"idle"
+transform = Transform3D(1, 0, 0, 0, -0.9965711, -0.08274089, 0, 0.08274089, -0.9965711, 0, 0.06779939, 0)
+offset = Vector2(0, 35)
+sprite_frames = ExtResource("character_frames")
+animation = &"attack"
+frame = 10
+frame_progress = 1.0
+
+[node name="GroundShadow" parent="." index="5" unique_id=565216423]
+transform = Transform3D(0.4638327, 0, 0, 0, 0.4638327, 0, 0, 0, 0.4638327, -0.25977004, 0.1, -0.3539554)

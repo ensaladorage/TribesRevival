@@ -1,0 +1,208 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/guardian/guardian_attack.png" id="attack"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/guardian/guardian_attack_2.png" id="attack_2"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/guardian/guardian_guard.png" id="guard"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/guardian/guardian_idle.png" id="idle"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/guardian/guardian_move.png" id="move"]
+
+[sub_resource type="AtlasTexture" id="attack_00"]
+atlas = ExtResource("attack")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_01"]
+atlas = ExtResource("attack")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_02"]
+atlas = ExtResource("attack")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_03"]
+atlas = ExtResource("attack")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_2_00"]
+atlas = ExtResource("attack_2")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_2_01"]
+atlas = ExtResource("attack_2")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_2_02"]
+atlas = ExtResource("attack_2")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_2_03"]
+atlas = ExtResource("attack_2")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="guard_00"]
+atlas = ExtResource("guard")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="guard_01"]
+atlas = ExtResource("guard")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="guard_02"]
+atlas = ExtResource("guard")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="guard_03"]
+atlas = ExtResource("guard")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="guard_04"]
+atlas = ExtResource("guard")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="guard_05"]
+atlas = ExtResource("guard")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_00"]
+atlas = ExtResource("idle")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_01"]
+atlas = ExtResource("idle")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_02"]
+atlas = ExtResource("idle")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_03"]
+atlas = ExtResource("idle")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_04"]
+atlas = ExtResource("idle")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_05"]
+atlas = ExtResource("idle")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_06"]
+atlas = ExtResource("idle")
+region = Rect2(1152, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_07"]
+atlas = ExtResource("idle")
+region = Rect2(1344, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_00"]
+atlas = ExtResource("move")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_01"]
+atlas = ExtResource("move")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_02"]
+atlas = ExtResource("move")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_03"]
+atlas = ExtResource("move")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_04"]
+atlas = ExtResource("move")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_05"]
+atlas = ExtResource("move")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[resource]
+animations = [{
+"frames": [
+{"duration": 1.0, "texture": SubResource("attack_00")},
+{"duration": 1.0, "texture": SubResource("attack_01")},
+{"duration": 1.0, "texture": SubResource("attack_02")},
+{"duration": 1.0, "texture": SubResource("attack_03")}
+],
+"loop": 0,
+"name": &"attack",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("attack_2_00")},
+{"duration": 1.0, "texture": SubResource("attack_2_01")},
+{"duration": 1.0, "texture": SubResource("attack_2_02")},
+{"duration": 1.0, "texture": SubResource("attack_2_03")}
+],
+"loop": 0,
+"name": &"attack_2",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("guard_00")},
+{"duration": 1.0, "texture": SubResource("guard_01")},
+{"duration": 1.0, "texture": SubResource("guard_02")},
+{"duration": 1.0, "texture": SubResource("guard_03")},
+{"duration": 1.0, "texture": SubResource("guard_04")},
+{"duration": 1.0, "texture": SubResource("guard_05")}
+],
+"loop": 1,
+"name": &"guard",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("idle_00")},
+{"duration": 1.0, "texture": SubResource("idle_01")},
+{"duration": 1.0, "texture": SubResource("idle_02")},
+{"duration": 1.0, "texture": SubResource("idle_03")},
+{"duration": 1.0, "texture": SubResource("idle_04")},
+{"duration": 1.0, "texture": SubResource("idle_05")},
+{"duration": 1.0, "texture": SubResource("idle_06")},
+{"duration": 1.0, "texture": SubResource("idle_07")}
+],
+"loop": 1,
+"name": &"idle",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("move_00")},
+{"duration": 1.0, "texture": SubResource("move_01")},
+{"duration": 1.0, "texture": SubResource("move_02")},
+{"duration": 1.0, "texture": SubResource("move_03")},
+{"duration": 1.0, "texture": SubResource("move_04")},
+{"duration": 1.0, "texture": SubResource("move_05")}
+],
+"loop": 1,
+"name": &"move",
+"speed": 10.0
+}]

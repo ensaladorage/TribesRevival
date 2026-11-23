@@ -20,7 +20,7 @@ func _run() -> void:
 	for index in 64:
 		var seed_text := "tree-biomes-%d" % index
 		var blueprint := Catalog.create_blueprint(seed_text)
-		_check(blueprint.biomes.any(func(b): return b.level == 3),"Third height exists")
+		_check_archipelago(blueprint,seed_text)
 		var layers: Array[Dictionary] = [{},{},{}]
 		layouts[hash(blueprint.terrain)] = true
 		_check(blueprint == Catalog.create_blueprint(seed_text), "Repeatable blueprint")
@@ -28,12 +28,16 @@ func _run() -> void:
 		_check(blueprint.biomes.filter(func(b): return b.id == "forest").size() >= 3, "At least three forests")
 		var meadows: Array = blueprint.biomes.filter(func(b): return b.id == "meadow")
 		var animals := Catalog.create_rabbits(seed_text, blueprint.biomes)
+		var starter: Dictionary = meadows.filter(func(b): return b.get("startingMeadow",false))[0]
+		_check(animals.filter(func(a): return a.homeBiomeId == starter.instanceId).size() == 2,"Two starting sheep")
+		for source in ["berry-bush","tree"]:
+			_check(blueprint.resources.filter(func(n): return n.biomeInstanceId == starter.instanceId and n.source == source).size() == 1,"Exactly one starting "+source)
+			_check(blueprint.resources.any(func(n): return n.biomeInstanceId == starter.instanceId and n.source == source and Vector2(n.position.x,n.position.y).distance_to(Vector2(80,80)) <= 10),"Starting "+source)
 		for animal_index in animals.size():
 			var animal: Dictionary = animals[animal_index]
-			var region: Dictionary = meadows[animal_index % meadows.size()].region
+			var region: Dictionary = meadows.filter(func(b): return b.instanceId == animal.homeBiomeId)[0].region
 			for point: Dictionary in [animal.spawnPosition, animal.patrolTarget]:
 				_check(Catalog.Footprint.contains(region, Vector2(point.x, point.y)), "Sheep inside meadow")
-			_check(animal.homeBiomeId == meadows[animal_index % meadows.size()].instanceId,"Sheep keeps its native meadow")
 		var ids := {}
 		for node in blueprint.resources:
 			_check(not ids.has(node.id), "Unique resource IDs")
@@ -43,10 +47,12 @@ func _run() -> void:
 			_check(Catalog.Footprint.contains(biome.region, point), "Resources inside biome tiles")
 			if node.type in ["spark","stone"]:
 				_check(biome.level >= 2 or biome.id in ["mountain","ruins"],"Low mineral in its native biome")
-			if not biome.isDecorativeOnly:
+			if not biome.isDecorativeOnly and not biome.get("startingMeadow",false):
 				_check(point.distance_to(Vector2(80, 80)) >= 12.0, "Starting resource exclusion")
 		for biome in blueprint.biomes:
 			var rule: Array = {"forest":["wood",5,8],"meadow":["wood",2,4],"rocky":["stone",4,6]}.get(biome.id,[])
+			if biome.get("startingMeadow",false):
+				rule = ["wood",1,1]
 			if not rule.is_empty():
 				var nodes: Array = blueprint.resources.filter(func(n): return n.biomeInstanceId == biome.instanceId and n.type == rule[0])
 				_check(nodes.size() >= rule[1] and nodes.size() <= rule[2],"Resource density by biome")
@@ -83,7 +89,7 @@ func _run() -> void:
 					if layers[layer-1].has(n):
 						_check(Catalog.Islands.contrasts(layers[layer][c],layers[layer-1][n]),"Contrasting adjoining terraces")
 
-	_check(layouts.size() > 1, "Different seeds vary the geography")
+	_check(layouts.size() == 64, "Each sampled seed has its own geography")
 	var world := World.instantiate()
 	root.add_child(world)
 	var variants := {}
@@ -110,6 +116,7 @@ func _run() -> void:
 		_check(sprite.texture_filter == BaseMaterial3D.TEXTURE_FILTER_NEAREST, "Nearest filtering")
 		_check(instance.find_children("*", "MeshInstance3D", true, false).all(func(mesh): return mesh.name == "Shadow"), "No old tree geometry; optional editable shadows allowed")
 		instance.free()
+	_test_weather_cadence()
 	_test_lifecycle(world)
 	_test_saved_world(world)
 	world.free()
@@ -117,6 +124,88 @@ func _run() -> void:
 		push_error(failure)
 	print("%s trees: %d checks; 64 seeds, four scenes, harvest/rain and saved world" % ["PASS" if failures.is_empty() else "FAIL", checks])
 	quit(0 if failures.is_empty() else 1)
+
+func _check_archipelago(world: Dictionary, seed_text: String) -> void:
+	var terrain: Array = world.terrain
+	var graph := Catalog.Terrain.graph(terrain)
+	var start := Catalog.Islands.START
+	var home := start.y*Catalog.Terrain.SIZE+start.x
+	var counts := [0,0,0]
+	var area := [0,0,0]
+	for biome in world.biomes:
+		var level: int = biome.level
+		counts[level-1] += 1
+		area[level-1] += biome.region.cells.size()
+		if level == 1: continue
+		var c := Catalog.Terrain.cell(biome.region)
+		var entrances := {}
+		for local in biome.region.cells:
+			var landing := c + Vector2i(local.x,local.y)
+			for direction: Vector2i in [Vector2i.LEFT,Vector2i.RIGHT]:
+				var stair := landing + direction
+				var tile := Catalog.Terrain.code(terrain,stair)
+				if Catalog.Terrain.ramp(tile) and Catalog.Terrain.level(tile) == level-1 and Catalog.Terrain.edge(terrain,landing,stair) and Catalog.Terrain.edge(terrain,stair,stair+direction):
+					entrances[stair] = true
+		var lanes := entrances.keys()
+		_check(lanes.size() == 2 and absi(lanes[0].y-lanes[1].y) == 1 and lanes[0].x == lanes[1].x and Catalog.Terrain.edge(terrain,lanes[0],lanes[1]),seed_text+" two adjacent stair lanes to "+biome.instanceId)
+		var route := graph.get_id_path(home,c.y*Catalog.Terrain.SIZE+c.x)
+		var stairs := {}
+		for id in route:
+			var tile := Catalog.Terrain.code(terrain,Vector2i(id%Catalog.Terrain.SIZE,floori(float(id)/Catalog.Terrain.SIZE)))
+			if Catalog.Terrain.ramp(tile): stairs[Catalog.Terrain.level(tile)] = true
+		_check(stairs.has(1) and (level == 2 or stairs.has(2)),seed_text+" stair route to "+biome.instanceId)
+	for x in range(-8,9):
+		for y in range(-8,9):
+			_check(Catalog.Terrain.code(terrain,start+Vector2i(x,y)) == Catalog.Terrain.LOW,seed_text+" flat start")
+	_check(counts[1] in [7,8] and counts[2] in [3,4],seed_text+" terrace counts")
+	_check(area[0] > area[1]+area[2],seed_text+" majority low ground")
+
+func _test_weather_cadence() -> void:
+	var state := State.create_initial("weather-cadence")
+	for resource in state.resources:
+		resource.amount = 0
+	Weather.update(state, 0.05)
+	var first: Dictionary = state.weather.clouds[0]
+	var initial_position: Dictionary = first.position.duplicate()
+	Weather.update(state, 30.0)
+	_check(first.phase == "passing" and first.position != initial_position, "Dry clouds drift from the start")
+	_check(state.weather.clouds.size() == 2, "A new cloud enters after 30 seconds")
+	_check(state.resources.all(func(resource): return resource.amount == 0), "Dry clouds leave resources depleted")
+	for second in 55:
+		Weather.update(state, 1.0)
+	_check(not state.weather.clouds.any(func(cloud): return cloud.phase in ["approaching","raining"]), "Dry weather until first rain cloud at 90 seconds")
+	for second in 32:
+		Weather.update(state, 1.0)
+	_check(state.weather.clouds.any(func(cloud): return cloud.phase == "raining"), "First rain arrives after its approach")
+	_check(state.resources.any(func(resource): return resource.amount > 0), "Rain replenishes resources")
+	for second in 64:
+		Weather.update(state, 1.0)
+	var next_rain: Array = state.weather.clouds.filter(func(cloud): return cloud.phase == "approaching")
+	_check(next_rain.size() == 1 and next_rain[0].id == "weather-cloud-007", "Rain clouds enter 90 seconds apart")
+
+	var conflict = preload("res://scripts/simulation/conflict_system.gd")
+	var enemy: Dictionary = state.barbarians[0]
+	conflict._defeat_barbarian(state,enemy)
+	_check(enemy.respawnRemainingSeconds == 180.0, "Defeated barbarian waits 180 seconds")
+	conflict._update_respawns_and_fauna(state,179.0)
+	_check(not enemy.isAlive, "Barbarian stays defeated before timeout")
+	conflict._update_respawns_and_fauna(state,1.0)
+	_check(enemy.isAlive, "Barbarian respawns at timeout")
+
+	var sheep: Dictionary = state.animals[0]
+	var hunter: Dictionary = state.units[0]
+	hunter.role = "hunter"
+	conflict._attack(state,hunter,sheep,{"damage":sheep.health,"cooldownSeconds":1.0},"animal")
+	var shot: Dictionary = state.hunterShots[0]
+	state.tick = shot.releaseTick
+	conflict.update_hunter_shots(state)
+	state.tick = shot.impactTick
+	conflict.update_hunter_shots(state)
+	_check(sheep.respawnRemainingSeconds == 90.0 and not sheep.isAlive, "Hunted sheep waits 90 seconds")
+	conflict._update_respawns_and_fauna(state,89.0)
+	_check(not sheep.isAlive, "Sheep stays defeated before timeout")
+	conflict._update_respawns_and_fauna(state,1.0)
+	_check(sheep.isAlive and sheep.position == sheep.spawnPosition, "Sheep respawns at home at timeout")
 
 func _test_lifecycle(world: Node3D) -> void:
 	var state := State.create_initial("tree-lifecycle")
@@ -146,6 +235,7 @@ func _test_lifecycle(world: Node3D) -> void:
 
 func _test_saved_world(world: Node3D) -> void:
 	var original := State.create_initial("saved-tile-world")
+	Weather.update(original, 0.05)
 	var expected: Dictionary = JSON.parse_string(JSON.stringify(original, "", false, true))
 	var directory := "user://tree-save-check-%d" % OS.get_process_id()
 	var repository := Saves.new(directory)
@@ -155,6 +245,7 @@ func _test_saved_world(world: Node3D) -> void:
 	if result.status == "valid":
 		var restored: Dictionary = result.save.gameState
 		_check(restored.terrain == expected.terrain and restored.biomes == expected.biomes and restored.resources == expected.resources and restored.decorations == expected.decorations, "Saved map never regenerated")
+		_check(restored.weather == expected.weather, "Moving dry clouds and schedule survive save/load")
 		var before := JSON.stringify(restored)
 		world.setup(restored)
 		_check(before == JSON.stringify(restored), "Loaded world presentation does not mutate save")

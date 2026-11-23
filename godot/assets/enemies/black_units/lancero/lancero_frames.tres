@@ -1,0 +1,467 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_attack_down.png" id="attack_down"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_attack_down_right.png" id="attack_down_right"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_attack_right.png" id="attack_right"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_attack_up.png" id="attack_up"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_attack_up_right.png" id="attack_up_right"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_defense_down.png" id="defense_down"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_defense_down_right.png" id="defense_down_right"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_defense_right.png" id="defense_right"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_defense_up.png" id="defense_up"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_defense_up_right.png" id="defense_up_right"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_idle.png" id="idle"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/lancero/lancero_move.png" id="move"]
+
+[sub_resource type="AtlasTexture" id="attack_down_00"]
+atlas = ExtResource("attack_down")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_down_01"]
+atlas = ExtResource("attack_down")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_down_02"]
+atlas = ExtResource("attack_down")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_down_right_00"]
+atlas = ExtResource("attack_down_right")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_down_right_01"]
+atlas = ExtResource("attack_down_right")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_down_right_02"]
+atlas = ExtResource("attack_down_right")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_right_00"]
+atlas = ExtResource("attack_right")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_right_01"]
+atlas = ExtResource("attack_right")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_right_02"]
+atlas = ExtResource("attack_right")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_up_00"]
+atlas = ExtResource("attack_up")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_up_01"]
+atlas = ExtResource("attack_up")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_up_02"]
+atlas = ExtResource("attack_up")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_up_right_00"]
+atlas = ExtResource("attack_up_right")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_up_right_01"]
+atlas = ExtResource("attack_up_right")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="attack_up_right_02"]
+atlas = ExtResource("attack_up_right")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_00"]
+atlas = ExtResource("defense_down")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_01"]
+atlas = ExtResource("defense_down")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_02"]
+atlas = ExtResource("defense_down")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_03"]
+atlas = ExtResource("defense_down")
+region = Rect2(960, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_04"]
+atlas = ExtResource("defense_down")
+region = Rect2(1280, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_05"]
+atlas = ExtResource("defense_down")
+region = Rect2(1600, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_right_00"]
+atlas = ExtResource("defense_down_right")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_right_01"]
+atlas = ExtResource("defense_down_right")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_right_02"]
+atlas = ExtResource("defense_down_right")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_right_03"]
+atlas = ExtResource("defense_down_right")
+region = Rect2(960, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_right_04"]
+atlas = ExtResource("defense_down_right")
+region = Rect2(1280, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_down_right_05"]
+atlas = ExtResource("defense_down_right")
+region = Rect2(1600, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_right_00"]
+atlas = ExtResource("defense_right")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_right_01"]
+atlas = ExtResource("defense_right")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_right_02"]
+atlas = ExtResource("defense_right")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_right_03"]
+atlas = ExtResource("defense_right")
+region = Rect2(960, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_right_04"]
+atlas = ExtResource("defense_right")
+region = Rect2(1280, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_right_05"]
+atlas = ExtResource("defense_right")
+region = Rect2(1600, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_00"]
+atlas = ExtResource("defense_up")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_01"]
+atlas = ExtResource("defense_up")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_02"]
+atlas = ExtResource("defense_up")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_03"]
+atlas = ExtResource("defense_up")
+region = Rect2(960, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_04"]
+atlas = ExtResource("defense_up")
+region = Rect2(1280, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_05"]
+atlas = ExtResource("defense_up")
+region = Rect2(1600, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_right_00"]
+atlas = ExtResource("defense_up_right")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_right_01"]
+atlas = ExtResource("defense_up_right")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_right_02"]
+atlas = ExtResource("defense_up_right")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_right_03"]
+atlas = ExtResource("defense_up_right")
+region = Rect2(960, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_right_04"]
+atlas = ExtResource("defense_up_right")
+region = Rect2(1280, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="defense_up_right_05"]
+atlas = ExtResource("defense_up_right")
+region = Rect2(1600, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_00"]
+atlas = ExtResource("idle")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_01"]
+atlas = ExtResource("idle")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_02"]
+atlas = ExtResource("idle")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_03"]
+atlas = ExtResource("idle")
+region = Rect2(960, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_04"]
+atlas = ExtResource("idle")
+region = Rect2(1280, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_05"]
+atlas = ExtResource("idle")
+region = Rect2(1600, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_06"]
+atlas = ExtResource("idle")
+region = Rect2(1920, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_07"]
+atlas = ExtResource("idle")
+region = Rect2(2240, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_08"]
+atlas = ExtResource("idle")
+region = Rect2(2560, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_09"]
+atlas = ExtResource("idle")
+region = Rect2(2880, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_10"]
+atlas = ExtResource("idle")
+region = Rect2(3200, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_11"]
+atlas = ExtResource("idle")
+region = Rect2(3520, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_00"]
+atlas = ExtResource("move")
+region = Rect2(0, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_01"]
+atlas = ExtResource("move")
+region = Rect2(320, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_02"]
+atlas = ExtResource("move")
+region = Rect2(640, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_03"]
+atlas = ExtResource("move")
+region = Rect2(960, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_04"]
+atlas = ExtResource("move")
+region = Rect2(1280, 0, 320, 320)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_05"]
+atlas = ExtResource("move")
+region = Rect2(1600, 0, 320, 320)
+filter_clip = true
+
+[resource]
+animations = [{
+"frames": [
+{"duration": 1.0, "texture": SubResource("attack_down_00")},
+{"duration": 1.0, "texture": SubResource("attack_down_01")},
+{"duration": 1.0, "texture": SubResource("attack_down_02")}
+],
+"loop": 0,
+"name": &"attack_down",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("attack_down_right_00")},
+{"duration": 1.0, "texture": SubResource("attack_down_right_01")},
+{"duration": 1.0, "texture": SubResource("attack_down_right_02")}
+],
+"loop": 0,
+"name": &"attack_down_right",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("attack_right_00")},
+{"duration": 1.0, "texture": SubResource("attack_right_01")},
+{"duration": 1.0, "texture": SubResource("attack_right_02")}
+],
+"loop": 0,
+"name": &"attack_right",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("attack_up_00")},
+{"duration": 1.0, "texture": SubResource("attack_up_01")},
+{"duration": 1.0, "texture": SubResource("attack_up_02")}
+],
+"loop": 0,
+"name": &"attack_up",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("attack_up_right_00")},
+{"duration": 1.0, "texture": SubResource("attack_up_right_01")},
+{"duration": 1.0, "texture": SubResource("attack_up_right_02")}
+],
+"loop": 0,
+"name": &"attack_up_right",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("defense_down_00")},
+{"duration": 1.0, "texture": SubResource("defense_down_01")},
+{"duration": 1.0, "texture": SubResource("defense_down_02")},
+{"duration": 1.0, "texture": SubResource("defense_down_03")},
+{"duration": 1.0, "texture": SubResource("defense_down_04")},
+{"duration": 1.0, "texture": SubResource("defense_down_05")}
+],
+"loop": 1,
+"name": &"defense_down",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("defense_down_right_00")},
+{"duration": 1.0, "texture": SubResource("defense_down_right_01")},
+{"duration": 1.0, "texture": SubResource("defense_down_right_02")},
+{"duration": 1.0, "texture": SubResource("defense_down_right_03")},
+{"duration": 1.0, "texture": SubResource("defense_down_right_04")},
+{"duration": 1.0, "texture": SubResource("defense_down_right_05")}
+],
+"loop": 1,
+"name": &"defense_down_right",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("defense_right_00")},
+{"duration": 1.0, "texture": SubResource("defense_right_01")},
+{"duration": 1.0, "texture": SubResource("defense_right_02")},
+{"duration": 1.0, "texture": SubResource("defense_right_03")},
+{"duration": 1.0, "texture": SubResource("defense_right_04")},
+{"duration": 1.0, "texture": SubResource("defense_right_05")}
+],
+"loop": 1,
+"name": &"defense_right",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("defense_up_00")},
+{"duration": 1.0, "texture": SubResource("defense_up_01")},
+{"duration": 1.0, "texture": SubResource("defense_up_02")},
+{"duration": 1.0, "texture": SubResource("defense_up_03")},
+{"duration": 1.0, "texture": SubResource("defense_up_04")},
+{"duration": 1.0, "texture": SubResource("defense_up_05")}
+],
+"loop": 1,
+"name": &"defense_up",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("defense_up_right_00")},
+{"duration": 1.0, "texture": SubResource("defense_up_right_01")},
+{"duration": 1.0, "texture": SubResource("defense_up_right_02")},
+{"duration": 1.0, "texture": SubResource("defense_up_right_03")},
+{"duration": 1.0, "texture": SubResource("defense_up_right_04")},
+{"duration": 1.0, "texture": SubResource("defense_up_right_05")}
+],
+"loop": 1,
+"name": &"defense_up_right",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("idle_00")},
+{"duration": 1.0, "texture": SubResource("idle_01")},
+{"duration": 1.0, "texture": SubResource("idle_02")},
+{"duration": 1.0, "texture": SubResource("idle_03")},
+{"duration": 1.0, "texture": SubResource("idle_04")},
+{"duration": 1.0, "texture": SubResource("idle_05")},
+{"duration": 1.0, "texture": SubResource("idle_06")},
+{"duration": 1.0, "texture": SubResource("idle_07")},
+{"duration": 1.0, "texture": SubResource("idle_08")},
+{"duration": 1.0, "texture": SubResource("idle_09")},
+{"duration": 1.0, "texture": SubResource("idle_10")},
+{"duration": 1.0, "texture": SubResource("idle_11")}
+],
+"loop": 1,
+"name": &"idle",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("move_00")},
+{"duration": 1.0, "texture": SubResource("move_01")},
+{"duration": 1.0, "texture": SubResource("move_02")},
+{"duration": 1.0, "texture": SubResource("move_03")},
+{"duration": 1.0, "texture": SubResource("move_04")},
+{"duration": 1.0, "texture": SubResource("move_05")}
+],
+"loop": 1,
+"name": &"move",
+"speed": 10.0
+}]

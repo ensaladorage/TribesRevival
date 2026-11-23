@@ -77,7 +77,9 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 		for index in count:
 			var extra: bool = index > 0 and not secondary.is_empty() and random.next_float() < config.secondaryChance
 			types.append(secondary[random.next_int(0,secondary.size()-1)] if extra else primary)
-		if biome.id == "forest":
+		if biome.get("startingMeadow",false):
+			types = ["food","wood"].filter(func(t): return t in active)
+		elif biome.id == "forest":
 			types.clear()
 			for index in random.next_int(5,8): types.append("wood")
 		elif biome.id == "rocky":
@@ -86,7 +88,8 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 		elif biome.id == "meadow" and "wood" in active:
 			types = types.filter(func(t): return t != "wood")
 			for index in random.next_int(2,4): types.append("wood")
-		var cells := Footprint.eligible(biome.region, config.startingResourceExclusionRadius).duplicate()
+		var exclusion: float = 3.0 if biome.get("startingMeadow",false) else config.startingResourceExclusionRadius
+		var cells := Footprint.eligible(biome.region, exclusion).duplicate()
 		_shuffle(cells, random)
 		var cluster := Vector2.INF
 		for index in types.size():
@@ -195,8 +198,12 @@ static func create_rabbits(seed_text: String, biomes: Array) -> Array:
 		return []
 	var random := Random.new(seed_text + ":rabbit-spawns")
 	var rabbits: Array = []
+	var starting := meadows.filter(func(b): return b.get("startingMeadow",false))
+	var others := meadows.filter(func(b): return not b.get("startingMeadow",false))
 	for index in 6:
 		var biome: Dictionary = meadows[index % meadows.size()]
+		if not starting.is_empty():
+			biome = starting[0] if index < 2 or others.is_empty() else others[(index-2) % others.size()]
 		var center := {"x": biome.region.x, "y": biome.region.y}
 		var radius := maxf(biome.region.size / 2.0 - 0.8, 0.5)
 		var use_cells: bool = biome.region.has("spawnCells")
@@ -275,19 +282,60 @@ static func _place_water_rocks(result: Array, terrain: Array, random: Random) ->
 				candidates.append(cell)
 	_shuffle(candidates,random)
 	var anchors: Array[Vector2i] = []
+	var baseline_count := 0
 	for cell in candidates:
-		if anchors.any(func(p): return cell.distance_to(p) < 9.0): continue
+		if anchors.any(func(anchor): return cell.distance_squared_to(anchor) < 81.0):
+			continue
 		anchors.append(cell)
+		baseline_count += 1
+		if anchors.size() % 3 == 0 and Terrain.DIRS.any(func(direction): return cell + direction * 2 in candidates):
+			baseline_count += 1
+		if anchors.size() >= 12:
+			break
+
+	var remaining := baseline_count * 3
+	var rocks: Array[Vector2i] = []
+	var group_sizes := [2, 3, 4, 5]
+	_shuffle(group_sizes, random)
+	# Start with the former coastal anchors, then try alternate centers for narrower bays.
+	for center in anchors + candidates:
+		if remaining < 2:
+			break
+		if rocks.any(func(rock): return center.distance_squared_to(rock) <= 16.0):
+			continue
+		var desired := mini(group_sizes[0], remaining)
+		if remaining - desired == 1 and desired < 5:
+			desired += 1
+		var group: Array[Vector2i] = [center]
+		for cell in candidates:
+			var distance := center.distance_squared_to(cell)
+			if distance < 4.0 or distance > 16.0:
+				continue
+			if rocks.any(func(rock): return cell.distance_squared_to(rock) <= 16.0):
+				continue
+			if group.any(func(rock): return cell.distance_squared_to(rock) < 4.0):
+				continue
+			group.append(cell)
+			if group.size() == desired:
+				break
+		if group.size() != desired:
+			continue
+		rocks.append_array(group)
+		remaining -= group.size()
+		group_sizes.append(group_sizes.pop_front())
+
+	# Leave a few isolated rocks where the coast cannot support another group.
+	for cell in candidates:
+		if remaining == 0:
+			break
+		if rocks.any(func(rock): return cell.distance_squared_to(rock) <= 16.0):
+			continue
+		rocks.append(cell)
+		remaining -= 1
+
+	for cell in rocks:
 		var point := Terrain.center(cell)
 		_append_decoration(result,Vector2(point.x,point.y),"water-rock","","")
-		if anchors.size() % 3 == 0:
-			for direction in Terrain.DIRS:
-				var neighbour: Vector2i = cell + direction*2
-				if neighbour in candidates:
-					point = Terrain.center(neighbour)
-					_append_decoration(result,Vector2(point.x,point.y),"water-rock","","")
-					break
-		if anchors.size() >= 12: break
 
 static func create_blueprint(seed_text: String) -> Dictionary:
 	var world := _world(seed_text)

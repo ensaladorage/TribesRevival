@@ -416,7 +416,7 @@ Las cimas de nivel 3 conservan una franja transitable de nivel 2 alrededor.
 Una pared termina con roca seca sobre tierra o con remate de agua sobre el mar.
 
 Los minions, bárbaros y animales caminan por tierra. Solo las escaleras
-comunican alturas. Las ovejas recorren su pradera de origen y reaparecen allí.
+comunican alturas. Entre recursos detectados de igual prioridad, los minions eligen por recorrido transitable hasta la posición de trabajo o recogida. Minions y bárbaros se ceden el paso en escaleras estrechas. Las ovejas recorren su pradera de origen y reaparecen allí.
 Un golpe cuerpo a cuerpo requiere un paso libre hasta el objetivo. Los ataques
 a distancia conservan su alcance entre alturas. Al arrastrar el tótem o un
 minion se puede sobrevolar el mar. Si se suelta sobre agua, pared o escalera,
@@ -428,21 +428,26 @@ semilla: regiones verdes de distintos tamaños, cantidades y
 combinaciones de recursos. Las zonas pequeñas pueden ser solo
 decoración; las regiones principales de una partida serán
 aproximadamente `20`, sin contar esas manchas menores. Cada celda de tierra pertenece a una única región.
-Las islas y mesetas tienen bordes predominantemente rectos y esquinas
-recortadas. Las terrazas elevadas tienen como referencia una huella de al
+Las islas, mesetas y biomas conservan una forma predominantemente cuadrada
+o rectangular, con esquinas desiguales, entrantes y salientes cortos.
+El claro inicial es llano. Dentro del radio de mando hay una pradera con un solo arbusto de bayas, un solo árbol y dos de las seis ovejas. En nivel 1 pueden convivir varios biomas en una misma isla. Junto a cada meseta, el suelo inferior mantiene el contraste que permite distinguir el desnivel. El archipiélago reparte
+7–8 mesetas de nivel 2 y 3–4 cimas de nivel 3. Cada meseta o cima tiene una escalera de dos casillas contiguas de ancho que conecta con el nivel inferior.
+Las terrazas elevadas tienen como referencia una huella de al
 menos 4 × 4 piezas y como máximo 12 × 10. Los pasos por tierra y las entradas
 a las escaleras permanecen despejados.
 
 - Los bosques forman pinares de 5 a 8 árboles recolectables.
-- Las praderas combinan bayas y 2 a 4 árboles recolectables, normalmente agrupados.
+- Las demás praderas combinan bayas y 2 a 4 árboles recolectables, normalmente agrupados.
 - Los pedregales concentran de 4 a 6 nodos de piedra de distintos tamaños.
 - Las ruinas contienen cristales de Brillo. Las montañas pueden contener rocas,
   árboles y arbustos de bayas.
 
 Los claros, las praderas y los bosques tienen grupos de 2 o 3 arbustos, manchas
 de césped y setas ocasionales de distintos tamaños. El agua junto a las costas
-tiene rocas animadas que actúan como decoración. La semilla determina todas
-estas posiciones. El rendimiento de cada nodo de piedra y de Brillo es común
+tiene rocas animadas que actúan como decoración. Las rocas aparecen en
+grupos de dos a cinco con espacio de agua visible entre ellas. Los mapas
+nuevos triplican la cantidad del generador base dentro del espacio válido. La semilla determina
+todas estas posiciones. El rendimiento de cada nodo de piedra y de Brillo es común
 a sus distintos tamaños visuales. Las futuras vetas de grado 2 siguen pendientes.
 
 Ningún área de bioma puede superponerse con otra, incluidos los `Claros`
@@ -485,7 +490,7 @@ Estos ajustes son visuales y no modifican posiciones lógicas ni guardados.
 Las praderas contienen nodos activos de `food` mediante
 arbustos de bayas. Además, como salvaguarda de progresión, al menos la
 mitad de los claros generados ---incluido el claro inicial--- contiene
-como mínimo un nodo de ramitas.
+como mínimo un nodo de ramitas. Las nubes cruzan el mapa desde el inicio y entra una cada 30 segundos. Cada 90 segundos entra una nube de lluvia. Al llegar a su destino, recupera los nodos agotados de comida y madera del bioma.
 El mundo contiene nodos de árboles (`wood`), vetas de piedra (`stone`) y ruinas luminosas (`spark`). La madera puede ser recolectada
 por `lumberjack`; piedra y Brillo quedan visibles y serializables, pero
 no se asignan a ningún rol jugable hasta que exista un minion adecuado.
@@ -526,7 +531,7 @@ reagrupamiento sin cancelar un combate en curso.
 ### Bárbaros y fauna
 -   El mapa contiene cinco bárbaros con posiciones, patrullas y botín
     reproducibles por semilla. Cada uno vuelve a su punto de aparición
-    `60 s` después de morir.
+    `180 s` después de morir.
 -   La patrulla de cada bárbaro queda dentro de `3,5 m` de su aparición,
     espera entre `2–4 s` deterministas entre destinos y se desplaza a
     `1 m/s`; la persecución conserva `8 m/s`.
@@ -551,7 +556,11 @@ reagrupamiento sin cancelar un combate en curso.
     intervalo determinista de patrulla y retoman su recorrido a `1 m/s`.
 -   Hay seis ovejas pasivas en praderas, con `2 HP`. Se mueven dentro
     de su bioma; el `hunter` los caza en al menos dos golpes y genera
-    `1–2` drops físicos de comida. Reaparecen en su punto a los `30 s`.
+    `1–2` drops físicos de comida. Reaparecen en su punto a los `90 s`.
+    Cada oveja patrulla durante `8 s`, descansa `1 s` y pasta durante
+    `1,2 s` antes de retomar el mismo destino. La primera pausa se escalona
+    hasta un segundo entre ovejas. El Cazador puede alcanzarlas en las tres
+    fases. Al reaparecer, la oveja empieza un ciclo nuevo.
 ### Estadísticas y comportamiento de combate
   Combatiente      HP   Daño   Alcance   Cadencia
   -------------- ---- ------ --------- ----------
@@ -571,11 +580,19 @@ reagrupamiento sin cancelar un combate en curso.
     evita cuerpos aliados y enemigos; los minions no desplazan al bárbaro
     mediante la separación. Las ovejas solo son objetivo del
     `hunter`. Los minions permanecen inmóviles durante el impulso de ataque
-    de `0,22 s`. El cazador y el mago se reposicionan a `6 m/s` y no se aleja más del radio de
+    de `0,22 s` o mientras el Cazador tensa el arco durante `0,5 s`.
+    El Cazador y el Mago se reposicionan a `6 m/s` y respetan el radio de
     mando (`10 m`) del tótem.
+-   El Cazador valida el alcance al empezar a tensar. La flecha fija la
+    posición del objetivo al salir y tarda `0,25 s` en llegar. El objetivo
+    original recibe daño en ese momento si sigue vivo y está a `0,47 m` o
+    menos del punto fijado. Si se apartó, la flecha golpea el suelo.
+    Recoger al Cazador, su muerte o un cambio de clase cancelan la
+    preparación. Las flechas que ya salieron completan su vuelo.
 -   El enfriamiento es un temporizador restante por minion, compartido
-    entre objetivos y tareas de combate/caza: solo se recarga al golpear
-    y nunca se reinicia al cambiar de objetivo.
+    entre objetivos y tareas de combate/caza. Para el Cazador empieza al
+    tensar el arco, aunque el disparo falle. Para el resto empieza al
+    golpear. Cambiar de objetivo conserva el temporizador.
 -   `gatherer`, `explorer` y `artisan` no atacan. Solo activan la huida si
     un enemigo los elige como objetivo de persecución/ataque. Detectar un
     enemigo no interrumpe por sí solo el idle, recolección ni recogida de drops.

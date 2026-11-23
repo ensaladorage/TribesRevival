@@ -1,0 +1,206 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://bjeofbtpqu3ie"]
+
+[ext_resource type="Texture2D" uid="uid://d2iqng7nlw0va" path="res://assets/characters/red_units/lenador/lenador_idle.png" id="idle"]
+[ext_resource type="Texture2D" uid="uid://nyxhtpruo673" path="res://assets/characters/red_units/lenador/lenador_move.png" id="move"]
+[ext_resource type="Texture2D" uid="uid://dg2npgfvpj7g7" path="res://assets/characters/red_units/lenador/lenador_work.png" id="work"]
+
+[sub_resource type="AtlasTexture" id="work_00"]
+atlas = ExtResource("work")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="work_01"]
+atlas = ExtResource("work")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="work_02"]
+atlas = ExtResource("work")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="work_03"]
+atlas = ExtResource("work")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="work_04"]
+atlas = ExtResource("work")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="work_05"]
+atlas = ExtResource("work")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_00"]
+atlas = ExtResource("idle")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_01"]
+atlas = ExtResource("idle")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_02"]
+atlas = ExtResource("idle")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_03"]
+atlas = ExtResource("idle")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_04"]
+atlas = ExtResource("idle")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_05"]
+atlas = ExtResource("idle")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_06"]
+atlas = ExtResource("idle")
+region = Rect2(1152, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_07"]
+atlas = ExtResource("idle")
+region = Rect2(1344, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_00"]
+atlas = ExtResource("move")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_01"]
+atlas = ExtResource("move")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_02"]
+atlas = ExtResource("move")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_03"]
+atlas = ExtResource("move")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_04"]
+atlas = ExtResource("move")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_05"]
+atlas = ExtResource("move")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("work_00")
+}, {
+"duration": 1.0,
+"texture": SubResource("work_01")
+}, {
+"duration": 1.0,
+"texture": SubResource("work_02")
+}, {
+"duration": 1.0,
+"texture": SubResource("work_03")
+}, {
+"duration": 1.0,
+"texture": SubResource("work_04")
+}, {
+"duration": 1.0,
+"texture": SubResource("work_05")
+}],
+"loop": 0,
+"name": &"attack",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("idle_00")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_01")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_02")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_03")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_04")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_05")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_06")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_07")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("move_00")
+}, {
+"duration": 1.0,
+"texture": SubResource("move_01")
+}, {
+"duration": 1.0,
+"texture": SubResource("move_02")
+}, {
+"duration": 1.0,
+"texture": SubResource("move_03")
+}, {
+"duration": 1.0,
+"texture": SubResource("move_04")
+}, {
+"duration": 1.0,
+"texture": SubResource("move_05")
+}],
+"loop": 1,
+"name": &"move",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("work_00")
+}, {
+"duration": 1.0,
+"texture": SubResource("work_01")
+}, {
+"duration": 1.0,
+"texture": SubResource("work_02")
+}, {
+"duration": 1.0,
+"texture": SubResource("work_03")
+}, {
+"duration": 1.0,
+"texture": SubResource("work_04")
+}, {
+"duration": 1.0,
+"texture": SubResource("work_05")
+}],
+"loop": 1,
+"name": &"work",
+"speed": 10.0
+}]

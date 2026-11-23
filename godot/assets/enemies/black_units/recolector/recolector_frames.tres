@@ -1,0 +1,397 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/recolector/recolector_idle.png" id="idle"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/recolector/recolector_idle_gold.png" id="idle_gold"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/recolector/recolector_idle_meat.png" id="idle_meat"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/recolector/recolector_idle_wood.png" id="idle_wood"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/recolector/recolector_move.png" id="move"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/recolector/recolector_move_gold.png" id="move_gold"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/recolector/recolector_move_meat.png" id="move_meat"]
+[ext_resource type="Texture2D" path="res://assets/enemies/black_units/recolector/recolector_move_wood.png" id="move_wood"]
+
+[sub_resource type="AtlasTexture" id="idle_00"]
+atlas = ExtResource("idle")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_01"]
+atlas = ExtResource("idle")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_02"]
+atlas = ExtResource("idle")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_03"]
+atlas = ExtResource("idle")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_04"]
+atlas = ExtResource("idle")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_05"]
+atlas = ExtResource("idle")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_06"]
+atlas = ExtResource("idle")
+region = Rect2(1152, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_07"]
+atlas = ExtResource("idle")
+region = Rect2(1344, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_gold_00"]
+atlas = ExtResource("idle_gold")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_gold_01"]
+atlas = ExtResource("idle_gold")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_gold_02"]
+atlas = ExtResource("idle_gold")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_gold_03"]
+atlas = ExtResource("idle_gold")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_gold_04"]
+atlas = ExtResource("idle_gold")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_gold_05"]
+atlas = ExtResource("idle_gold")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_gold_06"]
+atlas = ExtResource("idle_gold")
+region = Rect2(1152, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_gold_07"]
+atlas = ExtResource("idle_gold")
+region = Rect2(1344, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_meat_00"]
+atlas = ExtResource("idle_meat")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_meat_01"]
+atlas = ExtResource("idle_meat")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_meat_02"]
+atlas = ExtResource("idle_meat")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_meat_03"]
+atlas = ExtResource("idle_meat")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_meat_04"]
+atlas = ExtResource("idle_meat")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_meat_05"]
+atlas = ExtResource("idle_meat")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_meat_06"]
+atlas = ExtResource("idle_meat")
+region = Rect2(1152, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_meat_07"]
+atlas = ExtResource("idle_meat")
+region = Rect2(1344, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_wood_00"]
+atlas = ExtResource("idle_wood")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_wood_01"]
+atlas = ExtResource("idle_wood")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_wood_02"]
+atlas = ExtResource("idle_wood")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_wood_03"]
+atlas = ExtResource("idle_wood")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_wood_04"]
+atlas = ExtResource("idle_wood")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_wood_05"]
+atlas = ExtResource("idle_wood")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_wood_06"]
+atlas = ExtResource("idle_wood")
+region = Rect2(1152, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_wood_07"]
+atlas = ExtResource("idle_wood")
+region = Rect2(1344, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_00"]
+atlas = ExtResource("move")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_01"]
+atlas = ExtResource("move")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_02"]
+atlas = ExtResource("move")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_03"]
+atlas = ExtResource("move")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_04"]
+atlas = ExtResource("move")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_05"]
+atlas = ExtResource("move")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_gold_00"]
+atlas = ExtResource("move_gold")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_gold_01"]
+atlas = ExtResource("move_gold")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_gold_02"]
+atlas = ExtResource("move_gold")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_gold_03"]
+atlas = ExtResource("move_gold")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_gold_04"]
+atlas = ExtResource("move_gold")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_gold_05"]
+atlas = ExtResource("move_gold")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_meat_00"]
+atlas = ExtResource("move_meat")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_meat_01"]
+atlas = ExtResource("move_meat")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_meat_02"]
+atlas = ExtResource("move_meat")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_meat_03"]
+atlas = ExtResource("move_meat")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_meat_04"]
+atlas = ExtResource("move_meat")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_meat_05"]
+atlas = ExtResource("move_meat")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_wood_00"]
+atlas = ExtResource("move_wood")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_wood_01"]
+atlas = ExtResource("move_wood")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_wood_02"]
+atlas = ExtResource("move_wood")
+region = Rect2(384, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_wood_03"]
+atlas = ExtResource("move_wood")
+region = Rect2(576, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_wood_04"]
+atlas = ExtResource("move_wood")
+region = Rect2(768, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_wood_05"]
+atlas = ExtResource("move_wood")
+region = Rect2(960, 0, 192, 192)
+filter_clip = true
+
+[resource]
+animations = [{
+"frames": [
+{"duration": 1.0, "texture": SubResource("idle_00")},
+{"duration": 1.0, "texture": SubResource("idle_01")},
+{"duration": 1.0, "texture": SubResource("idle_02")},
+{"duration": 1.0, "texture": SubResource("idle_03")},
+{"duration": 1.0, "texture": SubResource("idle_04")},
+{"duration": 1.0, "texture": SubResource("idle_05")},
+{"duration": 1.0, "texture": SubResource("idle_06")},
+{"duration": 1.0, "texture": SubResource("idle_07")}
+],
+"loop": 1,
+"name": &"idle",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("idle_gold_00")},
+{"duration": 1.0, "texture": SubResource("idle_gold_01")},
+{"duration": 1.0, "texture": SubResource("idle_gold_02")},
+{"duration": 1.0, "texture": SubResource("idle_gold_03")},
+{"duration": 1.0, "texture": SubResource("idle_gold_04")},
+{"duration": 1.0, "texture": SubResource("idle_gold_05")},
+{"duration": 1.0, "texture": SubResource("idle_gold_06")},
+{"duration": 1.0, "texture": SubResource("idle_gold_07")}
+],
+"loop": 1,
+"name": &"idle_gold",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("idle_meat_00")},
+{"duration": 1.0, "texture": SubResource("idle_meat_01")},
+{"duration": 1.0, "texture": SubResource("idle_meat_02")},
+{"duration": 1.0, "texture": SubResource("idle_meat_03")},
+{"duration": 1.0, "texture": SubResource("idle_meat_04")},
+{"duration": 1.0, "texture": SubResource("idle_meat_05")},
+{"duration": 1.0, "texture": SubResource("idle_meat_06")},
+{"duration": 1.0, "texture": SubResource("idle_meat_07")}
+],
+"loop": 1,
+"name": &"idle_meat",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("idle_wood_00")},
+{"duration": 1.0, "texture": SubResource("idle_wood_01")},
+{"duration": 1.0, "texture": SubResource("idle_wood_02")},
+{"duration": 1.0, "texture": SubResource("idle_wood_03")},
+{"duration": 1.0, "texture": SubResource("idle_wood_04")},
+{"duration": 1.0, "texture": SubResource("idle_wood_05")},
+{"duration": 1.0, "texture": SubResource("idle_wood_06")},
+{"duration": 1.0, "texture": SubResource("idle_wood_07")}
+],
+"loop": 1,
+"name": &"idle_wood",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("move_00")},
+{"duration": 1.0, "texture": SubResource("move_01")},
+{"duration": 1.0, "texture": SubResource("move_02")},
+{"duration": 1.0, "texture": SubResource("move_03")},
+{"duration": 1.0, "texture": SubResource("move_04")},
+{"duration": 1.0, "texture": SubResource("move_05")}
+],
+"loop": 1,
+"name": &"move",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("move_gold_00")},
+{"duration": 1.0, "texture": SubResource("move_gold_01")},
+{"duration": 1.0, "texture": SubResource("move_gold_02")},
+{"duration": 1.0, "texture": SubResource("move_gold_03")},
+{"duration": 1.0, "texture": SubResource("move_gold_04")},
+{"duration": 1.0, "texture": SubResource("move_gold_05")}
+],
+"loop": 1,
+"name": &"move_gold",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("move_meat_00")},
+{"duration": 1.0, "texture": SubResource("move_meat_01")},
+{"duration": 1.0, "texture": SubResource("move_meat_02")},
+{"duration": 1.0, "texture": SubResource("move_meat_03")},
+{"duration": 1.0, "texture": SubResource("move_meat_04")},
+{"duration": 1.0, "texture": SubResource("move_meat_05")}
+],
+"loop": 1,
+"name": &"move_meat",
+"speed": 10.0
+}, {
+"frames": [
+{"duration": 1.0, "texture": SubResource("move_wood_00")},
+{"duration": 1.0, "texture": SubResource("move_wood_01")},
+{"duration": 1.0, "texture": SubResource("move_wood_02")},
+{"duration": 1.0, "texture": SubResource("move_wood_03")},
+{"duration": 1.0, "texture": SubResource("move_wood_04")},
+{"duration": 1.0, "texture": SubResource("move_wood_05")}
+],
+"loop": 1,
+"name": &"move_wood",
+"speed": 10.0
+}]

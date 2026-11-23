@@ -2,6 +2,8 @@
 extends Node3D
 ## Presentation only. SpriteFrames, transforms and selection shape live in scenes.
 
+const FACING_DEAD_ZONE := 0.0001
+
 @export var visual_scale := Vector3.ONE:
 	set(value):
 		visual_scale = value
@@ -15,30 +17,69 @@ extends Node3D
 @export var health_screen_margin_pixels := 18.0
 @export var show_health := true
 @export var carried_height := 2.6
+@export var use_attack_events := false
 var _health_position := Vector3.ZERO
 var _rest_position := Vector3.ZERO
 var _carried := false
+var _right_flip_h := false
+var _last_attack_effect := ""
 
 func _ready() -> void:
+	_right_flip_h = $Body/Sprite.flip_h
 	_rest_position = $Body.position
 	_health_position = $Health.position
 	$Body.scale = visual_scale
 	$Body/Sprite.modulate = visual_tint
 
-func present(actor: Dictionary) -> void:
+func present(actor: Dictionary, is_moving: bool, horizontal: float = 0.0, graze_frame: int = -1) -> void:
 	_carried = actor.get("isCarried", false)
 	reset_feedback()
 	var sprite: AnimatedSprite3D = $Body/Sprite
-	var animation := "idle"
-	if actor.get("task", {}).get("kind", "") == "combat":
-		animation = "attack"
-	elif actor.get("state", "") in ["working", "gathering"]:
-		animation = "work"
-	elif actor.has("navigation") and Vector2(actor.navigation.velocity.x, actor.navigation.velocity.y).length_squared() > 1e-8:
-		animation = "move"
-	if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(animation):
-		if sprite.animation != animation or not sprite.is_playing():
-			sprite.play(animation)
+	if not _carried and is_moving and absf(horizontal) > FACING_DEAD_ZONE:
+		sprite.flip_h = not _right_flip_h if horizontal < 0.0 else _right_flip_h
+	if sprite.sprite_frames == null:
+		return
+	if use_attack_events and not _carried and sprite.animation == &"attack" and sprite.is_playing():
+		return
+	if graze_frame >= 0 and sprite.sprite_frames.has_animation(&"graze"):
+		sprite.animation = &"graze"
+		sprite.pause()
+		sprite.set_frame_and_progress(graze_frame, 0.0)
+		return
+	var animation: StringName = &"idle"
+	if not _carried:
+		if not use_attack_events and actor.get("task", {}).get("kind", "") == "combat" and sprite.sprite_frames.has_animation(&"attack"):
+			animation = &"attack"
+		elif actor.get("state", "") in ["working", "gathering"] and sprite.sprite_frames.has_animation(&"work"):
+			animation = &"work"
+		elif is_moving and sprite.sprite_frames.has_animation(&"move"):
+			animation = &"move"
+	if sprite.sprite_frames.has_animation(animation) and (sprite.animation != animation or not sprite.is_playing()):
+		sprite.play(animation)
+
+func present_attack(effect_id: String) -> bool:
+	if not use_attack_events or _carried or effect_id == _last_attack_effect:
+		return false
+	var sprite: AnimatedSprite3D = $Body/Sprite
+	if sprite.sprite_frames == null or not sprite.sprite_frames.has_animation(&"attack"):
+		return false
+	_last_attack_effect = effect_id
+	sprite.stop()
+	sprite.play(&"attack")
+	return true
+
+func present_hunter_draw(animation_frame: float, aim_horizontal: float) -> void:
+	if _carried:
+		return
+	var sprite: AnimatedSprite3D = $Body/Sprite
+	if sprite.sprite_frames == null or not sprite.sprite_frames.has_animation(&"attack"):
+		return
+	if absf(aim_horizontal) > FACING_DEAD_ZONE:
+		sprite.flip_h = not _right_flip_h if aim_horizontal < 0.0 else _right_flip_h
+	sprite.animation = &"attack"
+	sprite.pause()
+	var frame_index := mini(floori(animation_frame), sprite.sprite_frames.get_frame_count(&"attack") - 1)
+	sprite.set_frame_and_progress(frame_index, clampf(animation_frame - frame_index, 0.0, 1.0))
 
 func reset_feedback() -> void:
 	$Body.position = _rest_position + Vector3.UP * (carried_height if _carried else 0.0)

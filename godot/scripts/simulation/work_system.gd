@@ -75,8 +75,11 @@ static func dispatch_resource_call(state: Dictionary, caller: Dictionary) -> boo
 			if candidate.id != caller.id and not candidate.get("isCarried", false) and not Move.returning_after_drop(state, candidate) and candidate.task.kind in ["idle", "return-to-totem"] and Rules.total_amount(candidate.cargo.amounts) == 0 and candidate.cancelledTargetId != resource.id and Rules.can_gather(candidate.role, resource, state.toolLevels):
 				responders.append(candidate)
 		_sort_nearest(responders, resource.position)
-		if not responders.is_empty():
-			set_task(responders[0], {"kind": "gather", "targetResourceId": resource.id, "destination": resource.position.duplicate(), "cause": "resource-call-received"})
+		for responder in responders:
+			var goal := Move.Terrain.work_position(state.get("terrain", []), responder.position, resource)
+			if goal.is_empty() or not is_finite(Move.Terrain.route_length(state.get("terrain", []), responder.position, goal)):
+				continue
+			set_task(responder, {"kind":"gather","targetResourceId":resource.id,"destination":goal,"cause":"resource-call-received"})
 			return true
 	return false
 
@@ -130,13 +133,13 @@ static func gather_duration(state: Dictionary, resource: Dictionary) -> float:
 	return base / Economy.gather_speed_multiplier(tool, state.toolLevels[tool]) if not tool.is_empty() else base
 
 static func choose_work_task(state: Dictionary, unit: Dictionary) -> Dictionary:
-	var gather_task := Rules.choose_gather_task({"role": unit.role, "unitPosition": unit.position, "totemPosition": state.totem.position, "commandRadius": state.totem.commandRadius, "cargo": unit.cargo, "resources": state.resources, "toolLevels": state.toolLevels, "reservedTargetIds": reserved_targets(state, unit, "gather"), "excludedTargetId": unit.cancelledTargetId})
+	var gather_task := Rules.choose_gather_task({"role": unit.role, "terrain": state.get("terrain", []), "unitPosition": unit.position, "totemPosition": state.totem.position, "commandRadius": state.totem.commandRadius, "cargo": unit.cargo, "resources": state.resources, "toolLevels": state.toolLevels, "reservedTargetIds": reserved_targets(state, unit, "gather"), "excludedTargetId": unit.cancelledTargetId})
 	var corpse_task: Variant = _corpse_task(state, unit)
 	if corpse_task != null:
 		return corpse_task
 	if gather_task.kind == "gather":
 		return gather_task
-	var drop_task := Rules.choose_drop_task({"unitPosition": unit.position, "drops": state.drops, "commandRadius": state.totem.commandRadius, "reservedTargetIds": reserved_targets(state, unit, "collect-drop"), "excludedTargetId": unit.cancelledTargetId})
+	var drop_task := Rules.choose_drop_task({"terrain": state.get("terrain", []), "unitPosition": unit.position, "drops": state.drops, "commandRadius": state.totem.commandRadius, "reservedTargetIds": reserved_targets(state, unit, "collect-drop"), "excludedTargetId": unit.cancelledTargetId})
 	if drop_task.kind == "collect-drop":
 		return drop_task
 	return gather_task
@@ -145,6 +148,13 @@ static func update_unit(state: Dictionary, unit: Dictionary, delta: float, frame
 	if Combat.is_ranged(unit.role, state.toolLevels.sword) and unit.attackLockRemainingSeconds > 0:
 		return
 	if unit.task.kind == "idle":
+		var rows: Array = state.get("terrain", [])
+		var cell := Move.Terrain.cell(unit.position)
+		if Move.Terrain.ramp(Move.Terrain.code(rows, cell)):
+			var direction: int = unit.get("stairTicket", {}).get("exitDirection", 1)
+			var landing := Move.Terrain.center(cell + Vector2i(direction, 0))
+			Move.move_towards(state, unit, landing, Move.UNIT_SPEED * delta, frame)
+			return
 		if Rules.total_amount(unit.cargo.amounts) > 0:
 			drop_cargo(state, unit, unit.position, null)
 			return
@@ -181,15 +191,19 @@ static func update_unit(state: Dictionary, unit: Dictionary, delta: float, frame
 			else:
 				set_task(unit, Rules.idle_task("resource-depleted"))
 			return
-		var approach := Move.resource_approach(unit.position,resource)
-		if not Move.Terrain.clear(state.get("terrain",[]),approach,resource.position):
-			approach = resource.position
-		if not Move.Terrain.fits(state.get("terrain",[]),approach):
+		var rows: Array = state.get("terrain", [])
+		var approach: Dictionary = unit.task.destination if unit.task.destination is Dictionary else {}
+		if approach.is_empty() or approach == resource.position or not Move.Terrain.clear(rows, approach, resource.position, 0.0):
+			approach = Move.Terrain.work_position(rows, unit.position, resource)
+			unit.task.destination = approach
+		if approach.is_empty():
 			unit.cancelledTargetId = resource.id
 			set_task(unit,Rules.idle_task("no-valid-resource"))
 			return
 		if not Move.move_towards(state, unit, approach, Move.UNIT_SPEED * delta, frame):
 			unit.state = "seeking-task"
+			return
+		if not Move.Terrain.clear(rows, unit.position, resource.position, 0.0):
 			return
 		unit.state = "gathering"
 		unit.actionProgressSeconds += delta
@@ -211,8 +225,15 @@ static func update_unit(state: Dictionary, unit: Dictionary, delta: float, frame
 		if drop == null or drop.amount <= 0:
 			set_task(unit, Rules.idle_task("drop-empty"))
 			return
+		if unit.task.destination != drop.position or not unit.has("navigation"):
+			if not is_finite(Move.Terrain.route_length(state.get("terrain", []), unit.position, drop.position)):
+				set_task(unit, Rules.idle_task("no-valid-resource"))
+				return
+			unit.task.destination = drop.position.duplicate()
 		if not Move.move_towards(state, unit, drop.position, Move.UNIT_SPEED * delta, frame):
 			unit.state = "collecting-drop"
+			return
+		if not Move.Terrain.clear(state.get("terrain", []), unit.position, drop.position):
 			return
 		state.inventory.amounts = Rules.collect_drop(drop, state.inventory.amounts).inventory
 		state.drops = state.drops.filter(func(candidate): return candidate.id != drop.id)

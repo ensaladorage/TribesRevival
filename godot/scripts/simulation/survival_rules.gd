@@ -63,16 +63,20 @@ static func collect_drop(drop: Dictionary, inventory: Dictionary) -> Dictionary:
 static func idle_task(cause: String = "no-valid-resource") -> Dictionary:
 	return {"kind": "idle", "cause": cause, "targetResourceId": null, "destination": null}
 
-static func _nearest(candidates: Array, position: Dictionary) -> Variant:
-	var ordered := candidates.duplicate()
-	ordered.sort_custom(func(a, b):
-		var adx: float = position.x - a.position.x
-		var ady: float = position.y - a.position.y
-		var bdx: float = position.x - b.position.x
-		var bdy: float = position.y - b.position.y
-		var difference := adx * adx + ady * ady - (bdx * bdx + bdy * bdy)
-		return difference < 0 if difference != 0 else a.id < b.id)
-	return ordered[0] if not ordered.is_empty() else null
+const Terrain = preload("res://scripts/simulation/island_terrain.gd")
+
+static func _nearest(candidates: Array, position: Dictionary, rows: Array) -> Variant:
+	var best: Variant = null
+	var shortest := INF
+	for candidate in candidates:
+		var goal := Terrain.work_position(rows, position, candidate)
+		if goal.is_empty():
+			continue
+		var cost := Terrain.route_length(rows, position, goal)
+		if cost < shortest or (best != null and cost == shortest and candidate.id < best.id):
+			best = {"id":candidate.id,"position":goal}
+			shortest = cost
+	return best
 
 static func _in_detection_range(position: Dictionary, target: Dictionary, command_radius: float) -> bool:
 	var dx: float = target.x - position.x
@@ -86,7 +90,7 @@ static func choose_gather_task(input: Dictionary) -> Dictionary:
 	for node in input.resources:
 		if node.amount > 0 and can_gather(input.role, node, input.get("toolLevels", {"axe": 0, "hammer": 0, "sword": 0})) and node.id != input.get("excludedTargetId") and node.id not in input.get("reservedTargetIds", []) and _in_detection_range(input.unitPosition, node.position, input.commandRadius):
 			candidates.append(node)
-	var target: Variant = _nearest(candidates, input.unitPosition)
+	var target: Variant = _nearest(candidates, input.unitPosition, input.get("terrain", []))
 	if target == null:
 		return idle_task()
 	return {"kind": "gather", "cause": "resource-found", "targetResourceId": target.id, "destination": target.position}
@@ -96,7 +100,7 @@ static func choose_drop_task(input: Dictionary) -> Dictionary:
 	for drop in input.drops:
 		if drop.amount > 0 and drop.id != input.get("excludedTargetId") and drop.id not in input.get("reservedTargetIds", []) and _in_detection_range(input.unitPosition, drop.position, input.commandRadius):
 			candidates.append(drop)
-	var target: Variant = _nearest(candidates, input.unitPosition)
+	var target: Variant = _nearest(candidates, input.unitPosition, input.get("terrain", []))
 	if target == null:
 		return idle_task()
 	return {"kind": "collect-drop", "cause": "drop-found", "targetResourceId": target.id, "destination": target.position}

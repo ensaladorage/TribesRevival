@@ -59,6 +59,7 @@ func advance(frame_seconds: float) -> void:
 		if state.phase not in ["paused", "victory"]:
 			state.tick += 1
 			if state.phase == "defeat":
+				Conflict.update_hunter_shots(state)
 				Survival.age_effects(state, FIXED_DT)
 			else:
 				Weather.update(state, FIXED_DT)
@@ -67,6 +68,7 @@ func advance(frame_seconds: float) -> void:
 				Conflict.update(state, FIXED_DT, frame)
 				Work.update_tribe(state, FIXED_DT, frame)
 				Movement.resolve_spacing(state)
+				Conflict.update_hunter_shots(state)
 				Survival.update_campfires(state, FIXED_DT)
 				Survival.age_effects(state, FIXED_DT)
 		accumulator -= FIXED_DT

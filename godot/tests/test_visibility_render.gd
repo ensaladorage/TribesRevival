@@ -37,12 +37,23 @@ func _run() -> void:
 		var focus := tree.global_position + Vector3.UP * 2
 		camera.position = focus + Vector3(1, tan(deg_to_rad(35)) * sqrt(2), 1).normalized() * 120
 		camera.look_at(focus)
-		# Put the body on the ground behind the projected crown.
-		var point: Vector3 = world._occlusion.sprite_point(sprite, Vector2(0.5, 0.42), camera)
-		point -= camera.global_basis.z * ((point.y - 0.9) / camera.global_basis.z.y)
-		state.units[0].position = {"x": point.x, "y": point.z}
+		# Place the visible body behind the crown independently of the terrain height
+		# and the actor atlas padding. Only the view moves in this render test.
+		var unit: Dictionary = state.units[0]
+		var previous := {unit.id: {"x": unit.position.x + 1.0, "y": unit.position.y}}
+		world.sync(state, previous)
+		var actor: Node3D = world._views[state.units[0].id]
+		var body: AnimatedSprite3D = actor.get_node("Body/Sprite")
+		if not body.flip_h:
+			failures += 1
+			push_error("Body should face left for mirrored occlusion")
+		var samples: PackedVector3Array = world._occlusion.sprite_samples(body, camera)
+		var center: Vector2 = world._occlusion.projected_bounds(samples, camera).get_center()
+		var body_center := camera.global_basis.x * center.x + camera.global_basis.y * center.y
+		body_center += camera.global_basis.z * samples[0].dot(camera.global_basis.z)
+		var crown_point: Vector3 = world._occlusion.sprite_point(sprite, Vector2(0.5, 0.42), camera)
+		actor.global_position += crown_point - camera.global_basis.z * 2.0 - body_center
 		totem.position = tree.position - camera.global_basis.x * 5 + Vector3.UP * 2
-		world.sync(state)
 		for zoom in [36.0, 18.0]:
 			camera.size = zoom
 			tree.update_holes({}, camera, 1.0)
