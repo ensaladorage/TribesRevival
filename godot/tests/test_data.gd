@@ -217,7 +217,20 @@ func _test_support(reference: Dictionary) -> void:
 	for sample in reference.awareness:
 		_equal(Awareness.choose_calls(sample.units, sample.entities, 18, 18), sample.result, "entity calls")
 	for sample in reference.gathering:
-		_equal(Rules.choose_gather_task(sample.input), sample.result, "gather selection")
+		var expected: Dictionary = sample.result.duplicate(true)
+		var actual := Rules.choose_gather_task(sample.input)
+		if expected.kind == "gather" and actual.kind == "gather":
+			# The Babylon fixture targets the node centre. Godot stops at its
+			# interaction radius on the approach from the worker.
+			var node: Dictionary = sample.input.resources.filter(func(n): return n.id == expected.targetResourceId)[0]
+			var dx := float(sample.input.unitPosition.x)-float(node.position.x)
+			var dy := float(sample.input.unitPosition.y)-float(node.position.y)
+			var scale := float(node.interactionRadius)/sqrt(dx*dx+dy*dy)
+			var distance_error := Vector2(actual.destination.x-(node.position.x+dx*scale),actual.destination.y-(node.position.y+dy*scale)).length()
+			_equal(distance_error < 0.00001,true,"physical work position")
+			actual.erase("destination")
+			expected.erase("destination")
+		_equal(actual, expected, "gather selection")
 
 func _test_economy(reference: Dictionary) -> void:
 	for population in reference.recruitment.size():

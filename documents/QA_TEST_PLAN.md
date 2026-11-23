@@ -20,9 +20,8 @@ guardar y cargar durante el desarrollo de sistemas que dependan de ello.
   acabados de acantilado en la escena de referencia.
 - En 64 semillas comprobar determinismo, conectividad, contraste y tamaño
   de terrazas, pertenencia de recursos y densidades de árboles y piedras.
-- Contar 7–8 mesetas y 3–4 cimas por mapa, comprobar el claro llano,
-  la mayoría de suelo de nivel 1 y la ruta por escaleras desde el claro
-  hasta cada altura. Revisar las siluetas en capturas de tres semillas.
+- Ejecutar `test_landscape_travel.gd` sobre `relieve-000` a `relieve-063` con uno y ocho trabajadores. Comprobar subida a la primera cantera, ingreso de piedra, descenso y reagrupación. Registrar semillas y ticks de los recorridos fallidos o lentos.
+- Abrir `LandscapeReview.tscn` con F6 para comprobar el arrastre continuo y la legibilidad en movimiento. Comparar capturas de las semillas 000, 017, 042 y la peor del lote a la misma escala mediante `capture_landscape.gd`.
 - Abrir un mapa guardado antes del ajuste y comparar terreno, biomas,
   recursos y decoración. Comprobar ambas entradas del generador, desde
   Nueva partida y desde Reiniciar tras la derrota.

@@ -1216,3 +1216,9 @@ La generación mezcla biomas en islas de nivel 1 e incorpora una pradera de inic
 Las nubes cruzan el mapa desde el inicio con nuevas entradas cada 30 segundos. La lluvia que repone comida y madera se programa cada 90 segundos y los bárbaros reaparecen a los 180 segundos. Pasaron las pruebas de cadencia, guardado, nubes e interpolación de reaparición en Godot 4.7.2. La paridad histórica reporta ocho diferencias de coordenadas de trabajo en la selección de recolección.
 
 Las ovejas reaparecen en su punto de origen 90 segundos después de ser cazadas. Verificado con la prueba de temporizadores y la de interpolación de reaparición en Godot 4.7.2.
+
+## Mapa exterior y recorrido de revisión — 2026-11-23
+
+El generador de partidas nuevas combina costas curvadas, una llanura costera asimétrica, bocas de paso ensanchadas y terrazas con escaleras principales de cinco carriles. Los árboles y grupos decorativos reservan espacio delante de las escaleras. El catálogo comprueba posiciones de trabajo y cuotas antes de aceptar un candidato. Tras ocho intentos puede cargar un plano poblado de reserva. El formato de los slots se conserva.
+
+Godot 4.7.2 completó 128 trayectos de ida y vuelta sobre 64 semillas, con uno y ocho artesanos, entrega de piedra y reagrupación. El trayecto más largo con ocho unidades fue relieve-061 con 422 ticks. Dos procesos produjeron los mismos hashes para los 64 planos completos. Pasaron las suites de datos, árboles, rutas y decoración. Se comprobó la conservación de terreno, regiones, recursos agotados, decoración, animales y bárbaros de un mundo generado con la revisión 0318d04 tras guardar y cargar. La prueba de captura usó proyección real del puntero y revisó la subida con ocho unidades; la evaluación de comodidad con ratón físico queda pendiente. El renderer Compatibility informó al cerrar de una textura pendiente de liberar.

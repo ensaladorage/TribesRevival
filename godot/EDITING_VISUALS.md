@@ -348,3 +348,9 @@ gira suavemente hacia su trayectoria.
 En `scenes/actors/CharactersBase.tscn`, la raíz expone `carried_height` para la
 altura visual al arrastrar. Las variantes heredan este ajuste. La sombra
 permanece en el suelo y la barra de vida acompaña al cuerpo elevado.
+
+### Ajustar y probar el mapa exterior
+
+Abrir `res://scenes/world/LandscapeReview.tscn` y ejecutar con F6. En su nodo Review se eligen la semilla y la vegetación. La escena comienza con ocho unidades y un artesano. Con la vegetación desactivada, la primera cantera es el único destino de trabajo. Arrastrar el tótem hacia el este, subir al rellano de la cantera, esperar la entrega de piedra y volver al claro.
+
+Editar `res://scripts/simulation/landscape_profile.tres` para ajustar separación de costas, profundidad de ensenada, anchura de recorrido, ensanchamiento de bocas y profundidad de mesetas. Editar `vegetation_profile.tres` en la misma carpeta para cambiar separación de grupos, cantidad de hierba y frecuencia de setas. En IslandSurface se ajusta el ancho en píxeles de la transición entre suelos. Crear una partida nueva para evaluar los perfiles.

@@ -428,12 +428,8 @@ semilla: regiones verdes de distintos tamaños, cantidades y
 combinaciones de recursos. Las zonas pequeñas pueden ser solo
 decoración; las regiones principales de una partida serán
 aproximadamente `20`, sin contar esas manchas menores. Cada celda de tierra pertenece a una única región.
-Las islas, mesetas y biomas conservan una forma predominantemente cuadrada
-o rectangular, con esquinas desiguales, entrantes y salientes cortos.
-El claro inicial es llano. Dentro del radio de mando hay una pradera con un solo arbusto de bayas, un solo árbol y dos de las seis ovejas. En nivel 1 pueden convivir varios biomas en una misma isla. Junto a cada meseta, el suelo inferior mantiene el contraste que permite distinguir el desnivel. El archipiélago reparte
-7–8 mesetas de nivel 2 y 3–4 cimas de nivel 3. Cada meseta o cima tiene una escalera de dos casillas contiguas de ancho que conecta con el nivel inferior.
-Las terrazas elevadas tienen como referencia una huella de al
-menos 4 × 4 piezas y como máximo 12 × 10. Los pasos por tierra y las entradas
+Las costas combinan llanuras continuas, ensenadas y promontorios. Los pasos principales se curvan y se abren al llegar a un claro o a una terraza.
+El claro inicial es llano. Dentro del radio de mando hay una pradera con un solo arbusto de bayas, un solo árbol y dos de las seis ovejas. En nivel 1 pueden convivir varios biomas en una misma isla. Junto a cada meseta, el suelo inferior mantiene el contraste que permite distinguir el desnivel. La huella y distribución de las terrazas dependen de la costa y del espacio disponible para maniobrar. Las subidas principales tienen espacio para varios minions en paralelo y un rellano apto para posar el tótem. Los pasos secundarios hacia una cima pueden ser más estrechos. Los pasos por tierra y las entradas
 a las escaleras permanecen despejados.
 
 - Los bosques forman pinares de 5 a 8 árboles recolectables.
