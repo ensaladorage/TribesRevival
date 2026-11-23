@@ -4,18 +4,11 @@ const T = preload("res://scripts/simulation/island_terrain.gd")
 const Random = preload("res://scripts/simulation/seeded_random.gd")
 const Profile = preload("res://scripts/simulation/landscape_profile.tres")
 const START := Vector2i(52,52)
-const FALLBACK_SEED := "terrain-reserve-0"
 const SECTORS := [Vector2i.RIGHT, Vector2i(1,1), Vector2i.DOWN, Vector2i(-1,1),
 	Vector2i.LEFT, Vector2i(-1,-1), Vector2i.UP, Vector2i(1,-1)]
 
-static func generate(seed_text: String) -> Dictionary:
-	for attempt in 9:
-		var layout_seed := FALLBACK_SEED if attempt == 8 else "%s:islands:%d" % [seed_text,attempt]
-		var layout := _layout(Random.new(layout_seed))
-		if not layout.is_empty():
-			return layout
-	push_error("Invalid island fallback")
-	return {}
+static func candidate(seed_text: String, attempt: int) -> Dictionary:
+	return _layout(Random.new("%s:islands:%d" % [seed_text,attempt]))
 
 # Short steps on two opposite banks leave the horizontal stair approaches intact.
 static func _footprint(rng: Random, rx: int, ry: int) -> Array[Vector2i]:

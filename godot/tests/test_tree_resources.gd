@@ -14,8 +14,8 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 func _run() -> void:
-	var fallback := Catalog.Islands._layout(Catalog.Random.new(Catalog.Islands.FALLBACK_SEED))
-	_check(not fallback.is_empty(),"Deterministic fallback layout")
+	var fallback := Catalog.Reserve.blueprint
+	_check(Catalog._usable_resources(fallback,fallback.resources) and fallback.barbarians.size() == 5 and fallback.animals.size() == 6,"Playable populated reserve")
 	var layouts := {}
 	for index in 64:
 		var seed_text := "relieve-%03d" % index

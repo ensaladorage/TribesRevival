@@ -37,17 +37,15 @@ static func point_in_circle(random: Random, center: Dictionary, radius: float, i
 	var distance := sqrt(random.next_float(inner_radius * inner_radius, radius * radius))
 	return {"x": _round_position(center.x + cos(angle) * distance), "y": _round_position(center.y + sin(angle) * distance)}
 
-static func _world(seed_text: String) -> Dictionary:
-	var world := Islands.generate(seed_text)
+static func _describe(world: Dictionary) -> void:
 	for biome in world.biomes:
 		var definition: Array = DEFINITIONS[biome.id]
 		biome.displayName = definition[0]
 		biome.movementMultiplier = definition[1]
 		biome.visibleResourceTypes = definition[2].duplicate()
-	return world
 
 static func create_biomes(seed_text: String) -> Array:
-	return _world(seed_text).biomes
+	return create_blueprint(seed_text).biomes
 
 static func create_resources(seed_text: String, biomes: Array, config: Dictionary = HITO_3) -> Array:
 	var random := Random.new(seed_text + ":resources")
@@ -337,9 +335,44 @@ static func _place_water_rocks(result: Array, terrain: Array, random: Random) ->
 		var point := Terrain.center(cell)
 		_append_decoration(result,Vector2(point.x,point.y),"water-rock","","")
 
+const Reserve = preload("res://scripts/simulation/landscape_reserve.res")
+
 static func create_blueprint(seed_text: String) -> Dictionary:
-	var world := _world(seed_text)
-	var biomes: Array = world.biomes
-	var resources := create_resources(seed_text,biomes)
-	return {"seed":seed_text,"terrain":world.terrain,"biomes":biomes,"resources":resources,
-		"decorations":create_decorations(seed_text,biomes,resources,world.terrain)}
+	for attempt in 8:
+		var world := Islands.candidate(seed_text,attempt)
+		if world.is_empty(): continue
+		_describe(world)
+		var nodes := create_resources(seed_text,world.biomes)
+		if not _usable_resources(world,nodes): continue
+		var enemies := create_barbarians(seed_text,world.terrain)
+		if enemies.size() != 5: continue
+		world.seed = seed_text
+		world.resources = nodes
+		world.barbarians = enemies
+		world.animals = create_rabbits(seed_text,world.biomes)
+		world.decorations = create_decorations(seed_text,world.biomes,nodes,world.terrain)
+		return world
+	push_warning("Landscape reserve used for seed %s after eight candidates" % seed_text)
+	var world: Dictionary = Reserve.blueprint.duplicate(true)
+	world.seed = seed_text
+	return world
+
+static func _usable_resources(world: Dictionary, nodes: Array) -> bool:
+	var counts := {}
+	for node in nodes:
+		var id: String = node.biomeInstanceId
+		if not counts.has(id): counts[id] = {}
+		counts[id][node.type] = counts[id].get(node.type,0) + 1
+		# All surface cells already connect to START through legal stair edges.
+		# Verify an actual interaction position on this connected surface.
+		if Terrain.work_position(world.terrain,node.position,node).is_empty(): return false
+	for biome in world.biomes:
+		if biome.isDecorativeOnly: continue
+		var resources: Dictionary = counts.get(biome.instanceId,{})
+		if not resources.has(DEFINITIONS[biome.id][3]): return false
+		if biome.id == "forest" and resources.get("wood",0) < 5: return false
+		if biome.id == "rocky" and resources.get("stone",0) < 4: return false
+		if biome.id == "meadow":
+			var required := 1 if biome.get("startingMeadow",false) else 2
+			if resources.get("wood",0) < required: return false
+	return true

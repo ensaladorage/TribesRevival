@@ -120,6 +120,9 @@ func _check_live_trip_and_fauna() -> void:
 	var session := Session.new("archipelago-travel")
 	var state := session.state
 	state.barbarians.clear()
+	for index in range(2,8):
+		var point := Vector2(80,80) + Vector2.from_angle(TAU*index/8) * 4
+		state.units.append(Session.State.create_unit(str(index),"gatherer",{"x":point.x,"y":point.y}))
 	var region: Dictionary = state.biomes[2].region
 	var goal := {"x": region.x, "y": region.y}
 	for action in [{"type":"pick-up-totem"}, {"type":"drag-totem","position":goal}, {"type":"drop-totem"}]:
