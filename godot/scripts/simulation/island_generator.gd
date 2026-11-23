@@ -2,6 +2,7 @@ extends RefCounted
 
 const T = preload("res://scripts/simulation/island_terrain.gd")
 const Random = preload("res://scripts/simulation/seeded_random.gd")
+const Profile = preload("res://scripts/simulation/landscape_profile.tres")
 const START := Vector2i(52,52)
 const FALLBACK_SEED := "terrain-reserve-0"
 const SECTORS := [Vector2i.RIGHT, Vector2i(1,1), Vector2i.DOWN, Vector2i(-1,1),
@@ -40,13 +41,9 @@ static func _footprint(rng: Random, rx: int, ry: int) -> Array[Vector2i]:
 	return cells
 
 static func _link_cell(start: Vector2i, end: Vector2i, progress: float) -> Vector2i:
-	var bend := Vector2i(end.x, start.y) if absi(end.x-start.x) >= absi(end.y-start.y) else Vector2i(start.x,end.y)
-	var first := Vector2(start).distance_to(Vector2(bend))
-	var second := Vector2(bend).distance_to(Vector2(end))
-	var distance := progress * (first + second)
-	if distance <= first:
-		return Vector2i(Vector2(start).move_toward(Vector2(bend),distance).round())
-	return Vector2i(Vector2(bend).move_toward(Vector2(end),distance-first).round())
+	var axis := Vector2(end-start)
+	var bow := axis.normalized().orthogonal() * sin(PI * progress) * axis.length() * 0.14
+	return Vector2i((Vector2(start) + axis * progress + bow).round())
 
 static func _layout(rng: Random) -> Dictionary:
 	var land := {}
@@ -63,14 +60,14 @@ static func _layout(rng: Random) -> Dictionary:
 	var sector_centers := {}
 	for sector: Vector2i in SECTORS:
 		var jitter := Vector2i(rng.next_int(-2,2),rng.next_int(-3,3))
-		sector_centers[sector] = START + sector*32 + jitter
+		sector_centers[sector] = START + Vector2i(sector.x*rng.next_int(24,29),sector.y*rng.next_int(24,30)) + jitter
 	for i in SECTORS.size():
 		if i == omitted: continue
 		var sector: Vector2i = SECTORS[i]
 		anchors.append(sector_centers[sector])
 		var link := START
 		if sector.x != 0 and sector.y != 0:
-			link = sector_centers[Vector2i(sector.x,0)]
+			link = sector_centers[Vector2i(sector.x,0)] if rng.next_int(0,1) else sector_centers[Vector2i(0,sector.y)]
 		links.append(link)
 	# Paint causeways first. Islands then own the banks where the two meet.
 	var bridge_start := 1 + 2*anchors.size()
@@ -80,8 +77,11 @@ static func _layout(rng: Random) -> Dictionary:
 		var length := absi(link.x-anchor.x) + absi(link.y-anchor.y)
 		for j in range(length+1):
 			var c := _link_cell(link,anchor,float(j)/length)
-			for x in range(-2,3):
-				for y in range(-2,3):
+			var progress := float(j)/length
+			var radius := Profile.route_half_width + roundi(Profile.mouth_flare * absf(2.0*progress-1.0))
+			for x in range(-radius,radius+1):
+				for y in range(-radius,radius+1):
+					if x*x+y*y > radius*radius: continue
 					var n := c + Vector2i(x,y)
 					land[n] = T.LOW
 					owners[n] = bridge_start+i
@@ -92,7 +92,7 @@ static func _layout(rng: Random) -> Dictionary:
 	var phase := rng.next_int(0,anchors.size()-1)
 	var summits: Array[int] = []
 	for i in summit_count:
-		summits.append((phase + floori(float(i*anchors.size())/summit_count)) % anchors.size())
+		summits.append(1 + (phase + floori(float(i*(anchors.size()-1))/summit_count)) % (anchors.size()-1))
 	for i in anchors.size():
 		var anchor := anchors[i]
 		var side := 1 if anchor.x >= START.x else -1
@@ -104,18 +104,19 @@ static func _layout(rng: Random) -> Dictionary:
 		for local in _footprint(rng,rx,rng.next_int(6,8)):
 			land[anchor+local] = T.LOW
 			owners[anchor+local] = low
-		var upper := anchor + Vector2i(side*(rx+2),rng.next_int(-1,1))
+		var shelf_width := rng.next_int(6,8)
+		var upper := anchor + Vector2i(side*(rx+1),rng.next_int(-2,2))
 		var plateau := centers.size()
 		centers.append(upper)
 		kinds.append("rocky")
 		levels.append(2)
-		for local in _footprint(rng,5,4):
+		for local in _footprint(rng,shelf_width,rng.next_int(5,Profile.terrace_depth)):
 			var c := upper+local
 			if owners.has(c): covered[c] = owners[c]
 			land[c] = T.HIGH
 			owners[c] = plateau
-		for dy in [0,1]:
-			var foot := upper + Vector2i(-side*6,dy)
+		for dy in range(-2,3):
+			var foot := upper + Vector2i(-side*(shelf_width+1),dy)
 			stairs[foot] = T.EAST if side == 1 else T.WEST
 			land[foot] = stairs[foot]
 	for i in anchors.size():
@@ -162,6 +163,40 @@ static func _layout(rng: Random) -> Dictionary:
 		_add_low_patch(patch,parent,"clearing" if kinds[parent] == "forest" else "forest",owners,centers,kinds,levels)
 	# A terrace may cut off a corner of its lower biome while the island as
 	# a whole remains reachable. Sheep must be able to stay in their biome.
+	# Redistribute connected low ground around the authored spaces. A broad
+	# confluence can cover a former region centre or split its original bank.
+	var low_cells := {}
+	for c: Vector2i in owners:
+		if levels[owners[c]] == 1 and owners[c] != starter_meadow:
+			low_cells[c] = true
+	var frontier: Array[Vector2i] = []
+	for i in centers.size():
+		if levels[i] != 1 or i == starter_meadow: continue
+		var best := centers[i]
+		if not low_cells.has(best) or best in frontier:
+			var distance := INF
+			for c: Vector2i in low_cells:
+				if c in frontier: continue
+				var candidate := centers[i].distance_squared_to(c)
+				if candidate < distance:
+					best = c
+					distance = candidate
+			centers[i] = best
+		frontier.append(best)
+		owners[best] = i
+		low_cells.erase(best)
+	var cursor := 0
+	while cursor < frontier.size():
+		var c := frontier[cursor]
+		cursor += 1
+		for d: Vector2i in T.DIRS:
+			var n := c+d
+			if low_cells.erase(n):
+				owners[n] = owners[c]
+				frontier.append(n)
+	for isolated: Vector2i in low_cells:
+		owners.erase(isolated)
+		land.erase(isolated)
 	if not _regions_connected(owners,centers):
 		return {}
 	# Colour the actual cross-height adjacency graph, including northern edges.
@@ -174,6 +209,15 @@ static func _layout(rng: Random) -> Dictionary:
 			if levels[i] != levels[j]:
 				if not neighbours.has(i): neighbours[i] = {}
 				neighbours[i][j] = true
+	for c: Vector2i in owners:
+		var plateau: int = middle.get(c,owners[c])
+		if levels[plateau] != 2: continue
+		for step in T.DIRS:
+			var n: Vector2i = c+step
+			var lower: int = covered.get(n,owners.get(n,-1))
+			if lower >= 0 and levels[lower] == 1:
+				if not neighbours.has(plateau): neighbours[plateau] = {}
+				neighbours[plateau][lower] = true
 	for height in [2,3]:
 		for i in centers.size():
 			if levels[i] != height: continue

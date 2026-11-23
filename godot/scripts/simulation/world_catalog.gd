@@ -249,7 +249,7 @@ static func _place_group(result: Array, reserved: Array[Vector2], resources: Arr
 		var center := Footprint.center(region,cell)
 		var group: Array[Vector2] = []
 		for index in count:
-			var offset := Vector2.ZERO if index == 0 else Vector2.from_angle(TAU * index / count) * spacing
+			var offset := Vector2.ZERO if index == 0 else Vector2.from_angle(TAU * index / count) * spacing * Islands.Profile.vegetation_spacing
 			var point := center + offset
 			if not allowed.has(Terrain.cell({"x":point.x,"y":point.y})) or point.distance_to(Footprint.START) < 4.0:
 				break

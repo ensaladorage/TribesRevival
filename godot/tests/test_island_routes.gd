@@ -107,6 +107,9 @@ func _run() -> void:
 	check(enemy.health == health, "Melee hit crossed a cliff")
 	unit.role = "hunter"
 	Session.Conflict._attack(state, unit, enemy, stats, "barbarian")
+	state.units = [unit]
+	state.tick = state.hunterShots[0].impactTick
+	Session.Conflict.update_hunter_shots(state)
 	check(enemy.health < health, "Ranged hit failed across elevations")
 	ref.free()
 	for message in failures.slice(0,8): push_error(message)

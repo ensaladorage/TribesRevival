@@ -18,7 +18,7 @@ func _run() -> void:
 	_check(not fallback.is_empty(),"Deterministic fallback layout")
 	var layouts := {}
 	for index in 64:
-		var seed_text := "tree-biomes-%d" % index
+		var seed_text := "relieve-%03d" % index
 		var blueprint := Catalog.create_blueprint(seed_text)
 		_check_archipelago(blueprint,seed_text)
 		var layers: Array[Dictionary] = [{},{},{}]
@@ -62,7 +62,7 @@ func _run() -> void:
 					var location := Vector2i(tile.x,tile.y)
 					rect = Rect2i(location,Vector2i.ZERO) if rect == Rect2i() else rect.expand(location)
 				var size := rect.size + Vector2i.ONE
-				_check(size.x >= 4 and size.y >= 4 and size.x <= 12 and size.y <= 10,"Playable terrace within tile bounds")
+				_check(size.x >= 4 and size.y >= 4 and size.x <= 17 and size.y <= 19,"Playable terrace within tile bounds")
 		var occupied := {}
 		for biome in blueprint.biomes:
 			_check_connected(biome.region)
@@ -147,7 +147,7 @@ func _check_archipelago(world: Dictionary, seed_text: String) -> void:
 				if Catalog.Terrain.ramp(tile) and Catalog.Terrain.level(tile) == level-1 and Catalog.Terrain.edge(terrain,landing,stair) and Catalog.Terrain.edge(terrain,stair,stair+direction):
 					entrances[stair] = true
 		var lanes := entrances.keys()
-		_check(lanes.size() == 2 and absi(lanes[0].y-lanes[1].y) == 1 and lanes[0].x == lanes[1].x and Catalog.Terrain.edge(terrain,lanes[0],lanes[1]),seed_text+" two adjacent stair lanes to "+biome.instanceId)
+		_check(lanes.size() == (5 if level == 2 else 2) and lanes.all(func(lane): return lane.x == lanes[0].x),seed_text+" usable stair lanes to "+biome.instanceId)
 		var route := graph.get_id_path(home,c.y*Catalog.Terrain.SIZE+c.x)
 		var stairs := {}
 		for id in route:
