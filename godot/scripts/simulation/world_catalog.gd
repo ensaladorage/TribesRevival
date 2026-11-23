@@ -51,7 +51,6 @@ static func create_biomes(seed_text: String) -> Array:
 static func create_resources(seed_text: String, biomes: Array, config: Dictionary = HITO_3, terrain: Array = []) -> Array:
 	var random := Random.new(seed_text + ":resources")
 	var twig_random := Random.new(seed_text + ":twig-clearings")
-	var tree_random := Random.new(seed_text + ":tree-yields")
 	var active: Array = []
 	for resource_type in config.get("activeResourceTypes", RESOURCE_TYPES):
 		if resource_type in RESOURCE_TYPES and resource_type not in active:
@@ -111,8 +110,6 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 				"isSecondary": is_secondary, "interactionRadius": RADII[resource_type],
 				"position": point, "amount": amount, "maxAmount": amount, "gatherRate": 1, "tier": 1,
 			}
-			if resource_type == "wood":
-				node.yieldAmount = tree_random.next_int(2, 3)
 			nodes.append(node)
 	var clearings: Array = biomes.filter(func(biome): return biome.id == "clearing")
 	if clearings.is_empty():
@@ -132,7 +129,7 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 			"id": "resource-%03d" % (nodes.size() + 1), "type": "wood", "source": "twigs",
 			"biome": biome.id, "biomeInstanceId": biome.instanceId, "isSecondary": true,
 			"interactionRadius": 1.2, "position": point, "amount": 1, "maxAmount": 1,
-			"gatherRate": 1, "tier": 1, "yieldAmount": 2,
+			"gatherRate": 1, "tier": 1,
 		})
 	return nodes
 

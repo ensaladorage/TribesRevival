@@ -36,7 +36,14 @@ func sprite_point(sprite: SpriteBase3D, uv: Vector2, camera: Camera3D) -> Vector
 	var rect := sprite.get_item_rect()
 	var point := rect.position + Vector2(uv.x, 1.0 - uv.y) * rect.size
 	var scale := sprite.global_basis.get_scale().abs()
-	return sprite.global_position + camera.global_basis.x * point.x * sprite.pixel_size * scale.x + camera.global_basis.y * point.y * sprite.pixel_size * scale.y
+	var height := point.y * sprite.pixel_size * scale.y
+	return sprite.global_position + camera.global_basis.x * point.x * sprite.pixel_size * scale.x + camera.global_basis.y * height + _depth_axis(sprite, camera) * maxf(height, 0.0)
+
+func _depth_axis(sprite: SpriteBase3D, camera: Camera3D) -> Vector3:
+	if not sprite.has_meta("standing_material"):
+		return Vector3.ZERO
+	var basis := camera.global_basis
+	return basis.z * basis.z.y / maxf(basis.y.y, 0.001)
 
 func sprite_samples(sprite: SpriteBase3D, camera: Camera3D) -> PackedVector3Array:
 	var tex := texture(sprite)
@@ -56,6 +63,7 @@ func sprite_samples(sprite: SpriteBase3D, camera: Camera3D) -> PackedVector3Arra
 	var scale := sprite.global_basis.get_scale().abs()
 	var right := camera.global_basis.x * sprite.pixel_size * scale.x
 	var up := camera.global_basis.y * sprite.pixel_size * scale.y
+	var depth_up := _depth_axis(sprite, camera) * sprite.pixel_size * scale.y
 	var origin := sprite.global_position
 	for raw_uv in _samples[tex]:
 		var uv: Vector2 = raw_uv
@@ -64,7 +72,7 @@ func sprite_samples(sprite: SpriteBase3D, camera: Camera3D) -> PackedVector3Arra
 		if sprite.flip_v:
 			uv.y = 1.0 - uv.y
 		var point := rect.position + Vector2(uv.x, 1.0 - uv.y) * rect.size
-		result.append(origin + right * point.x + up * point.y)
+		result.append(origin + right * point.x + up * point.y + depth_up * maxf(point.y, 0.0))
 	return result
 
 func projected_bounds(points: PackedVector3Array, camera: Camera3D) -> Rect2:
@@ -98,10 +106,11 @@ func covered_point(sprite: SpriteBase3D, region: Rect2, points: PackedVector3Arr
 	var unit := Vector2(scale.x, scale.y) * sprite.pixel_size
 	if unit.x <= 0 or unit.y <= 0 or rect.size.x <= 0 or rect.size.y <= 0:
 		return null
+	var depth_slope := _depth_axis(sprite, camera).dot(camera.global_basis.z)
 	for point in points:
 		var relative := point - sprite.global_position
 		# Positive camera Z is nearer the camera: never fade for a body in front.
-		if relative.dot(camera.global_basis.z) >= -0.01:
+		if relative.dot(camera.global_basis.z) >= maxf(relative.dot(camera.global_basis.y), 0.0) * depth_slope - 0.01:
 			continue
 		var local := Vector2(relative.dot(camera.global_basis.x), relative.dot(camera.global_basis.y)) / unit
 		var uv := (local - rect.position) / rect.size

@@ -34,6 +34,9 @@ static func level(k: int) -> int:
 	if k == SUMMIT: return 3
 	return 2 if k in [HIGH, UPPER_EAST, UPPER_WEST] else 1
 
+static func same_level(rows: Array, first: Dictionary, second: Dictionary) -> bool:
+	return level(code(rows, cell(first))) == level(code(rows, cell(second)))
+
 static func east(k: int) -> bool:
 	return k in [EAST, UPPER_EAST]
 
@@ -156,6 +159,39 @@ static func graph(rows: Array) -> AStar2D:
 					grid.connect_points(id,n.y * SIZE + n.x)
 	return grid
 
+# Components use the same edge rules as pathfinding. Stair cells belong
+# to the full walking graph but never connect separate flat surfaces.
+static var _surface_cache: Array = []
+
+static func surface_ids(rows: Array, flat_only: bool) -> Dictionary:
+	for entry in _surface_cache:
+		if is_same(entry.rows, rows) and entry.flat == flat_only:
+			return entry.ids
+	var ids := {}
+	for y in rows.size():
+		for x in SIZE:
+			var origin := Vector2i(x,y)
+			var kind := code(rows,origin)
+			if ids.has(origin) or kind == SEA or (flat_only and ramp(kind)):
+				continue
+			var queue: Array[Vector2i] = [origin]
+			ids[origin] = origin
+			var head := 0
+			while head < queue.size():
+				var current := queue[head]
+				head += 1
+				for direction: Vector2i in DIRS:
+					var adjacent := current + direction
+					if ids.has(adjacent) or (flat_only and code(rows,adjacent) != kind):
+						continue
+					if edge(rows,current,adjacent):
+						ids[adjacent] = origin
+						queue.append(adjacent)
+	_surface_cache.append({"rows":rows,"flat":flat_only,"ids":ids})
+	if _surface_cache.size() > 12:
+		_surface_cache.pop_front()
+	return ids
+
 static func route_length(rows: Array, start: Dictionary, goal: Dictionary) -> float:
 	var origin := Vector2(start.x, start.y)
 	var end := Vector2(goal.x, goal.y)
@@ -173,7 +209,21 @@ static func route_length(rows: Array, start: Dictionary, goal: Dictionary) -> fl
 		return INF
 	return origin.distance_to(Vector2(a) * TILE + Vector2.ONE * ORIGIN) + (path.size()-1) * TILE + end.distance_to(Vector2(b) * TILE + Vector2.ONE * ORIGIN)
 
-static func work_position(rows: Array, origin: Dictionary, target: Dictionary) -> Dictionary:
+const DROP_REACH := 0.65
+
+static func drop_position(rows: Array, origin: Dictionary, point: Dictionary) -> Dictionary:
+	if _inside_walk_bounds(point) and fits(rows, point):
+		return point
+	return work_position(rows, origin, {"position": point, "interactionRadius": DROP_REACH}, true)
+
+static func valid_drop_position(rows: Array, approach: Dictionary, point: Dictionary) -> bool:
+	return _inside_walk_bounds(approach) and fits(rows, approach) and Vector2(approach.x - point.x, approach.y - point.y).length() <= DROP_REACH + 1e-6 and clear(rows, approach, point, 0.0)
+
+static func _inside_walk_bounds(point: Dictionary) -> bool:
+	var limit := ORIGIN + (SIZE - 1) * TILE
+	return point.x >= ORIGIN and point.x <= limit and point.y >= ORIGIN and point.y <= limit
+
+static func work_position(rows: Array, origin: Dictionary, target: Dictionary, bounded: bool = false) -> Dictionary:
 	var point: Dictionary = target.position
 	if not target.has("interactionRadius"):
 		return point
@@ -186,7 +236,13 @@ static func work_position(rows: Array, origin: Dictionary, target: Dictionary) -
 	for i in 8:
 		var offset := direction.rotated(i * TAU / 8) * radius
 		var candidate := {"x":point.x+offset.x,"y":point.y+offset.y}
-		if not fits(rows,candidate) or not clear(rows,candidate,point,0.0):
+		if bounded:
+			var limit := ORIGIN + (SIZE - 1) * TILE
+			candidate.x = clampf(candidate.x, ORIGIN, limit)
+			candidate.y = clampf(candidate.y, ORIGIN, limit)
+		if bounded and not valid_drop_position(rows, candidate, point):
+			continue
+		if not bounded and (not fits(rows,candidate) or not clear(rows,candidate,point,0.0)):
 			continue
 		if i == 0 and clear(rows,origin,candidate):
 			return candidate
@@ -217,8 +273,10 @@ static func nearest(rows: Array, p: Dictionary, radius: float = 0.32, placement:
 
 ## Choose a visible waypoint on the A* corridor. Cache per agent, never in the map.
 ## Leave steering clearance between samples when smoothing across cell corners.
-static func waypoint(rows: Array, start: Dictionary, goal: Dictionary, memory: Dictionary) -> Dictionary:
-	if clear(rows,start,goal,0.48):
+static func waypoint(rows: Array, start: Dictionary, goal: Dictionary, memory: Dictionary, allow_tight_goal: bool = false) -> Dictionary:
+	# Drop pickups can use normal walking clearance for the final step inside a tile.
+	# Keep the wider clearance while smoothing routes across tile boundaries.
+	if clear(rows,start,goal,0.48) or (allow_tight_goal and cell(start) == cell(goal) and clear(rows,start,goal)):
 		memory.erase("terrainRoute")
 		return goal
 	var a := cell(start)

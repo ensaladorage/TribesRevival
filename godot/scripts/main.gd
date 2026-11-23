@@ -9,12 +9,15 @@ const HUD = preload("res://scenes/ui/HUD.tscn")
 const Menus = preload("res://scenes/ui/Menus.tscn")
 const Overlay = preload("res://scenes/ui/Overlay.tscn")
 const Saves = preload("res://scripts/persistence/save_repository.gd")
+const PROHIBITED_CURSOR_SCALE := 0.75
 const TOTEM_REST_HEIGHT := 2.0
 const TOTEM_CARRIED_HEIGHT := 4.6
 @export_group("Cursors")
 @export var arrow_cursor: Texture2D = preload("res://assets/ui/cursors/default.png")
 @export var interact_cursor: Texture2D = preload("res://assets/ui/cursors/interact.png")
 @export var grab_cursor: Texture2D = preload("res://assets/ui/cursors/grab.png")
+@export var prohibited_cursor: Texture2D = preload("res://assets/ui/cursors/prohibited.png")
+@export var prohibited_hotspot := Vector2(32, 32)
 @export var arrow_hotspot := Vector2(22, 18)
 @export var interact_hotspot := Vector2(22, 18)
 @export var grab_hotspot := Vector2(32, 32)
@@ -154,7 +157,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and is_node_ready():
-		_update_carry_cursor(false)
+		_update_cursor_overlay(null, Vector2.ZERO)
 		_end_drag()
 		_end_minion_drag()
 		session.flush_actions()
@@ -189,10 +192,11 @@ func _end_drag() -> void:
 
 func _begin_minion_drag(screen_point: Vector2) -> void:
 	var unit_id: String = world_view.pick_unit(camera, screen_point, session.state.units)
-	if unit_id.is_empty():
+	var unit: Variant = Session.Movement.find_entity(session.state.units, unit_id)
+	if not Session.Commands.Carry.can_pick_up(session.state, unit):
 		return
 	dragged_minion_id = unit_id
-	minion_drag_position = Session.Movement.find_entity(session.state.units, unit_id).position.duplicate()
+	minion_drag_position = unit.position.duplicate()
 	camera.recentering = false
 	session.enqueue({"type": "pick-up-minion", "unitId": unit_id})
 	_queue_minion_drag(screen_point)
@@ -246,19 +250,61 @@ func _sync_view() -> void:
 func _cursor_for_point(screen_point: Vector2, over_ui: bool) -> int:
 	if menus.screen != "game" or session.state.phase != "playing":
 		return Input.CURSOR_ARROW
-	if held_item in ["gatherer","campfire"] and not over_ui and not _landing_valid:
-		return Input.CURSOR_FORBIDDEN
-	if dragging or not dragged_minion_id.is_empty() or not held_item.is_empty():
-		return Input.CURSOR_DRAG
-	if over_ui:
+	if dragging or not dragged_minion_id.is_empty():
+		if not dragged_minion_id.is_empty() and _minion_over_sacrifice(screen_point):
+			return Input.CURSOR_FORBIDDEN if hud.sacrifice_target.disabled else Input.CURSOR_DRAG
+		return Input.CURSOR_FORBIDDEN if not over_ui and not _landing_valid else Input.CURSOR_DRAG
+	if not held_item.is_empty():
+		return Input.CURSOR_FORBIDDEN if not over_ui and not _can_place_item(screen_point) else Input.CURSOR_DRAG
+	# Release is queued. Until the next tick, the simulation still holds the minion.
+	if over_ui or Session.Commands.Carry.held_unit(session.state) != null:
 		return Input.CURSOR_ARROW
-	if _hits_totem(screen_point) or not world_view.pick_unit(camera, screen_point, session.state.units).is_empty():
+	if _hits_totem(screen_point):
 		return Input.CURSOR_POINTING_HAND
+	var unit_id: String = world_view.pick_unit(camera, screen_point, session.state.units)
+	if not unit_id.is_empty():
+		var unit: Variant = Session.Movement.find_entity(session.state.units, unit_id)
+		return Input.CURSOR_POINTING_HAND if Session.Commands.Carry.can_pick_up(session.state, unit) else Input.CURSOR_FORBIDDEN
 	return Input.CURSOR_ARROW
 
+func _can_place_item(screen_point: Vector2) -> bool:
+	var state: Dictionary = session.state
+	var economy = Session.Commands.Economy
+	if held_item == "campfire":
+		return _landing_valid and state.campfires.size() < 2 and state.inventory.amounts.wood >= 2
+	if held_item == "gatherer":
+		return _landing_valid and state.units.size() < economy.MAX_PLAYABLE_MINIONS and economy.can_afford(state.inventory.amounts, economy.recruitment_cost(state.units.size()))
+	var unit_id: String = world_view.pick_unit(camera, screen_point, state.units)
+	if unit_id.is_empty():
+		return true
+	var unit: Variant = Session.Movement.find_entity(state.units, unit_id)
+	var cost: Variant = Session.Commands.unit_item_cost(state, held_item, unit)
+	return cost != null and economy.can_afford(state.inventory.amounts, cost)
+
 func _update_cursor() -> void:
-	var shape := _cursor_for_point(get_viewport().get_mouse_position(), get_viewport().gui_get_hovered_control() != null)
-	_update_carry_cursor(shape == Input.CURSOR_DRAG and (dragging or not dragged_minion_id.is_empty()))
+	var screen_point := get_viewport().get_mouse_position()
+	var hovered := get_viewport().gui_get_hovered_control()
+	var shape := _cursor_for_point(screen_point, hovered != null)
+	if held_item.is_empty() and not dragging and dragged_minion_id.is_empty():
+		while hovered != null:
+			if hovered is BaseButton:
+				if hovered.disabled:
+					shape = Input.CURSOR_FORBIDDEN
+				break
+			hovered = hovered.get_parent_control()
+	_present_cursor(shape, screen_point)
+
+func _present_cursor(shape: int, screen_point: Vector2) -> void:
+	var carrying := shape == Input.CURSOR_DRAG and (dragging or not dragged_minion_id.is_empty())
+	if shape == Input.CURSOR_FORBIDDEN:
+		var position := screen_point
+		if not dragged_minion_id.is_empty():
+			position = _carry_cursor_position(screen_point)
+		_update_cursor_overlay(prohibited_cursor, position - prohibited_hotspot * PROHIBITED_CURSOR_SCALE, PROHIBITED_CURSOR_SCALE)
+	elif carrying:
+		_update_cursor_overlay(grab_cursor, _carry_cursor_position(screen_point) - grab_hotspot)
+	else:
+		_update_cursor_overlay(null, Vector2.ZERO)
 	if shape == _cursor_shape:
 		return
 	_cursor_shape = shape
@@ -273,30 +319,33 @@ func _update_cursor() -> void:
 	# Controls use ARROW too, so carrying stays visible while crossing the HUD.
 	Input.set_custom_mouse_cursor(texture, Input.CURSOR_ARROW, hotspot)
 	Input.set_custom_mouse_cursor(texture, Input.CURSOR_POINTING_HAND, hotspot)
-	Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN if shape == Input.CURSOR_FORBIDDEN else Input.CURSOR_ARROW)
+	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 
-func _update_carry_cursor(active: bool) -> void:
+func _update_cursor_overlay(texture: Texture2D, position_on_screen: Vector2, display_scale: float = 1.0) -> void:
 	var hand: TextureRect = carry_cursor.get_node("Hand")
-	if active:
+	if texture != null:
 		if not hand.visible:
 			_carry_cursor_mouse_mode = Input.mouse_mode
 			Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
-		hand.modulate = Color.WHITE if _landing_valid or get_viewport().gui_get_hovered_control() != null else Color(1,0.3,0.25)
-		hand.texture = grab_cursor
-		hand.position = _carry_cursor_position() - grab_hotspot
+		hand.texture = texture
+		hand.scale = Vector2.ONE * display_scale
+		hand.position = position_on_screen
 	elif hand.visible:
 		Input.mouse_mode = _carry_cursor_mouse_mode
-	hand.visible = active
+	hand.visible = texture != null
 
-func _carry_cursor_position() -> Vector2:
+func _carry_cursor_position(screen_point: Vector2) -> Vector2:
 	if dragging:
 		var resting := totem_view.global_position - Vector3.UP * (TOTEM_CARRIED_HEIGHT - TOTEM_REST_HEIGHT)
-		return get_viewport().get_mouse_position() + camera.unproject_position(totem_view.global_position) - camera.unproject_position(resting)
-	return get_viewport().get_mouse_position() + world_view.carried_screen_offset(camera, dragged_minion_id)
+		return screen_point + camera.unproject_position(totem_view.global_position) - camera.unproject_position(resting)
+	return screen_point + world_view.carried_screen_offset(camera, dragged_minion_id)
 
 func _exit_tree() -> void:
 	if is_instance_valid(carry_cursor) and carry_cursor.get_node("Hand").visible:
 		Input.mouse_mode = _carry_cursor_mouse_mode
+	if _cursor_shape != -1:
+		Input.set_custom_mouse_cursor(null, Input.CURSOR_ARROW)
+		Input.set_custom_mouse_cursor(null, Input.CURSOR_POINTING_HAND)
 
 func _begin_placement(item: String) -> void:
 	if session.state.phase != "playing" or menus.screen != "game":
@@ -310,6 +359,7 @@ func _begin_placement(item: String) -> void:
 	_update_held_preview()
 
 func _update_held_preview() -> void:
+	_landing_valid = false
 	var point: Variant = camera.ground_point(get_viewport().get_mouse_position())
 	if point is Vector3:
 		var p := TerrainView.logical(point)

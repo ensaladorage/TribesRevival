@@ -1,13 +1,17 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/world/Drop.tscn" id="base"]
+[ext_resource type="Texture2D" path="res://assets/resources/Drops/M_Idle.png" id="sprite"]
 
-[sub_resource type="StandardMaterial3D" id="material"]
-albedo_color = Color(0.8509803921568627, 0.3607843137254902, 0.3607843137254902, 1)
-roughness = 1.0
-metallic_specular = 0.0
+[sub_resource type="AtlasTexture" id="pickup"]
+atlas = ExtResource("sprite")
+region = Rect2(42, 59, 51, 41)
+filter_clip = true
 
 [node name="DropFood" instance=ExtResource("base")]
+visual_offset = Vector3(0, 0.065, 0)
 
-[node name="Drop" parent="Visual/Default" index="0"]
-material_override = SubResource("material")
+[node name="Sprite" parent="Visual/Default" index="0"]
+offset = Vector2(0, 20.5)
+pixel_size = 0.0187
+texture = SubResource("pickup")

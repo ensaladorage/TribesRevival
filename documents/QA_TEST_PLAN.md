@@ -93,6 +93,8 @@ guardar y cargar durante el desarrollo de sistemas que dependan de ello.
 
 #### Profundidad natural, separación y transparencia
 
+- Con ventana en Compatibility, `test_plateau_sprite_depth.gd` verifica píxeles del sprite a ambos lados de una esquina, con su base delante y detrás de la pared.
+
 - Headless: `test_natural_visibility.gd`, ocho semillas, separación de huellas,
   pertenencia al bioma, repetibilidad tras JSON, estado intacto, agotamiento y
   omisión sin candidatos válidos. Comprueba márgenes alfa, orden por profundidad,
@@ -185,6 +187,7 @@ guardar y cargar durante el desarrollo de sistemas que dependan de ello.
 
 #### Cobertura general de regresión
 
+-   `test_island_routes.gd`: adquisición bilateral y alertas a distinta altura con tótem quieto o en movimiento, continuidad al cambiar de nivel y daño a distancia entre alturas.
 -   Tótem levantado: guardianes, leñadores y cazadores conservan combate
     cercano dentro del mando. Al superar los 10 m terminan el impulso activo
     y siguen al tótem sin soltarlo, sin otro golpe ni readquisición fuera
@@ -513,24 +516,31 @@ caza, orientación hacia objetivo y desaparición al acabar el impulso.
 Cobertura automática: `tests/gdunit/combat/test_minion_carry.gd` comprueba las
 clases implementadas, exclusión mutua con el tótem, daño y temporizadores,
 liberación de reservas, cambio inmediato de objetivo enemigo, retorno fuera del
-mando, recogidas repetidas, colocación segura determinista, pausa y guardado.
+mando, recogidas repetidas, colocación segura determinista, pausa y guardado. También
+comprueba el bloqueo en combate y tras 39 ticks, el agarre al completar 40,
+la retirada al tótem, la reentrada en combate y la huida civil sin combate previo.
+Probar agarre y arrastre en combate con todos los roles y en cada tick de una
+persecución de cazador y mago que supere los dos segundos.
 `tests/test_minion_drag_input.gd` usa despacho nativo para recoger/soltar,
 liberación sobre un Control, pérdida de foco, pausa, cámara y presentación
-estructural. Ambos están integrados en `godot/tools/validate.sh`.
+estructural. Comprueba el PNG de prohibición, su alineación con el minion
+elevado, la suelta pendiente y el cursor de herramientas sobre terreno vacío
+y sobre destinatarios compatibles e incompatibles. Ambos están integrados en `godot/tools/validate.sh`.
 
 Validación manual pendiente:
 
 - Reorganizar una tribu de dos y ocho minions; seleccionar entre solapamientos
   y bajo oclusión, con prioridad del tótem y sin mover la cámara.
-- Rescatar un combatiente justo antes/después de un golpe, mantenerlo elevado
-  sobre una hoguera y soltarlo dentro/fuera del mando. Comprobar cambio de foco,
-  ausencia de curación en el aire y vulnerabilidad inmediata al depositarlo.
+- Intentar agarrar a un cazador en combate para cambiarlo de meseta y comprobar
+  el icono de prohibición hasta que acabe la espera. Una vez disponible,
+  mantenerlo sobre una hoguera y comprobar la curación y la vulnerabilidad al
+  soltarlo dentro o fuera del mando.
 - Revisar altura, marcador, barras de vida y precisión del cursor con varios
   niveles de zoom; comprobar los ajustes desde el Inspector.
 - Soltar en aglomeraciones, bordes, sobre el tótem y el HUD; pausar o cambiar de
   ventana durante el arrastre. Confirmar que el marcador desaparece al soltar.
 - Comprobar en partida que reclutamiento, conversiones y movimiento del tótem
-  mantienen sus interacciones, y guardar/cargar después de un rescate.
+  mantienen sus interacciones, y guardar/cargar durante la espera tras un combate.
 
 Las pruebas headless de entrada/estructura no acreditan apariencia ni sensación
 manual de control.
@@ -565,7 +575,13 @@ Verificar un sacrificio rechazado lejos del mando con un aliado ocupando el punt
 
 Al rechazar un sacrificio, comprobar que el origen de interpolación del primer tick en el suelo coincide con el punto de aterrizaje junto al tótem.
 
-La prueba headless test_island_routes.gd cubre la recogida y el trabajo junto al borde superior, el descarte de drops aislados, la elección por recorrido y el cruce de escaleras por minions y bárbaros en ambos sentidos.
+La prueba headless test_island_routes.gd cubre la recogida y el trabajo junto al borde superior, el descarte de drops aislados, la elección por recorrido y el cruce de escaleras por minions y bárbaros en ambos sentidos. También comprueba la recogida de madera junto a un desnivel, la costa y el límite del mapa, incluida una tarea previa cuyo destino es el centro del drop. Verifica que el minion permanece en suelo firme, suma una unidad al inventario y no recoge a través de un desnivel.
+
+Prueba ambos lados de la pared de una meseta con un drop donde cabe el
+minion pero no la holgura adicional de la ruta. Si el drop está al alcance,
+la recogida es inmediata. Si falta acercarse dentro de la casilla, el minion
+debe avanzar hasta poder recoger. Una tarea ya asignada tampoco permite
+recoger un drop cercano al otro lado de la pared.
 
 En 64 semillas, la prueba test_tree_resources.gd comprueba que cada meseta y cada cima tengan una escalera de dos casillas contiguas, cada una con acceso por ambos extremos.
 
@@ -573,4 +589,17 @@ La prueba test_island_routes.gd verifica que dos minions atraviesen una escalera
 
 En 64 semillas, comprobar dos ovejas residentes en la pradera inicial y exactamente un árbol y un arbusto de bayas dentro de los 10 m iniciales, además del contraste en los bordes de las terrazas.
 
+`test_tree_resources.gd` comprueba una unidad base por nodo, una de comida por oveja, el bonus adicional del hacha y el martillo, el botín de los bárbaros y la aplicación de la regla al cargar nodos con el rendimiento antiguo. Los objetos ya guardados en el suelo se conservan.
+
+`test_drop_flight.gd` comprueba el lanzamiento determinista en suelo abierto
+y junto a agua y desniveles, la recogida al asentarse, los seis sprites y
+la carga de objetos antiguos, en vuelo y asentados. En partida, revisar
+la legibilidad al hacer zoom, el contacto con el suelo, las sombras y
+varios lanzamientos simultáneos con un minion esperando la recogida.
+Comprobar que el sprite mantiene su orientación durante el lanzamiento y
+los rebotes, y que la posición del sprite y la sombra coinciden con la
+referencia del drop de madera.
+
 La prueba test_tree_resources.gd verifica el paso de nubes secas desde el inicio, la recuperación de nodos agotados solo con lluvia, la separación de 90 segundos entre nubes de lluvia, la reaparición de bárbaros a los 180 segundos y de ovejas a los 90 segundos y el guardado de nubes en tránsito.
+
+La prueba de formación comprueba ocho huecos separados en un desnivel, expansión fuera del radio, desborde por escaleras, recogida local y reinicio de la referencia al levantar el tótem.

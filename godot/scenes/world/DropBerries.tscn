@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world/Drop.tscn" id="base"]
+[ext_resource type="Texture2D" path="res://assets/resources/Drops/B_Idle.png" id="sprite"]
+
+[sub_resource type="AtlasTexture" id="pickup"]
+atlas = ExtResource("sprite")
+region = Rect2(43, 52, 49, 44)
+filter_clip = true
+
+[node name="DropBerries" instance=ExtResource("base")]
+visual_offset = Vector3(0, 0.065, 0)
+
+[node name="Sprite" parent="Visual/Default" index="0"]
+offset = Vector2(0, 22)
+pixel_size = 0.016
+texture = SubResource("pickup")

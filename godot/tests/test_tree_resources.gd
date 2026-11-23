@@ -6,6 +6,8 @@ const World = preload("res://scenes/WorldView.tscn")
 const Work = preload("res://scripts/simulation/work_system.gd")
 const Move = preload("res://scripts/simulation/minion_movement.gd")
 const Weather = preload("res://scripts/simulation/weather_system.gd")
+const Economy = preload("res://scripts/simulation/economy.gd")
+const Conflict = preload("res://scripts/simulation/conflict_system.gd")
 const Saves = preload("res://scripts/persistence/save_repository.gd")
 var failures: Array[String] = []
 var checks := 0
@@ -118,6 +120,8 @@ func _run() -> void:
 		instance.free()
 	_test_weather_cadence()
 	_test_lifecycle(world)
+	_test_resource_drops()
+	_test_barbarian_loot()
 	_test_saved_world(world)
 	world.free()
 	for failure in failures.slice(0, 20):
@@ -183,28 +187,28 @@ func _test_weather_cadence() -> void:
 	var next_rain: Array = state.weather.clouds.filter(func(cloud): return cloud.phase == "approaching")
 	_check(next_rain.size() == 1 and next_rain[0].id == "weather-cloud-007", "Rain clouds enter 90 seconds apart")
 
-	var conflict = preload("res://scripts/simulation/conflict_system.gd")
 	var enemy: Dictionary = state.barbarians[0]
-	conflict._defeat_barbarian(state,enemy)
+	Conflict._defeat_barbarian(state,enemy)
 	_check(enemy.respawnRemainingSeconds == 180.0, "Defeated barbarian waits 180 seconds")
-	conflict._update_respawns_and_fauna(state,179.0)
+	Conflict._update_respawns_and_fauna(state,179.0)
 	_check(not enemy.isAlive, "Barbarian stays defeated before timeout")
-	conflict._update_respawns_and_fauna(state,1.0)
+	Conflict._update_respawns_and_fauna(state,1.0)
 	_check(enemy.isAlive, "Barbarian respawns at timeout")
 
 	var sheep: Dictionary = state.animals[0]
 	var hunter: Dictionary = state.units[0]
 	hunter.role = "hunter"
-	conflict._attack(state,hunter,sheep,{"damage":sheep.health,"cooldownSeconds":1.0},"animal")
+	Conflict._attack(state,hunter,sheep,{"damage":sheep.health,"cooldownSeconds":1.0},"animal")
 	var shot: Dictionary = state.hunterShots[0]
 	state.tick = shot.releaseTick
-	conflict.update_hunter_shots(state)
+	Conflict.update_hunter_shots(state)
 	state.tick = shot.impactTick
-	conflict.update_hunter_shots(state)
+	Conflict.update_hunter_shots(state)
+	_check(state.drops.size() == 1 and state.drops.all(func(d): return d.type == "food" and d.amount == 1 and d.sourceNodeId == sheep.id), "One food drop per hunted sheep")
 	_check(sheep.respawnRemainingSeconds == 90.0 and not sheep.isAlive, "Hunted sheep waits 90 seconds")
-	conflict._update_respawns_and_fauna(state,89.0)
+	Conflict._update_respawns_and_fauna(state,89.0)
 	_check(not sheep.isAlive, "Sheep stays defeated before timeout")
-	conflict._update_respawns_and_fauna(state,1.0)
+	Conflict._update_respawns_and_fauna(state,1.0)
 	_check(sheep.isAlive and sheep.position == sheep.spawnPosition, "Sheep respawns at home at timeout")
 
 func _test_lifecycle(world: Node3D) -> void:
@@ -222,7 +226,7 @@ func _test_lifecycle(world: Node3D) -> void:
 	var path: String = world._views[tree.id].scene_file_path
 	Work.update_unit(state, unit, 0.05, Move.create_frame(state, 0.05))
 	_check(tree.amount == 0, "Harvest consumes tree")
-	_check(state.drops.size() == tree.yieldAmount and state.drops.all(func(d): return d.type == "wood" and d.amount == 1), "Two or three separate wood drops")
+	_check(state.drops.size() == 1 and state.drops.all(func(d): return d.type == "wood" and d.amount == 1), "One wood drop per tree")
 	world.sync(state)
 	_check(not world._views.has(tree.id), "Depleted visual removed")
 	state.weather.clouds = [{"id": "test-cloud", "position": tree.position.duplicate(), "targetBiomeInstanceId": tree.biomeInstanceId, "phase": "approaching", "phaseElapsedSeconds": 0.0, "rainRemainingSeconds": 0.0}]
@@ -232,6 +236,70 @@ func _test_lifecycle(world: Node3D) -> void:
 	_check(tree.amount == tree.maxAmount, "Rain replenishes meadow wood")
 	world.sync(state)
 	_check(world._views.has(tree.id) and world._views[tree.id].scene_file_path == path, "Rain restores identical tree appearance")
+
+func _harvest_at_node(state: Dictionary, node: Dictionary, role: String, bonus_tool: String = "") -> void:
+	state.terrain = []
+	var position := {"x": node.position.x + node.interactionRadius, "y": node.position.y}
+	var unit := State.create_unit("test-harvester", role, position)
+	state.units = [unit]
+	unit.task = {"kind": "gather", "targetResourceId": node.id, "destination": position, "cause": "test"}
+	unit.actionProgressSeconds = Work.gather_duration(state, node)
+	if not bonus_tool.is_empty():
+		var found_bonus := false
+		for tick in range(128):
+			if Economy.rolls_bonus(state.seed, tick, unit.id, node.id, bonus_tool, state.toolLevels[bonus_tool]):
+				state.tick = tick
+				found_bonus = true
+				break
+		_check(found_bonus, "Deterministic bonus roll for " + bonus_tool)
+	Work.update_unit(state, unit, 0.05, Move.create_frame(state, 0.05))
+
+func _test_resource_drops() -> void:
+	var initial := State.create_initial("resource-drops")
+	for source in ["twigs", "berry-bush", "stone-vein", "ruin"]:
+		var state := initial.duplicate(true)
+		var node: Dictionary = state.resources.filter(func(candidate): return candidate.source == source)[0]
+		var role: String = {"twigs": "gatherer", "berry-bush": "gatherer"}.get(source, "artisan")
+		var inventory_before: Dictionary = state.inventory.amounts.duplicate()
+		_harvest_at_node(state, node, role)
+		_check(state.drops.size() == 1 and state.drops.all(func(d): return d.type == node.type and d.amount == 1 and d.sourceNodeId == node.id), "One base drop from " + source)
+		if source == "berry-bush":
+			_check(state.drops.any(func(d): return d.get("appearance") == "berries"), "Berry harvest selects the berry sprite variant")
+		_check(state.inventory.amounts == inventory_before, "Harvest waits for physical pickup")
+	for tool in ["axe", "hammer"]:
+		var state := initial.duplicate(true)
+		state.toolLevels[tool] = 10
+		var source := "tree" if tool == "axe" else "stone-vein"
+		var node: Dictionary = state.resources.filter(func(candidate): return candidate.source == source)[0]
+		_harvest_at_node(state, node, "lumberjack" if tool == "axe" else "artisan", tool)
+		_check(state.drops.size() == 2 and state.drops.all(func(d): return d.type == node.type and d.amount == 1), "One additional drop from " + tool)
+
+func _test_barbarian_loot() -> void:
+	var state := State.create_initial("barbarian-loot")
+	var barbarian: Dictionary = state.barbarians[0]
+	var expected := State.empty_amounts()
+	var found_multiple_gold := false
+	for cycle in range(128):
+		var random := Conflict.Random.new("%s:barbarian-loot:%s:%s" % [state.seed, barbarian.id, cycle])
+		expected.gold = random.next_int(1, 2)
+		expected.food = random.next_int(0, 2)
+		expected.wood = random.next_int(0, 1)
+		if expected.gold == 2:
+			barbarian.spawnCycle = cycle
+			found_multiple_gold = true
+			break
+	_check(found_multiple_gold, "Deterministic barbarian loot with two gold")
+	Conflict._defeat_barbarian(state, barbarian)
+	var corpse: Dictionary = state.barbarianCorpses[0]
+	_check(corpse.loot == expected, "Barbarian keeps its original loot table")
+	var unit := State.create_unit("test-looter", "gatherer", {"x": corpse.position.x + 1.25, "y": corpse.position.y})
+	state.terrain = []
+	state.units = [unit]
+	unit.task = {"kind": "loot-corpse", "targetEntityId": corpse.id, "cause": "test"}
+	unit.actionProgressSeconds = 1.5
+	Work.update_unit(state, unit, 0.05, Move.create_frame(state, 0.05))
+	for resource_type in ["gold", "food", "wood"]:
+		_check(state.drops.filter(func(d): return d.type == resource_type and d.amount == 1).size() == expected[resource_type], "Barbarian drops all " + resource_type)
 
 func _test_saved_world(world: Node3D) -> void:
 	var original := State.create_initial("saved-tile-world")
@@ -253,9 +321,18 @@ func _test_saved_world(world: Node3D) -> void:
 	original.decorations = original.decorations.filter(func(item): return item.kind != "water-rock")
 	for item in original.decorations:
 		item.erase("grouped")
+	var old_tree: Dictionary = original.resources.filter(func(node): return node.source == "tree")[0]
+	old_tree.yieldAmount = 3
+	Work.drop_resource(original, old_tree.position, "test", old_tree.id, "wood", 2)
 	_check(repository.save_slot(2,original).ok,"Save legacy-shaped world")
 	var legacy := repository.read_slot(2)
 	_check(legacy.status == "valid" and legacy.save.gameState.decorations == JSON.parse_string(JSON.stringify(original.decorations,"",false,true)),"Existing decorations load without regeneration")
+	if legacy.status == "valid":
+		var restored: Dictionary = legacy.save.gameState
+		_check(restored.drops.size() == 2, "Legacy drops already on the ground are retained")
+		var tree: Dictionary = restored.resources.filter(func(node): return node.id == old_tree.id)[0]
+		_harvest_at_node(restored, tree, "lumberjack")
+		_check(restored.drops.size() == 3 and restored.drops.back().amount == 1, "Loaded tree ignores its legacy yield")
 	repository.delete_slot(2)
 	repository.delete_slot(1)
 	DirAccess.remove_absolute(directory)

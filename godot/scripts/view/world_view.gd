@@ -51,6 +51,7 @@ const COLORS := {
 }
 @export var drop_scenes := {
 	"food": preload("res://scenes/world/DropFood.tscn"),
+	"berries": preload("res://scenes/world/DropBerries.tscn"),
 	"wood": preload("res://scenes/world/DropWood.tscn"),
 	"stone": preload("res://scenes/world/DropStone.tscn"),
 	"spark": preload("res://scenes/world/DropSpark.tscn"),
@@ -151,7 +152,7 @@ func setup(state: Dictionary) -> void:
 			rock.set_frame_and_progress(random.next_int(0,rock.sprite_frames.get_frame_count("default")-1),0.0)
 		else:
 			_create_decoration(decoration, state.seed, state.biomes)
-	sync(state)
+	sync(state, {}, 0.0)
 
 func _create_decoration(decoration: Dictionary, seed_text: String, biomes: Array = []) -> void:
 	# Appearance has its own PRNG: changing art never consumes simulation randomness.
@@ -167,6 +168,7 @@ func _create_decoration(decoration: Dictionary, seed_text: String, biomes: Array
 		elif key == "bush-big":
 			key = "bush-forest-big"
 	var view := _spawn(decoration_scenes[key], decoration.position)
+	_prepare_ground_sprite(view.get_node_or_null("Visual/Default/Sprite"))
 	view.scale = Vector3.ONE * decoration.scale
 	var sprite := view.get_node_or_null("Visual/Default/Sprite") as SpriteBase3D
 	if sprite != null:
@@ -275,7 +277,20 @@ func sync(state: Dictionary, previous_positions: Dictionary = {}, alpha: float =
 		if drop.amount > 0:
 			active[drop.id] = true
 			if not _views.has(drop.id):
-				_views[drop.id] = _spawn(drop_scenes[drop.type], drop.position)
+				var appearance: String = drop.get("appearance", drop.type)
+				if appearance == "food" and not drop.has("launchTick"):
+					for resource in state.resources:
+						if resource.id == drop.get("sourceNodeId") and resource.source == "berry-bush":
+							appearance = "berries"
+							break
+				var scene: PackedScene = drop_scenes.get(appearance, drop_scenes[drop.type])
+				var spawned := _spawn(scene, drop.position)
+				_prepare_ground_sprite(spawned.get_node_or_null("Visual/Default/Sprite"))
+				_views[drop.id] = spawned
+			var view: Node3D = _views[drop.id]
+			if view.has_method("present_drop"):
+				var tick_fraction := 0.0 if state.phase == "paused" else clampf(alpha, 0.0, 1.0)
+				view.present_drop(drop, state.tick + tick_fraction, _terrain)
 	_sync_survival_views(state, active)
 	for id in _views.keys():
 		if not active.has(id):
@@ -292,6 +307,7 @@ func _sync_actor(actor: Dictionary, kind: String, active: Dictionary, camera: Ca
 		var instance: Node3D = scene.instantiate()
 		instance.set_meta("kind", kind)
 		add_child(instance)
+		_prepare_ground_sprite(instance.get_node_or_null("Body/Sprite"))
 		_views[actor.id] = instance
 	var previous: Dictionary = _previous_positions.get(actor.id, actor.position)
 	var point := {"x": lerpf(previous.x, actor.position.x, _alpha), "y": lerpf(previous.y, actor.position.y, _alpha)}
@@ -552,7 +568,29 @@ func _create_resource(resource: Dictionary, seed_text: String) -> Node3D:
 		var random := AppearanceRandom.new(seed_text + ":" + resource.id + ":resource-appearance")
 		if random.next_int(0, 1) == 1:
 			scene = large_resource_scenes[resource.source]
-	return _spawn(scene, resource.position)
+	var view := _spawn(scene, resource.position)
+	_prepare_ground_sprite(view.get_node_or_null("Visual/Default/Sprite"))
+	return view
+
+func _prepare_ground_sprite(sprite: SpriteBase3D) -> void:
+	if sprite == null or sprite.billboard != BaseMaterial3D.BILLBOARD_ENABLED or sprite.material_override != null:
+		return
+	var material := ShaderMaterial.new()
+	material.shader = preload("res://shaders/standing_sprite.gdshader")
+	sprite.material_override = material
+	sprite.set_meta("standing_material", material)
+	var refresh := func() -> void:
+		var texture := _occlusion.texture(sprite)
+		if texture is AtlasTexture:
+			texture = texture.atlas
+		material.set_shader_parameter("sprite_texture", texture)
+	refresh.call()
+	if sprite is AnimatedSprite3D:
+		sprite.frame_changed.connect(refresh)
+		sprite.animation_changed.connect(refresh)
+		sprite.sprite_frames_changed.connect(refresh)
+	elif sprite is Sprite3D:
+		sprite.texture_changed.connect(refresh)
 
 func _spawn(scene: PackedScene, point: Dictionary) -> Node3D:
 	var node := scene.instantiate() as Node3D

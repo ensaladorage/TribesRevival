@@ -138,6 +138,110 @@ func test_repeated_pickups_do_not_reset_cooldown_or_grant_hits() -> void:
 	assert_str(unit.task.kind).is_equal("combat")
 	assert_float(float(unit.attackCooldownRemainingSeconds)).is_equal_approx(0.95, 0.00001)
 
+func test_combat_pickup_lock_survives_pause_save_and_reentry() -> void:
+	var session := _session("hunter")
+	var unit: Dictionary = session.state.units[0]
+	var enemy := _enemy(session.state, {"x": 86.0, "y": 80.0})
+	var combat := {"kind": "combat", "cause": "threat-nearby", "targetResourceId": null, "targetEntityId": enemy.id, "destination": null}
+	Session.Work.set_task(unit, combat)
+	unit.attackCooldownRemainingSeconds = 1.0
+	var terrain = Session.Movement.Terrain
+	var plateau: Dictionary = terrain.center(Vector2i(72, 78))
+	var row: String = session.state.terrain[78]
+	session.state.terrain[78] = row.left(72) + "2" + row.substr(73)
+	assert_bool(terrain.same_level(session.state.terrain, unit.position, plateau)).is_false()
+	var before: Dictionary = session.state.duplicate(true)
+	_action(session, "pick-up-minion")
+	_action(session, "drag-minion", plateau)
+	assert_bool(session.state == before).is_true()
+
+	session.state.barbarians.clear()
+	session.advance(Session.FIXED_DT)
+	assert_int(int(unit.pickupLockTicks)).is_equal(40)
+	for step in 20:
+		session.advance(Session.FIXED_DT)
+	_action(session, "toggle-pause")
+	session.advance(0.20)
+	assert_int(int(unit.pickupLockTicks)).is_equal(20)
+	var directory := "user://combat-pickup-tests-%s" % Time.get_ticks_usec()
+	var saves := Saves.new(directory)
+	assert_bool(saves.save_slot(1, session.state).ok).is_true()
+	var loaded := saves.read_slot(1)
+	assert_str(loaded.status).is_equal("valid")
+	session.replace_state(loaded.save.gameState)
+	unit = session.state.units[0]
+	saves.delete_slot(1)
+	DirAccess.remove_absolute(directory)
+
+	for step in 19:
+		session.advance(Session.FIXED_DT)
+	_action(session, "pick-up-minion")
+	assert_bool(unit.get("isCarried", false)).is_false()
+	session.advance(Session.FIXED_DT)
+	assert_bool(Carry.can_pick_up(session.state, unit)).is_true()
+
+	Session.Work.set_task(unit, combat)
+	Session.Work.set_task(unit, Session.Work.return_task(session.state, unit, "totem-moved"))
+	for step in 20:
+		session.advance(Session.FIXED_DT)
+	Session.Work.set_task(unit, combat)
+	var totem_position: Dictionary = session.state.totem.position
+	session.state.totem.position = {"x": 40.0, "y": 80.0}
+	session.state.totem.moving = true
+	session.advance(Session.FIXED_DT)
+	assert_str(unit.task.kind).is_not_equal("combat")
+	assert_int(int(unit.pickupLockTicks)).is_equal(40)
+	session.state.totem.position = totem_position
+	session.state.totem.moving = false
+	for step in 39:
+		session.advance(Session.FIXED_DT)
+	_action(session, "pick-up-minion")
+	assert_bool(unit.get("isCarried", false)).is_false()
+	session.advance(Session.FIXED_DT)
+	_action(session, "pick-up-minion")
+	assert_bool(unit.get("isCarried", false)).is_true()
+
+func test_all_roles_reject_pickup_and_drag_in_combat() -> void:
+	for role in Session.Work.Rules.AFFINITY:
+		var session := _session(role)
+		var unit: Dictionary = session.state.units[0]
+		var position: Dictionary = unit.position.duplicate()
+		Session.Work.set_task(unit, {"kind": "combat", "targetResourceId": null})
+		_action(session, "pick-up-minion")
+		_action(session, "drag-minion", {"x": 100, "y": 100})
+		assert_bool(unit.get("isCarried", false)).is_false()
+		assert_bool(unit.position == position).is_true()
+
+func test_ranged_fighters_remain_locked_through_a_long_pursuit() -> void:
+	for role in ["hunter", "mage"]:
+		var session := _session(role)
+		var unit: Dictionary = session.state.units[0]
+		unit.health = 100
+		var enemy := _enemy(session.state, {"x": 86.0, "y": 80.0})
+		enemy.health = 100
+		for tick in 80:
+			session.advance(Session.FIXED_DT)
+			assert_str(unit.task.kind).is_equal("flee")
+			var position: Dictionary = unit.position.duplicate()
+			_action(session, "pick-up-minion")
+			_action(session, "drag-minion", {"x": 100, "y": 100})
+			assert_bool(unit.get("isCarried", false)).is_false()
+			assert_bool(unit.position == position).is_true()
+		session.state.barbarians.clear()
+		session.advance(Session.FIXED_DT)
+		assert_int(int(unit.get("pickupLockTicks", 0))).is_equal(40)
+		for tick in 40:
+			session.advance(Session.FIXED_DT)
+		assert_bool(Carry.can_pick_up(session.state, unit)).is_true()
+
+func test_fleeing_without_prior_combat_can_be_picked_up() -> void:
+	var session := _session("gatherer")
+	var unit: Dictionary = session.state.units[0]
+	var enemy := _enemy(session.state, {"x": 86.0, "y": 80.0})
+	Session.Work.set_task(unit, {"kind": "flee", "cause": "pursued", "targetResourceId": null, "targetEntityId": enemy.id, "destination": unit.position.duplicate()})
+	_action(session, "pick-up-minion")
+	assert_bool(unit.get("isCarried", false)).is_true()
+
 func test_returning_civilian_does_not_stop_to_avoid_someone_elses_fight() -> void:
 	var session := _session("gatherer")
 	var unit: Dictionary = session.state.units[0]

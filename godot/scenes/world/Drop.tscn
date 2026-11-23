@@ -1,27 +1,43 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/view/world_element.gd" id="script"]
+[ext_resource type="Script" path="res://scripts/view/drop_view.gd" id="script"]
 
-[sub_resource type="CylinderMesh" id="mesh1"]
-top_radius = 0.45
-bottom_radius = 0.45
-height = 0.22
-radial_segments = 12
+[sub_resource type="Gradient" id="shadow_gradient"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(0.07, 0.05, 0.04, 0.48, 0.07, 0.05, 0.04, 0.26, 0.07, 0.05, 0.04, 0)
 
-[sub_resource type="StandardMaterial3D" id="mat1"]
-albedo_color = Color(1, 1, 1, 1)
-roughness = 1.0
-metallic_specular = 0.0
+[sub_resource type="GradientTexture2D" id="shadow_texture"]
+gradient = SubResource("shadow_gradient")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="shadow_material"]
+transparency = 1
+shading_mode = 0
+cull_mode = 2
+albedo_texture = SubResource("shadow_texture")
+
+[sub_resource type="QuadMesh" id="shadow_mesh"]
+material = SubResource("shadow_material")
+size = Vector2(0.82, 0.58)
+orientation = 1
 
 [node name="Drop" type="Node3D"]
 script = ExtResource("script")
+
+[node name="Shadow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4283487, 0, 0, 0, 1.4283487, 0, 0, 0, 1.4283487, 0, 0.11381727, 0)
+cast_shadow = 0
+mesh = SubResource("shadow_mesh")
 
 [node name="Visual" type="Node3D" parent="."]
 
 [node name="Default" type="Node3D" parent="Visual"]
 
-[node name="Drop" type="MeshInstance3D" parent="Visual/Default"]
-position = Vector3(0, 0.18, 0)
-mesh = SubResource("mesh1")
-material_override = SubResource("mat1")
-
+[node name="Sprite" type="Sprite3D" parent="Visual/Default"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2228738, 0)
+billboard = 1
+texture_filter = 0
+alpha_cut = 1
+cast_shadow = 0

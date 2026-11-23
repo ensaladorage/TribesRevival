@@ -1,13 +1,17 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/world/Drop.tscn" id="base"]
+[ext_resource type="Texture2D" path="res://assets/resources/Drops/G_Idle.png" id="sprite"]
 
-[sub_resource type="StandardMaterial3D" id="material"]
-albedo_color = Color(0.9019607843137255, 0.7490196078431373, 0.3568627450980392, 1)
-roughness = 1.0
-metallic_specular = 0.0
+[sub_resource type="AtlasTexture" id="pickup"]
+atlas = ExtResource("sprite")
+region = Rect2(48, 51, 43, 48)
+filter_clip = true
 
 [node name="DropGold" instance=ExtResource("base")]
+visual_offset = Vector3(0, 0.065, 0)
 
-[node name="Drop" parent="Visual/Default" index="0"]
-material_override = SubResource("material")
+[node name="Sprite" parent="Visual/Default" index="0"]
+offset = Vector2(0, 24)
+pixel_size = 0.0176
+texture = SubResource("pickup")

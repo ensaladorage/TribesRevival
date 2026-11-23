@@ -405,6 +405,7 @@ func check_work_inside_combat() -> void:
 	if not state.barbarianCorpses.is_empty() or state.drops.is_empty(): failures.append("Civil cannot finish looting inside combat area")
 	if not state.drops.is_empty():
 		state.drops[0].position = civil.position.duplicate()
+		state.drops[0].launchTick = state.tick - Session.Work.DROP_SETTLE_TICKS
 		session.advance(0.05)
 		if not state.drops.is_empty(): failures.append("Civil refuses a floor drop inside combat area")
 	# Start from an idle civil inside the fight: allow choosing a nearby node.
@@ -442,6 +443,7 @@ func check_safe_work() -> void:
 	Session.Work.drop_resource(state, civil.position, "test", "test", "wood", 1)
 	var drop: Dictionary = state.drops[0]
 	drop.position = civil.position.duplicate()
+	drop.launchTick = state.tick - Session.Work.DROP_SETTLE_TICKS
 	Session.Work.set_task(civil, {"kind": "collect-drop", "targetResourceId": drop.id, "destination": drop.position.duplicate(), "cause": "drop-found"})
 	session.advance(0.05)
 	if not state.drops.is_empty() or civil.has("fleeMemory"):

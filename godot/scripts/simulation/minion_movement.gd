@@ -15,8 +15,6 @@ const RETURN_SPEED := 8.0
 const FORMATION_TOLERANCE := 0.08
 const TOTEM_CLEARANCE := 2.02
 const FORMATION_RADIUS := 4.0
-const FORMATION_SCATTER := 0.6
-const FOLLOW_WANDER := 0.65
 
 static func flee_totem_obstacle(state: Dictionary) -> Dictionary:
 	return {"id": "totem-clearance", "position": state.totem.position, "clearance": TOTEM_CLEARANCE, "waypointRadius": TOTEM_CLEARANCE + 0.4}
@@ -52,39 +50,124 @@ static func find_entity(entities: Array, id: Variant) -> Variant:
 			return entity
 	return null
 
-static func area(state: Dictionary) -> Dictionary:
-	return {"center": state.totem.position, "commandRadius": state.totem.commandRadius, "minimumCoordinate": 2.0, "maximumCoordinate": 158.0}
+static func area(state: Dictionary, unit: Dictionary = {}) -> Dictionary:
+	return {"center": activity_center(state,unit), "commandRadius": state.totem.commandRadius, "minimumCoordinate": 2.0, "maximumCoordinate": 158.0}
 
 static func returning_after_drop(state: Dictionary, unit: Dictionary) -> bool:
-	return unit.task.kind == "return-to-totem" and unit.task.cause == "minion-dropped" and not Idle.within_range(unit.position, area(state))
+	return unit.task.kind == "return-to-totem" and unit.task.cause == "minion-dropped" and not Idle.within_range(unit.position, area(state,unit))
+
+static func activity_center(state: Dictionary, unit: Dictionary) -> Dictionary:
+	return unit.get("formationActivityCenter", state.totem.position)
 
 static func formation_target(state: Dictionary, index: int) -> Dictionary:
 	return formation_motion(state, index).target
 
 static func formation_motion(state: Dictionary, index: int) -> Dictionary:
-	# A different, reproducible profile on each pickup. No global/random frame state.
 	var unit: Dictionary = state.units[index]
-	var started := int(state.totem.get("formationStartTick", 0))
-	var random := Random.new("%s:formation:%s:%s" % [state.seed, unit.id, started])
-	var angle := float(index) / maxi(state.units.size(), 1) * PI * 2.0
-	var scatter_angle := random.next_float(0.0, TAU)
-	var scatter_radius := sqrt(random.next_float()) * FORMATION_SCATTER
-	var offset := Vector2.from_angle(scatter_angle) * scatter_radius
-	# Independent phases and periods break the rigid ring without jitter per tick.
-	var phase_x := random.next_float(0.0, TAU)
-	var phase_y := random.next_float(0.0, TAU)
-	var period_x := random.next_float(2.8, 4.8)
-	var period_y := random.next_float(3.2, 5.2)
-	var response := random.next_float(1.7, 3.2)
-	var sampled_tick := int(state.tick) if state.totem.isCarried else int(state.totem.get("formationStopTick", started))
-	var seconds := maxf(0.0, float(sampled_tick - started) / 20.0)
-	var blend := smoothstep(0.0, 0.7, seconds)
-	offset += Vector2(sin(phase_x + seconds * TAU / period_x), sin(phase_y + seconds * TAU / period_y)) * (FOLLOW_WANDER / sqrt(2.0)) * blend
-	var target := {"x": state.totem.position.x + cos(angle) * FORMATION_RADIUS + offset.x, "y": state.totem.position.y + sin(angle) * FORMATION_RADIUS + offset.y}
-	# Preserve the follow speed ceiling; each unit eases into its own destination.
-	target = Terrain.nearest(state.get("terrain",[]),target)
+	return _formation_plan(state).get(unit.id, {"target":unit.position,"speed":0.0,"available":false})
+
+static func _formation_plan(state: Dictionary, remember: bool = false) -> Dictionary:
+	var rows: Array = state.get("terrain", [])
+	var anchor: Dictionary = state.totem.position
+	if not Terrain.fits(rows,anchor,1.0,true):
+		anchor = state.totem.get("lastLanding",anchor)
+	var origin := Terrain.cell(anchor)
+	var flat := Terrain.surface_ids(rows,true)
+	var connected := Terrain.surface_ids(rows,false)
+	var anchor_cell := Terrain.center(origin)
+	var surface: Variant = flat.get(origin)
+	var walking_area: Variant = connected.get(origin)
+	var occupied: Array = []
+	var followers: Array = []
+	var plan := {}
+	for unit in state.units:
+		if unit.get("isCarried",false):
+			continue
+		if unit.task.kind in ["combat","flee","hunt","avoid-combat"] or (not state.totem.isCarried and unit.get("postCombatFree",false)):
+			occupied.append(unit.position)
+		else:
+			followers.append(unit)
+	followers.sort_custom(func(a,b): return a.id < b.id)
+	var pending := []
+	for unit in followers:
+		var saved: Dictionary = unit.get("formationSlot",{})
+		var point: Dictionary = saved.get("target",{})
+		if saved.get("anchor") == anchor_cell and not point.is_empty() and unit.get("navigation",{}).get("blockedSeconds",0.0) < 2.0 and _formation_clear(anchor,point,occupied):
+			occupied.append(point)
+			plan[unit.id] = _follow_motion(state,unit,point)
+		else:
+			pending.append(unit)
+	if pending.is_empty():
+		return plan
+
+	# Cell centres are spaced farther apart than the required unit clearance.
+	# Expand locally before inspecting remote cells or allowing another height.
+	var candidates: Array[Dictionary] = []
+	var spill: Array[Dictionary] = []
+	var limit := 4 if rows.is_empty() else Terrain.SIZE
+	for ring in range(limit+1):
+		for y in range(-ring,ring+1):
+			var columns := range(-ring,ring+1) if absi(y) == ring else [-ring,ring]
+			for x: int in columns:
+				var cell := origin + Vector2i(x,y)
+				if not rows.is_empty() and (not flat.has(cell) or connected.get(cell) != walking_area):
+					continue
+				var point := Terrain.center(cell)
+				if not _formation_clear(anchor,point,occupied):
+					continue
+				if rows.is_empty() or (surface != null and flat.get(cell) == surface):
+					candidates.append(point)
+				elif walking_area != null and connected.get(cell) == walking_area and flat.has(cell):
+					spill.append(point)
+		if candidates.size() >= pending.size()*2:
+			break
+	for unit in pending:
+		var point := _choose_formation_point(rows,unit,anchor,state.totem.commandRadius,candidates,occupied)
+		if point.is_empty():
+			point = _choose_formation_point(rows,unit,anchor,state.totem.commandRadius,spill,occupied)
+		if point.is_empty():
+			plan[unit.id] = {"target":unit.position,"speed":0.0,"available":false}
+			if remember:
+				unit.erase("formationSlot")
+			continue
+		plan[unit.id] = _follow_motion(state,unit,point)
+		occupied.append(point)
+		if remember:
+			unit.formationSlot = {"anchor":anchor_cell,"target":point}
+	return plan
+
+static func _formation_clear(anchor: Dictionary, point: Dictionary, occupied: Array) -> bool:
+	if point.x < 2 or point.y < 2 or point.x > 158 or point.y > 158 or Geo.distance(anchor,point) < TOTEM_CLEARANCE + FORMATION_TOLERANCE:
+		return false
+	return not occupied.any(func(other): return Geo.distance(point,other) < Nav.MINIMUM_SEPARATION + 2.0 * FORMATION_TOLERANCE)
+
+static func _choose_formation_point(rows: Array, unit: Dictionary, anchor: Dictionary, command_radius: float, candidates: Array[Dictionary], occupied: Array) -> Dictionary:
+	var best := {}
+	var best_score := INF
+	var best_outside := true
+	var failed: Dictionary = unit.get("formationSlot",{}).get("target",{})
+	var blocked: bool = unit.get("navigation",{}).get("blockedSeconds",0.0) >= 2.0
+	for point in candidates:
+		if not _formation_clear(anchor,point,occupied) or (blocked and point == failed):
+			continue
+		var range_to_totem := Geo.distance(anchor,point)
+		var outside := range_to_totem > command_radius
+		if not best_outside and outside:
+			continue
+		var score := absf(range_to_totem - FORMATION_RADIUS) * 3.0
+		if outside == best_outside and score >= best_score:
+			continue
+		var travel := Terrain.route_length(rows,unit.position,point)
+		score += travel
+		if is_finite(travel) and (outside != best_outside or score < best_score):
+			best_outside = outside
+			best_score = score
+			best = point
+	return best
+
+static func _follow_motion(state: Dictionary, unit: Dictionary, point: Dictionary) -> Dictionary:
 	var minimum_speed := 0.3 if state.totem.isCarried else 6.0
-	return {"target": target, "speed": minf(FOLLOW_SPEED, maxf(minimum_speed, Geo.distance(unit.position, target) * response))}
+	return {"target":point,"speed":minf(FOLLOW_SPEED,maxf(minimum_speed,Geo.distance(unit.position,point)*2.4)),"available":true}
 
 static func approach(point: Dictionary, target: Dictionary, interaction_range: float) -> Dictionary:
 	var distance := Geo.distance(point, target)
@@ -149,8 +232,7 @@ static func create_frame(state: Dictionary, delta: float) -> Dictionary:
 	for unit in state.units:
 		origins[unit.id] = unit.position.duplicate()
 	if state.totem.isCarried or state.totem.moving:
-		for index in state.units.size():
-			followers[state.units[index].id] = formation_motion(state, index)
+		followers = _formation_plan(state,true)
 	return {"deltaSeconds": delta, "origins": origins, "followers": followers, "reservations": {}, "combatPositions": {}}
 
 static func agent(state: Dictionary, unit: Dictionary, frame: Dictionary) -> Dictionary:
@@ -161,7 +243,7 @@ static func agent(state: Dictionary, unit: Dictionary, frame: Dictionary) -> Dic
 	var speed := UNIT_SPEED
 	var fixed := holds_working_position(state, unit)
 	if (state.totem.isCarried or (state.totem.moving and not unit.get("postCombatFree", false))) and unit.task.kind not in ["combat", "flee", "hunt"]:
-		var follow: Dictionary = frame.followers[unit.id]
+		var follow: Dictionary = frame.followers.get(unit.id, {"target":unit.position,"speed":0.0})
 		destination = follow.target
 		speed = follow.speed
 		fixed = fixed or unit.withdrawAfterAttack
@@ -174,15 +256,13 @@ static func agent(state: Dictionary, unit: Dictionary, frame: Dictionary) -> Dic
 		if resource != null:
 			destination = unit.task.destination if unit.task.destination != null else resource_approach(point, resource)
 	elif unit.task.kind == "collect-drop":
-		var drop: Variant = find_entity(state.drops, unit.task.targetResourceId)
-		if drop != null:
-			destination = drop.position
+		destination = unit.task.destination
 	elif unit.task.kind == "loot-corpse":
 		var corpse: Variant = find_entity(state.barbarianCorpses, unit.task.get("targetEntityId"))
 		if corpse != null:
 			destination = approach(point, corpse.position, 1.25)
 	elif unit.task.kind in ["return-to-totem", "flee"]:
-		destination = Idle.range_entry(point, area(state)) if unit.task.kind == "return-to-totem" else unit.task.get("destination", point)
+		destination = Idle.range_entry(point, area(state,unit)) if unit.task.kind == "return-to-totem" else unit.task.get("destination", point)
 		speed = RETURN_SPEED if unit.task.kind == "return-to-totem" else FOLLOW_SPEED
 	elif unit.task.kind == "avoid-combat":
 		destination = unit.task.destination
@@ -214,7 +294,7 @@ static func neighbors(state: Dictionary, unit: Dictionary, frame: Dictionary) ->
 
 static func move_towards(state: Dictionary, unit: Dictionary, destination: Dictionary, distance: float, frame: Dictionary) -> bool:
 	var safe := outside_totem(destination, state.totem.position, unit.id)
-	if unit.task.kind in ["collect-drop", "gather"]:
+	if unit.task.kind in ["collect-drop", "gather"] or frame.followers.get(unit.id,{}).get("target") == destination:
 		safe = destination
 	var moving_agent := agent(state, unit, frame).duplicate()
 	moving_agent.position = unit.position.duplicate()
@@ -224,7 +304,7 @@ static func move_towards(state: Dictionary, unit: Dictionary, destination: Dicti
 	var memory: Dictionary = unit.navigation
 	var rows: Array = state.get("terrain",[])
 	var final_goal := Terrain.nearest(rows,safe)
-	safe = Terrain.waypoint(rows,unit.position,final_goal,memory)
+	safe = Terrain.waypoint(rows,unit.position,final_goal,memory,unit.task.kind == "collect-drop")
 	safe = Terrain.stair_waypoint(state, unit, safe)
 	var others := neighbors(state, unit, frame)
 	var leaving_stair := Terrain.ramp(Terrain.code(rows, Terrain.cell(unit.position)))
@@ -235,11 +315,11 @@ static func move_towards(state: Dictionary, unit: Dictionary, destination: Dicti
 			if not flee_point_allowed(state, unit, point):
 				return false
 		if not state.totem.isCarried and (not state.totem.moving or unit.get("postCombatFree", false)) and unit.task.kind == "idle" and not leaving_stair:
-			if not Idle.within_range(point, area(state)):
+			if not Idle.within_range(point, area(state,unit)):
 				return false
 			if Geo.distance(point, state.totem.position) < minf(Geo.distance(unit.position, state.totem.position), TOTEM_CLEARANCE) - 1e-8:
 				return false
-		return not (Combat.is_ranged(unit.role, state.toolLevels.sword) and unit.task.kind == "combat") or Geo.distance(point, state.totem.position) <= minf(state.totem.commandRadius, 10.0) + 1e-8
+		return not (Combat.is_ranged(unit.role, state.toolLevels.sword) and unit.task.kind == "combat") or Geo.distance(point, activity_center(state,unit)) <= minf(state.totem.commandRadius, 10.0) + 1e-8
 	if Geo.distance(memory.goal, safe) > 0.6:
 		memory.waypoints = []
 		memory.side = 0
@@ -316,13 +396,13 @@ static func update_idle(state: Dictionary, unit: Dictionary, delta: float, frame
 		for other in ordered:
 			if other.id != unit.id and not other.get("isCarried", false):
 				idle_neighbors.append({"position": other.position, "destination": other.get("idleMovement", {}).get("destination", null) if other.task.kind != "return-to-totem" else other.task.destination})
-		idle.destination = Idle.choose_destination(state.seed, unit.id, idle.step, unit.position, area(state), idle_neighbors)
+		idle.destination = Idle.choose_destination(state.seed, unit.id, idle.step, unit.position, area(state,unit), idle_neighbors)
 		idle.step += 1
 	unit.state = "idle"
 	if idle.waitRemainingSeconds > 0:
 		idle.waitRemainingSeconds = maxf(0, idle.waitRemainingSeconds - delta)
 		var allowed := func(point: Dictionary) -> bool:
-			return point.x >= 2 and point.y >= 2 and point.x <= 158 and point.y <= 158 and Idle.within_range(point, area(state)) and Geo.distance(point, state.totem.position) >= minf(Geo.distance(unit.position, state.totem.position), TOTEM_CLEARANCE) - 1e-8
+			return point.x >= 2 and point.y >= 2 and point.x <= 158 and point.y <= 158 and Idle.within_range(point, area(state,unit)) and Geo.distance(point, state.totem.position) >= minf(Geo.distance(unit.position, state.totem.position), TOTEM_CLEARANCE) - 1e-8
 		var target: Variant = Nav.idle_yield_target(agent(state, unit, frame), neighbors(state, unit, frame), allowed)
 		if target != null:
 			move_towards(state, unit, target, Idle.SPEED * delta, frame)
@@ -358,9 +438,9 @@ static func _constrain(state: Dictionary, unit: Dictionary, flee_limits: Diction
 				unit.position = {"x": state.totem.position.x + (unit.position.x - state.totem.position.x) * clearance / distance, "y": state.totem.position.y + (unit.position.y - state.totem.position.y) * clearance / distance}
 		unit.position.merge(project_within(State.clamp_position(unit.position), state.totem.position, flee_limits[unit.id]), true)
 	if Combat.is_ranged(unit.role, state.toolLevels.sword) and unit.task.kind == "combat":
-		unit.position.merge(project_within(unit.position, state.totem.position, minf(state.totem.commandRadius, 10)), true)
+		unit.position.merge(project_within(unit.position, activity_center(state,unit), minf(state.totem.commandRadius, 10)), true)
 	if not state.totem.isCarried and (not state.totem.moving or unit.get("postCombatFree", false)) and unit.task.kind == "idle" and unit.get("idleMovement", {}).get("destination") != null:
-		unit.position.merge(project_within(unit.position, state.totem.position, state.totem.commandRadius), true)
+		unit.position.merge(project_within(unit.position, activity_center(state,unit), state.totem.commandRadius), true)
 		unit.position.merge(State.clamp_position(outside_totem(unit.position, state.totem.position, unit.id)), true)
 
 static func resolve_spacing(state: Dictionary) -> void:

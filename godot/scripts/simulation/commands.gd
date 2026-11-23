@@ -13,6 +13,26 @@ const Carry = preload("res://scripts/simulation/minion_carry.gd")
 const Conflict = preload("res://scripts/simulation/conflict_system.gd")
 const Survival = preload("res://scripts/simulation/survival_system.gd")
 
+static func unit_item_cost(state: Dictionary, item: String, unit: Variant) -> Variant:
+	if unit == null:
+		return null
+	if item == "shield":
+		if "shield" not in state.progression.unlockedTechnologies or unit.role != "guardian" or unit.hasShield:
+			return null
+		var shielded: int = state.units.filter(func(candidate): return candidate.role == "guardian" and candidate.hasShield).size()
+		return Economy.shield_cost(shielded)
+	if unit.role != "gatherer" or not Economy.SPECIALIZATIONS.has(item):
+		return null
+	if item == "hammer" and "artisan" not in state.progression.unlockedTechnologies:
+		return null
+	if item == "mage" and "mage" not in state.progression.unlockedTechnologies:
+		return null
+	if item in ["axe", "hammer"] and not Rules.can_convert_last_gatherer(state.units):
+		return null
+	var definition: Dictionary = Economy.SPECIALIZATIONS[item]
+	var count := Rules.count_role(state.units, definition.role)
+	return Economy.specialization_cost(item, count) if count < definition.limit else null
+
 static func apply(state: Dictionary, action: Dictionary) -> void:
 	if action.type == "toggle-pause":
 		Carry.drop_all(state)
@@ -39,8 +59,8 @@ static func apply(state: Dictionary, action: Dictionary) -> void:
 	var totem: Dictionary = state.totem
 	match action.type:
 		"pick-up-minion":
-			Carry.pick_up(state, action.unitId)
-			Conflict.retarget_enemies(state)
+			if Carry.pick_up(state, action.unitId):
+				Conflict.retarget_enemies(state)
 		"drag-minion":
 			Carry.drag(state, action.unitId, action.position, action.get("surfaceValid",true))
 		"sacrifice-minion":
@@ -57,6 +77,8 @@ static func apply(state: Dictionary, action: Dictionary) -> void:
 			if not totem.isCarried and Carry.held_unit(state) == null:
 				for unit in state.units:
 					unit.erase("postCombatFree")
+					unit.erase("formationSlot")
+					unit.erase("formationActivityCenter")
 				totem.formationStartTick = state.tick
 				totem.erase("formationStopTick")
 				totem.lastLanding = totem.position.duplicate()
@@ -109,31 +131,19 @@ static func apply(state: Dictionary, action: Dictionary) -> void:
 		"unlock-technology":
 			Progression.unlock(state.progression, action.technology)
 		"equip-shield":
-			if "shield" not in state.progression.unlockedTechnologies:
-				return
 			var unit: Variant = Move.find_entity(state.units, action.unitId)
-			if unit == null or unit.role != "guardian" or unit.hasShield:
-				return
-			var count: int = state.units.filter(func(candidate): return candidate.role == "guardian" and candidate.hasShield).size()
-			if not Economy.spend(state.inventory.amounts, Economy.shield_cost(count)):
+			var cost: Variant = unit_item_cost(state, "shield", unit)
+			if cost == null or not Economy.spend(state.inventory.amounts, cost):
 				return
 			unit.hasShield = true
 			unit.maxHealth += 1
 			unit.health = minf(unit.health + 1, unit.maxHealth)
 		"transform-unit":
 			var unit: Variant = Move.find_entity(state.units, action.unitId)
-			if unit == null or unit.role != "gatherer" or not Economy.SPECIALIZATIONS.has(action.item):
-				return
-			if action.item == "hammer" and "artisan" not in state.progression.unlockedTechnologies:
-				return
-			if action.item == "mage" and "mage" not in state.progression.unlockedTechnologies:
-				return
-			if action.item in ["axe", "hammer"] and not Rules.can_convert_last_gatherer(state.units):
+			var cost: Variant = unit_item_cost(state, action.item, unit)
+			if action.item == "shield" or cost == null or not Economy.spend(state.inventory.amounts, cost):
 				return
 			var definition: Dictionary = Economy.SPECIALIZATIONS[action.item]
-			var count := Rules.count_role(state.units, definition.role)
-			if count >= definition.limit or not Economy.spend(state.inventory.amounts, Economy.specialization_cost(action.item, count)):
-				return
 			state.purchaseCounts[definition.role] += 1
 			unit.role = definition.role
 			Work.set_task(unit, Rules.idle_task("action-complete"))

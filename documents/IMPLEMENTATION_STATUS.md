@@ -1,5 +1,44 @@
 # IMPLEMENTATION_STATUS --- Tribes Revival
 
+## Agarre durante la persecución
+
+El cazador y el mago mantienen el bloqueo de agarre durante la huida con ataques y los dos segundos posteriores. En Godot 4.7.2 pasaron 23 pruebas de combate y agarre y 69 comprobaciones de entrada. Se comprobó el rechazo del arrastre para los siete roles y durante 80 ticks consecutivos de persecución para cada combatiente a distancia.
+
+## Cursor de prohibición
+
+La interfaz usa `prohibited.png` para agarres bloqueados, destinos inválidos, herramientas que no se pueden aplicar, sacrificios bloqueados y botones deshabilitados. El PNG conserva los 64 × 64 píxeles, compresión sin pérdida, mipmaps desactivados y filtrado nearest.
+
+Al soltar un minion, el cursor espera a que se procese la suelta antes de volver a evaluar el agarre. En un destino prohibido, el icono acompaña al minion elevado. Una herramienta reservada para un minion conserva el cursor de agarre hasta que se señala un destinatario incompatible.
+
+Se ejecutaron 62 comprobaciones de arrastre y cursor en modo headless y con ventana en Compatibility. También pasaron la prueba de entrada de colocación y la suite de datos.
+
+## Bloqueo de agarre durante el combate
+
+El agarre se bloquea durante la tarea de combate y durante los 40 ticks posteriores a su fin. Durante el bloqueo, el cursor muestra el icono de prohibición. El guardado conserva la espera pendiente. La huida sin combate previo permite agarrar al minion.
+
+Verificado en Godot 4.7.2 con 21 pruebas GdUnit de combate y agarre, 47 comprobaciones de entrada y 29 748 comparaciones de datos y guardados. La regresión cubre el arrastre a un nivel superior, la retirada, el reinicio de la espera tras otro combate y su persistencia al pausar y recargar.
+
+## Detección de enemigos por nivel
+
+La simulación filtra los objetivos nuevos y los avisos de combate por nivel de terreno. Conserva los rivales activos al cruzar un desnivel. La prueba de rutas cubre ambos sentidos de detección y el daño a distancia. En una copia en memoria del slot 1 se simularon 200 ticks, con 493 observaciones de parejas cercanas en niveles distintos sin combate previo y ninguna adquisición nueva entre ellas.
+
+## Superposición de sprites junto a mesetas
+
+Los personajes, recursos y adornos terrestres con sprite frontal usan profundidad por píxel sobre su pivote. La prueba de render en Compatibility verifica el solapamiento delante, detrás y a ambos lados del borde de una pared.
+
+## Recogida de drops junto a bordes
+
+- Los minions pueden recoger drops desde suelo firme junto a mesetas,
+  costas y el límite del mapa. Las tareas existentes que apuntan a un
+  centro inaccesible se reajustan al continuar.
+- La llegada al destino de navegación ya no condiciona la recogida si
+  el drop está al alcance por el mismo lado del desnivel. El último
+  tramo dentro de la casilla admite la holgura normal de movimiento.
+- En la reproducción headless del slot 2, los tres drops originales
+  quedaron bloqueados durante 400 ticks antes de la corrección. Con ella
+  se recogieron en 25 ticks. `test_island_routes.gd` cubre ambos lados de
+  la pared y el rechazo de la recogida a través del desnivel.
+
 ## Grupos de rocas acuáticas
 
 - La generación reparte las rocas costeras en grupos de dos a cinco con
@@ -23,6 +62,24 @@
   según el sentido del tiro. La salida se revisó en Compatibility.
   La rotación Z del marcador define el ángulo inicial de la flecha.
   La transición al ángulo de vuelo se verificó en Compatibility.
+
+## Builds de desarrollo del 23 de noviembre de 2026
+
+- Exportadas y empaquetadas Windows x86-64, Linux x86-64 y web con Godot 4.7.2. Los ZIP y sus hashes están en `godot/builds/`. Los complementos del editor se excluyeron en la copia temporal usada para exportar.
+- Arranque headless comprobado en Windows y menú inicial comprobado en Edge por HTTP. En Linux se verificó el binario ELF x86-64. La ejecución en Linux queda pendiente.
+
+## Lanzamiento y recogida de recursos
+
+- Los seis sprites de recogida sustituyen a los cilindros. Las piezas salen hacia un destino transitable, dan dos rebotes y los minions las recogen al asentarse.
+- Los sprites mantienen su orientación durante el vuelo y al asentarse usan la posición de sprite y la escala y altura de sombra del drop de madera. Verificado con `test_drop_flight.gd` y una captura en Compatibility al zoom inicial.
+- El guardado conserva la fase del lanzamiento. Los objetos de guardados antiguos aparecen asentados.
+- Godot 4.7.2 headless verificó el lanzamiento, la recogida, la carga, los datos y el trabajo civil durante combate. Se revisaron cuatro capturas con los seis sprites simultáneos en Compatibility al zoom inicial.
+
+## Rendimiento base de nodos y fauna
+
+- Cada recolección genera una unidad base del recurso del nodo y cada oveja cazada deja una unidad de comida. El hacha y el martillo conservan la posibilidad de añadir una unidad. El botín de los bárbaros conserva su tabla.
+- Los nodos de partidas existentes aplican la regla al recolectarse. Los objetos ya guardados en el suelo se conservan.
+- Verificado en Godot 4.7.2 headless con `test_tree_resources.gd`, `test_data.gd` y `test_respawn_interpolation.gd`.
 
 ## Animaciones y pastoreo de las ovejas
 
@@ -1222,3 +1279,5 @@ Las ovejas reaparecen en su punto de origen 90 segundos después de ser cazadas.
 El generador de partidas nuevas combina costas curvadas, una llanura costera asimétrica, bocas de paso ensanchadas y terrazas con escaleras principales de cinco carriles. Los árboles y grupos decorativos reservan espacio delante de las escaleras. El catálogo comprueba posiciones de trabajo y cuotas antes de aceptar un candidato. Tras ocho intentos puede cargar un plano poblado de reserva. El formato de los slots se conserva.
 
 Godot 4.7.2 completó 128 trayectos de ida y vuelta sobre 64 semillas, con uno y ocho artesanos, entrega de piedra y reagrupación. El trayecto más largo con ocho unidades fue relieve-061 con 422 ticks. Dos procesos produjeron los mismos hashes para los 64 planos completos. Pasaron las suites de datos, árboles, rutas y decoración. Se comprobó la conservación de terreno, regiones, recursos agotados, decoración, animales y bárbaros de un mundo generado con la revisión 0318d04 tras guardar y cargar. La prueba de captura usó proyección real del puntero y revisó la subida con ocho unidades; la evaluación de comodidad con ratón físico queda pendiente. El renderer Compatibility informó al cerrar de una textura pendiente de liberar.
+
+La formación reparte huecos por superficie y puede extenderse fuera del radio antes de usar otra altura. La recogida local, separación, determinismo y asentamiento se verificaron con test_island_routes.gd y test_data.gd. Pasó test_tactical_behavior.gd. La reproducción de 200 ticks de arrastre por el borde midió 10 ms en el percentil 95 de simulación.

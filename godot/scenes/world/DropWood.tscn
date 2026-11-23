@@ -1,13 +1,21 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cudleqloc2giq"]
 
 [ext_resource type="PackedScene" path="res://scenes/world/Drop.tscn" id="base"]
+[ext_resource type="Texture2D" uid="uid://33447yrnl36t" path="res://assets/resources/Drops/W_Idle.png" id="sprite"]
 
-[sub_resource type="StandardMaterial3D" id="material"]
-albedo_color = Color(0.6039215686274509, 0.4196078431372549, 0.2627450980392157, 1)
-roughness = 1.0
-metallic_specular = 0.0
+[sub_resource type="AtlasTexture" id="pickup"]
+atlas = ExtResource("sprite")
+region = Rect2(39, 72, 49, 30)
+filter_clip = true
 
-[node name="DropWood" instance=ExtResource("base")]
+[node name="DropWood" unique_id=472488345 instance=ExtResource("base")]
+visual_offset = Vector3(0, 0.065, 0)
 
-[node name="Drop" parent="Visual/Default" index="0"]
-material_override = SubResource("material")
+[node name="Shadow" parent="." index="0"]
+transform = Transform3D(1.4283487, 0, 0, 0, 1.4283487, 0, 0, 0, 1.4283487, 0, 0.11381727, 0)
+
+[node name="Sprite" parent="Visual/Default" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2228738, 0)
+offset = Vector2(0, 15)
+pixel_size = 0.0198
+texture = SubResource("pickup")

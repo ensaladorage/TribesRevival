@@ -27,6 +27,8 @@ func _run() -> void:
 	var main := MainScene.instantiate()
 	main.set_process(false)
 	root.add_child(main)
+	var prohibited_image: Image = main.prohibited_cursor.get_image()
+	_check(prohibited_image.get_size() == Vector2i(64, 64) and not prohibited_image.has_mipmaps(), "Prohibited artwork must retain its original dimensions without mipmaps")
 	main._new_game()
 	main.session.state.resources = []
 	main.session.state.barbarians = []
@@ -39,6 +41,19 @@ func _run() -> void:
 	var screen: Vector2 = main.camera.unproject_position(main.TerrainView.world(unit.position,main.session.state.terrain) + Vector3.UP * 0.8)
 	_check(main._cursor_for_point(screen, false) == Input.CURSOR_POINTING_HAND, "Hovering a minion must show interact")
 	_check(main._cursor_for_point(screen, true) == Input.CURSOR_ARROW, "HUD must use arrow when empty handed")
+	var idle_task: Dictionary = unit.task.duplicate(true)
+	unit.task.kind = "combat"
+	_check_blocked_cursor(main, screen)
+	_mouse(screen, true)
+	main.session.flush_actions()
+	_check(main.dragged_minion_id.is_empty() and not unit.get("isCarried", false), "Combat click must not start a drag")
+	_mouse(screen, false)
+	unit.task = idle_task
+	unit.pickupLockTicks = 1
+	_check_blocked_cursor(main, screen)
+	unit.erase("pickupLockTicks")
+	main._present_cursor(main._cursor_for_point(screen, false), screen)
+	_check(not main.carry_cursor.get_node("Hand").visible and Input.mouse_mode == Input.MOUSE_MODE_VISIBLE, "Eligible minion must restore native cursor")
 	_mouse(screen, true)
 	main.session.flush_actions()
 	_check(main.dragged_minion_id == unit.id and unit.get("isCarried", false), "Left press must lift the selected minion")
@@ -52,8 +67,13 @@ func _run() -> void:
 	var view: Node3D = main.world_view._views[unit.id]
 	_check(view.get_node("Body").position.y > 2, "Scene must present raised body")
 	_check_carry_cursor(main, view.carried_height)
+	main._landing_valid = false
+	_check_blocked_cursor(main, screen)
+	main._landing_valid = true
 	var expected: Dictionary = unit.position.duplicate()
 	_mouse(destination, false)
+	_check(main.dragged_minion_id.is_empty() and unit.get("isCarried", false), "Release must remain queued until the next simulation step")
+	_check(main._cursor_for_point(destination, false) == Input.CURSOR_ARROW, "Queued release must not flash the prohibited cursor")
 	main.session.flush_actions()
 	main._sync_view()
 	_check(main.dragged_minion_id.is_empty() and not unit.get("isCarried", false), "Mouse release must drop the minion")
@@ -94,9 +114,26 @@ func _run() -> void:
 	_check(main._cursor_for_point(totem_screen, false) == Input.CURSOR_DRAG, "Carrying totem must show grab")
 	main._sync_view()
 	_check_carry_cursor(main, main.TOTEM_CARRIED_HEIGHT - main.TOTEM_REST_HEIGHT)
+	main._landing_valid = false
+	_check_blocked_cursor(main, totem_screen)
+	main._landing_valid = true
 	_mouse(totem_screen, false)
 	main.session.flush_actions()
 	_check(not main.dragging and not main.session.state.totem.isCarried, "Existing totem release must still work")
+	main.held_item = "gatherer"
+	main._landing_valid = false
+	_check_blocked_cursor(main, screen)
+	var item_target: Vector2 = main.camera.unproject_position(main.TerrainView.world(unit.position, main.session.state.terrain) + Vector3.UP * 0.65)
+	var empty_point := Vector2(100, 100)
+	main.held_item = "shield"
+	_check(main._cursor_for_point(empty_point, false) == Input.CURSOR_DRAG, "A held item without a recipient must keep the grab cursor")
+	_check_blocked_cursor(main, item_target)
+	main.held_item = "bow"
+	var inventory: Dictionary = main.session.state.inventory.amounts.duplicate()
+	for resource in main.session.state.inventory.amounts:
+		main.session.state.inventory.amounts[resource] = 100
+	_check(main._cursor_for_point(item_target, false) == Input.CURSOR_DRAG, "A compatible recipient must keep the grab cursor")
+	main.session.state.inventory.amounts = inventory
 	main.held_item = "gatherer"
 	_check(main._cursor_for_point(screen, true) == Input.CURSOR_DRAG, "HUD placement must show grab")
 	main.held_item = ""
@@ -118,7 +155,10 @@ func _run() -> void:
 		var food := int(main.session.state.inventory.amounts.food)
 		var body: Rect2 = main.world_view.carried_body_rect(main.camera, carried.id, carried.position)
 		var feet: Vector2 = main.camera.unproject_position(main.TerrainView.world(carried.position,main.session.state.terrain))
-		_mouse(skull_point - (body.get_center() - feet), false)
+		var release_point := skull_point - (body.get_center() - feet)
+		if count == 1:
+			_check_blocked_cursor(main, release_point)
+		_mouse(release_point, false)
 		main.session.flush_actions()
 		main._sync_view()
 		if count == 1:
@@ -131,6 +171,16 @@ func _run() -> void:
 	if failures.is_empty():
 		print("PASS minion drag input: %s checks; native dispatch and scene structure, no visual QA" % checks)
 	quit(0 if failures.is_empty() else 1)
+
+func _check_blocked_cursor(main: Node3D, screen: Vector2) -> void:
+	main._present_cursor(main._cursor_for_point(screen, false), screen)
+	var hand: TextureRect = main.carry_cursor.get_node("Hand")
+	_check(hand.visible and hand.texture == main.prohibited_cursor and hand.modulate == Color.WHITE, "Blocked action must show the prohibited artwork at its original color")
+	_check(hand.scale == Vector2(0.75, 0.75), "Prohibited cursor must display at 75 percent")
+	var expected := screen
+	if not main.dragged_minion_id.is_empty():
+		expected += main.world_view.carried_screen_offset(main.camera, main.dragged_minion_id)
+	_check((hand.position + main.prohibited_hotspot * 0.75).distance_to(expected) < 0.01, "Prohibited cursor must align with the lifted minion or the pointer")
 
 func _check_carry_cursor(main: Node3D, height: float) -> void:
 	var original_size: float = main.camera.size

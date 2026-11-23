@@ -10,7 +10,7 @@ extends "res://scripts/view/world_element.gd"
 			_holes.clear()
 			var sprite := canopy_sprite()
 			if sprite != null:
-				sprite.material_override = null
+				sprite.material_override = sprite.get_meta("standing_material", null) if sprite.has_meta("standing_material") else null
 ## Normalized texture coordinates, origin at top left; transparent pixels excluded.
 @export var canopy_region := Rect2(0.08, 0.04, 0.84, 0.78)
 ## Low shrubs reveal only the part of the body actually behind their foliage.
@@ -56,7 +56,7 @@ func update_holes(targets: Dictionary, camera: Camera3D, delta: float) -> void:
 		if hole.amount <= 0:
 			_holes.erase(id)
 	if _holes.is_empty():
-		sprite.material_override = null
+		sprite.material_override = sprite.get_meta("standing_material", null) if sprite.has_meta("standing_material") else null
 		return
 	if _material == null:
 		_material = ShaderMaterial.new()
@@ -75,6 +75,7 @@ func update_holes(targets: Dictionary, camera: Camera3D, delta: float) -> void:
 		texture = sprite.texture
 	# Sprite geometry already contains the atlas UV region of the current frame.
 	_material.set_shader_parameter("sprite_texture", texture.atlas if texture is AtlasTexture else texture)
+	_material.set_shader_parameter("standing", sprite.has_meta("standing_material"))
 	_material.set_shader_parameter("circles", circles)
 	_material.set_shader_parameter("circle_count", index)
 	_material.set_shader_parameter("dither_pixel_size", dither_pixel_size)

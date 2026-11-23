@@ -65,11 +65,11 @@ static func idle_task(cause: String = "no-valid-resource") -> Dictionary:
 
 const Terrain = preload("res://scripts/simulation/island_terrain.gd")
 
-static func _nearest(candidates: Array, position: Dictionary, rows: Array) -> Variant:
+static func _nearest(candidates: Array, position: Dictionary, rows: Array, drops: bool = false) -> Variant:
 	var best: Variant = null
 	var shortest := INF
 	for candidate in candidates:
-		var goal := Terrain.work_position(rows, position, candidate)
+		var goal := Terrain.drop_position(rows, position, candidate.position) if drops else Terrain.work_position(rows, position, candidate)
 		if goal.is_empty():
 			continue
 		var cost := Terrain.route_length(rows, position, goal)
@@ -100,7 +100,7 @@ static func choose_drop_task(input: Dictionary) -> Dictionary:
 	for drop in input.drops:
 		if drop.amount > 0 and drop.id != input.get("excludedTargetId") and drop.id not in input.get("reservedTargetIds", []) and _in_detection_range(input.unitPosition, drop.position, input.commandRadius):
 			candidates.append(drop)
-	var target: Variant = _nearest(candidates, input.unitPosition, input.get("terrain", []))
+	var target: Variant = _nearest(candidates, input.unitPosition, input.get("terrain", []), true)
 	if target == null:
 		return idle_task()
 	return {"kind": "collect-drop", "cause": "drop-found", "targetResourceId": target.id, "destination": target.position}

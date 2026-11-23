@@ -12,12 +12,13 @@ static func held_unit(state: Dictionary) -> Variant:
 			return unit
 	return null
 
-static func pick_up(state: Dictionary, unit_id: String) -> void:
-	if state.totem.isCarried or held_unit(state) != null:
-		return
+static func can_pick_up(state: Dictionary, unit: Variant) -> bool:
+	return unit != null and unit.health > 0 and not Work.blocks_combat_pickup(unit.role, unit.task.kind) and int(unit.get("pickupLockTicks", 0)) <= 0 and not state.totem.isCarried and held_unit(state) == null
+
+static func pick_up(state: Dictionary, unit_id: String) -> bool:
 	var unit: Variant = Move.find_entity(state.units, unit_id)
-	if unit == null or unit.health <= 0:
-		return
+	if not can_pick_up(state, unit):
+		return false
 	Work.set_task(unit, Rules.idle_task("minion-picked-up"))
 	Move.cancel_idle(unit)
 	unit.erase("navigation")
@@ -35,6 +36,7 @@ static func pick_up(state: Dictionary, unit_id: String) -> void:
 	# The hit was already resolved; remove only its remaining visual feedback.
 	state.effects = state.effects.filter(func(effect): return effect.targetId != unit_id or effect.kind not in ["attack-lunge", "heal-crosses"])
 	state.alerts = state.alerts.filter(func(alert): return alert.detectorKind != "minion" or alert.detectorId != unit_id)
+	return true
 
 static func drag(state: Dictionary, unit_id: String, point: Dictionary, surface_valid: bool = true) -> void:
 	var unit: Variant = held_unit(state)

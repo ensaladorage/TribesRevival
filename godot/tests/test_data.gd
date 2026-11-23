@@ -84,7 +84,7 @@ func _test_player_numbers() -> void:
 		_equal(not "." in label and not "," in label, true, "count text has no decimal separator")
 
 func _test_formation_geometry() -> void:
-	# Sample only the destination formula: no simulation ticks or movement loop.
+	# Sample the group assignment without advancing movement.
 	var state := State.create_initial("formation-geometry")
 	for index in range(2, 8):
 		state.units.append(State.create_unit("formation-%s" % index, "gatherer", {"x": 80.0, "y": 80.0}))
@@ -95,9 +95,7 @@ func _test_formation_geometry() -> void:
 		var targets: Array = []
 		for index in state.units.size():
 			var follow := Movement.formation_motion(state, index)
-			var angle := float(index) / 8.0 * TAU
-			var nominal := {"x": 80.0 + cos(angle) * 4.0, "y": 80.0 + sin(angle) * 4.0}
-			_equal(Movement.Geo.distance(follow.target, nominal) <= 1.25 + 1e-7, true, "bounded formation variation")
+			_equal(Movement.Terrain.fraction(state.terrain,follow.target), 0.0, "formation stays on starting surface")
 			_equal(follow.speed > 0 and follow.speed <= Movement.FOLLOW_SPEED, true, "follow speed ceiling")
 			_equal(follow, Movement.formation_motion(state.duplicate(true), index), "reproducible follow profile")
 			for other in targets:

@@ -4,14 +4,14 @@ extends RefCounted
 
 const Geo = preload("res://scripts/simulation/geometry.gd")
 
-static func choose_calls(units: Array, entities: Array, enemy_radius: float, animal_radius: float, can_respond: Callable = Callable()) -> Dictionary:
+static func choose_calls(units: Array, entities: Array, enemy_radius: float, animal_radius: float, can_respond: Callable = Callable(), can_detect: Callable = Callable()) -> Dictionary:
 	var calls := {}
 	var seen: Array = []
 	for entity in entities:
 		if not entity.isAlive:
 			continue
 		for unit in units:
-			if Geo.distance(unit.position, entity.position) <= (enemy_radius if entity.kind == "combat" else animal_radius):
+			if Geo.distance(unit.position, entity.position) <= (enemy_radius if entity.kind == "combat" else animal_radius) and (not can_detect.is_valid() or can_detect.call(unit, entity)):
 				seen.append(entity)
 				break
 	seen.sort_custom(func(a, b):
@@ -36,7 +36,7 @@ static func choose_calls(units: Array, entities: Array, enemy_radius: float, ani
 			continue
 		var candidates: Array = []
 		for unit in units:
-			if unit.available and not calls.has(unit.id) and (unit.canFight if entity.kind == "combat" else unit.canHunt) and (not can_respond.is_valid() or can_respond.call(unit, entity)):
+			if unit.available and (not can_detect.is_valid() or can_detect.call(unit, entity)) and not calls.has(unit.id) and (unit.canFight if entity.kind == "combat" else unit.canHunt) and (not can_respond.is_valid() or can_respond.call(unit, entity)):
 				candidates.append(unit)
 		candidates.sort_custom(func(a, b):
 			var difference := Geo.distance(a.position, entity.position) - Geo.distance(b.position, entity.position)

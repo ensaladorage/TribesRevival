@@ -118,7 +118,7 @@ un Recolector y al cargar una partida con Mago.
 | Formación/idle | Seguimiento 10 m/s, retorno al radio real 8 m/s, idle a 3 m/s con pausas; repetir con 2 y 8 minions |
 | Navegación | Cruces, rodeos a trabajadores, cesión del idle, bordes, detención y llegada real; sin aglomeraciones ni vibración |
 | Recolección | Afinidades, ramitas universales, tickets y llamadas; árboles 3 s, piedra I 5 s, otros 1.5 s; mover tótem cancela progreso sin consumir nodo |
-| Drops | Árboles 2–3 maderas y ramitas 2, siempre drops individuales; inventario cambia solo al recogerlos |
+| Drops | Una unidad base del recurso por nodo y una de comida por oveja; el hacha y el martillo pueden añadir un objeto de una unidad; los sprites salen despedidos, dan dos rebotes y el inventario cambia al recogerlos una vez asentados |
 | Combate | Plazas melee/rango, cooldowns, cazador dentro del leash; sin arma huye; al mover tótem máximo un golpe pendiente y reagrupar |
 | Comunicación | Detector llama a combatiente/cazador libre fuera de su rango personal; no duplicar objetivo; enemigos antes que fauna/recursos |
 | Daño/vida | Minion 4 HP, bárbaro 5 HP, conejos 2 HP; flashes, impulso, alertas y sonido una vez por encuentro |

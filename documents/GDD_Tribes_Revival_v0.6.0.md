@@ -22,7 +22,7 @@ El jugador guía una pequeña comunidad mediante un tótem que puede
 desplazar por un archipiélago. Las unidades no se controlan una por
 una de forma constante: interpretan la posición del tótem, el estado de
 la tribu y las oportunidades del entorno. Como intervención puntual, el jugador
-puede levantar un minion para reorganizarlo o rescatarlo del combate.
+puede levantar un minion para reorganizarlo cuando esté disponible.
 La fantasía principal es actuar como guía de una comunidad viva:
 -   explorar un territorio peligroso;
 -   detenerse en lugares con recursos;
@@ -192,8 +192,13 @@ dirección del arrastre.
 
 - Pulsar el botón izquierdo sobre un minion propio vivo lo levanta; mantenerlo
   pulsado lo mueve bajo el cursor y soltarlo lo deposita. Solo puede llevarse
-  un minion o el tótem a la vez. No hay coste, enfriamiento ni límite de distancia
-  al tótem. La cámara no se desplaza durante el arrastre de un minion.
+  un minion o el tótem a la vez. El agarre es gratuito y no tiene límite de
+  distancia al tótem. La cámara no se desplaza durante el arrastre de un minion.
+- Un minion queda bloqueado para el agarre mientras tenga una tarea de combate
+  y durante los 2 segundos de simulación posteriores. Si vuelve a combatir,
+  la espera vuelve a empezar cuando termina el nuevo combate. El cazador y el
+  mago siguen en combate mientras esquivan a su perseguidor, incluidas las
+  pausas entre ataques. La huida civil y la caza por sí solas permiten el agarre.
 - Mientras está levantado no trabaja, ataca, detecta amenazas, llama a aliados,
   bloquea el movimiento ni recibe daño. Tampoco se cura ni avanza su enfriamiento
   de ataque. Se conserva el tiempo pendiente de ataque y el progreso de curación;
@@ -308,7 +313,9 @@ aleatorio entre `lumberjack` y `hunter`. El `gatherer` puede
 transformarse en cualquier especialización mediante un objeto; los roles
 especializados no pueden volver a `gatherer` ni cambiar directamente a
 otro rol.
-Todos los minions pueden recoger drops y saquear cadáveres. La
+Todos los minions pueden recoger drops y saquear cadáveres. Junto a un
+borde, pueden recoger un drop desde un punto cercano de suelo transitable
+al que puedan llegar, con acceso directo al objeto. La
 herramienta no limita la recogida física; sí determina la recolección y
 el combate: `lumberjack`, `hunter` y `guardian` luchan con sus
 diferencias de alcance y daño; los roles sin arma no combaten y solo huyen
@@ -362,7 +369,11 @@ de acceso más cercano, y entra en idle sin dirigirse a un hueco central.
 La formación es exclusiva del seguimiento cuando el jugador mueve el tótem:
 los minions lo alcanzan, ocupan la formación y después vuelven a buscar
 trabajo o pasan a idle. Terminar recolección, recogida, saqueo, caza o combate
-no activa la formación.
+no activa la formación. Los huecos se reparten en la superficie continua del
+tótem, con separación entre minions y sin ángulos fijos. La búsqueda puede
+superar el radio de mando antes de recurrir a otra altura por escaleras.
+Cada minion asentado fuera del radio usa su hueco como centro para pasear y
+detectar tareas hasta el siguiente movimiento del tótem.
 Los bordes del mapa limitan los destinos; se mantienen la separación entre
 actores y la zona de exclusión del tótem. Combate, huida y movimiento del
 tótem conservan su prioridad. Mover el tótem cancela el paseo y su espera;
@@ -490,8 +501,9 @@ como mínimo un nodo de ramitas. Las nubes cruzan el mapa desde el inicio y entr
 El mundo contiene nodos de árboles (`wood`), vetas de piedra (`stone`) y ruinas luminosas (`spark`). La madera puede ser recolectada
 por `lumberjack`; piedra y Brillo quedan visibles y serializables, pero
 no se asignan a ningún rol jugable hasta que exista un minion adecuado.
-Cada árbol entrega entre `2` y `3` maderas por acción de tala,
-representadas como drops físicos separados de una unidad cada uno.
+Cada acción de recolección completada entrega una unidad base del recurso
+del nodo. El hacha y el martillo conservan la probabilidad de generar una
+unidad adicional, representada como un objeto físico separado.
 La acción tarda `3` segundos por árbol. La extracción de una veta de
 piedra de nivel 1 tarda `5` segundos; las futuras vetas de nivel 2
 tardarán `7` segundos. Las mejoras de herramienta aplican su bonificación
@@ -499,7 +511,7 @@ de velocidad a estos tiempos base.
 Piedra y Brillo solo pueden recolectarse cuando exista un rol con la afinidad correspondiente. El oro procede de bárbaros y la comida obtenida de bayas, animales y bárbaros comparte un único recurso e inventario.
 Las ramitas son un pequeño asset marrón de ramas en el suelo. Cualquier
 rol de minion puede recolectarlas; al completar una acción, el nodo se
-consume y genera un drop de `2` unidades de madera. Así la tribu puede
+consume y genera una unidad base de madera. Así la tribu puede
 obtener madera aunque solo conserve recolectores o cazadores.
 La economía inicial usa únicamente cantidades enteras: cada arbusto
 contiene exactamente `1` baya y cada baya añade exactamente `1` unidad
@@ -510,8 +522,9 @@ termina la acción de recolección, consume su contenido y crea un
 `ResourceDrop` visual junto al nodo. Al recolectar, el arbusto consume su
 única baya y crea una drop de `1` baya. Cualquier unidad libre puede
 desplazarse hasta esa drop y recogerla; solo entonces se suma `1` comida
-al inventario. La economía no necesita física realista: las colisiones y
-rutas se resolverán con navegación lógica y colisionadores simples.
+al inventario. Los objetos salen despedidos, caen y dan dos rebotes más cortos. Los
+minions pueden acercarse al punto de caída y recogerlos al asentarse. La
+simulación fija un destino transitable y la vista dibuja el salto.
 ### Navegación 3D
 La navegación forma parte de la simulación lógica; la capa de presentación solo representa el resultado. Para el MVP se puede usar una cuadrícula
 lógica sobre el terreno; posteriormente se podrá sustituir por navmesh y
@@ -521,6 +534,8 @@ crowd agents sin cambiar las reglas de alto nivel.
 ---
 
 ## 9. Combate
+
+La detección inicial entre minions y enemigos exige el mismo nivel de terreno, también al responder a un aviso aliado. Una vez iniciado el combate, ambos pueden seguir a su rival al cambiar de nivel. Los ataques a distancia pueden alcanzar al rival entre alturas dentro de su alcance habitual.
 El jugador decide posición, composición y movimiento del tótem. Las
 unidades resuelven ataques automáticamente; mover el tótem inicia el
 reagrupamiento sin cancelar un combate en curso.
@@ -551,12 +566,15 @@ reagrupamiento sin cancelar un combate en curso.
     aparición, regresan a ella a `8 m/s`. Al llegar, esperan el
     intervalo determinista de patrulla y retoman su recorrido a `1 m/s`.
 -   Hay seis ovejas pasivas en praderas, con `2 HP`. Se mueven dentro
-    de su bioma; el `hunter` los caza en al menos dos golpes y genera
-    `1–2` drops físicos de comida. Reaparecen en su punto a los `90 s`.
+    de su bioma; el `hunter` las caza en al menos dos golpes y genera
+    una unidad de comida en el suelo. Reaparecen en su punto a los `90 s`.
     Cada oveja patrulla durante `8 s`, descansa `1 s` y pasta durante
     `1,2 s` antes de retomar el mismo destino. La primera pausa se escalona
     hasta un segundo entre ovejas. El Cazador puede alcanzarlas en las tres
     fases. Al reaparecer, la oveja empieza un ciclo nuevo.
+El botín de los bárbaros y de futuros enemigos se define por separado del
+rendimiento de los nodos y la fauna.
+
 ### Estadísticas y comportamiento de combate
   Combatiente      HP   Daño   Alcance   Cadencia
   -------------- ---- ------ --------- ----------

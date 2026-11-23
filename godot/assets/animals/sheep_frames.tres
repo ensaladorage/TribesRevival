@@ -1,58 +1,8 @@
-[gd_resource type="SpriteFrames" format=3]
+[gd_resource type="SpriteFrames" format=3 uid="uid://bkm7byv3kvigf"]
 
-[ext_resource type="Texture2D" path="res://assets/animals/Sheep_Idle.png" id="idle"]
-[ext_resource type="Texture2D" path="res://assets/animals/Sheep_Move.png" id="move"]
-[ext_resource type="Texture2D" path="res://assets/animals/Sheep_Grass.png" id="graze"]
-
-[sub_resource type="AtlasTexture" id="idle_00"]
-atlas = ExtResource("idle")
-region = Rect2(0, 0, 128, 128)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="idle_01"]
-atlas = ExtResource("idle")
-region = Rect2(128, 0, 128, 128)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="idle_02"]
-atlas = ExtResource("idle")
-region = Rect2(256, 0, 128, 128)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="idle_03"]
-atlas = ExtResource("idle")
-region = Rect2(384, 0, 128, 128)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="idle_04"]
-atlas = ExtResource("idle")
-region = Rect2(512, 0, 128, 128)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="idle_05"]
-atlas = ExtResource("idle")
-region = Rect2(640, 0, 128, 128)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="move_00"]
-atlas = ExtResource("move")
-region = Rect2(0, 0, 128, 128)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="move_01"]
-atlas = ExtResource("move")
-region = Rect2(128, 0, 128, 128)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="move_02"]
-atlas = ExtResource("move")
-region = Rect2(256, 0, 128, 128)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="move_03"]
-atlas = ExtResource("move")
-region = Rect2(384, 0, 128, 128)
-filter_clip = true
+[ext_resource type="Texture2D" uid="uid://wno2ggl8mgua" path="res://assets/animals/Sheep_Grass.png" id="graze"]
+[ext_resource type="Texture2D" uid="uid://esejv6qj0wdo" path="res://assets/animals/Sheep_Idle.png" id="idle"]
+[ext_resource type="Texture2D" uid="uid://duj4ea865sr6v" path="res://assets/animals/Sheep_Move.png" id="move"]
 
 [sub_resource type="AtlasTexture" id="graze_00"]
 atlas = ExtResource("graze")
@@ -114,45 +64,136 @@ atlas = ExtResource("graze")
 region = Rect2(1408, 0, 128, 128)
 filter_clip = true
 
+[sub_resource type="AtlasTexture" id="idle_00"]
+atlas = ExtResource("idle")
+region = Rect2(0, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_01"]
+atlas = ExtResource("idle")
+region = Rect2(128, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_02"]
+atlas = ExtResource("idle")
+region = Rect2(256, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_03"]
+atlas = ExtResource("idle")
+region = Rect2(384, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_04"]
+atlas = ExtResource("idle")
+region = Rect2(512, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="idle_05"]
+atlas = ExtResource("idle")
+region = Rect2(640, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_00"]
+atlas = ExtResource("move")
+region = Rect2(0, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_01"]
+atlas = ExtResource("move")
+region = Rect2(128, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_02"]
+atlas = ExtResource("move")
+region = Rect2(256, 0, 128, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="move_03"]
+atlas = ExtResource("move")
+region = Rect2(384, 0, 128, 128)
+filter_clip = true
+
 [resource]
 animations = [{
-"frames": [
-{"duration": 1.0, "texture": SubResource("idle_00")},
-{"duration": 1.0, "texture": SubResource("idle_01")},
-{"duration": 1.0, "texture": SubResource("idle_02")},
-{"duration": 1.0, "texture": SubResource("idle_03")},
-{"duration": 1.0, "texture": SubResource("idle_04")},
-{"duration": 1.0, "texture": SubResource("idle_05")}
-],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("graze_00")
+}, {
+"duration": 1.0,
+"texture": SubResource("graze_01")
+}, {
+"duration": 1.0,
+"texture": SubResource("graze_02")
+}, {
+"duration": 1.0,
+"texture": SubResource("graze_03")
+}, {
+"duration": 1.0,
+"texture": SubResource("graze_04")
+}, {
+"duration": 1.0,
+"texture": SubResource("graze_05")
+}, {
+"duration": 1.0,
+"texture": SubResource("graze_06")
+}, {
+"duration": 1.0,
+"texture": SubResource("graze_07")
+}, {
+"duration": 1.0,
+"texture": SubResource("graze_08")
+}, {
+"duration": 1.0,
+"texture": SubResource("graze_09")
+}, {
+"duration": 1.0,
+"texture": SubResource("graze_10")
+}, {
+"duration": 1.0,
+"texture": SubResource("graze_11")
+}],
+"loop": 0,
+"name": &"graze",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("idle_00")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_01")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_02")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_03")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_04")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_05")
+}],
 "loop": 1,
 "name": &"idle",
 "speed": 10.0
 }, {
-"frames": [
-{"duration": 1.0, "texture": SubResource("move_00")},
-{"duration": 1.0, "texture": SubResource("move_01")},
-{"duration": 1.0, "texture": SubResource("move_02")},
-{"duration": 1.0, "texture": SubResource("move_03")}
-],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("move_00")
+}, {
+"duration": 1.0,
+"texture": SubResource("move_01")
+}, {
+"duration": 1.0,
+"texture": SubResource("move_02")
+}, {
+"duration": 1.0,
+"texture": SubResource("move_03")
+}],
 "loop": 1,
 "name": &"move",
-"speed": 10.0
-}, {
-"frames": [
-{"duration": 1.0, "texture": SubResource("graze_00")},
-{"duration": 1.0, "texture": SubResource("graze_01")},
-{"duration": 1.0, "texture": SubResource("graze_02")},
-{"duration": 1.0, "texture": SubResource("graze_03")},
-{"duration": 1.0, "texture": SubResource("graze_04")},
-{"duration": 1.0, "texture": SubResource("graze_05")},
-{"duration": 1.0, "texture": SubResource("graze_06")},
-{"duration": 1.0, "texture": SubResource("graze_07")},
-{"duration": 1.0, "texture": SubResource("graze_08")},
-{"duration": 1.0, "texture": SubResource("graze_09")},
-{"duration": 1.0, "texture": SubResource("graze_10")},
-{"duration": 1.0, "texture": SubResource("graze_11")}
-],
-"loop": 0,
-"name": &"graze",
 "speed": 10.0
 }]

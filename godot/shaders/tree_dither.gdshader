@@ -5,13 +5,8 @@ uniform sampler2D sprite_texture : source_color, filter_nearest, repeat_disable;
 uniform vec4 circles[32];
 uniform int circle_count = 0;
 uniform float dither_pixel_size = 2.0;
-varying vec2 view_position;
-
-void vertex() {
-	vec3 scale = vec3(length(MODEL_MATRIX[0].xyz), length(MODEL_MATRIX[1].xyz), length(MODEL_MATRIX[2].xyz));
-	MODELVIEW_MATRIX = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0] * scale.x, INV_VIEW_MATRIX[1] * scale.y, INV_VIEW_MATRIX[2] * scale.z, MODEL_MATRIX[3]);
-	view_position = (MODELVIEW_MATRIX * vec4(VERTEX, 1.0)).xy;
-}
+uniform bool standing = false;
+#include "res://shaders/standing_depth.gdshaderinc"
 
 void fragment() {
 	vec4 tex = texture(sprite_texture, UV);
@@ -26,5 +21,6 @@ void fragment() {
 	ivec2 pixel = ivec2(mod(floor(FRAGCOORD.xy / dither_pixel_size), 4.0));
 	float threshold = (bayer[pixel.y * 4 + pixel.x] + 0.5) / 16.0;
 	if (keep < threshold) { discard; }
+	DEPTH = standing ? sprite_depth(FRAGCOORD.z, PROJECTION_MATRIX[2][2]) : FRAGCOORD.z;
 	ALBEDO = tex.rgb * COLOR.rgb;
 }

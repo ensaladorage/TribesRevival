@@ -12,8 +12,6 @@ var _template: Dictionary
 func _init(directory: String = "user://saves") -> void:
 	_directory = directory
 	_template = State.create_initial()
-	# Resource yield and unit navigation are optional in the current schema.
-	_template.resources[0].erase("yieldAmount")
 	if not _template.decorations.is_empty():
 		_template.decorations[0].erase("grouped")
 

@@ -51,6 +51,7 @@ func _run() -> void:
 	var enemy: Dictionary = state.barbarians[0]
 	state.barbarians = []
 	unit.position = home.duplicate()
+	unit.erase("postCombatFree")
 	unit.task.kind = "return-to-totem"
 	var passed_stairs := false
 	var target := Session.Movement.formation_target(state,0)
@@ -74,8 +75,10 @@ func _run() -> void:
 		check(T.clear(rows,prev,enemy.position),"Enemy crossed blocked edge")
 	check(Session.Movement.Geo.distance(enemy.position,enemy_goal) < 0.2,"Enemy descended and crossed the causeway")
 	_check_stair_save()
+	_check_edge_drops()
 	_check_stair_traffic()
 	_check_wide_stair()
+	_check_flexible_formation()
 	_check_live_trip_and_fauna()
 	var ref := preload("res://scenes/world/TerrainReference.tscn").instantiate()
 	root.add_child(ref)
@@ -98,6 +101,7 @@ func _run() -> void:
 	low.y += 0.38
 	high.y -= 0.38
 	state.terrain = camera.terrain
+	_check_detection_levels(camera.terrain, low, high)
 	unit.position = low
 	enemy.position = high
 	unit.role = "guardian"
@@ -115,6 +119,92 @@ func _run() -> void:
 	for message in failures.slice(0,8): push_error(message)
 	print("Island route and picking failures: ",failures.size())
 	quit(int(not failures.is_empty()))
+
+func _check_detection_levels(rows: Array, low: Dictionary, high: Dictionary) -> void:
+	var state := Session.new("height-awareness").state
+	var unit: Dictionary = state.units[0]
+	var enemy: Dictionary = state.barbarians[0]
+	state.units = [unit]
+	state.barbarians = [enemy]
+	state.animals = []
+	state.terrain = rows
+	state.totem.position = low.duplicate()
+	unit.role = "hunter"
+	unit.position = low.duplicate()
+	enemy.position = high.duplicate()
+	enemy.spawnPosition = high.duplicate()
+	enemy.patrolTarget = high.duplicate()
+	for moving in [false, true]:
+		state.totem.moving = moving
+		Session.Conflict.update(state, 0.0, Session.Movement.create_frame(state, 0.05))
+		check(unit.task.kind != "combat" and enemy.targetUnitId == null and state.alerts.is_empty(), "No acquisition or alert across elevations")
+	state.totem.moving = false
+	unit.role = "guardian"
+	enemy.position = low.duplicate()
+	Session.Conflict.update(state, 0.0, Session.Movement.create_frame(state, 0.05))
+	check(unit.task.get("targetEntityId") == enemy.id and enemy.targetUnitId == unit.id, "Both sides engage on the same level")
+	enemy.position = high.duplicate()
+	Session.Conflict.update(state, 0.0, Session.Movement.create_frame(state, 0.05))
+	check(unit.task.get("targetEntityId") == enemy.id and enemy.targetUnitId == unit.id, "Both sides retain their opponent across elevations")
+
+func _check_edge_drops() -> void:
+	var state := Session.new("edge-drops").state
+	state.resources = []
+	state.animals = []
+	state.barbarians = []
+	state.totem.position = T.center(Vector2i(53, 50))
+	var rows := []
+	for y in T.SIZE:
+		rows.append(("1" if y < 51 else ".").repeat(50) + "2".repeat(55))
+	state.terrain = rows
+	var unit: Dictionary = state.units[0]
+	state.units = [unit]
+	var move := Session.Movement
+	for edge in [Vector2i(50, 50), Vector2i(50, 51), Vector2i(104, 50)]:
+		var inward := -1 if edge.x == 104 else 1
+		unit.position = T.center(edge + Vector2i(2 * inward, 0))
+		Session.Work.set_task(unit, Session.Work.Rules.idle_task())
+		var point := T.center(edge)
+		point.x -= 0.65 * inward
+		var drop := {"id": "edge-wood", "type": "wood", "position": point, "amount": 1}
+		state.drops = [drop]
+		check(not T.fits(rows, point) and T.fits(rows, point, 0.0), "Drop fits at the edge, minion footprint does not")
+		if edge.y == 51:
+			Session.Work.set_task(unit, {"kind": "collect-drop", "targetResourceId": drop.id, "destination": point, "cause": "drop-found"})
+		var wood: int = state.inventory.amounts.wood
+		for tick in 80:
+			Session.Work.update_unit(state, unit, 0.05, move.create_frame(state, 0.05))
+			check(T.fits(rows, unit.position) and T.fraction(rows, unit.position) == 1.0, "Pickup keeps the worker on solid ground")
+			if state.drops.is_empty():
+				break
+		check(state.drops.is_empty() and state.inventory.amounts.wood == wood + 1, "Collect one edge drop at %s" % str(edge))
+	unit.position = T.center(Vector2i(49, 50))
+	unit.position.x += 0.4
+	var unreachable := T.center(Vector2i(50, 50))
+	unreachable.x -= 0.65
+	state.drops = [{"id": "above-cliff", "type": "wood", "position": unreachable, "amount": 1}]
+	check(Session.Work.choose_work_task(state, unit).kind == "idle", "Cannot collect through a cliff")
+	Session.Work.set_task(unit, {"kind": "collect-drop", "targetResourceId": "above-cliff", "destination": unreachable, "cause": "drop-found"})
+	Session.Work.update_unit(state, unit, 0.05, move.create_frame(state, 0.05))
+	check(state.drops.size() == 1, "An existing task cannot pick up a nearby drop through a cliff")
+
+	for edge in [Vector2i(49, 49), Vector2i(50, 49)]:
+		for along_edge in [0.0, 0.7]:
+			var start := T.center(edge)
+			unit.position = start.duplicate()
+			var point := {"x": start.x + (0.4 if edge.x == 49 else -0.4), "y": start.y + along_edge}
+			state.drops = [{"id": "tight-edge", "type": "wood", "position": point, "amount": 1}]
+			check(T.fits(rows, point) and not T.fits(rows, point, 0.48), "Drop fits the body but lacks steering clearance")
+			Session.Work.set_task(unit, {"kind": "collect-drop", "targetResourceId": "tight-edge", "destination": point, "cause": "drop-found"})
+			var wood: int = state.inventory.amounts.wood
+			for tick in (1 if along_edge == 0.0 else 20):
+				Session.Work.update_unit(state, unit, 0.05, move.create_frame(state, 0.05))
+				check(T.fits(rows, unit.position) and T.fraction(rows, unit.position) == T.fraction(rows, start), "Worker stays on its side of the cliff")
+				if state.drops.is_empty():
+					break
+			check(state.drops.is_empty() and state.inventory.amounts.wood == wood + 1, "Collect tight drop at %s, along edge %s" % [edge, along_edge])
+			if along_edge == 0.0:
+				check(unit.position == start, "Worker already in reach collects without taking a step")
 
 func _check_live_trip_and_fauna() -> void:
 	var session := Session.new("archipelago-travel")
@@ -343,3 +433,59 @@ func _check_wide_stair() -> void:
 		simultaneous = simultaneous or (first.x == 50 and second.x == 50 and first.y != second.y)
 		check(Session.Movement.Geo.distance(a.position,b.position) >= 0.9,"Opposing traffic overlapped on wide stair")
 	check(simultaneous and T.cell(a.position).x == 53 and T.cell(b.position).x == 47,"Opposing traffic crossed the wide stair simultaneously")
+func _check_flexible_formation() -> void:
+	var state := Session.new("surface-formation").state
+	var move := Session.Movement
+	state.barbarians = []
+	state.animals = []
+	state.resources = []
+	state.drops = []
+	var home := T.center(Vector2i(48,50))
+	state.totem.position = home
+	state.totem.commandRadius = 3.0
+	state.units = []
+	for index in 8:
+		var point := T.center(Vector2i(47-index,50))
+		state.units.append(Session.State.create_unit("follower-%d" % index,"gatherer",point))
+	for lower_width in [15,4]:
+		var rows := []
+		for y in T.SIZE:
+			var lower := (".".repeat(50-lower_width) + "1".repeat(lower_width)) if y in [49,50,51] else ".".repeat(50)
+			var upper := "2".repeat(12) if y in [49,50,51] else ".".repeat(12)
+			rows.append(lower + (">" if y in [50,51] else ".") + upper + ".".repeat(42))
+		state.terrain = rows
+		state.totem.moving = true
+		for unit in state.units:
+			unit.erase("formationSlot")
+			unit.position = T.center(Vector2i(maxi(46,T.cell(unit.position).x),50))
+		var frame := move.create_frame(state,0.05)
+		var upper_count := 0
+		var outside_count := 0
+		var assigned := []
+		for position in frame.followers.values():
+			check(position.available,"Every follower can reach a flexible slot")
+			var point: Dictionary = position.target
+			for other in assigned:
+				check(move.Geo.distance(point,other) > move.Nav.MINIMUM_SEPARATION,"Flexible slots remain separated")
+			assigned.append(point)
+			upper_count += int(T.fraction(rows,point) == 1.0)
+			outside_count += int(move.Geo.distance(home,point) > 3.0)
+		check((lower_width == 15 and upper_count == 0 and outside_count > 0) or (lower_width == 4 and upper_count > 0),"Only use stairs when the whole surface is full")
+		for unit in state.units:
+			unit.position = frame.followers[unit.id].target.duplicate()
+		Session.Work.update_tribe(state,0.05,move.create_frame(state,0.05))
+		check(not state.totem.moving,"Settles after reaching flexible slots")
+		var local_units: Array = state.units.filter(func(u): return u.has("formationActivityCenter"))
+		check(not local_units.is_empty(),"Outside followers have a local activity area")
+		if not local_units.is_empty():
+			var worker: Dictionary = local_units[0]
+			var point: Dictionary = worker.position.duplicate()
+			state.drops = [{"id":"local-drop","type":"food","position":point,"amount":1}]
+			for tick in 2:
+				Session.Work.update_unit(state,worker,0.05,move.create_frame(state,0.05))
+			check(state.drops.is_empty() and worker.task.kind == "idle","A follower outside the command radius collects nearby drops")
+			var restored: Dictionary = JSON.parse_string(JSON.stringify(state,"",false,true))
+			check(restored.units.any(func(u): return u.id == worker.id and u.get("formationActivityCenter") == worker.formationActivityCenter),"Activity centre survives JSON")
+			Session.Commands.apply(state,{"type":"pick-up-totem"})
+			check(not worker.has("formationActivityCenter"),"Picking up totem resets outside activity area")
+			Session.Commands.apply(state,{"type":"drop-totem"})

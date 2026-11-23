@@ -63,6 +63,12 @@ func advance(frame_seconds: float) -> void:
 				Survival.age_effects(state, FIXED_DT)
 			else:
 				Weather.update(state, FIXED_DT)
+				for unit in state.units:
+					var pickup_lock_ticks := int(unit.get("pickupLockTicks", 0))
+					if pickup_lock_ticks > 1:
+						unit.pickupLockTicks = pickup_lock_ticks - 1
+					elif pickup_lock_ticks == 1:
+						unit.erase("pickupLockTicks")
 				Survival.update_cooldowns(state, FIXED_DT)
 				var frame := Movement.create_frame(state, FIXED_DT)
 				Conflict.update(state, FIXED_DT, frame)

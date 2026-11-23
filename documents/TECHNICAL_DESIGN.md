@@ -133,7 +133,14 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
     ser recogido por cualquier unidad libre.
 -   La recolección de un nodo es una transformación
     `ResourceNode → ResourceDrop`; no modifica directamente el
-    inventario. El inventario solo cambia al completar `collect-drop`.
+    inventario. En Godot, cada acción produce un objeto de una unidad más
+    el posible objeto adicional del hacha o el martillo. Los nodos cargados
+    con el antiguo `yieldAmount` aplican la misma regla. El inventario solo
+    cambia al completar `collect-drop`.
+    `position` es el destino final transitable. Los campos opcionales
+    `launchOrigin` y `launchTick` permiten reconstruir la trayectoria visual
+    y bloquear la recogida durante 16 ticks. `appearance` distingue bayas
+    de otras fuentes de comida. Los guardados antiguos cargan asentados.
 -   Los tipos de simulación son `food`, `wood`, `stone`, `spark` y
     `gold`. Bayas y carne de fauna o bárbaros usan siempre `food`; no
     existe un recurso separado de carne.
@@ -148,6 +155,13 @@ Esta sección fija los contratos de simulación para recursos y tareas. El siste
     a `idle`; si la carga está llena o el nodo se agota, crea un drop en
     el lugar de recolección y queda libre.
 -   La prioridad de decisión autónoma es `enemigos` > `nodos de recursos` > `drops`. Si no hay enemigos elegibles, se comparan nodos y drops.
+-   En Godot, si el centro del drop no admite la huella del minion,
+    selección y movimiento usan un punto de recogida cercano y transitable.
+    La recogida se comprueba antes y después de mover al minion, según el
+    alcance actual y un segmento directo al objeto desde ese lado del borde.
+    Si todavía falta acercarse dentro de la casilla del destino, el trayecto
+    final usa la holgura normal de movimiento.
+    Se revalida el destino de tareas existentes sin cambiar el guardado.
     Levantar el tótem interrumpe tareas de recolección, caza y saqueo.
     El combate continúa hasta romper contacto; los minions sin arma
     usan en Godot la huida limitada descrita en «IA táctica en Godot».

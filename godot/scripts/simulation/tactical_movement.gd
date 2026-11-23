@@ -21,6 +21,8 @@ static func combat_area_clear(state: Dictionary, point: Dictionary) -> bool:
 	for enemy in state.barbarians:
 		if not enemy.isAlive or Geo.distance(point, enemy.position) >= COMBAT_AREA_RADIUS:
 			continue
+		if not Move.Terrain.same_level(state.get("terrain", []), point, enemy.position):
+			continue
 		var target: Variant = Move.find_entity(state.units, enemy.targetUnitId)
 		if target != null and Combat.minion_attack(target.role, state.toolLevels.sword) != null:
 			return false
