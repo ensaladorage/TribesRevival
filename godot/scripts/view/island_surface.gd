@@ -6,6 +6,7 @@ const AT := "res://assets/biomes/Tileset/"
 	"clearing": preload(AT+"Tilemap Claro.png"), "meadow": preload(AT+"Tilemap Pradera.png"),
 	"forest": preload(AT+"Tilemap_Bosque.png"), "ruins": preload(AT+"Tilemap Ruinas.png"),
 	"mountain": preload(AT+"Tilemap montañas.png"), "rocky": preload(AT+"Tilemap_Pegregal.png")}
+@export_range(3, 24) var biome_edge_pixels: int = 12
 @export var cliff: Texture2D = preload(AT+"Tilemap_Pegregal.png")
 @export var shadow: Texture2D = preload(AT+"Shadow.png")
 @export var foam: Texture2D = preload(AT+"Water Foam.png")
@@ -108,6 +109,7 @@ func _batch(tex: Texture2D, fringe: int) -> SurfaceTool:
 			var edge_material := ShaderMaterial.new()
 			edge_material.shader = preload("res://shaders/biome_grass_edge.gdshader")
 			edge_material.set_shader_parameter("grass",tex)
+			edge_material.set_shader_parameter("width_pixels",biome_edge_pixels)
 			_fringes[tex] = edge_material
 		key = _fringes[tex]
 	if not _batches.has(key):

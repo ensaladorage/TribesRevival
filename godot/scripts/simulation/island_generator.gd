@@ -2,16 +2,18 @@ extends RefCounted
 
 const T = preload("res://scripts/simulation/island_terrain.gd")
 const Random = preload("res://scripts/simulation/seeded_random.gd")
+const ProfileType = preload("res://scripts/simulation/landscape_profile.gd")
 const Profile = preload("res://scripts/simulation/landscape_profile.tres")
 const START := Vector2i(52,52)
 const SECTORS := [Vector2i.RIGHT, Vector2i(1,1), Vector2i.DOWN, Vector2i(-1,1),
 	Vector2i.LEFT, Vector2i(-1,-1), Vector2i.UP, Vector2i(1,-1)]
 
-static func candidate(seed_text: String, attempt: int) -> Dictionary:
-	return _layout(Random.new("%s:islands:%d" % [seed_text,attempt]))
+static func candidate(seed_text: String, attempt: int, profile: ProfileType = Profile) -> Dictionary:
+	if profile.coast_spacing < 25 or profile.coast_spacing > 30: return {}
+	return _layout(Random.new("%s:islands:%d" % [seed_text,attempt]),profile)
 
 # Short steps on two opposite banks leave the horizontal stair approaches intact.
-static func _footprint(rng: Random, rx: int, ry: int) -> Array[Vector2i]:
+static func _footprint(rng: Random, rx: int, ry: int, preserve_start: bool = false) -> Array[Vector2i]:
 	var cuts: Array[int] = []
 	var max_cut := mini(2,ry-1)
 	for i in 4:
@@ -20,16 +22,22 @@ static func _footprint(rng: Random, rx: int, ry: int) -> Array[Vector2i]:
 	var notch := rng.next_int(-rx+2,rx-2)
 	var tab := rng.next_int(-rx+2,rx-2)
 	var bank := rng.next_int(0,1)*2-1
+	var sweep := 0.16 * bank
 	var cells: Array[Vector2i] = []
 	for x in range(-rx,rx+1):
 		for y in range(-ry,ry+1):
+			# Keep broad landings on the horizontal axis and sculpt longer banks.
+			if rx >= 6 and not preserve_start and absi(y) > 2:
+				var u := float(x)/rx
+				var v := float(y)/ry
+				if u*u + pow(absf(v-sweep*u),3) > 1.22: continue
 			var corner := int(x > 0) + 2*int(y > 0)
 			if rx-absi(x) < cuts[corner] and ry-absi(y) < cuts[corner]:
 				continue
 			if y == bank*ry and x in [notch,notch+1]:
 				continue
 			cells.append(Vector2i(x,y))
-		if x in [tab,tab+1]:
+		if x in [tab,tab+1] and Vector2i(x,-bank*ry) in cells:
 			cells.append(Vector2i(x,-bank*(ry+1)))
 	return cells
 
@@ -38,7 +46,7 @@ static func _link_cell(start: Vector2i, end: Vector2i, progress: float) -> Vecto
 	var bow := axis.normalized().orthogonal() * sin(PI * progress) * axis.length() * 0.14
 	return Vector2i((Vector2(start) + axis * progress + bow).round())
 
-static func _layout(rng: Random) -> Dictionary:
+static func _layout(rng: Random, profile: ProfileType) -> Dictionary:
 	var land := {}
 	var stairs: Dictionary = {}
 	var centers: Array[Vector2i] = [START]
@@ -53,7 +61,7 @@ static func _layout(rng: Random) -> Dictionary:
 	var sector_centers := {}
 	for sector: Vector2i in SECTORS:
 		var jitter := Vector2i(rng.next_int(-2,2),rng.next_int(-3,3))
-		sector_centers[sector] = START + Vector2i(sector.x*rng.next_int(24,29),sector.y*rng.next_int(24,30)) + jitter
+		sector_centers[sector] = START + Vector2i(sector.x*rng.next_int(profile.coast_spacing-3,profile.coast_spacing+2),sector.y*rng.next_int(profile.coast_spacing-3,profile.coast_spacing+3)) + jitter
 	for i in SECTORS.size():
 		if i == omitted: continue
 		var sector: Vector2i = SECTORS[i]
@@ -71,14 +79,28 @@ static func _layout(rng: Random) -> Dictionary:
 		for j in range(length+1):
 			var c := _link_cell(link,anchor,float(j)/length)
 			var progress := float(j)/length
-			var radius := Profile.route_half_width + roundi(Profile.mouth_flare * absf(2.0*progress-1.0))
+			var radius := profile.route_half_width + roundi(profile.mouth_flare * absf(2.0*progress-1.0))
 			for x in range(-radius,radius+1):
 				for y in range(-radius,radius+1):
 					if x*x+y*y > radius*radius: continue
 					var n := c + Vector2i(x,y)
 					land[n] = T.LOW
 					owners[n] = bridge_start+i
-	for local in _footprint(rng,11,10):
+	# An overlapping coastal plain unifies two arms. Its off-centre bay
+	# makes a second way around the headland and leaves open water beyond.
+	var shore: Vector2i = SECTORS[1+2*(absi(anchors[0].y)%4)]
+	var lateral := Vector2i(shore.x,0)
+	var inland := Vector2i(0,shore.y)
+	for x in range(30):
+		for y in range(30):
+			var u := float(x-13)/18.0
+			var v := float(y-12)/17.0
+			if u*u + v*v > 1.0: continue
+			if Vector2(x-27,y-27).length() < profile.bay_depth: continue
+			var c := START + lateral*x + inland*y
+			land[c] = T.LOW
+			owners[c] = 0
+	for local in _footprint(rng,11,10,true):
 		land[START+local] = T.LOW
 		owners[START+local] = 0
 	var summit_count := rng.next_int(3,4)
@@ -103,7 +125,7 @@ static func _layout(rng: Random) -> Dictionary:
 		centers.append(upper)
 		kinds.append("rocky")
 		levels.append(2)
-		for local in _footprint(rng,shelf_width,rng.next_int(5,Profile.terrace_depth)):
+		for local in _footprint(rng,shelf_width,rng.next_int(5,profile.terrace_depth)):
 			var c := upper+local
 			if owners.has(c): covered[c] = owners[c]
 			land[c] = T.HIGH
@@ -151,8 +173,8 @@ static func _layout(rng: Random) -> Dictionary:
 	_add_low_patch(START + Vector2i(0,4), 0, "meadow", owners, centers, kinds, levels)
 	for island in range(0,anchors.size(),2):
 		var parent := 1 + 2 * island
-		var inland := -1 if anchors[island].x >= START.x else 1
-		var patch := anchors[island] + Vector2i(inland*4,rng.next_int(-1,1))
+		var landward := -1 if anchors[island].x >= START.x else 1
+		var patch := anchors[island] + Vector2i(landward*4,rng.next_int(-1,1))
 		_add_low_patch(patch,parent,"clearing" if kinds[parent] == "forest" else "forest",owners,centers,kinds,levels)
 	# A terrace may cut off a corner of its lower biome while the island as
 	# a whole remains reachable. Sheep must be able to stay in their biome.

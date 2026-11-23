@@ -6,6 +6,7 @@ const Random = preload("res://scripts/simulation/seeded_random.gd")
 const Footprint = preload("res://scripts/simulation/biome_footprint.gd")
 const Islands = preload("res://scripts/simulation/island_generator.gd")
 const Terrain = preload("res://scripts/simulation/island_terrain.gd")
+const Vegetation = preload("res://scripts/simulation/vegetation_profile.tres")
 const RESOURCE_TYPES := ["food", "wood", "stone", "spark"]
 const DEFINITIONS := {
 	"clearing": ["Claro", 1.0, ["wood"], ""],
@@ -47,7 +48,7 @@ static func _describe(world: Dictionary) -> void:
 static func create_biomes(seed_text: String) -> Array:
 	return create_blueprint(seed_text).biomes
 
-static func create_resources(seed_text: String, biomes: Array, config: Dictionary = HITO_3) -> Array:
+static func create_resources(seed_text: String, biomes: Array, config: Dictionary = HITO_3, terrain: Array = []) -> Array:
 	var random := Random.new(seed_text + ":resources")
 	var twig_random := Random.new(seed_text + ":twig-clearings")
 	var tree_random := Random.new(seed_text + ":tree-yields")
@@ -56,6 +57,7 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 		if resource_type in RESOURCE_TYPES and resource_type not in active:
 			active.append(resource_type)
 	var nodes: Array = []
+	var stair_front := _stair_clearance(terrain)
 	for biome in biomes:
 		if biome.isDecorativeOnly:
 			continue
@@ -95,7 +97,10 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 			var is_secondary := resource_type != primary
 			var amount := 1
 			var isolated: bool = biome.id == "meadow" and resource_type == "wood" and index == types.size()-1 and random.next_int(0,3) == 0
-			var point := _resource_point(biome.region,cells,nodes,cluster,isolated)
+			# Put the first quarry within working distance of its clear landing.
+			if biome.id == "rocky" and biome.instanceId == "biome-03" and index == 0:
+				cluster = Vector2(biome.region.x,biome.region.y)
+			var point := _resource_point(biome.region,cells,nodes,cluster,isolated,stair_front if resource_type == "wood" else {})
 			if point.is_empty():
 				break
 			if not cluster.is_finite() or (biome.id == "forest" and index == 4 and types.size() >= 7):
@@ -131,12 +136,24 @@ static func create_resources(seed_text: String, biomes: Array, config: Dictionar
 		})
 	return nodes
 
-static func _resource_point(region: Dictionary, cells: Array, nodes: Array, cluster: Vector2, isolated: bool) -> Dictionary:
+static func _stair_clearance(rows: Array) -> Dictionary:
+	var reserved := {}
+	for y in rows.size():
+		for x in Terrain.SIZE:
+			var stair := Vector2i(x,y)
+			if not Terrain.ramp(Terrain.code(rows,stair)): continue
+			for dx in range(-2,3):
+				for dy in range(-1,4):
+					reserved[stair+Vector2i(dx,dy)] = true
+	return reserved
+
+static func _resource_point(region: Dictionary, cells: Array, nodes: Array, cluster: Vector2, isolated: bool, excluded: Dictionary) -> Dictionary:
 	var best := Vector2.INF
 	var best_index := -1
 	var best_distance := INF
 	for i in cells.size():
 		var point := Footprint.center(region,cells[i])
+		if excluded.has(Terrain.cell({"x":point.x,"y":point.y})): continue
 		if nodes.any(func(node): return point.distance_squared_to(Vector2(node.position.x,node.position.y)) < 2.2):
 			continue
 		var distance := point.distance_squared_to(cluster) if cluster.is_finite() else 0.0
@@ -222,15 +239,30 @@ static func create_rabbits(seed_text: String, biomes: Array) -> Array:
 static func create_decorations(seed_text: String, biomes: Array, resources: Array = [], terrain: Array = []) -> Array:
 	var random := Random.new(seed_text + ":decoration-groups")
 	var decorations: Array = []
+	var stair_front := _stair_clearance(terrain)
 	var reserved: Array[Vector2] = []
 	for biome in biomes:
 		if biome.id not in ["clearing","meadow","forest"]: continue
 		var region: Dictionary = biome.region
 		var cells: Array = region.spawnCells.duplicate()
 		_shuffle(cells,random)
+		# Leave the stair approach visible from the fixed camera to the south.
+		var origin := Terrain.cell(region)
+		if not terrain.is_empty():
+			cells = cells.filter(func(tile): return not stair_front.has(origin+Vector2i(tile.x,tile.y)))
+			var borders: Array = []
+			var interior: Array = []
+			for tile in cells:
+				var c := origin + Vector2i(tile.x,tile.y)
+				var k := Terrain.code(terrain,c)
+				if Terrain.DIRS.any(func(d): return Terrain.code(terrain,c+d*2) != k):
+					borders.append(tile)
+				else:
+					interior.append(tile)
+			cells = borders + interior
 		_place_group(decorations,reserved,resources,biome,cells,"bush",random.next_int(2,3),1.05)
-		_place_group(decorations,reserved,resources,biome,cells,"grass",random.next_int(3,5),0.8)
-		if random.next_float() < 0.24:
+		_place_group(decorations,reserved,resources,biome,cells,"grass",random.next_int(3,Vegetation.grass_group_max),0.8)
+		if random.next_float() < Vegetation.mushroom_chance:
 			_place_group(decorations,reserved,resources,biome,cells,"mushroom",1,0.6)
 	if not terrain.is_empty():
 		_place_water_rocks(decorations, terrain, Random.new(seed_text + ":water-rocks"))
@@ -247,7 +279,7 @@ static func _place_group(result: Array, reserved: Array[Vector2], resources: Arr
 		var center := Footprint.center(region,cell)
 		var group: Array[Vector2] = []
 		for index in count:
-			var offset := Vector2.ZERO if index == 0 else Vector2.from_angle(TAU * index / count) * spacing * Islands.Profile.vegetation_spacing
+			var offset := Vector2.ZERO if index == 0 else Vector2.from_angle(TAU * index / count) * spacing * Vegetation.group_spacing
 			var point := center + offset
 			if not allowed.has(Terrain.cell({"x":point.x,"y":point.y})) or point.distance_to(Footprint.START) < 4.0:
 				break
@@ -337,12 +369,12 @@ static func _place_water_rocks(result: Array, terrain: Array, random: Random) ->
 
 const Reserve = preload("res://scripts/simulation/landscape_reserve.res")
 
-static func create_blueprint(seed_text: String) -> Dictionary:
+static func create_blueprint(seed_text: String, profile: Islands.ProfileType = Islands.Profile) -> Dictionary:
 	for attempt in 8:
-		var world := Islands.candidate(seed_text,attempt)
+		var world := Islands.candidate(seed_text,attempt,profile)
 		if world.is_empty(): continue
 		_describe(world)
-		var nodes := create_resources(seed_text,world.biomes)
+		var nodes := create_resources(seed_text,world.biomes,HITO_3,world.terrain)
 		if not _usable_resources(world,nodes): continue
 		var enemies := create_barbarians(seed_text,world.terrain)
 		if enemies.size() != 5: continue
